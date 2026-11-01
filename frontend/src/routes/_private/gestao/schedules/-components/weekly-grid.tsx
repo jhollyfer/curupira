@@ -122,15 +122,18 @@ function DayList({
     >
       {GRID_WEEKDAYS.map((day) => (
         <li key={day} className="rounded-md border bg-card">
-          <h3 className="border-b bg-muted/40 px-3 py-2 text-sm font-semibold">
+          <h2 className="border-b bg-muted/40 px-3 py-2 text-sm font-semibold">
             {weekdayLabel(day)}
-          </h3>
+          </h2>
           <ul className="flex flex-col divide-y">
             {GRID_WASTE_TYPES.map((type) => {
               const Icon = WASTE_TYPE_ICONS[type]
 
               return (
-                <li key={type} className="flex flex-col gap-2 px-3 py-2.5">
+                <li
+                  key={type}
+                  className="flex items-center justify-between gap-3 px-3 py-1.5"
+                >
                   <span className="inline-flex items-center gap-2 text-sm font-medium">
                     <Icon aria-hidden="true" weight="fill" className="size-4" />
                     {WASTE_TYPE_LABELS[type]()}
