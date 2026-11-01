@@ -268,8 +268,8 @@ pelo protocolo.
 ## 10. Auditoria de segurança
 
 Auditoria do código inteiro (`TASKS.md` 5.2), feita sobre o backend, o frontend e a esteira, com as correções
-aplicadas no mesmo ciclo. Achados da API levam `A-`; achados de sessão e cookie, `S-`. O relatório com o
-texto completo de cada achado não está no repositório: a tabela guarda o que o código e os testes provam.
+aplicadas no mesmo ciclo. Achados da API levam `A-`; achados de sessão e cookie, `S-`. O relatório da auditoria
+não está no repositório: a tabela guarda o achado, o estado atual e onde o código e os testes provam.
 
 | Id | Achado | Status | Onde está |
 |---|---|---|---|
@@ -279,9 +279,24 @@ texto completo de cada achado não está no repositório: a tabela guarda o que 
 | A-10 | o teto de login por e-mail permite travar o acesso de uma conta cujo e-mail se conhece | aceito: trade-off do teto por conta | `backend/start/limiter.ts` (`signInAccountThrottle`) |
 | S-03 | cookies de sessão com nome genérico, sujeitos a colidir com outros projetos em `.maiyu.com.br` | corrigido por prefixo (`curupira-access-token`, `curupira-refresh-token`); residual: o `Domain=.maiyu.com.br` segue largo | `backend/config/cookie.ts`, `DECISIONS.md` #20 |
 
-Os demais achados da auditoria (A-02 a A-07, A-11, A-12, S-01, S-02, S-04 e S-05) foram corrigidos. A tabela
-seguinte agrupa o que mudou no código por tema, porque a correspondência id a id mora no relatório da
-auditoria.
+Demais achados, um a um (todos com correção e teste no mesmo ciclo):
+
+| Id | Achado | Status | Onde está |
+|---|---|---|---|
+| A-02 | o `.env.production` do frontend nunca foi versionado e o build do CI saía em modo de exemplo, com a API em `localhost` e a CSP fechada para ela: o morador acharia que enviou a denúncia | corrigido: arquivo versionado e `main-build-frontend.yml` reprova o build sem `VITE_DATA_SOURCE=api` | `frontend/.env.production`, `.github/workflows/main-build-frontend.yml` |
+| A-03 | o service worker guardava o HTML de `/gestao/*` e nada o limpava no sign-out | corrigido: sem `/gestao` e `/sign-in` no cache, `no-store`, `caches.delete` no sign-out | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
+| A-04 | o SSR de `/acompanhar` chamava a API sem o IP do visitante: todas as consultas caíam no mesmo balde de 30 por 10 minutos | corrigido: o SSR repassa `X-Forwarded-For` | `frontend/src/integrations/tanstack-query/http.server.ts` |
+| A-05 | o IP do denunciante ficava em texto claro na chave de `rate_limits` e o 429 o registrava em log | corrigido: HMAC do IP como chave; sem IP no log de 429 anônimo | `backend/start/limiter.ts`, `backend/app/exceptions/handler.ts` |
+| A-06 | foto enviada que nunca virou denúncia não era podada, e a foto pendente guarda o objeto cru | corrigido: `storages:prune` apaga também a `UPLOADED` de denúncia sem denúncia há mais de 24 h (exige cron) | `backend/commands/storages-prune.command.ts` |
+| A-07 | `sharp` 0.34 com três avisos HIGH no `pnpm audit --prod` | corrigido: `sharp` 0.35.5; `pnpm audit --prod --audit-level=high` sem HIGH | `backend/package.json` |
+| A-11 | dados de exemplo do painel com e-mails e telefones de aparência real no bundle | corrigido: domínio `@exemplo.invalid`, telefones fictícios, fora do bundle de produção | `frontend/src/data/management/*`, `frontend/scripts/strip-example-data.ts` |
+| A-12 | o dono não é semeado em produção e faltava caminho para criar o primeiro administrador | corrigido: `node ace users:create-owner` | `backend/commands/users-create-owner.command.ts` |
+| S-01 | `?redirect=` recusava só `//` e `/\`, e `/%09/evil.com` poderia sair do site | corrigido: validação por origem e sem caractere de controle | `frontend/src/lib/redirect-search.ts` |
+| S-02 | o `fetch` do SSR não manda `Origin` e o backend exige `Origin` em método não seguro: o refresh feito no servidor levaria 403 | corrigido: o SSR envia `Origin` igual a `VITE_SITE_URL` (não reproduzido ao vivo com token expirado) | `frontend/src/integrations/tanstack-query/http.server.ts` |
+| S-04 | `limitInputPixels` de 60 MP permitia cerca de 240 MB de pixels por conversão, com 60 chamadas por hora por IP | corrigido: 50 MP (uma foto de 48 MP ainda passa) e no máximo 2 conversões simultâneas | `backend/app/services/photo-sanitizer/photo-sanitizer.service.ts`, `backend/app/core/semaphore.ts` |
+| S-05 | o arquivo da biblioteca da gestão podia ser anexado a uma denúncia por quem soubesse o uuid | corrigido: o anexo só aceita arquivo com o prefixo `report-photos/` | `backend/app/core/report-photo-key.ts`, `backend/app/repositories/storage/` |
+
+Resumo das correções por tema:
 
 | Tema | Correção | Onde |
 |---|---|---|
