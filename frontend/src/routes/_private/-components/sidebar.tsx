@@ -69,7 +69,7 @@ function NavigationItem({
         render={<Link to={to} />}
         // The drawer is a phone surface: rows are 44px there, the dense 32px is the
         // desktop rail's.
-        className="max-md:h-11 max-md:text-base"
+        className="max-md:h-11 max-md:text-base pointer-coarse:group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:[&>span]:sr-only"
         onClick={() => setOpenMobile(false)}
       >
         <Icon aria-hidden="true" />
@@ -149,7 +149,7 @@ export function Sidebar(): React.JSX.Element {
               render={
                 <SidebarMenuButton
                   tooltip={m.panel_sign_out()}
-                  className="max-md:h-11 max-md:text-base"
+                  className="max-md:h-11 max-md:text-base pointer-coarse:group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:[&>span]:sr-only"
                 >
                   <SignOutIcon aria-hidden="true" />
                   <span>{m.panel_sign_out()}</span>
