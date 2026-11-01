@@ -188,6 +188,9 @@ test.group('account > update > avatar', (group) => {
     const response = await client.put('/account').cookies(session).json({ avatarId: storage.id })
 
     response.assertStatus(200)
-    assert.equal(body(response).avatar.id, storage.id)
+    // The response shape has no avatar (the panel does not show it): the attachment is checked
+    // where it lives.
+    const user = await Stored.userByEmailOrFail(ADMINISTRATOR.email)
+    assert.equal(user.avatarId, storage.id)
   })
 })

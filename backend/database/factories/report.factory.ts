@@ -40,13 +40,18 @@ export const ReportFactory = factory
     report.anonymous = false
   })
   .after('create', async (_factory, report) => {
-    await ReportStatusEvent.create({
-      id: randomUUID(),
-      reportId: report.id,
-      status: REPORT_STATUS.RECEIVED,
-      message: null,
-      authorId: null,
-      at: report.createdAt ?? DateTime.now(),
-    })
+    // The factory creates the report inside a transaction and runs this hook before it
+    // commits: the event must join that same transaction, or its foreign key cannot see the row.
+    await ReportStatusEvent.create(
+      {
+        id: randomUUID(),
+        reportId: report.id,
+        status: REPORT_STATUS.RECEIVED,
+        message: null,
+        authorId: null,
+        at: report.createdAt ?? DateTime.now(),
+      },
+      { client: report.$trx },
+    )
   })
   .build()

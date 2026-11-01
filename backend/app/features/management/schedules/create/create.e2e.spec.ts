@@ -63,15 +63,12 @@ test.group('management/schedules > create', (group) => {
     const session = await authenticateAsAdministrator(client)
     const neighborhood = await NeighborhoodFactory.create()
 
-    const response = await client
-      .post('/management/schedules')
-      .cookies(session)
-      .json({
-        neighborhoodId: neighborhood.id,
-        wasteType: 'GOLD',
-        weekday: 'FUNDAY',
-        shift: 'LATE',
-      })
+    const response = await client.post('/management/schedules').cookies(session).json({
+      neighborhoodId: neighborhood.id,
+      wasteType: 'GOLD',
+      weekday: 'FUNDAY',
+      shift: 'LATE',
+    })
 
     response.assertStatus(422)
     assert.property(body(response).errors, 'wasteType')
