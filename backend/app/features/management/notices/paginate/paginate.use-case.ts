@@ -42,7 +42,10 @@ export default class ManagementNoticePaginateUseCase {
       logger.error({ err: error }, '[management/notices > paginate][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_NOTICE_PAGINATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_NOTICE_PAGINATE_ERROR',
+        ),
       )
     }
   }

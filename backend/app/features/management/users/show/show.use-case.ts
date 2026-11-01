@@ -20,14 +20,18 @@ export default class ManagementUserShowUseCase {
   async execute({ id }: Payload): Promise<Response> {
     try {
       const user = await this.users.detail(id)
-      if (!user) return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
+      if (!user)
+        return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
 
       return right(user)
     } catch (error) {
       logger.error({ err: error }, '[management/users > show][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_USER_SHOW_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_USER_SHOW_ERROR',
+        ),
       )
     }
   }

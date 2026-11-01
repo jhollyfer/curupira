@@ -10,8 +10,7 @@ import { IdentifierValidator } from '#core/validator'
 export default class ManagementScheduleShowController {
   static docs = defineDocs({
     summary: 'View a collection slot',
-    description:
-      'Returns the bare object, with the neighborhood name.',
+    description: 'Returns the bare object, with the neighborhood name.',
   })
 
   constructor(private readonly useCase: ManagementScheduleShowUseCase) {}

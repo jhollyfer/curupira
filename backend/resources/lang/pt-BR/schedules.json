@@ -1,0 +1,5 @@
+{
+  "not_found": "Coleta não encontrada",
+  "already_exists": "Esta coleta já está cadastrada",
+  "slot_taken": "Este bairro já tem este tipo de resíduo neste dia e turno"
+}

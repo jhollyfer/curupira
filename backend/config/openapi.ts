@@ -81,118 +81,86 @@ const tags: TagRule[] = [
     plural: 'attachments',
   },
   {
-    prefix: '/administrator/classrooms',
-    name: 'Panel · Classrooms',
+    prefix: '/management/reports',
+    name: 'Management · Reports',
     description:
-      'The classrooms that compete. The category (Fundamental 1 or 2) comes from the grade, and each classroom has ' +
-      'a teacher advisor and a student representative.',
-    singular: 'classroom',
-    plural: 'classrooms',
-  },
-  {
-    prefix: '/administrator/sports',
-    name: 'Panel · Sports',
-    description:
-      'Futsal, volleyball, dodgeball... Each with its minimum and maximum athletes per team.',
-    singular: 'sport',
-    plural: 'sports',
-  },
-  {
-    prefix: '/administrator/announcements',
-    name: 'Panel · Announcements',
-    description: 'The announcements the site shows. Pinned ones appear first.',
-    singular: 'announcement',
-    plural: 'announcements',
-  },
-  {
-    prefix: '/administrator/reports',
-    name: 'Panel · Reports',
-    description:
-      'How many classrooms, students and athletes took part in the games, on screen or as CSV.',
+      'The environmental reports for the team: list with filters, map pins, dashboard numbers, detail with the contact and signed photos, and the status moving forward. ' +
+      'Operators and administrators.',
     singular: 'report',
     plural: 'reports',
   },
   {
-    prefix: '/administrator/photos',
-    name: 'Panel · Photos',
+    prefix: '/management/notices',
+    name: 'Management · Notices',
+    description: 'The notices the home shows between two dates. ' + 'Operators and administrators.',
+    singular: 'notice',
+    plural: 'notices',
+  },
+  {
+    prefix: '/management/schedules',
+    name: 'Management · Collection schedule',
     description:
-      'The site carousel photos. Those from the advisor arrive pending and only go live ' +
-      'once approved.',
-    singular: 'photo',
-    plural: 'photos',
+      'The weekly collection slots: a waste type, weekday and shift in a neighborhood. ' +
+      'Administrators only.',
+    singular: 'collection slot',
+    plural: 'collection slots',
   },
   {
-    prefix: '/administrator/site',
-    name: 'Panel · Site',
+    prefix: '/management/neighborhoods',
+    name: 'Management · Neighborhoods',
     description:
-      'The games "About" and the PDF regulation the public site shows. A single configuration.',
-    singular: 'configuration',
-    plural: 'configurations',
+      'The neighborhoods residents pick, with an optional center on the map. ' +
+      'Administrators only.',
+    singular: 'neighborhood',
+    plural: 'neighborhoods',
   },
   {
-    prefix: '/administrator/brackets',
-    name: 'Panel · Brackets',
+    prefix: '/management/users',
+    name: 'Management · Users',
     description:
-      'The draw of a sport in a category, which builds the whole knockout. A bracket is not ' +
-      'edited: delete it and draw again.',
-    singular: 'bracket',
-    plural: 'brackets',
-  },
-  {
-    prefix: '/administrator/matches',
-    name: 'Panel · Matches',
-    description: 'The schedule and the score. Matches are born from the draw, never by hand.',
-    singular: 'match',
-    plural: 'matches',
-  },
-  {
-    prefix: '/administrator/cards',
-    name: 'Panel · Cards',
-    description: 'The yellow and red cards athletes received in matches.',
-    singular: 'card',
-    plural: 'cards',
-  },
-  {
-    prefix: '/administrator/enrollment-removals',
-    name: 'Panel · Athlete removals',
-    description: 'The notice for each athlete the advisor removed from a sport, with the reason.',
-    singular: 'removal notice',
-    plural: 'removal notices',
-  },
-  {
-    prefix: '/administrator/users',
-    name: 'Panel · Users',
-    description:
-      'The access accounts: administrators, teacher advisors and student representatives. ' +
-      'There is no public sign-up - every account is born here. The password is never returned in any response.',
+      'The access accounts: administrators and operators. There is no public sign-up - every account is born here. The password is never returned in any response. ' +
+      'Administrators only.',
     singular: 'user',
     plural: 'users',
   },
   {
-    prefix: '/advisor',
-    name: 'Advisor',
-    description:
-      'The students and enrollments of the classrooms the teacher advises. A classroom of ' +
-      'another advisor answers `404`.',
-    singular: 'classroom',
-    plural: 'classrooms',
+    prefix: '/storefront/neighborhoods',
+    name: 'Site · Neighborhoods',
+    description: 'The neighborhood list the resident picks from. **Unauthenticated**.',
+    singular: 'neighborhood',
+    plural: 'neighborhoods',
   },
   {
-    prefix: '/representative',
-    name: 'Representative',
-    description:
-      'The athlete list of their own classroom, per sport. The classroom comes from the session.',
-    singular: 'enrollment',
-    plural: 'enrollments',
+    prefix: '/storefront/schedules',
+    name: 'Site · Collection schedule',
+    description: 'The week of collection, per neighborhood. **Unauthenticated**.',
+    singular: 'collection slot',
+    plural: 'collection slots',
   },
   {
-    prefix: '/storefront',
-    name: 'Site',
+    prefix: '/storefront/notices',
+    name: 'Site · Notices',
+    description: 'The notices showing now. **Unauthenticated**.',
+    singular: 'notice',
+    plural: 'notices',
+  },
+  {
+    prefix: '/storefront/report-photos',
+    name: 'Site · Report photos',
     description:
-      'The public site, **unauthenticated** and read-only: match table, standings, ' +
-      'brackets and announcements.',
-    singular: 'item',
-    plural: 'items',
+      'Anonymous photo upload for a report, in two steps: open (signed `PUT`) and confirm, which verifies the image and strips its metadata. ' +
+      '**Unauthenticated**, throttled per IP.',
+    singular: 'report photo',
+    plural: 'report photos',
+  },
+  {
+    prefix: '/storefront/reports',
+    name: 'Site · Reports',
+    description:
+      'File a report anonymously, follow it by protocol and see the public map. The public reads never carry the contact, the description or the photos. ' +
+      '**Unauthenticated**, throttled per IP.',
+    singular: 'report',
+    plural: 'reports',
   },
 ]
 
@@ -201,8 +169,8 @@ const openapi = {
     title: 'API Curupira',
     version: '1.0.0',
     description:
-      'Student Games API: classrooms, enrollments, draw, match table, score and ' +
-      'standings, with panels for the organization, the advisor and the representative.\n\n' +
+      'Curupira API: the collection schedule by neighborhood, anonymous environmental reports with ' +
+      'photo and map, and the management panel for the city team.\n\n' +
       'The site (`/storefront`) answers without a session. Everything else requires the `httpOnly` cookie ' +
       '`access-token`, issued by `POST /authentication/sign-in` and renewed by ' +
       '`POST /authentication/refresh`.\n\n' +
@@ -234,8 +202,11 @@ const openapi = {
  * is consulted.
  */
 export const ACTION_OVERRIDES: Record<string, string> = {
-  score: 'Enter score',
-  unscore: 'Undo score',
+  'update-status': 'Move report forward',
+  'show-by-protocol': 'Follow report by protocol',
+  'map': 'Report map',
+  'stats': 'Dashboard numbers',
+  'close': 'Close notice',
 }
 
 export default openapi

@@ -76,7 +76,13 @@ export class Report {
       anonymous: contact === null,
       photoIds: [...input.photoIds],
       events: [
-        { id: input.eventId, status: REPORT_STATUS.RECEIVED, message: null, authorId: null, at: input.now },
+        {
+          id: input.eventId,
+          status: REPORT_STATUS.RECEIVED,
+          message: null,
+          authorId: null,
+          at: input.now,
+        },
       ],
       createdAt: input.now,
       updatedAt: input.now,

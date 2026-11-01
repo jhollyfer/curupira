@@ -37,7 +37,10 @@ export default class ManagementSchedulePaginateUseCase {
       logger.error({ err: error }, '[management/schedules > paginate][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_SCHEDULE_PAGINATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_SCHEDULE_PAGINATE_ERROR',
+        ),
       )
     }
   }

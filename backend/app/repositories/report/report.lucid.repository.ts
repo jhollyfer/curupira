@@ -2,7 +2,13 @@ import { randomUUID } from 'node:crypto'
 
 import { inject } from '@adonisjs/core'
 import { DateTime } from 'luxon'
-import { REPORT_KINDS, REPORT_PUBLIC_STATUSES, REPORT_STATUSES, left, right } from '@curupira/shared'
+import {
+  REPORT_KINDS,
+  REPORT_PUBLIC_STATUSES,
+  REPORT_STATUSES,
+  left,
+  right,
+} from '@curupira/shared'
 import type {
   Either,
   ManagementReportListItemResponse,
@@ -181,11 +187,13 @@ export class ReportLucidRepository extends ReportRepository {
 
   async detail(id: string): Promise<ReportRead | null> {
     const client = this.transaction.client()
-    const row: (ListRow & {
-      description: string | null
-      contact: string | null
-      updated_at: Date | null
-    }) | null = await this.listing(client).where('reports.id', id).first()
+    const row:
+      | (ListRow & {
+          description: string | null
+          contact: string | null
+          updated_at: Date | null
+        })
+      | null = await this.listing(client).where('reports.id', id).first()
     if (!row) return null
 
     const [photos, events] = await Promise.all([
@@ -302,9 +310,7 @@ export class ReportLucidRepository extends ReportRepository {
     }
   }
 
-  async showByProtocol(
-    protocol: string,
-  ): Promise<StorefrontReportShowByProtocolResponse | null> {
+  async showByProtocol(protocol: string): Promise<StorefrontReportShowByProtocolResponse | null> {
     const client = this.transaction.client()
     // The column list is the whole public surface of this read: nothing else is selected.
     const row: {

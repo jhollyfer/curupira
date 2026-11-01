@@ -14,8 +14,12 @@ export class ReportPhotoRefusal {
 
   /** The bytes are not an image the decoder accepts, whatever they started with. */
   static invalidImage(i18n: I18n): HTTPException {
-    return HTTPException.UnprocessableEntity(i18n.t('reports.photo_invalid'), 'REPORT_PHOTO_INVALID', {
-      photoIds: i18n.t('reports.photo_invalid'),
-    })
+    return HTTPException.UnprocessableEntity(
+      i18n.t('reports.photo_invalid'),
+      'REPORT_PHOTO_INVALID',
+      {
+        photoIds: i18n.t('reports.photo_invalid'),
+      },
+    )
   }
 }

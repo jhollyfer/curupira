@@ -60,7 +60,7 @@ test.group('authentication/sessions > refresh (unit)', () => {
     assert.deepInclude(result.value, { status: 401, code: 'REFRESH_TOKEN_INVALID' })
   })
 
-  test('archived, inactive or deleted account does not refresh', async ({ assert }) => {
+  test('inactive or deleted account does not refresh', async ({ assert }) => {
     const { users, sessions, useCase } = await setup()
     const user = await seedUser(users, { inactive: true })
 

@@ -10,7 +10,14 @@ import { test } from '@japa/runner'
  */
 const BACKEND = join(import.meta.dirname, '..', '..')
 const ROOTS = ['app', 'commands']
-const VENDORS = ['@aws-sdk/', '@smithy/', '@adonisjs/drive', '@adonisjs/mail', 'nodemailer', 'sharp']
+const VENDORS = [
+  '@aws-sdk/',
+  '@smithy/',
+  '@adonisjs/drive',
+  '@adonisjs/mail',
+  'nodemailer',
+  'sharp',
+]
 const SERVICE = /^app\/services\/([^/]+)\/\1\.service\.ts$/
 const SPEC = /\.(unit|e2e)\.spec\.ts$/
 const IMPORT = /(?:from|import)\s*\(?\s*['"]([^'"]+)['"]/g

@@ -1,5 +1,4 @@
 import { test } from '@japa/runner'
-import { DateTime } from 'luxon'
 
 import {
   ADMINISTRATOR,
@@ -33,16 +32,16 @@ test.group('account > read', (group) => {
     assert.notProperty(body(response), 'password')
   })
 
-  test('archived user with a still valid token responds 401', async ({ client }) => {
+  test('inactive user with a still valid token responds 401', async ({ client }) => {
     const session = await authenticateAsAdministrator(client)
     const user = await Stored.userByEmailOrFail(ADMINISTRATOR.email)
 
-    await user.merge({ deletedAt: DateTime.now() }).save()
+    await user.merge({ status: 'INACTIVE' }).save()
 
     const response = await client.get('/account').cookies(session)
 
-    // 401 and not 404: the guard rereads `deletedAt` and `status` on every request,
-    // so archiving the account ends the session instead of leaving it authenticated
+    // 401 and not 404: the guard rereads `status` on every request,
+    // so deactivating the account ends the session instead of leaving it authenticated
     // until the token expires. The previous 404 said "you are authenticated, but your
     // own account does not exist", which described the hole instead of the rule.
     response.assertStatus(401)

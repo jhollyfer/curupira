@@ -1,0 +1,5 @@
+{
+  "not_found": "Collection slot not found",
+  "already_exists": "This collection slot already exists",
+  "slot_taken": "This neighborhood already has this waste type on this weekday and shift"
+}

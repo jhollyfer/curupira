@@ -30,7 +30,10 @@ export default class ManagementNeighborhoodShowUseCase {
       logger.error({ err: error }, '[management/neighborhoods > show][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_NEIGHBORHOOD_SHOW_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_NEIGHBORHOOD_SHOW_ERROR',
+        ),
       )
     }
   }

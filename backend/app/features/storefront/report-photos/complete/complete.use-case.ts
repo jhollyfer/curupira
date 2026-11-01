@@ -54,7 +54,10 @@ export default class StorefrontReportPhotoCompleteUseCase {
 
       const metadata = await this.bucket.metadata(file.path)
       const head = await this.bucket.head(file.path)
-      const completed = storage.complete({ contentLength: metadata.contentLength, head }, new Date())
+      const completed = storage.complete(
+        { contentLength: metadata.contentLength, head },
+        new Date(),
+      )
       if (completed.isLeft()) {
         await this.discard(storage)
 
@@ -80,7 +83,10 @@ export default class StorefrontReportPhotoCompleteUseCase {
       logger.error({ err: error }, '[storefront/report-photos > complete][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'STOREFRONT_REPORT_PHOTO_COMPLETE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'STOREFRONT_REPORT_PHOTO_COMPLETE_ERROR',
+        ),
       )
     }
   }

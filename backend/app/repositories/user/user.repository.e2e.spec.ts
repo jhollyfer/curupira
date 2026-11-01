@@ -7,14 +7,9 @@ import { UserMemoryRepository } from './user.memory.repository.ts'
 import type { UserRepository } from './user.repository.ts'
 
 import { resetDatabase } from '#tests/http-fixtures'
-import { PNG_HEAD } from '#tests/storages-unit-fixtures'
-import { Storage } from '#domain/storage/storage.entity'
 import { User } from '#domain/user/user.entity'
-import { StorageLucidRepository } from '#repositories/storage/storage.lucid.repository'
-import { StorageMemoryRepository } from '#repositories/storage/storage.memory.repository'
-import type { StorageRepository } from '#repositories/storage/storage.repository'
 
-type Pair = { users: UserRepository; storages: StorageRepository }
+type Pair = { users: UserRepository }
 
 /**
  * The same contract in both implementations (`_standards/domain.md` §5.4): it is what
@@ -24,25 +19,19 @@ type Pair = { users: UserRepository; storages: StorageRepository }
 const IMPLEMENTATIONS = {
   lucid: async (): Promise<Pair> => ({
     users: await app.container.make(UserLucidRepository),
-    storages: await app.container.make(StorageLucidRepository),
   }),
-  memory: async (): Promise<Pair> => {
-    const storages = new StorageMemoryRepository()
-
-    return { users: new UserMemoryRepository(storages), storages }
-  },
+  memory: async (): Promise<Pair> => ({ users: new UserMemoryRepository() }),
 } satisfies Record<string, () => Promise<Pair>>
 
 const NOW = new Date('2026-10-29T12:00:00.000Z')
 const ANA = '4b6f2c1e-3f2a-4c8e-9a1b-0f6d2e7c8a91'
 const BIA = '5c7a3d2f-4a3b-4d9f-8b2c-1a7e3f8d9b02'
-const CAIO = '6d8b4e3a-5b4c-4eaa-9c3d-2b8f4a9eac13'
 
 function account(
   id: string,
   name: string,
   email: string,
-  role: 'ADVISOR' | 'ADMINISTRATOR' = 'ADVISOR',
+  role: 'OPERATOR' | 'ADMINISTRATOR' = 'OPERATOR',
 ) {
   return User.create({ id, name, email, password: 'Senha@123', role, now: NOW })
 }
@@ -106,25 +95,9 @@ for (const [name, make] of Object.entries(IMPLEMENTATIONS)) {
       assert.isTrue(await hash.verify(stored, 'Nova@12345'))
     })
 
-    test('the archived account disappears from findById and shows up in findArchivedById and findAnyById', async ({
-      assert,
-    }) => {
+    test('findByEmail and existsByEmail see the account', async ({ assert }) => {
       const { users } = await make()
-      const ana = account(ANA, 'Ana', 'ana@t.dev')
-      await users.save(ana)
-      ana.archive(NOW)
-      await users.save(ana)
-
-      assert.isNull(await users.findById(ANA))
-      assert.isNotNull(await users.findArchivedById(ANA))
-      assert.isNotNull(await users.findAnyById(ANA))
-    })
-
-    test('findByEmail and existsByEmail also see the archived account', async ({ assert }) => {
-      const { users } = await make()
-      const ana = account(ANA, 'Ana', 'ana@t.dev')
-      ana.archive(NOW)
-      await users.save(ana)
+      await users.save(account(ANA, 'Ana', 'ana@t.dev'))
 
       assert.isNotNull(await users.findByEmail('ana@t.dev'))
       assert.isTrue(await users.existsByEmail('ana@t.dev'))
@@ -132,47 +105,22 @@ for (const [name, make] of Object.entries(IMPLEMENTATIONS)) {
       assert.isNull(await users.findByEmail('outra@t.dev'))
     })
 
-    test('detail brings the account with the avatar and without the password; archived is null', async ({
-      assert,
-    }) => {
-      const { users, storages } = await make()
-      const photo = Storage.open({
-        id: CAIO,
-        key: 'photo.png',
-        originalName: 'photo.png',
-        mimetype: 'image/png',
-        size: 1,
-        uploadId: null,
-        partSize: 1,
-        now: NOW,
-      })
-      photo.complete({ contentLength: 1, head: PNG_HEAD }, NOW)
-      await storages.save(photo)
-      const ana = account(ANA, 'Ana', 'ana@t.dev')
-      ana.update({ avatarId: CAIO }, NOW)
-      await users.save(ana)
-      const bia = account(BIA, 'Bia', 'bia@t.dev')
-      bia.archive(NOW)
-      await users.save(bia)
+    test('detail brings the account without the password; unknown is null', async ({ assert }) => {
+      const { users } = await make()
+      await users.save(account(ANA, 'Ana', 'ana@t.dev'))
 
       const detail = await users.detail(ANA)
 
-      assert.deepInclude(detail, { id: ANA, name: 'Ana', avatarId: CAIO })
-      assert.equal(detail?.avatar?.id, CAIO)
+      assert.deepInclude(detail, { id: ANA, name: 'Ana', role: 'OPERATOR' })
       assert.notProperty(detail, 'password')
       assert.isNull(await users.detail(BIA))
     })
 
-    test('paginate hides the trash, searches by name and e-mail and filters by role', async ({
-      assert,
-    }) => {
+    test('paginate searches by name and e-mail and filters by role', async ({ assert }) => {
       const { users } = await make()
       await users.save(account(ANA, 'Ana', 'ana@t.dev'))
       await users.save(account(BIA, 'Bia', 'zeta@t.dev', 'ADMINISTRATOR'))
-      const caio = account(CAIO, 'Caio', 'caio@t.dev')
-      caio.archive(NOW)
-      await users.save(caio)
-      // The seeder leaves the administrator in the table: the search cuts only the test accounts.
+      // The seeder leaves the owner in the table: the search cuts only the test accounts.
       const base = {
         page: 1,
         perPage: 10,
@@ -181,21 +129,14 @@ for (const [name, make] of Object.entries(IMPLEMENTATIONS)) {
         direction: 'asc',
       } as const
 
-      const living = await users.paginate(base)
-      const trash = await users.paginate({ ...base, trashed: 'only' })
-      const everyone = await users.paginate({ ...base, trashed: 'with' })
+      const everyone = await users.paginate(base)
       const byEmail = await users.paginate({ ...base, search: 'ZETA' })
       const admins = await users.paginate({ ...base, role: 'ADMINISTRATOR' })
 
       assert.deepEqual(
-        living.data.map((item) => item.name),
+        everyone.data.map((item) => item.name),
         ['Ana', 'Bia'],
       )
-      assert.deepEqual(
-        trash.data.map((item) => item.name),
-        ['Caio'],
-      )
-      assert.equal(everyone.meta.total, 3)
       assert.deepEqual(
         byEmail.data.map((item) => item.name),
         ['Bia'],
@@ -209,12 +150,11 @@ for (const [name, make] of Object.entries(IMPLEMENTATIONS)) {
     test('delete deletes for good', async ({ assert }) => {
       const { users } = await make()
       const ana = account(ANA, 'Ana', 'ana@t.dev')
-      ana.archive(NOW)
       await users.save(ana)
 
       await users.delete(ana)
 
-      assert.isNull(await users.findAnyById(ANA))
+      assert.isNull(await users.findById(ANA))
     })
   })
 }

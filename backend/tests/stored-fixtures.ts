@@ -64,6 +64,11 @@ export class Stored {
     return ReportStatusEventModel.query().where('reportId', reportId).orderBy('at', 'asc')
   }
 
+  /** Links an uploaded file to a report, as saving the report does. */
+  static attachPhoto(reportId: string, storageId: string, position = 0) {
+    return ReportPhotoModel.create({ reportId, storageId, position })
+  }
+
   static photosOfReport(reportId: string) {
     return ReportPhotoModel.query().where('reportId', reportId)
   }

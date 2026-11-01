@@ -2,7 +2,7 @@ import { test } from '@japa/runner'
 
 import {
   authenticateAsAdministrator,
-  authenticateAsAdvisor,
+  authenticateAsOperator,
   body,
   resetDatabase,
 } from '#tests/http-fixtures'
@@ -30,7 +30,7 @@ test.group('reference > show', (group) => {
   })
 
   test('whoever does not operate the installation also gets 404', async ({ client, assert }) => {
-    const session = await authenticateAsAdvisor(client)
+    const session = await authenticateAsOperator(client)
     const response = await client.get('/documentation').cookies(session)
 
     response.assertStatus(404)

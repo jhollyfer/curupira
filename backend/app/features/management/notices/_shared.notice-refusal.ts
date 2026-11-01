@@ -8,11 +8,9 @@ import type { NoticeError } from '#domain/notice/notice.errors'
 export class NoticeRefusal extends RefusalBase {
   private static readonly TABLE = {
     NOTICE_INVALID_PERIOD: (_fact, i18n) =>
-      HTTPException.UnprocessableEntity(
-        i18n.t('notices.invalid_period'),
-        'NOTICE_INVALID_PERIOD',
-        { endsAt: i18n.t('notices.ends_before_start') },
-      ),
+      HTTPException.UnprocessableEntity(i18n.t('notices.invalid_period'), 'NOTICE_INVALID_PERIOD', {
+        endsAt: i18n.t('notices.ends_before_start'),
+      }),
     NOTICE_ALREADY_CLOSED: (_fact, i18n) =>
       HTTPException.Conflict(i18n.t('notices.already_closed'), 'NOTICE_ALREADY_CLOSED'),
   } satisfies RefusalTable<NoticeError>

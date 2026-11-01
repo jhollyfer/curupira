@@ -28,7 +28,10 @@ export default class ManagementReportStatsUseCase {
       logger.error({ err: error }, '[management/reports > stats][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_REPORT_STATS_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_REPORT_STATS_ERROR',
+        ),
       )
     }
   }

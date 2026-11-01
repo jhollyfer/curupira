@@ -36,7 +36,11 @@ export default class ManagementNeighborhoodUpdateUseCase {
 
       if (
         neighborhood.renamesTo(changes.name) &&
-        (await this.neighborhoods.existsByNameOrSlug(changes.name, Slug.from(changes.name).value, id))
+        (await this.neighborhoods.existsByNameOrSlug(
+          changes.name,
+          Slug.from(changes.name).value,
+          id,
+        ))
       )
         return left(NeighborhoodRefusal.http({ code: 'NEIGHBORHOOD_ALREADY_EXISTS' }, this.i18n))
 
@@ -51,7 +55,10 @@ export default class ManagementNeighborhoodUpdateUseCase {
       logger.error({ err: error }, '[management/neighborhoods > update][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_NEIGHBORHOOD_UPDATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_NEIGHBORHOOD_UPDATE_ERROR',
+        ),
       )
     }
   }

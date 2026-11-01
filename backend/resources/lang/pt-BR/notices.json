@@ -1,0 +1,6 @@
+{
+  "not_found": "Aviso não encontrado",
+  "invalid_period": "Período inválido",
+  "ends_before_start": "O fim precisa ser depois do início",
+  "already_closed": "Aviso já encerrado"
+}

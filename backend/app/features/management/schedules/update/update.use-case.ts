@@ -1,7 +1,13 @@
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementScheduleShowResponse, type Merge } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementScheduleShowResponse,
+  type Merge,
+} from '@curupira/shared'
 
 import { ScheduleRefusal } from '../_shared.schedule-refusal.ts'
 
@@ -29,10 +35,7 @@ export default class ManagementScheduleUpdateUseCase {
       const schedule = await this.schedules.findById(id)
       if (!schedule) return left(ScheduleRefusal.notFound(this.i18n))
 
-      if (
-        changes.neighborhoodId &&
-        !(await this.neighborhoods.findById(changes.neighborhoodId))
-      )
+      if (changes.neighborhoodId && !(await this.neighborhoods.findById(changes.neighborhoodId)))
         return left(NeighborhoodRefusal.unknown('neighborhoodId', this.i18n))
 
       const current = schedule.snapshot()
@@ -57,7 +60,10 @@ export default class ManagementScheduleUpdateUseCase {
       logger.error({ err: error }, '[management/schedules > update][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_SCHEDULE_UPDATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_SCHEDULE_UPDATE_ERROR',
+        ),
       )
     }
   }

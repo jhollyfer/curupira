@@ -37,7 +37,10 @@ export default class ManagementNoticeCloseUseCase {
       logger.error({ err: error }, '[management/notices > close][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_NOTICE_CLOSE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_NOTICE_CLOSE_ERROR',
+        ),
       )
     }
   }

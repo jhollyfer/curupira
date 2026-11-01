@@ -82,7 +82,7 @@ export class NoticeLucidRepository extends NoticeRepository {
 
   /** The same three-way rule as `Notice.statusOf`, expressed as SQL. */
   private byStatus(query: NoticeQuery, status: NoticeStatus, now: Date): void {
-    const at = DateTime.fromJSDate(now).toSQL()
+    const at = now
     const cuts = {
       [NOTICE_STATUS.SCHEDULED]: () => query.whereNull('closedAt').where('startsAt', '>', at),
       [NOTICE_STATUS.ACTIVE]: () =>

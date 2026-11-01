@@ -13,7 +13,7 @@ type Payload = AuthenticationSessionSignInPayload
 type Response = Either<HTTPException, SessionTokens>
 
 /**
- * Opens the session. Nonexistent account, wrong password, archived account and inactive
+ * Opens the session. Nonexistent account, wrong password and inactive
  * account get the same `401`: the response does not confirm that the account existed
  * nor why it was refused.
  *
@@ -30,8 +30,7 @@ export default class AuthenticationSessionSignInUseCase {
 
   async execute(payload: Payload): Promise<Response> {
     try {
-      // Alive or archived: whether it gets in is decided by the account, after the password
-      // is checked.
+      // Whether it gets in is decided by the account, after the password is checked.
       const user = await this.users.findByEmail(payload.email)
 
       // A nonexistent account also spends the time of a hash, so the response

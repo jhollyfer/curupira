@@ -1,11 +1,6 @@
-import {
-  LIST_LIMITS,
-  REPORT_KINDS,
-  REPORT_SORT_COLUMNS,
-  REPORT_STATUSES,
-} from '@curupira/shared'
+import { LIST_LIMITS, REPORT_KINDS, REPORT_SORT_COLUMNS, REPORT_STATUSES } from '@curupira/shared'
 
-import { vine, paginationFields, sortFields } from '#core/validator'
+import { vine, isoInstant, paginationFields, sortFields } from '#core/validator'
 import type { Infer } from '#core/validator'
 
 /**
@@ -19,8 +14,8 @@ function reportFilterFields() {
     kind: vine.enum(REPORT_KINDS).optional(),
     status: vine.enum(REPORT_STATUSES).optional(),
     neighborhoodId: vine.string().uuid().optional(),
-    from: vine.string().trim().maxLength(40).isoDateTime().optional(),
-    to: vine.string().trim().maxLength(40).isoDateTime().optional(),
+    from: isoInstant().optional(),
+    to: isoInstant().optional(),
   }
 }
 

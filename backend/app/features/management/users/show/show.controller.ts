@@ -10,8 +10,7 @@ import { IdentifierValidator } from '#core/validator'
 export default class ManagementUserShowController {
   static docs = defineDocs({
     summary: 'View a user',
-    description:
-      'Returns the bare object, without envelope and **without the password**.',
+    description: 'Returns the bare object, without envelope and **without the password**.',
   })
 
   constructor(private readonly useCase: ManagementUserShowUseCase) {}

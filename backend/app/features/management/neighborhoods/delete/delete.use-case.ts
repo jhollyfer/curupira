@@ -34,7 +34,10 @@ export default class ManagementNeighborhoodDeleteUseCase {
       logger.error({ err: error }, '[management/neighborhoods > delete][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_NEIGHBORHOOD_DELETE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_NEIGHBORHOOD_DELETE_ERROR',
+        ),
       )
     }
   }

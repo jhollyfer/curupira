@@ -22,7 +22,10 @@ import { StorageContract } from '#services/storage/storage.contract'
 import type { IdentifierPayload } from '#core/validator'
 import type { ManagementReportUpdateStatusPayload } from '#validators/management/reports.validator'
 
-type Payload = Merge<Merge<ManagementReportUpdateStatusPayload, IdentifierPayload>, { actor: Actor }>
+type Payload = Merge<
+  Merge<ManagementReportUpdateStatusPayload, IdentifierPayload>,
+  { actor: Actor }
+>
 type Response = Either<HTTPException, ManagementReportShowResponse>
 
 /** Moves the status forward and records who did it and what they told the resident. */
@@ -64,7 +67,10 @@ export default class ManagementReportUpdateStatusUseCase {
       logger.error({ err: error }, '[management/reports > update-status][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_REPORT_UPDATE_STATUS_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_REPORT_UPDATE_STATUS_ERROR',
+        ),
       )
     }
   }

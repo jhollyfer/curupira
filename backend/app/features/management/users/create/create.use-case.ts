@@ -43,14 +43,18 @@ export default class ManagementUserCreateUseCase {
       // Reload before responding: `status` comes from the entity default and the response
       // is the row as it ended up, without the password.
       const detail = await this.users.detail(user.id)
-      if (!detail) return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
+      if (!detail)
+        return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
 
       return right(detail)
     } catch (error) {
       logger.error({ err: error }, '[management/users > create][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_USER_CREATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_USER_CREATE_ERROR',
+        ),
       )
     }
   }

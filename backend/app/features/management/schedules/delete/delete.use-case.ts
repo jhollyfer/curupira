@@ -31,7 +31,10 @@ export default class ManagementScheduleDeleteUseCase {
       logger.error({ err: error }, '[management/schedules > delete][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_SCHEDULE_DELETE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_SCHEDULE_DELETE_ERROR',
+        ),
       )
     }
   }

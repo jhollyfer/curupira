@@ -48,7 +48,10 @@ export default class ManagementReportPaginateUseCase {
       logger.error({ err: error }, '[management/reports > paginate][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_REPORT_PAGINATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_REPORT_PAGINATE_ERROR',
+        ),
       )
     }
   }

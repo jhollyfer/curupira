@@ -10,8 +10,7 @@ import { IdentifierValidator } from '#core/validator'
 export default class ManagementScheduleDeleteController {
   static docs = defineDocs({
     summary: 'Delete collection slot',
-    description:
-      'Deletes the slot. Residents stop seeing that collection on the next read.',
+    description: 'Deletes the slot. Residents stop seeing that collection on the next read.',
   })
 
   constructor(private readonly useCase: ManagementScheduleDeleteUseCase) {}

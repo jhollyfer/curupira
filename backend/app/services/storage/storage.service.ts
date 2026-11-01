@@ -1,11 +1,7 @@
 import { randomUUID } from 'node:crypto'
 
 import drive from '@adonisjs/drive/services/main'
-import {
-  STORAGE_EXTENSIONS,
-  STORAGE_SIGNATURE_BYTES,
-  type StorageMimetype,
-} from '@curupira/shared'
+import { STORAGE_EXTENSIONS, STORAGE_SIGNATURE_BYTES, type StorageMimetype } from '@curupira/shared'
 
 import {
   StorageContract,

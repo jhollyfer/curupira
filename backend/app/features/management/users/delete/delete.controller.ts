@@ -19,8 +19,10 @@ export default class ManagementUserDeleteController {
     errors: { 403: 'SELF_DELETE_FORBIDDEN' },
   })
 
-  constructor(private readonly useCase: ManagementUserDeleteUseCase,
-    private readonly users: UserRepository) {}
+  constructor(
+    private readonly useCase: ManagementUserDeleteUseCase,
+    private readonly users: UserRepository,
+  ) {}
 
   async handle(context: HttpContext) {
     const payload = await context.request.validateUsing(IdentifierValidator, {

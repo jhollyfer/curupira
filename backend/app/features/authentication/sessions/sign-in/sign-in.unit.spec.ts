@@ -29,16 +29,11 @@ test.group('authentication/sessions > sign-in (unit)', () => {
     assert.deepEqual(sessions.issued, [USER_ID])
   })
 
-  test('wrong password, unknown email, archived and inactive account give the same 401', async ({
+  test('wrong password, unknown email and inactive account give the same 401', async ({
     assert,
   }) => {
     const { users, sessions, useCase } = await setup()
     await seedUser(users, { id: USER_ID, email: 'ana@mail.com' })
-    await seedUser(users, {
-      id: '2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e',
-      email: 'arq@mail.com',
-      archived: true,
-    })
     await seedUser(users, {
       id: '3c4d5e6f-7a8b-4c9d-8e1f-2a3b4c5d6e7f',
       email: 'off@mail.com',
@@ -48,7 +43,6 @@ test.group('authentication/sessions > sign-in (unit)', () => {
     const results = [
       await useCase.execute({ email: 'ana@mail.com', password: 'Errada@123' }),
       await useCase.execute({ email: 'ninguem@mail.com', password: PASSWORD }),
-      await useCase.execute({ email: 'arq@mail.com', password: PASSWORD }),
       await useCase.execute({ email: 'off@mail.com', password: PASSWORD }),
     ]
 

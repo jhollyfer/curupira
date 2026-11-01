@@ -10,8 +10,7 @@ import { IdentifierValidator } from '#core/validator'
 export default class ManagementNeighborhoodShowController {
   static docs = defineDocs({
     summary: 'View a neighborhood',
-    description:
-      'Returns the bare object, without envelope.',
+    description: 'Returns the bare object, without envelope.',
   })
 
   constructor(private readonly useCase: ManagementNeighborhoodShowUseCase) {}

@@ -2,7 +2,7 @@ import { test } from '@japa/runner'
 
 import {
   authenticateAsAdministrator,
-  authenticateAsAdvisor,
+  authenticateAsOperator,
   body,
   resetDatabase,
 } from '#tests/http-fixtures'
@@ -46,7 +46,7 @@ test.group('openapi > show', (group) => {
   })
 
   test('whoever does not operate the installation also gets 404', async ({ client, assert }) => {
-    const session = await authenticateAsAdvisor(client)
+    const session = await authenticateAsOperator(client)
     const response = await client.get('/openapi.json').cookies(session)
 
     response.assertStatus(404)

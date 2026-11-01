@@ -32,7 +32,10 @@ export default class ManagementReportShowUseCase {
       logger.error({ err: error }, '[management/reports > show][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_REPORT_SHOW_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_REPORT_SHOW_ERROR',
+        ),
       )
     }
   }

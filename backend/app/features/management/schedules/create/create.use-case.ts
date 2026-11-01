@@ -46,7 +46,10 @@ export default class ManagementScheduleCreateUseCase {
       logger.error({ err: error }, '[management/schedules > create][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_SCHEDULE_CREATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_SCHEDULE_CREATE_ERROR',
+        ),
       )
     }
   }

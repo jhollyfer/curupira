@@ -71,14 +71,13 @@ export class CookieAccessTokensGuard implements GuardContract<GuardUser> {
     // would give a session with the refresh's lifetime.
     if (!accessToken || accessToken.name !== COOKIE_TOKEN.ACCESS) throw this.#authenticationFailed()
 
-    // The filter was only on sign-in, and the token lives a day: archiving or
-    // deactivating someone did not kick them out, only stopped them from signing in again.
+    // The filter was only on sign-in, and the token lives a day: deactivating
+    // someone did not kick them out, only stopped them from signing in again.
     // Revoking access must take effect on the next request.
     const user = await User.query()
       // `tokenableId` is typed `string | number | BigInt` by the auth
       // package, and the query builder does not accept `BigInt`. Here the key is always a uuid.
       .where('id', String(accessToken.tokenableId))
-      .withScopes((scopes) => scopes.notDeleted())
       .where('status', ACTIVE_STATUS.ACTIVE)
       .first()
 

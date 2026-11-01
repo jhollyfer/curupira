@@ -22,7 +22,10 @@ export default class StorefrontReportMapUseCase {
       logger.error({ err: error }, '[storefront/reports > map][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'STOREFRONT_REPORT_MAP_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'STOREFRONT_REPORT_MAP_ERROR',
+        ),
       )
     }
   }

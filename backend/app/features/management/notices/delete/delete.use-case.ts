@@ -31,7 +31,10 @@ export default class ManagementNoticeDeleteUseCase {
       logger.error({ err: error }, '[management/notices > delete][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_NOTICE_DELETE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_NOTICE_DELETE_ERROR',
+        ),
       )
     }
   }

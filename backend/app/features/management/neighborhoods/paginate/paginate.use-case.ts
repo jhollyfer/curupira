@@ -42,7 +42,10 @@ export default class ManagementNeighborhoodPaginateUseCase {
       logger.error({ err: error }, '[management/neighborhoods > paginate][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_NEIGHBORHOOD_PAGINATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_NEIGHBORHOOD_PAGINATE_ERROR',
+        ),
       )
     }
   }

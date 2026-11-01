@@ -15,7 +15,10 @@ export default class StorefrontReportPhotoCompleteController {
       'The report location comes from the form pin, never from the photo: nothing in the stored file tells where it was taken.\n\n' +
       'A file that fails any check is deleted and responds `422`. Calling again on a confirmed photo is safe (`204`). Public, throttled per IP.',
     responses: { 204: 'no-content' },
-    errors: { 404: 'REPORT_PHOTO_NOT_FOUND', 422: ['STORAGE_SIZE_MISMATCH', 'STORAGE_CONTENT_MISMATCH', 'REPORT_PHOTO_INVALID'] },
+    errors: {
+      404: 'REPORT_PHOTO_NOT_FOUND',
+      422: ['STORAGE_SIZE_MISMATCH', 'STORAGE_CONTENT_MISMATCH', 'REPORT_PHOTO_INVALID'],
+    },
   })
 
   constructor(private readonly useCase: StorefrontReportPhotoCompleteUseCase) {}

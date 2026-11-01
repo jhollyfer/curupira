@@ -112,6 +112,7 @@ export class UserLucidRepository extends UserRepository {
       password: row.password,
       role: row.role,
       status: row.status,
+      avatarId: row.avatarId,
       createdAt: row.createdAt.toJSDate(),
       updatedAt: row.updatedAt?.toJSDate() ?? null,
     })

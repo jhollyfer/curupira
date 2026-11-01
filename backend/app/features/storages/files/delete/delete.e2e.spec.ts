@@ -3,7 +3,6 @@ import drive from '@adonisjs/drive/services/main'
 import type { ApiClient } from '@japa/api-client'
 import type { StorageMimetype } from '@curupira/shared'
 
-import { StorageFactory } from '#database/factories/storage.factory'
 import { PART_SIZE } from '#services/multipart/multipart.contract'
 import {
   authenticateAsAdministrator,
@@ -11,6 +10,7 @@ import {
   resetDatabase,
   type ResponseBody,
 } from '#tests/http-fixtures'
+import { ReportFactory } from '#database/factories/report.factory'
 import { Stored } from '#tests/stored-fixtures'
 import type { Session } from '#tests/http-fixtures'
 import { pngBytes } from '#tests/storages-fixtures'
@@ -137,38 +137,17 @@ test.group('storages > delete', (group) => {
     assert.isTrue(await drive.use().exists(storage.path))
   })
 
-  test('refuses with 409 the file in use as a gallery photo', async ({ client, assert }) => {
+  test('refuses with 409 the file in use as a report photo', async ({ client, assert }) => {
     const session = await authenticateAsAdministrator(client)
     const storage = await upload(client, session)
-
-    const photo = await client
-      .post('/administrator/photos')
-      .cookies(session)
-      .json({ storageId: storage.id })
-    photo.assertStatus(201)
+    const report = await ReportFactory.create()
+    await Stored.attachPhoto(report.id, storage.id)
 
     const response = await client.delete(`/storages/${storage.id}`).cookies(session)
 
     response.assertStatus(409)
     assert.equal(body(response).code, 'STORAGE_IN_USE')
     assert.isNotNull(await Stored.storage(storage.id))
-  })
-
-  test('refuses with 409 the file in use as the site regulation', async ({ client, assert }) => {
-    const session = await authenticateAsAdministrator(client)
-    const pdf = await StorageFactory.merge({ mimetype: 'application/pdf' }).create()
-
-    const linked = await client
-      .put('/administrator/site')
-      .cookies(session)
-      .json({ regulationId: pdf.id })
-    linked.assertStatus(200)
-
-    const response = await client.delete(`/storages/${pdf.id}`).cookies(session)
-
-    response.assertStatus(409)
-    assert.equal(body(response).code, 'STORAGE_IN_USE')
-    assert.isNotNull(await Stored.storage(pdf.id))
   })
 
   test('accepts again after the attachment is unlinked', async ({ client, assert }) => {

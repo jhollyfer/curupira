@@ -18,7 +18,7 @@ function accountOf(id: string): User {
     name: 'Ana',
     email: 'ana@mail.com',
     password: 'Senha@123',
-    role: USER_ROLE.ADVISOR,
+    role: USER_ROLE.OPERATOR,
     now: new Date('2026-10-29T12:00:00Z'),
   })
 }
@@ -34,25 +34,20 @@ const OTHER = accountOf(OTHER_ID)
 
 test.group('policies > user (unit)', () => {
   for (const role of USER_ROLES) {
-    test(`${role}: an account owned by someone else passes on update, archive and delete`, async ({
+    test(`${role}: an account owned by someone else passes on update and delete`, async ({
       assert,
     }) => {
       const policy = await makeWithMemory(UserPolicy, [])
       const actor = actorOf(role)
 
-      assert.isTrue(policy.update(actor, OTHER, { role: USER_ROLE.ADVISOR }))
-      assert.isTrue(policy.archive(actor, OTHER))
+      assert.isTrue(policy.update(actor, OTHER, { role: USER_ROLE.OPERATOR }))
       assert.isTrue(policy.delete(actor, OTHER))
     })
 
-    test(`${role}: the account itself answers 403 on archive and delete`, async ({ assert }) => {
+    test(`${role}: the account itself answers 403 on delete`, async ({ assert }) => {
       const policy = await makeWithMemory(UserPolicy, [])
       const actor = actorOf(role)
 
-      assert.deepEqual(denied(policy.archive(actor, OWN)), {
-        status: 403,
-        code: 'SELF_ARCHIVE_FORBIDDEN',
-      })
       assert.deepEqual(denied(policy.delete(actor, OWN)), {
         status: 403,
         code: 'SELF_DELETE_FORBIDDEN',
@@ -65,7 +60,7 @@ test.group('policies > user (unit)', () => {
       const policy = await makeWithMemory(UserPolicy, [])
       const actor = actorOf(role)
 
-      assert.deepEqual(denied(policy.update(actor, OWN, { role: USER_ROLE.ADVISOR })), {
+      assert.deepEqual(denied(policy.update(actor, OWN, { role: USER_ROLE.OPERATOR })), {
         status: 403,
         code: 'SELF_ACCESS_FORBIDDEN',
       })
@@ -82,7 +77,6 @@ test.group('policies > user (unit)', () => {
       const expected = { status: 404, code: 'USER_NOT_FOUND' }
 
       assert.deepEqual(denied(policy.update(actor, null, {})), expected)
-      assert.deepEqual(denied(policy.archive(actor, null)), expected)
       assert.deepEqual(denied(policy.delete(actor, null)), expected)
     })
   }

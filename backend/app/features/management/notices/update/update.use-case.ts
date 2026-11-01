@@ -1,7 +1,13 @@
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementNoticeShowResponse, type Merge } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementNoticeShowResponse,
+  type Merge,
+} from '@curupira/shared'
 
 import { NoticePresenter } from '../notices.presenter.ts'
 import { NoticeRefusal } from '../_shared.notice-refusal.ts'
@@ -47,7 +53,10 @@ export default class ManagementNoticeUpdateUseCase {
       logger.error({ err: error }, '[management/notices > update][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_NOTICE_UPDATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_NOTICE_UPDATE_ERROR',
+        ),
       )
     }
   }

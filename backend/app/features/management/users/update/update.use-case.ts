@@ -1,7 +1,13 @@
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementUserShowResponse, type Merge } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementUserShowResponse,
+  type Merge,
+} from '@curupira/shared'
 
 import { UserRefusal } from '../_shared.user-refusal.ts'
 
@@ -28,7 +34,8 @@ export default class ManagementUserUpdateUseCase {
   async execute({ id, ...changes }: Payload): Promise<Response> {
     try {
       const user = await this.users.findById(id)
-      if (!user) return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
+      if (!user)
+        return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
 
       if (
         changes.email &&
@@ -55,14 +62,18 @@ export default class ManagementUserUpdateUseCase {
       if (written.isLeft()) return left(written.value)
 
       const detail = await this.users.detail(id)
-      if (!detail) return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
+      if (!detail)
+        return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
 
       return right(detail)
     } catch (error) {
       logger.error({ err: error }, '[management/users > update][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_USER_UPDATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_USER_UPDATE_ERROR',
+        ),
       )
     }
   }

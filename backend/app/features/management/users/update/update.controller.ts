@@ -20,8 +20,10 @@ export default class ManagementUserUpdateController {
     errors: { 403: 'SELF_ACCESS_FORBIDDEN', 409: 'USER_ALREADY_EXISTS' },
   })
 
-  constructor(private readonly useCase: ManagementUserUpdateUseCase,
-    private readonly users: UserRepository) {}
+  constructor(
+    private readonly useCase: ManagementUserUpdateUseCase,
+    private readonly users: UserRepository,
+  ) {}
 
   async handle(context: HttpContext) {
     // Body and params validated separately and merged: the `:id` comes from the URL and

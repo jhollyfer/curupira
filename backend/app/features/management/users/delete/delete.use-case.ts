@@ -28,7 +28,8 @@ export default class ManagementUserDeleteUseCase {
   async execute({ id }: Payload): Promise<Response> {
     try {
       const user = await this.users.findById(id)
-      if (!user) return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
+      if (!user)
+        return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
 
       await this.users.delete(user)
 
@@ -37,7 +38,10 @@ export default class ManagementUserDeleteUseCase {
       logger.error({ err: error }, '[management/users > delete][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_USER_DELETE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_USER_DELETE_ERROR',
+        ),
       )
     }
   }

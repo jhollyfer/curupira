@@ -120,7 +120,8 @@ export class ReportMemoryRepository extends ReportRepository {
           (row.description ?? '').toLowerCase().includes(search),
       )
       .sort((a, b) => {
-        if (criteria.sort === 'createdAt') return sign * (a.createdAt.getTime() - b.createdAt.getTime())
+        if (criteria.sort === 'createdAt')
+          return sign * (a.createdAt.getTime() - b.createdAt.getTime())
 
         return sign * String(a[criteria.sort]).localeCompare(String(b[criteria.sort]))
       })
@@ -157,9 +158,7 @@ export class ReportMemoryRepository extends ReportRepository {
     }
   }
 
-  async showByProtocol(
-    protocol: string,
-  ): Promise<StorefrontReportShowByProtocolResponse | null> {
+  async showByProtocol(protocol: string): Promise<StorefrontReportShowByProtocolResponse | null> {
     const row = [...this.rows.values()].find((each) => each.protocol === protocol)
     if (!row) return null
 

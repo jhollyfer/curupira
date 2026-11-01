@@ -15,7 +15,7 @@ export default class AuthenticationSessionSignInController {
       'Opens the session. Responds `204` **without a body**: what matters is the `Set-Cookie` with the `httpOnly` ' +
       'token pair. The client never handles the token, and no user ' +
       'data travels inside it.\n\n' +
-      'The failure is **indistinguishable by cause**: wrong password, inactive account and archived account ' +
+      'The failure is **indistinguishable by cause**: wrong password and inactive account ' +
       'return the same `401`. That is what prevents discovering, from the response, which emails exist.',
   })
 

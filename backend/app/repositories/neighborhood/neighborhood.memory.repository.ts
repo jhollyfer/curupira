@@ -7,10 +7,7 @@ import type {
   StorefrontNeighborhoodShowResponse,
 } from '@curupira/shared'
 
-import {
-  NeighborhoodRepository,
-  type NeighborhoodListCriteria,
-} from './neighborhood.repository.ts'
+import { NeighborhoodRepository, type NeighborhoodListCriteria } from './neighborhood.repository.ts'
 
 import { MemoryPagination } from '#core/memory-pagination'
 import { Neighborhood, type NeighborhoodProps } from '#domain/neighborhood/neighborhood.entity'

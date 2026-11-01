@@ -30,7 +30,10 @@ export default class ManagementNoticeShowUseCase {
       logger.error({ err: error }, '[management/notices > show][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_NOTICE_SHOW_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_NOTICE_SHOW_ERROR',
+        ),
       )
     }
   }

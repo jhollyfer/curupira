@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { USER_ROLE } from '@curupira/shared'
 
-import { ClassroomFactory } from '#database/factories/classroom.factory'
+import { ReportFactory } from '#database/factories/report.factory'
 import { FACTORY_PASSWORD, UserFactory } from '#database/factories/user.factory'
 import {
   ADMINISTRATOR,
@@ -14,7 +14,8 @@ import {
  * The "allowlist leak" net (_standards/backend.md §7): no response
  * carries a credential key at any level of the tree, nor the password value
  * anywhere. The routes are the ones that return an account, directly or nested
- * (classroom with advisor and representative, photo with author, announcement with actor).
+ * (the user, and the report with the timeline authors); the public routes of the reports are
+ * swept for the reporter's contact too, which is the other thing that must never leak.
  */
 const FORBIDDEN_KEYS =
   /^(password|passwordHash|currentPassword|token|tokenHash|hash|secret|rememberMeToken)$/i
@@ -42,21 +43,15 @@ test.group('responses > leak (e2e)', (group) => {
     assert,
   }) => {
     const session = await authenticateAsAdministrator(client)
-    const advisor = await UserFactory.create()
-    const representative = await UserFactory.apply('representative').create()
-    const classroom = await ClassroomFactory.merge({
-      advisorId: advisor.id,
-      representativeId: representative.id,
-    }).create()
+    const operator = await UserFactory.create()
+    const report = await ReportFactory.apply('identified').create()
 
     const paths = [
       '/account',
-      '/administrator/users',
-      `/administrator/users/${advisor.id}`,
-      '/administrator/classrooms',
-      `/administrator/classrooms/${classroom.id}`,
-      '/administrator/photos',
-      '/administrator/enrollment-removals',
+      '/management/users',
+      `/management/users/${operator.id}`,
+      '/management/reports',
+      `/management/reports/${report.id}`,
     ]
 
     for (const path of paths) {
@@ -79,16 +74,16 @@ test.group('responses > leak (e2e)', (group) => {
   }) => {
     const session = await authenticateAsAdministrator(client)
 
-    const created = await client.post('/administrator/users').cookies(session).json({
+    const created = await client.post('/management/users').cookies(session).json({
       name: 'Nova Conta',
       email: 'nova@mail.com',
-      role: USER_ROLE.ADVISOR,
+      role: USER_ROLE.OPERATOR,
       password: 'Senha1234!',
       passwordConfirmation: 'Senha1234!',
     })
     created.assertStatus(201)
     const updated = await client
-      .put(`/administrator/users/${body(created).id}`)
+      .put(`/management/users/${body(created).id}`)
       .cookies(session)
       .json({ name: 'Outro Nome' })
     updated.assertStatus(200)
@@ -99,9 +94,25 @@ test.group('responses > leak (e2e)', (group) => {
     }
   })
 
-  test('the scan sees a forbidden key at any level', ({ assert }) => {
-    const leaked = forbiddenPaths({ data: [{ advisor: { password: 'x' } }], token: 'y' })
+  test('the public report routes never carry the reporter contact nor the description', async ({
+    client,
+    assert,
+  }) => {
+    const report = await ReportFactory.apply('identified').merge({ status: 'IN_REVIEW' }).create()
 
-    assert.deepEqual(leaked, ['$.data[0].advisor.password', '$.token'])
+    for (const path of [`/storefront/reports/${report.protocol}`, '/storefront/reports/map']) {
+      const response = await client.get(path)
+      response.assertStatus(200)
+
+      assert.notInclude(response.text(), report.contact ?? 'no-contact', `${path}: contact`)
+      assert.notInclude(response.text(), report.description ?? 'no-description', `${path}: text`)
+      assert.notProperty(body(response), 'contact')
+    }
+  })
+
+  test('the scan sees a forbidden key at any level', ({ assert }) => {
+    const leaked = forbiddenPaths({ data: [{ operator: { password: 'x' } }], token: 'y' })
+
+    assert.deepEqual(leaked, ['$.data[0].operator.password', '$.token'])
   })
 })

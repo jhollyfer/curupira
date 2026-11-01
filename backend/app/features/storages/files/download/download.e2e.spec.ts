@@ -6,7 +6,7 @@ import type { StorageMimetype } from '@curupira/shared'
 import { StorageContract } from '#services/storage/storage.contract'
 import {
   authenticateAsAdministrator,
-  authenticateAsAdvisor,
+  authenticateAsOperator,
   body,
   resetDatabase,
   type ResponseBody,
@@ -123,20 +123,20 @@ test.group('storages > download', (group) => {
     assert.include(disposition, "filename*=UTF-8''capa.png")
   })
 
-  test('the advisor cannot download a file that is not theirs: only the administrator operates the collection', async ({
+  test('the operator downloads any file too: the report photos are theirs to review', async ({
     client,
   }) => {
     const admin = await authenticateAsAdministrator(client)
     const storage = await upload(client, admin)
 
-    const advisor = await authenticateAsAdvisor(client)
+    const operator = await authenticateAsOperator(client)
 
     const response = await client
       .get(`/storages/${storage.id}/download`)
-      .cookies(advisor)
+      .cookies(operator)
       .redirects(0)
 
-    response.assertStatus(404)
+    response.assertStatus(302)
   })
 
   test('responds 404 for a nonexistent id', async ({ client, assert }) => {

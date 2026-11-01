@@ -35,9 +35,13 @@ export const ManagementNeighborhoodPaginateValidator = vine.create({
   ...sortFields(NEIGHBORHOOD_SORT_COLUMNS),
 })
 
-export type ManagementNeighborhoodCreatePayload = Infer<typeof ManagementNeighborhoodCreateValidator>
+export type ManagementNeighborhoodCreatePayload = Infer<
+  typeof ManagementNeighborhoodCreateValidator
+>
 
-export type ManagementNeighborhoodUpdatePayload = Infer<typeof ManagementNeighborhoodUpdateValidator>
+export type ManagementNeighborhoodUpdatePayload = Infer<
+  typeof ManagementNeighborhoodUpdateValidator
+>
 
 export type ManagementNeighborhoodPaginatePayload = Infer<
   typeof ManagementNeighborhoodPaginateValidator

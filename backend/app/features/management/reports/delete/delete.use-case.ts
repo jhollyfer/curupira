@@ -49,7 +49,10 @@ export default class ManagementReportDeleteUseCase {
       logger.error({ err: error }, '[management/reports > delete][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_REPORT_DELETE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_REPORT_DELETE_ERROR',
+        ),
       )
     }
   }

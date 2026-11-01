@@ -1,7 +1,13 @@
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type Paginated, type StorefrontScheduleShowResponse } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type Paginated,
+  type StorefrontScheduleShowResponse,
+} from '@curupira/shared'
 
 import { MemoryPagination } from '#core/memory-pagination'
 import HTTPException from '#exceptions/http.exception'
@@ -27,7 +33,10 @@ export default class StorefrontSchedulePaginateUseCase {
       logger.error({ err: error }, '[storefront/schedules > paginate][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'STOREFRONT_SCHEDULE_PAGINATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'STOREFRONT_SCHEDULE_PAGINATE_ERROR',
+        ),
       )
     }
   }

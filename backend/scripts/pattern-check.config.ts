@@ -63,9 +63,8 @@ export const CONFIG: PatternCheckConfig = {
     'start/validator.ts',
   ],
   BOUNCER_REQUIRED: [
-    'app/features/administrator/users/archive/archive.controller.ts',
-    'app/features/administrator/users/delete/delete.controller.ts',
-    'app/features/administrator/users/update/update.controller.ts',
+    'app/features/management/users/delete/delete.controller.ts',
+    'app/features/management/users/update/update.controller.ts',
     'app/features/storages/files/download/download.controller.ts',
   ],
 }

@@ -44,7 +44,10 @@ export default class ManagementUserPaginateUseCase {
       logger.error({ err: error }, '[management/users > paginate][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_USER_PAGINATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_USER_PAGINATE_ERROR',
+        ),
       )
     }
   }

@@ -1,17 +1,8 @@
 {
-  "csv": {
-    "classroom": "Grupo",
-    "category": "Categoría",
-    "advisor": "Consejero",
-    "representative": "Representante",
-    "students": "Alumnos",
-    "athletes": "Atletas",
-    "sports": "Modalidades",
-    "total": "Total",
-    "total_classrooms": "{count} grupos"
-  },
-  "category": {
-    "F1": "Fundamental 1",
-    "F2": "Fundamental 2"
-  }
+  "not_found": "Denuncia no encontrada",
+  "status_regression": "El estado solo puede avanzar",
+  "status_regression_field": "Elige un estado posterior al actual",
+  "protocol_taken": "No se pudo generar el protocolo. Inténtalo de nuevo",
+  "photo_taken": "Una de las fotos ya se usó en otra denuncia",
+  "photo_invalid": "La foto enviada no es una imagen válida"
 }

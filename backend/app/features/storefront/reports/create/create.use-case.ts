@@ -80,7 +80,10 @@ export default class StorefrontReportCreateUseCase {
       logger.error({ err: error }, '[storefront/reports > create][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'STOREFRONT_REPORT_CREATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'STOREFRONT_REPORT_CREATE_ERROR',
+        ),
       )
     }
   }

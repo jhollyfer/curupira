@@ -8,10 +8,7 @@ import type {
   StorefrontNeighborhoodShowResponse,
 } from '@curupira/shared'
 
-import {
-  NeighborhoodRepository,
-  type NeighborhoodListCriteria,
-} from './neighborhood.repository.ts'
+import { NeighborhoodRepository, type NeighborhoodListCriteria } from './neighborhood.repository.ts'
 
 import NeighborhoodModel from '#models/neighborhood'
 import { PostgresError } from '#core/postgres-error'

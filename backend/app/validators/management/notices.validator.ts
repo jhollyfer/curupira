@@ -1,6 +1,6 @@
 import { NOTICE_SORT_COLUMNS, NOTICE_STATUSES } from '@curupira/shared'
 
-import { vine, notNull, paginationFields, sortFields } from '#core/validator'
+import { vine, notNull, isoInstant, paginationFields, sortFields } from '#core/validator'
 import type { Infer } from '#core/validator'
 
 /**
@@ -11,22 +11,18 @@ import type { Infer } from '#core/validator'
  * into `Date`, so the validator does not decide the timezone. That `endsAt` is after
  * `startsAt` is a notice entity rule.
  */
-function instant() {
-  return vine.string().trim().maxLength(40).isoDateTime()
-}
-
 export const ManagementNoticeCreateValidator = vine.create({
   title: vine.string().trim().minLength(1).maxLength(120),
   body: vine.string().trim().minLength(1).maxLength(600),
-  startsAt: instant(),
-  endsAt: instant().nullable().optional(),
+  startsAt: isoInstant(),
+  endsAt: isoInstant().nullable().optional(),
 })
 
 export const ManagementNoticeUpdateValidator = vine.create({
   title: vine.string().trim().minLength(1).maxLength(120).optional().use(notNull()),
   body: vine.string().trim().minLength(1).maxLength(600).optional().use(notNull()),
-  startsAt: instant().optional().use(notNull()),
-  endsAt: instant().nullable().optional(),
+  startsAt: isoInstant().optional().use(notNull()),
+  endsAt: isoInstant().nullable().optional(),
 })
 
 export const ManagementNoticePaginateValidator = vine.create({

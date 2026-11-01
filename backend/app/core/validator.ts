@@ -70,6 +70,31 @@ export function notNull() {
   return notNullRule()
 }
 
+/** Date and time with offset: `2026-11-03T14:30:00-04:00` or `...T18:30:00.000Z`. */
+const ISO_DATE_TIME =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}:\d{2})$/
+
+/**
+ * ISO 8601 **with offset**, and not `vine.date({ formats: ['iso8601'] })`.
+ *
+ * VineJS's `iso8601` falls to a loose `dayjs(value)` when the strict format fails, and
+ * accepts any text JavaScript's `Date` understands: `03/11/2026 14:30` became March 11th,
+ * and `2026-11-03` without offset, midnight UTC. Hence the text is checked here, and the
+ * use case converts it (`Instant`) respecting the received offset.
+ */
+const isoDateTimeRule = vine.createRule((value: unknown, _options: undefined, field) => {
+  if (typeof value !== 'string') return
+  if (ISO_DATE_TIME.test(value) && DateTime.fromISO(value).isValid) return
+
+  // The phrase lives in the catalog below (key `isoDateTime`), in the three languages.
+  field.report('Informe {{ field }}', 'isoDateTime', field)
+})
+
+/** An instant: ISO 8601 with offset, kept as a string (the use case parses it). */
+export function isoInstant() {
+  return vine.string().trim().maxLength(40).use(isoDateTimeRule()).meta({ format: 'date-time' })
+}
+
 export function email() {
   return vine.string().email().maxLength(254)
 }

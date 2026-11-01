@@ -29,7 +29,10 @@ export default class ManagementScheduleShowUseCase {
       logger.error({ err: error }, '[management/schedules > show][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_SCHEDULE_SHOW_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_SCHEDULE_SHOW_ERROR',
+        ),
       )
     }
   }

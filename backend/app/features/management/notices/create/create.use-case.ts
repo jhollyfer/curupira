@@ -45,7 +45,10 @@ export default class ManagementNoticeCreateUseCase {
       logger.error({ err: error }, '[management/notices > create][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'MANAGEMENT_NOTICE_CREATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'MANAGEMENT_NOTICE_CREATE_ERROR',
+        ),
       )
     }
   }

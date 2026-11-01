@@ -81,9 +81,7 @@ export abstract class ReportRepository {
    * The public status page: protocol, type, status, date and timeline. Never the contact,
    * the description, the photos, the coordinates or who answered.
    */
-  abstract showByProtocol(
-    protocol: string,
-  ): Promise<StorefrontReportShowByProtocolResponse | null>
+  abstract showByProtocol(protocol: string): Promise<StorefrontReportShowByProtocolResponse | null>
   /** The public map: only the public statuses, the day without the hour, no text, no contact. */
   abstract publicMap(): Promise<StorefrontReportMapResponse[]>
 }

@@ -68,7 +68,10 @@ export default class StorefrontReportPhotoCreateUseCase {
       logger.error({ err: error }, '[storefront/report-photos > create][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'STOREFRONT_REPORT_PHOTO_CREATE_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'STOREFRONT_REPORT_PHOTO_CREATE_ERROR',
+        ),
       )
     }
   }

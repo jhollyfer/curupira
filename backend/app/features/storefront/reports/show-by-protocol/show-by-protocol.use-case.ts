@@ -42,7 +42,10 @@ export default class StorefrontReportShowByProtocolUseCase {
       logger.error({ err: error }, '[storefront/reports > show-by-protocol][error]')
 
       return left(
-        HTTPException.InternalServerError(this.i18n.t('errors.internal'), 'STOREFRONT_REPORT_SHOW_BY_PROTOCOL_ERROR'),
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'STOREFRONT_REPORT_SHOW_BY_PROTOCOL_ERROR',
+        ),
       )
     }
   }

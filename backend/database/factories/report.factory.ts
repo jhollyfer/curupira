@@ -14,7 +14,9 @@ function protocol(): string {
   counter += 1
   const symbols = counter.toString(32).toUpperCase().padStart(8, '0')
 
-  return formatProtocol([...symbols].map((symbol) => (PROTOCOL_ALPHABET.includes(symbol) ? symbol : '0')).join(''))
+  return formatProtocol(
+    [...symbols].map((symbol) => (PROTOCOL_ALPHABET.includes(symbol) ? symbol : '0')).join(''),
+  )
 }
 
 /**

@@ -10,8 +10,7 @@ import { IdentifierValidator } from '#core/validator'
 export default class ManagementNoticeShowController {
   static docs = defineDocs({
     summary: 'View a notice',
-    description:
-      'Returns the bare object, with the status derived at the moment of the read.',
+    description: 'Returns the bare object, with the status derived at the moment of the read.',
   })
 
   constructor(private readonly useCase: ManagementNoticeShowUseCase) {}
