@@ -1,4 +1,8 @@
+import { createHmac } from 'node:crypto'
+
 import limiter from '@adonisjs/limiter/services/main'
+
+import env from '#start/env'
 
 /**
  * The keys of the limits that are not the IP, in methods that can be tested without a database.
@@ -18,6 +22,42 @@ export class LimiterKey {
     if (normalized.length === 0) return null
 
     return `signin:${normalized}`
+  }
+
+  /**
+   * The anonymous caller, by a keyed hash of the IP.
+   *
+   * The default key is `ip_<address>` in clear text in `rate_limits`, which would keep the
+   * address of whoever files a report next to the report routes for as long as the row
+   * lives. HMAC-SHA256 keeps the bucket per IP (same IP, same key) while the table, a
+   * backup or a leaked dump no longer lists addresses; the secret is derived from
+   * `APP_KEY`, so the small IPv4 space cannot be walked to recover them
+   * (_doc-lib/adonisjs.md#guides/security/rate-limiting,
+   * https://docs.adonisjs.com/guides/security/rate-limiting).
+   */
+  static anonymous(ip: string, secret: string): string {
+    return `anon:${createHmac('sha256', secret).update(ip).digest('hex')}`
+  }
+
+  /** The anonymous key of the running application: the secret comes from its `APP_KEY`. */
+  static byIp(ip: string): string {
+    return LimiterKey.anonymous(ip, LimiterKey.ipSecret())
+  }
+
+  private static derivedSecret: string | undefined
+
+  private static ipSecret(): string {
+    LimiterKey.derivedSecret ??= LimiterKey.secretFrom(env.get('APP_KEY').release())
+
+    return LimiterKey.derivedSecret
+  }
+
+  /**
+   * A purpose-bound secret derived from `APP_KEY`: the application key is never used as
+   * the HMAC key itself, so rotating it rotates the buckets and nothing else leaks from it.
+   */
+  static secretFrom(appKey: string): string {
+    return createHmac('sha256', appKey).update('curupira:rate-limit:ip').digest('hex')
   }
 
   /**
@@ -123,8 +163,8 @@ export const accountUpdateThrottle = limiter.define('accountUpdate', function (c
  * hundreds would bury the team's queue, and `blockFor` turns blowing the ceiling into a
  * cost instead of a one-minute pause.
  */
-export const reportCreateThrottle = limiter.define('reportCreate', function () {
-  return limiter.allowRequests(10).every('1 hour').blockFor('10 mins')
+export const reportCreateThrottle = limiter.define('reportCreate', function (context) {
+  return limiter.allowRequests(10).every('1 hour').blockFor('10 mins').usingKey(LimiterKey.byIp(context.request.ip()))
 })
 
 /**
@@ -132,8 +172,8 @@ export const reportCreateThrottle = limiter.define('reportCreate', function () {
  * photo is two requests, plus retries on a bad connection - hence higher than the report
  * ceiling. It also bounds the `PENDING` rows an anonymous caller can create.
  */
-export const reportPhotoThrottle = limiter.define('reportPhoto', function () {
-  return limiter.allowRequests(60).every('1 hour').blockFor('10 mins')
+export const reportPhotoThrottle = limiter.define('reportPhoto', function (context) {
+  return limiter.allowRequests(60).every('1 hour').blockFor('10 mins').usingKey(LimiterKey.byIp(context.request.ip()))
 })
 
 /**
@@ -141,6 +181,6 @@ export const reportPhotoThrottle = limiter.define('reportPhoto', function () {
  * combinations make a walk hopeless on their own, and the ceiling makes it also expensive.
  * Generous enough for a resident who reloads the page to see if the status moved.
  */
-export const reportLookupThrottle = limiter.define('reportLookup', function () {
-  return limiter.allowRequests(30).every('10 mins').blockFor('10 mins')
+export const reportLookupThrottle = limiter.define('reportLookup', function (context) {
+  return limiter.allowRequests(30).every('10 mins').blockFor('10 mins').usingKey(LimiterKey.byIp(context.request.ip()))
 })

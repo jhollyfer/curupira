@@ -2,6 +2,7 @@ import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/core/http'
 
 import env from '#start/env'
+import { TrustedProxies } from '#core/trusted-proxies'
 
 /**
  * The app URL can be used in various places where you want to create absolute
@@ -27,7 +28,7 @@ export const http = defineConfig({
    * (_standards/backend.md §4.10; _doc-lib/adonisjs.md#guides/basics/request,
    * https://docs.adonisjs.com/guides/basics/request).
    */
-  trustProxy: env.get('TRUSTED_PROXIES'),
+  trustProxy: TrustedProxies.compile(env.get('TRUSTED_PROXIES')),
 
   /**
    * Allow HTTP method spoofing via the "_method" form/query parameter.

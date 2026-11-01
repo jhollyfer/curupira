@@ -11,6 +11,8 @@
 
 import { Env } from '@adonisjs/core/env'
 
+import { TrustedProxies } from '#core/trusted-proxies'
+
 /**
  * The single environment reader (_standards/backend.md §6), in blocks in the house
  * order. Every key declared here is read by some `env.get()`, and vice versa -
@@ -49,9 +51,10 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /**
    * Whom Adonis treats as a trusted proxy, so `request.ip()` reads
-   * `X-Forwarded-For` only from whoever the proxy actually wrote. A single value, in the
+   * `X-Forwarded-For` only from whoever the proxy actually wrote. A comma-separated list in the
    * `proxy-addr` format: IP, subnet (`10.0.0.0/8`) or alias
-   * (`loopback`, `linklocal`, `uniquelocal`).
+   * (`loopback`, `linklocal`, `uniquelocal`). `true`, `*` and catch-all ranges are refused
+   * (`app/core/trusted-proxies.ts`).
    *
    * Required: the anonymous report routes are throttled by IP, and with the wrong value
    * every resident shares one bucket. Behind Coolify's Traefik (another container) it is
@@ -59,7 +62,7 @@ export default await Env.create(new URL('../', import.meta.url), {
    * `request.ip()` is the proxy IP and every per-IP limit becomes global. Never
    * `true`: the client would then forge `X-Forwarded-For`.
    */
-  TRUSTED_PROXIES: Env.schema.string(),
+  TRUSTED_PROXIES: TrustedProxies.validate,
 
   /**
    * The session cookie domain, when the app and the API are on different

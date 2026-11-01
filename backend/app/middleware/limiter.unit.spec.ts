@@ -25,4 +25,28 @@ test.group('start/limiter > LimiterKey (unit)', () => {
   test('without a session there is no per-user key', ({ assert }) => {
     assert.isNull(LimiterKey.user('upload', undefined))
   })
+
+  test('the anonymous key hides the IP and keeps one bucket per IP', ({ assert }) => {
+    const key = LimiterKey.anonymous('203.0.113.9', 'secret-a')
+
+    assert.notInclude(key, '203.0.113.9')
+    assert.equal(key, LimiterKey.anonymous('203.0.113.9', 'secret-a'))
+    assert.notEqual(key, LimiterKey.anonymous('203.0.113.10', 'secret-a'))
+  })
+
+  test('the anonymous key depends on the secret, so the IP cannot be recovered by brute force', ({
+    assert,
+  }) => {
+    assert.notEqual(
+      LimiterKey.anonymous('203.0.113.9', 'secret-a'),
+      LimiterKey.anonymous('203.0.113.9', 'secret-b'),
+    )
+  })
+
+  test('the secret is derived from APP_KEY, never the key itself', ({ assert }) => {
+    const derived = LimiterKey.secretFrom('app-key-value')
+
+    assert.notInclude(derived, 'app-key-value')
+    assert.equal(derived, LimiterKey.secretFrom('app-key-value'))
+  })
 })
