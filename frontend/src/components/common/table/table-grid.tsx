@@ -94,7 +94,12 @@ export function TableGrid<TRow extends RowData>({
               {row.getAllCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className={cell.column.columnDef.meta?.className}
+                  // On a touch tablet the record link is the 44px target; its padding
+                  // grows the hit area without changing the row's look on a mouse.
+                  className={cn(
+                    'pointer-coarse:[&_a]:inline-block pointer-coarse:[&_a]:py-3.5',
+                    cell.column.columnDef.meta?.className,
+                  )}
                 >
                   <FlexRender cell={cell} />
                 </TableCell>
