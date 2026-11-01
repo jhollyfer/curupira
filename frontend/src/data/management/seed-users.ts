@@ -39,12 +39,7 @@ export function seedUsers(): Array<ManagementUserShowResponse> {
       'ADMINISTRATOR',
       'ACTIVE',
     ],
-    [
-      'Josué Mendonça',
-      'josue.mendonca@exemplo.invalid',
-      'OPERATOR',
-      'ACTIVE',
-    ],
+    ['Josué Mendonça', 'josue.mendonca@exemplo.invalid', 'OPERATOR', 'ACTIVE'],
   ] as const
 
   return rows.map(([name, email, role, status], index) => ({

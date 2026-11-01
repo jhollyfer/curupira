@@ -130,7 +130,9 @@ const config = defineConfig(({ mode }) => {
               // this file exists; `(en|es)` are the Paraglide URL prefixes.
               urlPattern: ({ request, url }) =>
                 request.mode === 'navigate' &&
-                !/^(?:\/(?:en|es))?\/(?:gestao|sign-in)(?:\/|$)/.test(url.pathname),
+                !/^(?:\/(?:en|es))?\/(?:gestao|sign-in)(?:\/|$)/.test(
+                  url.pathname,
+                ),
               handler: 'NetworkFirst',
               options: {
                 cacheName: 'pages',

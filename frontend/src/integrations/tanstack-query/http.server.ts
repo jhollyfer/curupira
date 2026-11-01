@@ -174,7 +174,9 @@ export function joinForwardedFor(
  * the sign-in with a valid refresh token. It is the site's own address, the one
  * `SITE_URL` lists on the API side.
  */
-export function serverHeaders(method: string | undefined): Record<string, string> {
+export function serverHeaders(
+  method: string | undefined,
+): Record<string, string> {
   const headers: Record<string, string> = {}
 
   const chain = forwardedFor()

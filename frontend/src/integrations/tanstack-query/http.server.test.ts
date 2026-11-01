@@ -11,9 +11,10 @@ import {
 } from './http.server'
 
 test('replaces the pair that already existed and preserves the rest', () => {
-  const merged = mergeCookieHeader('curupira-access-token=s:velho.aaa; outro=1', [
-    'curupira-access-token=s:novo.bbb; Path=/; HttpOnly; Max-Age=86400',
-  ])
+  const merged = mergeCookieHeader(
+    'curupira-access-token=s:velho.aaa; outro=1',
+    ['curupira-access-token=s:novo.bbb; Path=/; HttpOnly; Max-Age=86400'],
+  )
 
   expect(merged).toBe('curupira-access-token=s:novo.bbb; outro=1')
 })

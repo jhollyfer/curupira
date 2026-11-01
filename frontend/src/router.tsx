@@ -11,7 +11,8 @@ import {
   NotFoundPageServerError,
   NotFoundPageTitle,
 } from '#/components/common/not-found-page'
-import { HTTPError } from '#/integrations/tanstack-query/http'
+import { Button } from '#/components/ui/button'
+import { HTTPError, HTTPStatus } from '#/integrations/tanstack-query/http'
 import { m } from '#/paraglide/messages'
 
 import { getContext } from './integrations/tanstack-query/query-context'
@@ -78,6 +79,25 @@ export function getRouter() {
         error.status < 500
       )
         handled = error
+
+      // 429 (the public map and the protocol lookup are rate limited): the message is
+      // already in plain words, the fix is to wait and try again, and "the link moved"
+      // would be the wrong thing to say.
+      if (handled?.status === HTTPStatus.TOO_MANY_REQUESTS)
+        return (
+          <NotFoundPage code="429">
+            <NotFoundPageTitle>{handled.message}</NotFoundPageTitle>
+            <NotFoundPageDescription>
+              {m.common_error_too_many()}
+            </NotFoundPageDescription>
+            <NotFoundPageActions>
+              <Button size="touch-lg" onClick={reset}>
+                {m.common_try_again()}
+              </Button>
+              <NotFoundPageHomeButton />
+            </NotFoundPageActions>
+          </NotFoundPage>
+        )
 
       if (handled)
         return (
