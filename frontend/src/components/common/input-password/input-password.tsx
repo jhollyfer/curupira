@@ -45,7 +45,7 @@ export function InputPassword({
           tabIndex={-1}
           aria-label={label}
           onClick={() => setVisible((prev) => !prev)}
-          className="text-muted-foreground hover:bg-transparent hover:text-foreground"
+          className="size-11 text-muted-foreground hover:bg-transparent hover:text-foreground [&_svg:not([class*='size-'])]:size-5"
         >
           {visible && <EyeSlashIcon />}
           {!visible && <EyeIcon />}

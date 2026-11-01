@@ -35,7 +35,8 @@ export function NotFoundPageServerError({
       <NotFoundPageActions>
         <Button
           data-slot="not-found-page-retry-button"
-          className="w-fit rounded-md"
+          size="touch-lg"
+          className="w-fit"
           onClick={onRetry}
         >
           {m.common_try_again()}

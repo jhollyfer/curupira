@@ -154,6 +154,7 @@
   "report_location_hint": "Toca el mapa para poner el pin, o usa tu ubicación.",
   "report_location_locating": "Buscando tu ubicación…",
   "report_location_placed": "Lugar marcado. Si no es aquí, arrastra el pin o toca otro punto.",
+  "report_location_pin_label": "Pin del lugar de la ocurrencia. Arrastre para ajustar.",
   "report_location_denied": "Se negó el acceso a la ubicación. Toca el mapa para marcar el lugar.",
   "report_location_unavailable": "No se pudo encontrar tu ubicación. Toca el mapa para marcar el lugar.",
   "report_location_timeout": "La ubicación tardó demasiado. Inténtalo de nuevo o toca el mapa.",

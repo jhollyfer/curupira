@@ -154,6 +154,7 @@
   "report_location_hint": "Tap the map to drop the pin, or use your location.",
   "report_location_locating": "Finding your location…",
   "report_location_placed": "Place marked. If it is not here, drag the pin or tap another spot.",
+  "report_location_pin_label": "Pin for the place of the occurrence. Drag to adjust.",
   "report_location_denied": "Location access was denied. Tap the map to mark the place.",
   "report_location_unavailable": "Could not find your location. Tap the map to mark the place.",
   "report_location_timeout": "The location took too long. Try again or tap the map.",

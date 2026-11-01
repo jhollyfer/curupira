@@ -154,6 +154,7 @@
   "report_location_hint": "Toque no mapa para colocar o pino, ou use sua localização.",
   "report_location_locating": "Procurando sua localização…",
   "report_location_placed": "Lugar marcado. Se não for aqui, arraste o pino ou toque em outro ponto.",
+  "report_location_pin_label": "Pino do lugar da ocorrência. Arraste para ajustar.",
   "report_location_denied": "O acesso à localização foi negado. Toque no mapa para marcar o lugar.",
   "report_location_unavailable": "Não foi possível achar sua localização. Toque no mapa para marcar o lugar.",
   "report_location_timeout": "A localização demorou demais. Tente de novo ou toque no mapa.",

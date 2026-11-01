@@ -5,6 +5,7 @@ import { Marker, useMap, useMapEvents } from 'react-leaflet'
 import { clampToTown } from '#/lib/geo'
 import type { Coordinate } from '#/lib/geo'
 import { prefersReducedMotion } from '#/lib/motion'
+import { m } from '#/paraglide/messages'
 
 import { reportPinIcon } from './report-pin-icon'
 
@@ -71,6 +72,9 @@ export function ReportMapPicker({
   return (
     <Marker
       draggable
+      // Leaflet turns `title` into the marker's `alt` and accessible name: without it the
+      // focusable pin is a `button` with no name (axe `aria-command-name`).
+      title={m.report_location_pin_label()}
       position={[value.latitude, value.longitude]}
       icon={reportPinIcon(kind, undefined, 'picker')}
       eventHandlers={{

@@ -26,7 +26,9 @@ function AuthShell({
     >
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
         <BrandMark className="text-stage-foreground" />
-        <div className="flex items-center gap-1.5 text-foreground">
+        {/* The controls sit on the dark green band, not on the paper: `text-foreground`
+            made the language and theme buttons near-black on dark green (about 1.3:1). */}
+        <div className="flex items-center gap-1.5 text-stage-foreground **:data-[slot=locale-switch]:border-stage-foreground/50 **:data-[slot=locale-switch]:bg-transparent **:data-[slot=locale-switch]:text-stage-foreground **:data-[slot=locale-switch]:hover:bg-stage-foreground/10 **:data-[slot=theme-toggle]:text-stage-foreground **:data-[slot=theme-toggle]:hover:bg-stage-foreground/10">
           <LocaleSwitch />
           <ThemeToggle />
         </div>
