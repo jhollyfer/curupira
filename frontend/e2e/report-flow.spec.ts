@@ -30,7 +30,7 @@ async function fileReport(page: Page, kind: string): Promise<void> {
 
   await page.locator('input[type=file]').last().setInputFiles(PHOTO)
   // The pin is placed by tapping the map: the resident's GPS is not the only way.
-  await page.getByLabel('Mapa para marcar o lugar da ocorrência').click()
+  await page.locator('.leaflet-container').click({ position: { x: 200, y: 160 } })
   await expect(page.getByText(/lugar marcado/i)).toBeVisible()
   await page.getByRole('button', { name: 'Continuar' }).click()
 
