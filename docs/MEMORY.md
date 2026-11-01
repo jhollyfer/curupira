@@ -33,6 +33,8 @@ Backend e frontend sendo reescritos a partir do molde do interclasse (o starter 
 - Branch de trabalho: `feat/curupira-plataforma` (a sessão sugeria um nome com prefixo de agente, proibido pela régua).
 - Toolchain local: Node 24 e pnpm 12 instalados num prefixo à parte, o sistema tem Node 22 e pnpm 10.
 
+- Produção: app em `https://curupira.maiyu.com.br`, API em `https://api-curupira.maiyu.com.br`. Faltam os uuids das aplicações no Coolify (`UUID_API`, `UUID_APP`).
+
 ## Lições
 
 > Uma linha por correção do dono (`AGENTS.md`, "Modo de trabalho" item 3). Lida no início de toda

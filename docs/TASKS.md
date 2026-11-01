@@ -22,7 +22,7 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | 1.3 | `shared/` com enums, validators Zod e responses do domínio | Alta | Feita | |
 | 1.4 | `AGENTS.md`, `CLAUDE.md` e `docs/` | Alta | Feita | |
 | 1.5 | Remover as sobras do starter (backend e frontend) | Alta | Em andamento | |
-| 1.6 | Deploy no Coolify: serviços, variáveis, healthcheck `/health-check` | Média | A fazer | depende da conta e do domínio |
+| 1.6 | Deploy no Coolify: serviços, variáveis, healthcheck `/health-check` | Média | Bloqueada | domínios definidos (`api-curupira.maiyu.com.br`, `curupira.maiyu.com.br`); faltam os uuids das duas aplicações em `main-deploy-coolify.yml` (hoje `PREENCHER_*`, o job reprova de propósito) |
 
 ## Fase 2 · Backend (0/5)
 

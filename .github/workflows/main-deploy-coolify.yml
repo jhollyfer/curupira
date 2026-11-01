@@ -16,16 +16,26 @@ permissions:
 # outro projeto não é recusado pelo Coolify - redeploya o projeto errado.
 env:
   COOLIFY_URL: https://coolify.maiyu.com.br
-  UUID_API: kyjyk4ahdpscxmvurpzcohpg
-  UUID_APP: sqrom3vusao6bwh1fq5du0hs
-  URL_API: https://api-interclass.maiyu.com.br
-  URL_APP: https://interclass.maiyu.com.br
+  UUID_API: PREENCHER_UUID_DA_API
+  UUID_APP: PREENCHER_UUID_DO_APP
+  URL_API: https://api-curupira.maiyu.com.br
+  URL_APP: https://curupira.maiyu.com.br
 
 jobs:
   deploy:
     name: Trigger Coolify Deploy
     runs-on: ubuntu-latest
     steps:
+      # O marcador é de propósito: um uuid herdado de outro projeto não é
+      # recusado pelo Coolify, redeploya o projeto errado. Enquanto os uuids
+      # reais das duas aplicações do Curupira não entram acima, o job para aqui.
+      - name: Confere que os uuids foram preenchidos
+        run: |
+          if printf '%s %s' "${UUID_API}" "${UUID_APP}" | grep -q PREENCHER; then
+            echo "Preencha UUID_API e UUID_APP com os uuids das aplicações do Curupira no Coolify."
+            exit 1
+          fi
+
       # `-f` reprova quando o Coolify responde erro; sem ele o curl sai 0 em
       # 401 ou 404. POST, e não GET: desde o Coolify v4.2 o GET responde 405.
       #
