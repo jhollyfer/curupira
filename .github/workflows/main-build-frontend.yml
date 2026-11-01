@@ -49,6 +49,20 @@ jobs:
           REVISION: ${{ github.sha }}
         run: echo "$REVISION" > frontend/public/revision.txt
 
+      # `.env.production` é versionado (só `VITE_*`, públicos). Sem ele o Vite
+      # embute `VITE_DATA_SOURCE` vazio, que cai em dados de exemplo, com a API em
+      # `localhost` e a CSP fechada para ela: o morador acharia que enviou a
+      # denúncia e nada sairia do navegador.
+      - name: Confere o ambiente de produção do frontend
+        working-directory: ./frontend
+        run: |
+          set -euo pipefail
+          test -f .env.production || { echo '.env.production ausente: o build sairia em modo de exemplo.'; exit 1; }
+          grep -q '^VITE_DATA_SOURCE=api$' .env.production || { echo 'VITE_DATA_SOURCE precisa ser api.'; exit 1; }
+          grep -q '^VITE_API_URL=https://' .env.production || { echo 'VITE_API_URL precisa ser https.'; exit 1; }
+          grep -q '^VITE_SITE_URL=https://' .env.production || { echo 'VITE_SITE_URL precisa ser https.'; exit 1; }
+          grep -q '^VITE_STORAGE_URL=https://' .env.production || echo '::warning::VITE_STORAGE_URL não definida: a CSP bloqueia o envio da foto ao bucket em produção.'
+
       - name: Build
         env:
           NODE_OPTIONS: --max-old-space-size=8192

@@ -7,6 +7,9 @@ node_modules/
 .env.*
 !.env.example
 !.env.test
+# Valores públicos do build do frontend (`VITE_*` vai para o navegador): o CI precisa
+# deles para não publicar o app em modo de exemplo.
+!.env.production
 !.env.e2e.example
 
 # Credenciais do E2E do frontend: o versionado é `.env.e2e.example`.
