@@ -15,6 +15,7 @@ import {
   refreshThrottle,
   reportCreateThrottle,
   reportLookupThrottle,
+  reportMapThrottle,
   reportPhotoThrottle,
   signInAccountThrottle,
   signInThrottle,
@@ -85,7 +86,10 @@ router
       .group(() => {
         router.post('/', [controllers.storefront.reports.create.Create]).use(reportCreateThrottle)
         // Before `:protocol`: otherwise `map` would be read as a protocol.
-        router.get('map', [controllers.storefront.reports.map.Map]).as('map')
+        router
+          .get('map', [controllers.storefront.reports.map.Map])
+          .as('map')
+          .use(reportMapThrottle)
         router
           .get(':protocol', [controllers.storefront.reports.showByProtocol.ShowByProtocol])
           .as('showByProtocol')

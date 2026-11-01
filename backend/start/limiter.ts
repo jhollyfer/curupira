@@ -184,3 +184,16 @@ export const reportPhotoThrottle = limiter.define('reportPhoto', function (conte
 export const reportLookupThrottle = limiter.define('reportLookup', function (context) {
   return limiter.allowRequests(30).every('10 mins').blockFor('10 mins').usingKey(LimiterKey.byIp(context.request.ip()))
 })
+
+/**
+ * The public map, by IP. It is a cheap read, but anonymous and the biggest response of the
+ * public block, so a script polling it is a free way to burn the database and the
+ * bandwidth. One load per page view and a refresh every ten seconds fit comfortably.
+ */
+export const reportMapThrottle = limiter.define('reportMap', function (context) {
+  return limiter
+    .allowRequests(60)
+    .every('10 mins')
+    .blockFor('10 mins')
+    .usingKey(LimiterKey.byIp(context.request.ip()))
+})
