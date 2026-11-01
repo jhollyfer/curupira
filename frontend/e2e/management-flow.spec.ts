@@ -88,7 +88,8 @@ test.describe('administrator', () => {
     await page.goto('/gestao/notices')
     await expect(page.getByText(scheduled)).toBeVisible()
     const row = page.getByRole('row').filter({ hasText: title })
-    await row.getByRole('button', { name: 'Encerrar' }).click()
+    await row.getByRole('button').click()
+    await page.getByRole('menuitem', { name: 'Encerrar' }).click()
     await page.getByRole('alertdialog').getByRole('button', { name: 'Encerrar' }).click()
     await expect(page.getByText('Aviso encerrado')).toBeVisible()
 
@@ -100,7 +101,23 @@ test.describe('administrator', () => {
   test('registers a collection day and the resident sees it on the calendar', async ({
     page,
     browser,
+    ownerApi,
   }) => {
+    // A run that died half way leaves its debris entry behind, and the API (rightly) answers
+    // 409 for the same type, day and shift: start from the seed.
+    const neighborhoods = await ownerApi.get('/management/neighborhoods?perPage=100')
+    const { data } = await neighborhoods.json()
+    const umariacu = data.find((item: { name: string }) => item.name === 'Umariaçu')
+    const entries = await ownerApi.get(
+      `/management/schedules?neighborhoodId=${umariacu.id}&perPage=100`,
+    )
+    const { data: schedules } = await entries.json()
+    for (const entry of schedules.filter(
+      (item: { wasteType: string }) => item.wasteType === 'DEBRIS',
+    )) {
+      await ownerApi.delete(`/management/schedules/${entry.id}`)
+    }
+
     await page.goto('/gestao/schedules')
     await waitForHydration(page)
     await page.getByLabel('Bairro').selectOption({ label: 'Umariaçu' })
