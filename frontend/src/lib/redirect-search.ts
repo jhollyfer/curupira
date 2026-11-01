@@ -1,5 +1,21 @@
-/** Control characters (raw or percent-encoded) and `\`: never part of an honest path here. */
-const CONTROL_OR_BACKSLASH = /[\u0000-\u001f\u007f\\]|%(?:[01][0-9a-f]|7f)/i
+/** Percent-encoded control characters (`%00` to `%1F`, `%7F`). */
+const ENCODED_CONTROL = /%(?:[01][0-9a-f]|7f)/i
+
+const BACKSLASH = 92
+const DELETE = 127
+const SPACE = 32
+
+/** Raw control characters and `\`: never part of an honest path here. */
+function hasControlOrBackslash(value: string): boolean {
+  if (ENCODED_CONTROL.test(value)) return true
+
+  // `charCodeAt` and not a regex: ESLint's `no-control-regex` rejects the class.
+  return Array.from(value).some((char) => {
+    const code = char.charCodeAt(0)
+
+    return code < SPACE || code === DELETE || code === BACKSLASH
+  })
+}
 
 const BASE = 'http://x'
 
@@ -41,7 +57,7 @@ export function validateRedirectSearch(
   // inside a URL (`/\t/evil.com` becomes `//evil.com`) and turns `\` into `/`, which are
   // exactly the spellings a string check misses. A path is internal only if resolving it
   // against a base stays on that base.
-  if (CONTROL_OR_BACKSLASH.test(value)) return {}
+  if (hasControlOrBackslash(value)) return {}
   if (!stayedOnSite(value)) return {}
 
   return { redirect: value }
