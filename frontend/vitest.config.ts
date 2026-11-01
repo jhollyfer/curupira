@@ -17,6 +17,7 @@ const STATEFUL = [
   'src/integrations/**/*.test.ts',
   'src/lib/form-errors.test.ts',
   'src/lib/local-store.test.ts',
+  'src/lib/motion.test.ts',
   'src/lib/theme.test.ts',
   'src/lib/report-queue.test.ts',
 ]
