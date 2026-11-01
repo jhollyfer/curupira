@@ -36,9 +36,10 @@ async function logOfThrottledRoute(pattern: string, ip: string): Promise<string>
   const config = { ...loggerConfig.loggers.app, transport: undefined, destination: sink }
   const logger = new LoggerManager({ default: 'app', loggers: { app: config } }).use('app')
   const handler = await app.container.make(HttpExceptionHandler)
-  const context = new HttpContextFactory()
-    .merge({ logger, route: { pattern, params: {} } })
-    .create()
+  const context = new HttpContextFactory().merge({ logger }).create()
+  // The factory takes a bare route that the context does not expose; the handler reads the
+  // matched route's pattern, so the test plants just that.
+  Object.defineProperty(context, 'route', { value: { pattern } })
   // The factory request has no socket to read an address from.
   Object.defineProperty(context.request, 'ip', { value: () => ip })
   const response = new LimiterResponse({ limit: 5, remaining: 0, consumed: 5, availableIn: 600 })

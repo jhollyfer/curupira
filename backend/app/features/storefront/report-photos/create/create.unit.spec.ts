@@ -13,13 +13,14 @@ import { rightOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const storages = MemoryRepositories.storages()
+  const multipart = new MultipartFake()
   const useCase = await makeWithMemory(StorefrontReportPhotoCreateUseCase, [
     [StorageContract, new StorageFake()],
-    [MultipartContract, new MultipartFake()],
+    [MultipartContract, multipart],
     [StorageRepository, storages],
   ])
 
-  return { storages, useCase }
+  return { storages, multipart, useCase }
 }
 
 test.group('storefront/report-photos > create (unit)', () => {
@@ -38,6 +39,25 @@ test.group('storefront/report-photos > create (unit)', () => {
       status: 'PENDING',
       uploadId: null,
     })
+  })
+
+  test('the object lives under the report-photo prefix, which marks where it came from', async ({
+    assert,
+  }) => {
+    const { storages, useCase } = await setup()
+
+    const { id } = rightOf(await useCase.execute({ mimetype: 'image/png', size: 10 }))
+
+    const stored = await storages.findById(id)
+    assert.isTrue(stored?.isReportPhoto())
+  })
+
+  test('the signed PUT is valid for 3 minutes only', async ({ assert }) => {
+    const { multipart, useCase } = await setup()
+
+    await useCase.execute({ mimetype: 'image/jpeg', size: 2048 })
+
+    assert.deepEqual(multipart.singleExpiries, [180])
   })
 
   test('the stored label is generated, never a sender-chosen name', async ({ assert }) => {

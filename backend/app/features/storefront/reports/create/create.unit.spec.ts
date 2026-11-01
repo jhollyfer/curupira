@@ -3,6 +3,7 @@ import { PROTOCOL_PATTERN } from '@curupira/shared'
 
 import StorefrontReportCreateUseCase from './create.use-case.ts'
 
+import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
 import { Storage } from '#domain/storage/storage.entity'
 import { NeighborhoodRepository } from '#repositories/neighborhood/neighborhood.repository'
 import { ReportRepository } from '#repositories/report/report.repository'
@@ -31,10 +32,12 @@ const BASE = {
   photoIds: string[]
 }
 
+const LIBRARY_FILE = '5b1d3a9e-7c2f-4e8a-8d6b-1f0e2c3a4b5d'
+
 async function uploadedPhoto(storages: ReturnType<typeof MemoryRepositories.storages>) {
   const storage = Storage.open({
     id: PHOTO,
-    key: 'foto.jpg',
+    key: `${REPORT_PHOTO_KEY_PREFIX}foto.jpg`,
     originalName: 'report-photo.jpg',
     mimetype: 'image/jpeg',
     size: 8,
@@ -141,6 +144,26 @@ test.group('storefront/reports > create (unit)', () => {
 
     assert.deepInclude(result.value, { status: 422, code: 'STORAGE_NOT_FOUND' })
     assert.property(leftOf(result).errors ?? {}, 'photoIds')
+  })
+
+  test('a file of the management library cannot be attached to a report', async ({ assert }) => {
+    const { storages, useCase } = await setup()
+    const library = Storage.open({
+      id: LIBRARY_FILE,
+      key: 'galeria.jpg',
+      originalName: 'galeria.jpg',
+      mimetype: 'image/jpeg',
+      size: 8,
+      uploadId: null,
+      partSize: 8,
+      now: new Date(),
+    })
+    library.complete({ contentLength: 8, head: JPEG_HEAD }, new Date())
+    await storages.save(library)
+
+    const result = await useCase.execute({ ...BASE, photoIds: [LIBRARY_FILE] })
+
+    assert.deepInclude(result.value, { status: 422, code: 'STORAGE_NOT_FOUND' })
   })
 
   test('a photo already used by another report is 422 REPORT_PHOTO_TAKEN', async ({ assert }) => {

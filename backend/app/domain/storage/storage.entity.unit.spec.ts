@@ -2,6 +2,8 @@ import { test } from '@japa/runner'
 
 import { Storage } from './storage.entity.ts'
 
+import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
+
 const NOW = new Date('2026-10-29T12:00:00Z')
 
 const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0])
@@ -30,6 +32,22 @@ test.group('Storage', () => {
       uploadId: 'upload',
     })
     assert.isTrue(file.isPending())
+  })
+
+  test('is a report photo only when its key sits under the report-photo prefix', ({ assert }) => {
+    const photo = Storage.open({
+      id: 'id',
+      key: `${REPORT_PHOTO_KEY_PREFIX}abc.jpg`,
+      originalName: 'report-photo.jpg',
+      mimetype: 'image/jpeg',
+      size: 1,
+      uploadId: null,
+      partSize: 1,
+      now: NOW,
+    })
+
+    assert.isTrue(photo.isReportPhoto())
+    assert.isFalse(pending().isReportPhoto())
   })
 
   test('confirms when the size that went up is the declared one and drops the uploadId', ({

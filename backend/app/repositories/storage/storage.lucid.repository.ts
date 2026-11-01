@@ -68,7 +68,7 @@ export class StorageLucidRepository extends StorageRepository {
   }
 
   async areAttachable(ids: ReadonlyArray<string>): Promise<boolean> {
-    return this.allUploaded(ids, (query) => query.whereNotLike('path', REPORT_PHOTO_LIKE))
+    return this.allUploaded(ids, (query) => query.where('path', 'not like', REPORT_PHOTO_LIKE))
   }
 
   async areReportPhotos(ids: ReadonlyArray<string>): Promise<boolean> {

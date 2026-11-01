@@ -2,6 +2,7 @@ import { test } from '@japa/runner'
 
 import StorefrontReportPhotoCompleteUseCase from './complete.use-case.ts'
 
+import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
 import { Storage } from '#domain/storage/storage.entity'
 import { StorageRepository } from '#repositories/storage/storage.repository'
 import { PhotoSanitizerContract } from '#services/photo-sanitizer/photo-sanitizer.contract'
@@ -11,14 +12,15 @@ import { StorageFake } from '#services/storage/storage.fake'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { MemoryRepositories } from '#tests/memory-fixtures'
 
+const KEY = `${REPORT_PHOTO_KEY_PREFIX}foto.jpg`
 const ID = '8a7b6c5d-4e3f-4a2b-9c1d-0e9f8a7b6c5d'
 const JPEG_HEAD = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0, 0, 0, 0, 0])
 const ORIGINAL = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4])
 
-function pending(mimetype = 'image/jpeg', size = ORIGINAL.length): Storage {
+function pending(mimetype = 'image/jpeg', size = ORIGINAL.length, key = KEY): Storage {
   return Storage.open({
     id: ID,
-    key: 'foto.jpg',
+    key,
     originalName: 'report-photo.jpg',
     mimetype,
     size,
@@ -32,8 +34,8 @@ async function setup(storage: Storage = pending()) {
   const storages = MemoryRepositories.storages()
   await storages.save(storage)
   const bucket = new StorageFake()
-    .put('foto.jpg', { contentLength: ORIGINAL.length }, JPEG_HEAD)
-    .putBody('foto.jpg', ORIGINAL)
+    .put(KEY, { contentLength: ORIGINAL.length }, JPEG_HEAD)
+    .putBody(KEY, ORIGINAL)
   const sanitizer = new PhotoSanitizerFake()
   const useCase = await makeWithMemory(StorefrontReportPhotoCompleteUseCase, [
     [StorageRepository, storages],
@@ -55,7 +57,7 @@ test.group('storefront/report-photos > complete (unit)', () => {
     assert.isTrue(result.isRight())
     assert.deepEqual(sanitizer.received[0]?.bytes, ORIGINAL)
     assert.deepEqual(
-      bucket.overwritten.get('foto.jpg'),
+      bucket.overwritten.get(KEY),
       new Uint8Array([...PhotoSanitizerFake.MARKER, ...ORIGINAL]),
     )
     const stored = await storages.findById(ID)
@@ -71,7 +73,7 @@ test.group('storefront/report-photos > complete (unit)', () => {
     const result = await useCase.execute({ id: ID })
 
     assert.deepInclude(result.value, { status: 422, code: 'REPORT_PHOTO_INVALID' })
-    assert.deepEqual(bucket.discarded, ['foto.jpg'])
+    assert.deepEqual(bucket.discarded, [KEY])
     assert.isNull(await storages.findById(ID))
     assert.isFalse(await storages.areAttachable([ID]))
   })
@@ -84,7 +86,7 @@ test.group('storefront/report-photos > complete (unit)', () => {
     const result = await useCase.execute({ id: ID })
 
     assert.deepInclude(result.value, { status: 422, code: 'STORAGE_SIZE_MISMATCH' })
-    assert.deepEqual(bucket.discarded, ['foto.jpg'])
+    assert.deepEqual(bucket.discarded, [KEY])
     assert.isNull(await storages.findById(ID))
   })
 
@@ -94,7 +96,7 @@ test.group('storefront/report-photos > complete (unit)', () => {
     const storages = MemoryRepositories.storages()
     await storages.save(pending())
     const bucket = new StorageFake().put(
-      'foto.jpg',
+      KEY,
       { contentLength: ORIGINAL.length },
       new Uint8Array(12),
     )
@@ -133,6 +135,22 @@ test.group('storefront/report-photos > complete (unit)', () => {
     assert.deepInclude(result.value, { status: 404, code: 'REPORT_PHOTO_NOT_FOUND' })
     assert.lengthOf(sanitizer.received, 0)
     assert.isNotNull(await storages.findById(ID))
+  })
+
+  test('a file of the management library is 404 and is neither re-encoded nor confirmed', async ({
+    assert,
+  }) => {
+    // Same uuid trick as before the marker: a library file whose uuid leaked must not be
+    // overwritten, nor confirmed, by an anonymous caller.
+    const library = pending('image/jpeg', ORIGINAL.length, 'galeria.jpg')
+    const { storages, bucket, sanitizer, useCase } = await setup(library)
+
+    const result = await useCase.execute({ id: ID })
+
+    assert.deepInclude(result.value, { status: 404, code: 'REPORT_PHOTO_NOT_FOUND' })
+    assert.lengthOf(sanitizer.received, 0)
+    assert.equal(bucket.overwritten.size, 0)
+    assert.equal((await storages.findById(ID))?.snapshot().status, 'PENDING')
   })
 
   test('an unknown id is 404 REPORT_PHOTO_NOT_FOUND', async ({ assert }) => {
