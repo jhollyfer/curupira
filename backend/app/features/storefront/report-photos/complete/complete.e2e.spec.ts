@@ -36,7 +36,7 @@ test.group('storefront/report-photos > complete', (group) => {
     const stored = await Stored.storageOrFail(id)
     const first = await drive.use().getBytes(stored.path)
 
-    const again = await client.post(`/storefront/report-photos/${id}/complete`).json({})
+    const again = await client.post(`/storefront/report-photos/${id}/complete`)
 
     again.assertStatus(204)
     assert.deepEqual(await drive.use().getBytes(stored.path), first)
@@ -54,18 +54,19 @@ test.group('storefront/report-photos > complete', (group) => {
       headers: { 'Content-Type': 'image/jpeg' },
     })
 
-    const response = await client.post(`/storefront/report-photos/${opened.id}/complete`).json({})
+    const response = await client.post(`/storefront/report-photos/${opened.id}/complete`)
 
     response.assertStatus(422)
     assert.equal(body(response).code, 'REPORT_PHOTO_INVALID')
     assert.isNull(await Stored.storage(opened.id))
   })
 
-  test('a PNG sent as image/jpeg is refused by the signature check', async ({
-    client,
-    assert,
-  }) => {
-    const png = new Uint8Array(await sharp({ create: { width: 8, height: 8, channels: 3, background: '#fff' } }).png().toBuffer())
+  test('a PNG sent as image/jpeg is refused by the signature check', async ({ client, assert }) => {
+    const png = new Uint8Array(
+      await sharp({ create: { width: 8, height: 8, channels: 3, background: '#fff' } })
+        .png()
+        .toBuffer(),
+    )
     const opened = await openReportPhoto(client, png.byteLength)
     await fetch(opened.uploadUrl, {
       method: 'PUT',
@@ -73,7 +74,7 @@ test.group('storefront/report-photos > complete', (group) => {
       headers: { 'Content-Type': 'image/jpeg' },
     })
 
-    const response = await client.post(`/storefront/report-photos/${opened.id}/complete`).json({})
+    const response = await client.post(`/storefront/report-photos/${opened.id}/complete`)
 
     response.assertStatus(422)
     assert.equal(body(response).code, 'STORAGE_CONTENT_MISMATCH')
@@ -83,7 +84,7 @@ test.group('storefront/report-photos > complete', (group) => {
     const unknown = await client
       .post('/storefront/report-photos/00000000-0000-4000-8000-000000000000/complete')
       .json({})
-    const malformed = await client.post('/storefront/report-photos/xyz/complete').json({})
+    const malformed = await client.post('/storefront/report-photos/xyz/complete')
 
     unknown.assertStatus(404)
     assert.equal(body(unknown).code, 'REPORT_PHOTO_NOT_FOUND')

@@ -6,11 +6,12 @@ import {
   authenticateAsAdministrator,
   authenticateAsOperator,
   body,
+  invalidPayload,
   resetDatabase,
 } from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
-const SLOT = { wasteType: 'RECYCLABLE', weekday: 'TUESDAY', shift: 'AFTERNOON' }
+const SLOT = { wasteType: 'RECYCLABLE', weekday: 'TUESDAY', shift: 'AFTERNOON' } as const
 
 test.group('management/schedules > create', (group) => {
   group.each.setup(() => resetDatabase())
@@ -63,12 +64,17 @@ test.group('management/schedules > create', (group) => {
     const session = await authenticateAsAdministrator(client)
     const neighborhood = await NeighborhoodFactory.create()
 
-    const response = await client.post('/management/schedules').cookies(session).json({
-      neighborhoodId: neighborhood.id,
-      wasteType: 'GOLD',
-      weekday: 'FUNDAY',
-      shift: 'LATE',
-    })
+    const response = await client
+      .post('/management/schedules')
+      .cookies(session)
+      .json(
+        invalidPayload({
+          neighborhoodId: neighborhood.id,
+          wasteType: 'GOLD',
+          weekday: 'FUNDAY',
+          shift: 'LATE',
+        }),
+      )
 
     response.assertStatus(422)
     assert.property(body(response).errors, 'wasteType')

@@ -16,6 +16,15 @@ import type User from '#models/user'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- @tuyau/core registry unites the responses of the path
 export type ResponseBody = Record<string, any>
 
+/**
+ * A payload the typed client would refuse at compile time, sent on purpose to prove the
+ * server answers 422 (an unknown enum value, a type outside the allowlist). `JSON.parse`
+ * returns `any`, which is the only honest way across the registry's types without `as`.
+ */
+export function invalidPayload<TExpected>(payload: Record<string, unknown>): TExpected {
+  return JSON.parse(JSON.stringify(payload))
+}
+
 export function body(response: ApiResponse): ResponseBody {
   return response.body()
 }

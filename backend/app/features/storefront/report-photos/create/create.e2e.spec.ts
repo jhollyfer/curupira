@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 
-import { body, resetDatabase } from '#tests/http-fixtures'
+import { body, invalidPayload, resetDatabase } from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('storefront/report-photos > create', (group) => {
@@ -24,7 +24,9 @@ test.group('storefront/report-photos > create', (group) => {
     assert,
   }) => {
     for (const mimetype of ['application/pdf', 'image/gif', 'image/svg+xml', 'text/html']) {
-      const response = await client.post('/storefront/report-photos').json({ mimetype, size: 1024 })
+      const response = await client
+        .post('/storefront/report-photos')
+        .json(invalidPayload({ mimetype, size: 1024 }))
 
       response.assertStatus(422)
       assert.property(body(response).errors, 'mimetype')

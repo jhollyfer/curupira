@@ -27,10 +27,7 @@ export async function openReportPhoto(client: ApiClient, size: number) {
 }
 
 /** The whole public flow, from zero to a confirmed (sanitized) photo. Returns its id. */
-export async function uploadReportPhoto(
-  client: ApiClient,
-  bytes?: Uint8Array,
-): Promise<string> {
+export async function uploadReportPhoto(client: ApiClient, bytes?: Uint8Array): Promise<string> {
   const content = bytes ?? (await jpegWithGps())
   const opened = await openReportPhoto(client, content.byteLength)
 
@@ -41,7 +38,7 @@ export async function uploadReportPhoto(
   })
   if (!put.ok) throw new Error(`PUT respondeu ${put.status}`)
 
-  const completed = await client.post(`/storefront/report-photos/${opened.id}/complete`).json({})
+  const completed = await client.post(`/storefront/report-photos/${opened.id}/complete`)
   completed.assertStatus(204)
 
   return opened.id
