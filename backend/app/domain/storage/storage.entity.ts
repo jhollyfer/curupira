@@ -1,5 +1,7 @@
 import { UPLOAD_STATUS, left, right, type Either, type UploadStatus } from '@curupira/shared'
 
+import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
+
 import type { StorageError } from './storage.errors.ts'
 
 /**
@@ -154,6 +156,11 @@ export class Storage {
     return alternatives.some((rules) =>
       rules.every((rule) => rule.bytes.every((byte, index) => head[rule.offset + index] === byte)),
     )
+  }
+
+  /** Born from the anonymous report-photo flow (see `REPORT_PHOTO_KEY_PREFIX`). */
+  isReportPhoto(): boolean {
+    return this.props.path.startsWith(REPORT_PHOTO_KEY_PREFIX)
   }
 
   isPending(): boolean {

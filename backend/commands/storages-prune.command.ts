@@ -6,7 +6,7 @@ import type { CommandOptions } from '@adonisjs/core/types/ace'
 const DEFAULT_HOURS = 24
 
 /**
- * Deletes the uploads that started and never finished.
+ * Deletes the uploads that started and never finished, and the report photos nobody claimed.
  *
  * The upload has three steps and the binary does not pass through here:
  * `POST /storages` writes the `PENDING` row and signs the URLs, the client uploads the
@@ -26,6 +26,10 @@ const DEFAULT_HOURS = 24
  * `assertExist` refuses to attach what is not `UPLOADED`, so a `PENDING`
  * cannot be in use.
  *
+ * The second kind is the anonymous report photo already confirmed (`UPLOADED`) that no
+ * report ever attached, older than the same cutoff: the resident abandoned the form after
+ * the upload. It has no `report_photos` row, and the library never lists it as in use.
+ *
  * There is no scheduler inside the application: this is a command, and whoever
  * repeats it is the environment (host cron, Kubernetes `CronJob`). Running on two
  * replicas at the same time is harmless - the second finds the row already deleted
@@ -34,7 +38,7 @@ const DEFAULT_HOURS = 24
 export default class StoragesPrune extends BaseCommand {
   static override commandName = 'storages:prune'
   static override description =
-    'Deletes the abandoned PENDING uploads and aborts the multipart of each one'
+    'Deletes the abandoned PENDING uploads, aborts their multipart, and removes unclaimed report photos'
 
   static override options: CommandOptions = { startApp: true }
 
@@ -52,19 +56,40 @@ export default class StoragesPrune extends BaseCommand {
     const { default: Storage } = await import('#models/storage')
     const { default: StoragesFileDeleteUseCase } =
       await import('#features/storages/files/delete/delete.use-case')
+    const { StorageRepository } = await import('#repositories/storage/storage.repository')
     const { UPLOAD_STATUS } = await import('@curupira/shared')
 
     const hours = this.hours ?? DEFAULT_HOURS
     const cutoff = DateTime.now().minus({ hours })
 
     // The column order is that of the index `storages_status_created_at_index`.
-    const abandoned = await Storage.query()
+    const pending = await Storage.query()
       .where('status', UPLOAD_STATUS.PENDING)
       .where('createdAt', '<', cutoff.toSQL() ?? '')
       .orderBy('createdAt', 'asc')
 
+    // The anonymous report route never gets the resident back to a photo whose form was
+    // closed: the row is `UPLOADED` (so the `PENDING` sweep above never sees it) and no
+    // report claims it. Without this, every abandoned form leaves a sanitized photo in the
+    // bucket for good, and the route is open to anyone.
+    const repository = await this.app.container.make(StorageRepository)
+    const unclaimed = await repository.unclaimedReportPhotos(cutoff.toJSDate())
+
+    const abandoned = [
+      ...pending.map((storage) => ({
+        id: storage.id,
+        originalName: storage.originalName,
+        createdAt: storage.createdAt,
+      })),
+      ...unclaimed.map((storage) => {
+        const { id, originalName, createdAt } = storage.snapshot()
+
+        return { id, originalName, createdAt: createdAt ? DateTime.fromJSDate(createdAt) : null }
+      }),
+    ]
+
     if (abandoned.length === 0) {
-      this.logger.info(`No PENDING upload older than ${hours}h.`)
+      this.logger.info(`No abandoned upload older than ${hours}h.`)
       return
     }
 

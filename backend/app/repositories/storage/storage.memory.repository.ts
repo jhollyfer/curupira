@@ -9,6 +9,7 @@ import {
 
 import { Storage, type StorageProps } from '#domain/storage/storage.entity'
 import { MemoryPagination } from '#core/memory-pagination'
+import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
 
 /** The sign of the comparison by sort direction. */
 const SIGN = { asc: 1, desc: -1 } satisfies Record<SortDirection, number>
@@ -53,11 +54,21 @@ export class StorageMemoryRepository extends StorageRepository {
   }
 
   async areAttachable(ids: ReadonlyArray<string>): Promise<boolean> {
-    return [...new Set(ids)].every((id) => {
-      const props = this.rows.get(id)
+    return this.allUploaded(ids, false)
+  }
 
-      return props !== undefined && !props.deletedAt && props.status === UPLOAD_STATUS.UPLOADED
-    })
+  async areReportPhotos(ids: ReadonlyArray<string>): Promise<boolean> {
+    return this.allUploaded(ids, true)
+  }
+
+  async unclaimedReportPhotos(cutoff: Date): Promise<Storage[]> {
+    return [...this.rows.values()]
+      .filter((props) => !props.deletedAt && props.status === UPLOAD_STATUS.UPLOADED)
+      .filter((props) => props.path.startsWith(REPORT_PHOTO_KEY_PREFIX))
+      .filter((props) => (props.createdAt?.getTime() ?? 0) < cutoff.getTime())
+      .filter((props) => (this.uses.get(props.id) ?? []).length === 0)
+      .sort((a, b) => (a.createdAt?.getTime() ?? 0) - (b.createdAt?.getTime() ?? 0))
+      .map((props) => Storage.restore(structuredClone(props)))
   }
 
   async usedBy(id: string): Promise<string[]> {
@@ -93,6 +104,19 @@ export class StorageMemoryRepository extends StorageRepository {
       meta: page.meta,
       data: page.data.map((row) => this.toResponse(row)),
     }
+  }
+
+  private allUploaded(ids: ReadonlyArray<string>, reportPhoto: boolean): boolean {
+    return [...new Set(ids)].every((id) => {
+      const props = this.rows.get(id)
+
+      return (
+        props !== undefined &&
+        !props.deletedAt &&
+        props.status === UPLOAD_STATUS.UPLOADED &&
+        props.path.startsWith(REPORT_PHOTO_KEY_PREFIX) === reportPhoto
+      )
+    })
   }
 
   private compare(a: StorageProps, b: StorageProps, sort: StorageListCriteria['sort']): number {

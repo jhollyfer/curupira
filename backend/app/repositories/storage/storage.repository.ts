@@ -35,8 +35,22 @@ export abstract class StorageRepository {
   abstract detail(id: string): Promise<StorageFileRead | null>
   /** The same record for several ids at once; an id without a live file is left out. */
   abstract detailsOf(ids: ReadonlyArray<string>): Promise<StorageFileRead[]>
-  /** All the ids are live, already confirmed (`UPLOADED`) files: only those attach. */
+  /**
+   * All the ids are live, already confirmed (`UPLOADED`) files **of the management library**
+   * (an avatar): a report photo never attaches here.
+   */
   abstract areAttachable(ids: ReadonlyArray<string>): Promise<boolean>
+  /**
+   * All the ids are live, confirmed files born from the anonymous report-photo flow
+   * (`REPORT_PHOTO_KEY_PREFIX`): a library file never attaches to a report, however
+   * well its uuid is known.
+   */
+  abstract areReportPhotos(ids: ReadonlyArray<string>): Promise<boolean>
+  /**
+   * Confirmed report photos created before `cutoff` that no report ever claimed: the
+   * resident closed the form after the upload. Oldest first.
+   */
+  abstract unclaimedReportPhotos(cutoff: Date): Promise<Storage[]>
   /** Where the file is in use, in readable labels; empty means orphan. */
   abstract usedBy(id: string): Promise<string[]>
   abstract save(storage: Storage): Promise<void>

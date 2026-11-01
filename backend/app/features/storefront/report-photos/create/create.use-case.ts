@@ -18,8 +18,14 @@ import { MultipartContract, PART_SIZE } from '#services/multipart/multipart.cont
 import { StorageContract } from '#services/storage/storage.contract'
 import type { StorefrontReportPhotoCreatePayload } from '#validators/storefront/report-photos.validator'
 
-/** The signed `PUT` lives 15 minutes: long enough for a slow connection, short enough to expire unused. */
-const UPLOAD_URL_SECONDS = 15 * 60
+/**
+ * The signed `PUT` lives 3 minutes. The URL needs no login and stays a valid way to write the
+ * object until it expires, including after `complete` re-encoded it: a long window would let
+ * its holder swap the sanitized photo for one that still carries the sender's EXIF. A few
+ * MB fit in three minutes on a phone connection, and the client simply asks for another
+ * URL (a new `POST /storefront/report-photos`) when the wait was longer.
+ */
+const UPLOAD_URL_SECONDS = 3 * 60
 
 type Payload = StorefrontReportPhotoCreatePayload
 type Response = Either<HTTPException, StorefrontReportPhotoCreateResponse>
@@ -41,7 +47,7 @@ export default class StorefrontReportPhotoCreateUseCase {
 
   async execute(payload: Payload): Promise<Response> {
     try {
-      const key = this.bucket.key(payload.mimetype)
+      const key = this.bucket.reportPhotoKey(payload.mimetype)
       const uploadUrl = await this.multipart.signSingle(
         key,
         payload.mimetype,

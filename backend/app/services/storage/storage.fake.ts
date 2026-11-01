@@ -1,3 +1,4 @@
+import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
 import {
   StorageContract,
   type StorageDownload,
@@ -59,6 +60,12 @@ export class StorageFake extends StorageContract {
     this.keys += 1
 
     return `fake-${this.keys}.bin`
+  }
+
+  reportPhotoKey(): string {
+    this.keys += 1
+
+    return `${REPORT_PHOTO_KEY_PREFIX}fake-${this.keys}.bin`
   }
 
   async metadata(path: string): Promise<StorageMetadata> {

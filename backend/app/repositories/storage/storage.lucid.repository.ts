@@ -1,5 +1,6 @@
 import { inject } from '@adonisjs/core'
 import { DateTime } from 'luxon'
+import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 import { UPLOAD_STATUS } from '@curupira/shared'
 import type { Paginated } from '@curupira/shared'
 
@@ -12,6 +13,7 @@ import {
 import StorageModel from '#models/storage'
 import { Storage } from '#domain/storage/storage.entity'
 import { TransactionContext } from '#core/transaction-context'
+import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
 
 /**
  * Every column that points to `storages`, with the label the error message
@@ -26,6 +28,8 @@ const REFERENCES = [
   { table: 'users', column: 'avatar_id', label: 'avatar de usuário' },
   { table: 'report_photos', column: 'storage_id', label: 'foto de denúncia' },
 ] as const
+
+const REPORT_PHOTO_LIKE = `${REPORT_PHOTO_KEY_PREFIX}%`
 
 @inject()
 export class StorageLucidRepository extends StorageRepository {
@@ -64,15 +68,25 @@ export class StorageLucidRepository extends StorageRepository {
   }
 
   async areAttachable(ids: ReadonlyArray<string>): Promise<boolean> {
-    const unique = [...new Set(ids)]
-    if (unique.length === 0) return true
+    return this.allUploaded(ids, (query) => query.whereNotLike('path', REPORT_PHOTO_LIKE))
+  }
 
+  async areReportPhotos(ids: ReadonlyArray<string>): Promise<boolean> {
+    return this.allUploaded(ids, (query) => query.whereLike('path', REPORT_PHOTO_LIKE))
+  }
+
+  async unclaimedReportPhotos(cutoff: Date): Promise<Storage[]> {
     const rows = await StorageModel.query({ client: this.transaction.client() })
-      .whereIn('id', unique)
       .where('status', UPLOAD_STATUS.UPLOADED)
+      .whereLike('path', REPORT_PHOTO_LIKE)
+      .where('createdAt', '<', DateTime.fromJSDate(cutoff).toSQL() ?? '')
       .withScopes((scopes) => scopes.notDeleted())
+      .whereNotExists((builder) => {
+        builder.from('report_photos').whereColumn('report_photos.storage_id', 'storages.id')
+      })
+      .orderBy('createdAt', 'asc')
 
-    return rows.length === unique.length
+    return rows.map((row) => this.toEntity(row))
   }
 
   async usedBy(id: string): Promise<string[]> {
@@ -140,6 +154,23 @@ export class StorageLucidRepository extends StorageRepository {
       meta: page.getMeta(),
       data: page.all().map((row) => this.toResponse(row)),
     }
+  }
+
+  /** The ids are all live, `UPLOADED` and pass the extra filter that says which flow they came from. */
+  private async allUploaded(
+    ids: ReadonlyArray<string>,
+    origin: (query: ModelQueryBuilderContract<typeof StorageModel>) => unknown,
+  ): Promise<boolean> {
+    const unique = [...new Set(ids)]
+    if (unique.length === 0) return true
+
+    const query = StorageModel.query({ client: this.transaction.client() })
+      .whereIn('id', unique)
+      .where('status', UPLOAD_STATUS.UPLOADED)
+      .withScopes((scopes) => scopes.notDeleted())
+    origin(query)
+
+    return (await query).length === unique.length
   }
 
   private toEntity(row: StorageModel): Storage {

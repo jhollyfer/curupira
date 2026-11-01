@@ -14,6 +14,8 @@ export class MultipartFake extends MultipartContract {
   readonly initiated: string[] = []
   readonly completed: string[] = []
   readonly aborted: string[] = []
+  /** The lifetime asked for each single-part URL, so a test can pin how long it stays valid. */
+  readonly singleExpiries: Array<number | undefined> = []
   private readonly uploaded = new Map<string, UploadedPart[]>()
 
   /** Test arrangement: the parts the bucket has already received for this upload. */
@@ -39,7 +41,13 @@ export class MultipartFake extends MultipartContract {
     }))
   }
 
-  async signSingle(key: string): Promise<string> {
+  async signSingle(
+    key: string,
+    _contentType?: string,
+    _size?: number,
+    expiresIn?: number,
+  ): Promise<string> {
+    this.singleExpiries.push(expiresIn)
     return `https://bucket.test/${key}?single`
   }
 

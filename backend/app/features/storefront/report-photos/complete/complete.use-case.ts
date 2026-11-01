@@ -48,6 +48,7 @@ export default class StorefrontReportPhotoCompleteUseCase {
       // Only a pending image of this flow is touched. An already confirmed file is left exactly
       // as it is: re-encoding someone else's file because its uuid was sent here would be an
       // anonymous write over it. Confirmed means the answer to a retry is simply "done".
+      if (!storage.isReportPhoto()) return left(ReportPhotoRefusal.notFound(this.i18n))
       if (storage.isUploaded()) return right(null)
       if (!REPORT_PHOTO_MIMETYPES.some((mimetype) => mimetype === file.mimetype))
         return left(ReportPhotoRefusal.notFound(this.i18n))

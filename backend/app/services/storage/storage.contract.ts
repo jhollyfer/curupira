@@ -25,6 +25,11 @@ export type StorageDownload = {
 export abstract class StorageContract {
   /** The key under which the object will live in the bucket. */
   abstract key(mimetype: StorageMimetype): string
+  /**
+   * The key of an anonymous report photo: the same uuid-plus-extension, under the
+   * `REPORT_PHOTO_KEY_PREFIX` that marks where the file came from.
+   */
+  abstract reportPhotoKey(mimetype: StorageMimetype): string
   /** What the bucket knows about the object: size and `ETag`. */
   abstract metadata(path: string): Promise<StorageMetadata>
   /**

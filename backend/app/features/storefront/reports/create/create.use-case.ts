@@ -41,7 +41,7 @@ export default class StorefrontReportCreateUseCase {
     try {
       // Photos are checked before any write: a foreign key to a missing or half-uploaded file
       // would be a 500, and the resident should get a 422 pointing at the field.
-      if (!(await this.storages.areAttachable(payload.photoIds)))
+      if (!(await this.storages.areReportPhotos(payload.photoIds)))
         return left(FileRefusal.attachmentNotFound('photoIds', this.i18n))
       if (await this.reports.anyPhotoTaken(payload.photoIds))
         return left(ReportRefusal.http({ code: 'REPORT_PHOTO_TAKEN' }, this.i18n))
