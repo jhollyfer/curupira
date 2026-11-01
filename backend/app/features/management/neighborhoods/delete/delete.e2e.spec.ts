@@ -48,7 +48,8 @@ test.group('management/neighborhoods > delete', (group) => {
       .cookies(session)
 
     response.assertStatus(204)
-    assert.isNull((await Stored.reportOrFail(report.id)).neighborhoodId)
+    const stored = await Stored.reportOrFail(report.id)
+    assert.isNull(stored.neighborhoodId)
   })
 
   test('nonexistent responds 404', async ({ client }) => {

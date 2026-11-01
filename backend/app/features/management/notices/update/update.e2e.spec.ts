@@ -18,7 +18,8 @@ test.group('management/notices > update', (group) => {
 
     response.assertStatus(200)
     assert.equal(body(response).title, 'Outro título')
-    assert.equal((await Stored.noticeOrFail(notice.id)).body, notice.body)
+    const stored = await Stored.noticeOrFail(notice.id)
+    assert.equal(stored.body, notice.body)
   })
 
   test('an end before the existing start responds 422', async ({ client, assert }) => {

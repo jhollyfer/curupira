@@ -25,7 +25,8 @@ test.group('management/users > update', (group) => {
 
     response.assertStatus(200)
     assert.equal(body(response).role, 'ADMINISTRATOR')
-    assert.equal((await Stored.userOrFail(target.id)).role, 'ADMINISTRATOR')
+    const stored = await Stored.userOrFail(target.id)
+    assert.equal(stored.role, 'ADMINISTRATOR')
     const stale = await client.get('/account').cookies(targetSession)
     stale.assertStatus(401)
   })
@@ -44,7 +45,8 @@ test.group('management/users > update', (group) => {
       .post('/authentication/sign-in')
       .json({ email: target.email, password: FACTORY_PASSWORD })
     signIn.assertStatus(401)
-    assert.equal((await Stored.userOrFail(target.id)).status, 'INACTIVE')
+    const stored = await Stored.userOrFail(target.id)
+    assert.equal(stored.status, 'INACTIVE')
   })
 
   test('an e-mail already taken responds 409', async ({ client, assert }) => {

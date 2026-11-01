@@ -17,7 +17,8 @@ test.group('management/notices > close', (group) => {
 
     response.assertStatus(200)
     assert.equal(body(response).status, 'CLOSED')
-    assert.isNotNull((await Stored.noticeOrFail(notice.id)).closedAt)
+    const stored = await Stored.noticeOrFail(notice.id)
+    assert.isNotNull(stored.closedAt)
     const after = await client.get('/storefront/notices')
     assert.deepEqual(body(after).data, [])
   })

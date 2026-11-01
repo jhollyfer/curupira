@@ -20,7 +20,8 @@ test.group('management/schedules > update', (group) => {
 
     response.assertStatus(200)
     assert.deepInclude(body(response), { weekday: 'SATURDAY', wasteType: 'ORGANIC' })
-    assert.equal((await Stored.schedule(slot.id))?.weekday, 'SATURDAY')
+    const stored = await Stored.schedule(slot.id)
+    assert.equal(stored?.weekday, 'SATURDAY')
   })
 
   test('moving onto an existing slot responds 409', async ({ client, assert }) => {

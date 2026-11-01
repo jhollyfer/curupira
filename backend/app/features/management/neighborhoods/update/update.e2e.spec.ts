@@ -18,7 +18,8 @@ test.group('management/neighborhoods > update', (group) => {
 
     response.assertStatus(200)
     assert.equal(body(response).slug, 'sao-francisco')
-    assert.equal((await Stored.neighborhoodOrFail(neighborhood.id)).name, 'São Francisco')
+    const stored = await Stored.neighborhoodOrFail(neighborhood.id)
+    assert.equal(stored.name, 'São Francisco')
   })
 
   test('null on both coordinates erases the center', async ({ client, assert }) => {
@@ -32,7 +33,8 @@ test.group('management/neighborhoods > update', (group) => {
 
     response.assertStatus(200)
     assert.isNull(body(response).latitude)
-    assert.isNull((await Stored.neighborhoodOrFail(neighborhood.id)).longitude)
+    const stored = await Stored.neighborhoodOrFail(neighborhood.id)
+    assert.isNull(stored.longitude)
   })
 
   test('the name of another neighborhood responds 409', async ({ client, assert }) => {
