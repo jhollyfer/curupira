@@ -48,6 +48,7 @@ export const queryKeys = {
       list: (params: StorefrontSearch) =>
         ['management', 'neighborhoods', 'list', params] as const,
       options: ['management', 'neighborhoods', 'options'] as const,
+      choices: ['management', 'neighborhoods', 'choices'] as const,
       detail: (id: string) =>
         ['management', 'neighborhoods', 'detail', id] as const,
     },

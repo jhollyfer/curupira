@@ -115,7 +115,11 @@ test.describe('resident', () => {
     const shown = await page
       .locator('section[aria-labelledby=next-collection]')
       .innerText()
-    expect([...kinds].some((kind) => shown.includes(labels[kind as keyof typeof labels]))).toBe(true)
+    expect(
+      [...kinds].some((kind) =>
+        shown.includes(labels[kind as keyof typeof labels]),
+      ),
+    ).toBe(true)
   })
 
   test('files an anonymous report with a real photo, follows it and the panel answers it', async ({
@@ -173,7 +177,9 @@ test.describe('resident', () => {
     await expect(
       desk.getByRole('table').getByRole('link', { name: code }),
     ).toBeVisible()
-    await expect(desk.locator(`.leaflet-marker-icon[title*="${code}"]`)).toBeVisible()
+    await expect(
+      desk.locator(`.leaflet-marker-icon[title*="${code}"]`),
+    ).toBeVisible()
 
     await desk.getByRole('table').getByRole('link', { name: code }).click()
     await desk.getByRole('radio', { name: /Em análise/ }).check()
@@ -216,7 +222,11 @@ test.describe('resident', () => {
       headers: { 'Content-Type': 'image/jpeg' },
     })
     expect(uploaded.ok()).toBe(true)
-    expect((await resident.post(`/storefront/report-photos/${id}/complete`)).status()).toBe(204)
+    expect(
+      (
+        await resident.post(`/storefront/report-photos/${id}/complete`)
+      ).status(),
+    ).toBe(204)
 
     const filed = await resident.post('/storefront/reports', {
       data: {
@@ -250,7 +260,9 @@ test.describe('resident', () => {
 
     await fileReport(page, 'Descarte irregular de lixo', 'gps')
     await expect(
-      page.getByText(/salva no aparelho e será enviada quando voltar a conexão/i),
+      page.getByText(
+        /salva no aparelho e será enviada quando voltar a conexão/i,
+      ),
     ).toBeVisible()
 
     await context.setOffline(false)
@@ -258,7 +270,9 @@ test.describe('resident', () => {
     await expect(toast).toBeVisible()
     filedInThisRun += 1
 
-    const code = /CUR-[A-Z0-9]{4}-[A-Z0-9]{4}/.exec(await toast.innerText())?.[0]
+    const code = /CUR-[A-Z0-9]{4}-[A-Z0-9]{4}/.exec(
+      await toast.innerText(),
+    )?.[0]
     expect(code).toBeDefined()
     const stored = await managementReport(ownerApi, code ?? '')
     expect(stored.contact).toBeNull()

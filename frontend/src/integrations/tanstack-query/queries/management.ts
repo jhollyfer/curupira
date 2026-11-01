@@ -6,6 +6,7 @@ import {
   ManagementReportStatsResponse,
   ManagementScheduleShowResponse,
   ManagementUserShowResponse,
+  StorefrontNeighborhoodShowResponse,
   paginatedResponse,
   z,
 } from '@curupira/shared'
@@ -255,6 +256,37 @@ export const managementNeighborhoodOptionsQueryOptions = () =>
           )
 
           return page.data
+        },
+      }),
+    staleTime: 5 * 60 * 1000,
+  })
+
+/** What a neighborhood select needs, and nothing the administrator-only record carries. */
+export type NeighborhoodChoice = Readonly<{ id: string; name: string }>
+
+/**
+ * The neighborhoods for the report filter, readable by BOTH roles.
+ *
+ * `/management/neighborhoods` is administrator-only, and the report screen is the
+ * operator's desk too: reading the options from there answered 403 and the whole
+ * screen fell into the 500 page. The public list is the same data (id and name) and
+ * needs no role, so the api body reads it. The administrator-only options below stay
+ * for the schedule grid, which only the administrator can open.
+ */
+export const managementNeighborhoodChoicesQueryOptions = () =>
+  queryOptions({
+    queryKey: queryKeys.management.neighborhoods.choices,
+    queryFn: ({ signal }) =>
+      fromSource<ReadonlyArray<NeighborhoodChoice>>({
+        mock: () => allNeighborhoods().map(({ id, name }) => ({ id, name })),
+        api: async () => {
+          const page = await request(
+            '/storefront/neighborhoods?perPage=100',
+            paginatedResponse(StorefrontNeighborhoodShowResponse),
+            { signal },
+          )
+
+          return page.data.map(({ id, name }) => ({ id, name }))
         },
       }),
     staleTime: 5 * 60 * 1000,

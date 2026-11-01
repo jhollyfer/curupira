@@ -8,7 +8,7 @@ import { OptionSelect } from '#/components/common/option-select'
 import { Button } from '#/components/ui/button'
 import { Field, FieldLabel } from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
-import { managementNeighborhoodOptionsQueryOptions } from '#/integrations/tanstack-query/queries/management'
+import { managementNeighborhoodChoicesQueryOptions } from '#/integrations/tanstack-query/queries/management'
 import { REPORT_KIND_LABELS, REPORT_STATUS_LABELS } from '#/lib/labels'
 import { hasReportsFilter } from '#/lib/management-search'
 import type { ReportsSearch } from '#/lib/management-search'
@@ -27,7 +27,7 @@ export function ReportsFilters(): React.JSX.Element {
   const search = route.useSearch()
   const navigate = route.useNavigate()
   const { data: neighborhoods } = useSuspenseQuery(
-    managementNeighborhoodOptionsQueryOptions(),
+    managementNeighborhoodChoicesQueryOptions(),
   )
   const ids = React.useId()
 

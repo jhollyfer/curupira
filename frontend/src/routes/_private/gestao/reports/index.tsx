@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import {
-  managementNeighborhoodOptionsQueryOptions,
+  managementNeighborhoodChoicesQueryOptions,
   managementReportsMapQueryOptions,
   managementReportsQueryOptions,
 } from '#/integrations/tanstack-query/queries/management'
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/_private/gestao/reports/')({
       context.queryClient.query(
         managementReportsMapQueryOptions(reportsFilterOf(deps.search)),
       ),
-      context.queryClient.query(managementNeighborhoodOptionsQueryOptions()),
+      context.queryClient.query(managementNeighborhoodChoicesQueryOptions()),
     ])
   },
 })
