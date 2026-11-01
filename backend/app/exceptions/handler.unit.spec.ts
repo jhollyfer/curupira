@@ -9,7 +9,6 @@ import { HttpContextFactory } from '@adonisjs/core/factories/http'
 import { LoggerManager } from '@adonisjs/core/logger'
 
 import loggerConfig from '#config/logger'
-
 import HttpExceptionHandler from '#exceptions/handler'
 import HTTPException from '#exceptions/http.exception'
 

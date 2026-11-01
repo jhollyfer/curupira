@@ -84,7 +84,7 @@ export default class StoragesPrune extends BaseCommand {
       ...unclaimed.map((storage) => {
         const { id, originalName, createdAt } = storage.snapshot()
 
-        return { id, originalName, createdAt: createdAt ? DateTime.fromJSDate(createdAt) : null }
+        return { id, originalName, createdAt: DateTime.fromJSDate(createdAt ?? new Date(0)) }
       }),
     ]
 

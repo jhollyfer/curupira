@@ -170,7 +170,9 @@ export class StorageLucidRepository extends StorageRepository {
       .withScopes((scopes) => scopes.notDeleted())
     origin(query)
 
-    return (await query).length === unique.length
+    const rows = await query
+
+    return rows.length === unique.length
   }
 
   private toEntity(row: StorageModel): Storage {

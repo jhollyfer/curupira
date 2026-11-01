@@ -40,8 +40,7 @@ export default class UsersCreateOwner extends BaseCommand {
     const { default: User } = await import('#models/user')
     const { default: env } = await import('#start/env')
     const { vineErrors } = await import('#core/validator')
-    const { ManagementUserCreateValidator } =
-      await import('#validators/management/users.validator')
+    const { ManagementUserCreateValidator } = await import('#validators/management/users.validator')
     const { ACTIVE_STATUS, USER_ROLE } = await import('@curupira/shared')
 
     const existing = await User.query()

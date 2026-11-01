@@ -160,7 +160,8 @@ test.group('storages > prune', (group) => {
 
   test('deletes a report photo nobody claimed, object and row', async ({ client, assert }) => {
     const photoId = await uploadReportPhoto(client)
-    const path = (await Stored.storageOrFail(photoId)).path
+    const stored = await Stored.storageOrFail(photoId)
+    const path = stored.path
     await age(photoId, 48)
 
     const command = await prune()

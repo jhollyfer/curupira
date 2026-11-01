@@ -150,7 +150,8 @@ test.group('storefront/report-photos > complete (unit)', () => {
     assert.deepInclude(result.value, { status: 404, code: 'REPORT_PHOTO_NOT_FOUND' })
     assert.lengthOf(sanitizer.received, 0)
     assert.equal(bucket.overwritten.size, 0)
-    assert.equal((await storages.findById(ID))?.snapshot().status, 'PENDING')
+    const kept = await storages.findById(ID)
+    assert.equal(kept?.snapshot().status, 'PENDING')
   })
 
   test('an unknown id is 404 REPORT_PHOTO_NOT_FOUND', async ({ assert }) => {

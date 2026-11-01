@@ -1,8 +1,8 @@
 import { UPLOAD_STATUS, left, right, type Either, type UploadStatus } from '@curupira/shared'
 
-import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
-
 import type { StorageError } from './storage.errors.ts'
+
+import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
 
 /**
  * The signatures (magic bytes) of each accepted type: the `Content-Type` and the

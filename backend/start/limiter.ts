@@ -164,7 +164,11 @@ export const accountUpdateThrottle = limiter.define('accountUpdate', function (c
  * cost instead of a one-minute pause.
  */
 export const reportCreateThrottle = limiter.define('reportCreate', function (context) {
-  return limiter.allowRequests(10).every('1 hour').blockFor('10 mins').usingKey(LimiterKey.byIp(context.request.ip()))
+  return limiter
+    .allowRequests(10)
+    .every('1 hour')
+    .blockFor('10 mins')
+    .usingKey(LimiterKey.byIp(context.request.ip()))
 })
 
 /**
@@ -173,7 +177,11 @@ export const reportCreateThrottle = limiter.define('reportCreate', function (con
  * ceiling. It also bounds the `PENDING` rows an anonymous caller can create.
  */
 export const reportPhotoThrottle = limiter.define('reportPhoto', function (context) {
-  return limiter.allowRequests(60).every('1 hour').blockFor('10 mins').usingKey(LimiterKey.byIp(context.request.ip()))
+  return limiter
+    .allowRequests(60)
+    .every('1 hour')
+    .blockFor('10 mins')
+    .usingKey(LimiterKey.byIp(context.request.ip()))
 })
 
 /**
@@ -182,7 +190,11 @@ export const reportPhotoThrottle = limiter.define('reportPhoto', function (conte
  * Generous enough for a resident who reloads the page to see if the status moved.
  */
 export const reportLookupThrottle = limiter.define('reportLookup', function (context) {
-  return limiter.allowRequests(30).every('10 mins').blockFor('10 mins').usingKey(LimiterKey.byIp(context.request.ip()))
+  return limiter
+    .allowRequests(30)
+    .every('10 mins')
+    .blockFor('10 mins')
+    .usingKey(LimiterKey.byIp(context.request.ip()))
 })
 
 /**

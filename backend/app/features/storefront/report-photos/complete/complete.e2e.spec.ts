@@ -90,7 +90,8 @@ test.group('storefront/report-photos > complete', (group) => {
     const response = await client.post(`/storefront/report-photos/${library.id}/complete`)
 
     response.assertStatus(404)
-    assert.equal((await Stored.storageOrFail(library.id)).status, 'PENDING')
+    const kept = await Stored.storageOrFail(library.id)
+    assert.equal(kept.status, 'PENDING')
   })
 
   test('an unknown id and a malformed id are refused', async ({ client, assert }) => {
