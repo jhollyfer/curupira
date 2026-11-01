@@ -108,7 +108,12 @@ export function Sidebar(): React.JSX.Element {
       <SidebarHeader className="h-14 justify-center border-b">
         <SidebarMenu>
           <SidebarMenuItem>
-            <BrandMark to="/gestao" />
+            {/* Collapsed to icons (the 1024px case) the rail is 48px wide: the wordmark
+                spilled out of it and printed over the breadcrumb. */}
+            <BrandMark
+              to="/gestao"
+              className="group-data-[collapsible=icon]:[&>span]:hidden"
+            />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
