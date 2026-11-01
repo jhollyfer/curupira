@@ -42,7 +42,7 @@ export function MockAccounts({
             <Button
               type="button"
               variant="outline"
-              size="sm"
+              size="touch"
               onClick={() => {
                 form.setValue('email', account.email, { shouldValidate: true })
                 form.setValue('password', MOCK_PASSWORD, {
