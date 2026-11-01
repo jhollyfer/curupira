@@ -7,6 +7,8 @@
  */
 export function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined') return false
+  // Old WebViews and test DOMs have a `window` and no `matchMedia`.
+  if (typeof window.matchMedia !== 'function') return false
 
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
