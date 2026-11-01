@@ -124,10 +124,10 @@ export function ReportsPage(): React.JSX.Element {
             className="w-full"
             aria-label={m.panel_reports_views_label()}
           >
-            <TabsTrigger value="list" className="min-h-11 text-sm">
+            <TabsTrigger value="list" className="min-h-11 text-sm text-foreground">
               {m.panel_reports_view_list()}
             </TabsTrigger>
-            <TabsTrigger value="map" className="min-h-11 text-sm">
+            <TabsTrigger value="map" className="min-h-11 text-sm text-foreground">
               {m.panel_reports_view_map()}
             </TabsTrigger>
           </TabsList>

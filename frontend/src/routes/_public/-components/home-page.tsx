@@ -1,10 +1,4 @@
-import {
-  CameraIcon,
-  ListChecksIcon,
-  MapPinIcon,
-  PhoneCallIcon,
-  WarningCircleIcon,
-} from '@phosphor-icons/react'
+import { PhoneCallIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { Link, getRouteApi } from '@tanstack/react-router'
 import type * as React from 'react'
@@ -104,7 +98,7 @@ export function HomePage(): React.JSX.Element {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-card p-5 text-card-foreground shadow-card-elevated md:p-6 lg:p-8">
+          <div className="rounded-2xl bg-card p-5 text-card-foreground shadow-card-elevated md:p-6 lg:p-8">
             {neighborhoodId === undefined && (
               <div
                 className="flex flex-col gap-4"
@@ -182,7 +176,7 @@ export function HomePage(): React.JSX.Element {
       </div>
 
       <section className="page-container pt-10 lg:pt-14">
-        <div className="stage-band flex flex-col gap-4 rounded-3xl p-6 md:flex-row md:items-center md:justify-between md:gap-10 md:p-8 lg:p-12">
+        <div className="stage-band flex flex-col gap-4 rounded-2xl p-6 md:flex-row md:items-center md:justify-between md:gap-10 md:p-8 lg:p-12">
           <div className="flex max-w-xl flex-col gap-2">
             <h2 className="text-fluid-section font-extrabold tracking-tight text-balance">
               {m.home_report_title()}
@@ -203,50 +197,32 @@ export function HomePage(): React.JSX.Element {
         </div>
       </section>
 
-      <section className="page-container flex flex-col gap-5 py-10 lg:gap-6 lg:py-14">
-        <h2 className="text-fluid-section font-extrabold tracking-tight">
+      {/* The steps are a plain list with weight on the titles, and the emergency number
+          sits beside them: on a wide screen the left column carries the one thing that
+          cannot wait (193), the right one the routine. No icon tiles, no cards. */}
+      <section className="page-container grid grid-cols-[minmax(0,1fr)] gap-x-16 gap-y-6 py-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-y-8 lg:py-16">
+        <h2 className="text-fluid-section font-extrabold tracking-tight lg:col-start-1 lg:row-start-1">
           {m.home_how_title()}
         </h2>
-        {/* A divided list on a phone, three cards in a row from `md`. */}
-        <ol className="flex flex-col divide-y md:grid md:grid-cols-3 md:gap-5 md:divide-y-0">
+        <ol className="flex flex-col lg:col-start-2 lg:row-span-2 lg:row-start-1">
           {[
-            {
-              icon: ListChecksIcon,
-              title: m.home_how_1_title(),
-              text: m.home_how_1_text(),
-            },
-            {
-              icon: CameraIcon,
-              title: m.home_how_2_title(),
-              text: m.home_how_2_text(),
-            },
-            {
-              icon: MapPinIcon,
-              title: m.home_how_3_title(),
-              text: m.home_how_3_text(),
-            },
+            { title: m.home_how_1_title(), text: m.home_how_1_text() },
+            { title: m.home_how_2_title(), text: m.home_how_2_text() },
+            { title: m.home_how_3_title(), text: m.home_how_3_text() },
           ].map((item) => (
             <li
               key={item.title}
-              className="flex gap-4 py-4 first:pt-0 last:pb-0 md:flex-col md:rounded-2xl md:bg-card md:p-5 md:shadow-card md:first:pt-5 md:last:pb-5"
+              className="flex flex-col gap-1 border-t py-5 first:border-t-2 first:border-foreground/80 first:pt-4 last:pb-0"
             >
-              <span
-                aria-hidden="true"
-                className="grid size-12 shrink-0 place-items-center rounded-xl bg-accent text-accent-foreground"
-              >
-                <item.icon className="size-6" weight="fill" />
-              </span>
-              <div className="flex flex-col gap-0.5">
-                <h3 className="text-lg font-bold">{item.title}</h3>
-                <p className="text-base text-muted-foreground">{item.text}</p>
-              </div>
+              <h3 className="text-xl font-bold lg:text-2xl">{item.title}</h3>
+              <p className="text-lg text-muted-foreground">{item.text}</p>
             </li>
           ))}
         </ol>
 
         <aside
           aria-labelledby="emergency-title"
-          className="flex gap-4 rounded-2xl bg-badge-alert p-4 text-badge-alert-foreground md:p-6"
+          className="flex gap-4 rounded-xl bg-badge-alert p-5 text-badge-alert-foreground lg:col-start-1 lg:row-start-2 lg:self-start"
         >
           <PhoneCallIcon
             aria-hidden="true"

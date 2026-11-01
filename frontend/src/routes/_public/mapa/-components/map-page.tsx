@@ -14,7 +14,7 @@ import { m } from '#/paraglide/messages'
 const route = getRouteApi('/_public/mapa/')
 
 const CHIP =
-  'inline-flex min-h-11 shrink-0 snap-start whitespace-nowrap items-center gap-2 rounded-xl bg-card px-4 text-base font-semibold shadow-card outline-none transition-shadow focus-visible:ring-4 focus-visible:ring-ring/60 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground motion-reduce:transition-none'
+  'inline-flex min-h-11 shrink-0 snap-start whitespace-nowrap items-center gap-2 rounded-lg border bg-card px-4 text-base font-semibold outline-none transition-colors hover:bg-accent focus-visible:ring-4 focus-visible:ring-ring/60 data-[active=true]:border-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground motion-reduce:transition-none'
 
 export function MapPage(): React.JSX.Element {
   const { kind } = route.useSearch()
@@ -96,14 +96,14 @@ export function MapPage(): React.JSX.Element {
           {reports.length === 0 && (
             <p className="text-base text-muted-foreground">{m.map_empty()}</p>
           )}
-          <ul className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-1">
+          <ul className="grid grid-cols-1 gap-x-8 md:grid-cols-2 lg:grid-cols-1">
             {reports.map((report) => {
               const Icon = REPORT_KIND_ICONS[report.kind]
 
               return (
                 <li
                   key={report.id}
-                  className="flex items-center justify-between gap-3 rounded-2xl bg-card p-4 shadow-card"
+                  className="flex items-center justify-between gap-3 border-t py-3"
                 >
                   <div className="flex min-w-0 items-center gap-3">
                     <span

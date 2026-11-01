@@ -1,4 +1,3 @@
-import { MapPinIcon } from '@phosphor-icons/react'
 import { Link, getRouteApi } from '@tanstack/react-router'
 import * as React from 'react'
 
@@ -78,18 +77,9 @@ export function TrackPage(): React.JSX.Element {
         </React.Suspense>
       )}
       {!protocol && (
-        <aside className="hidden gap-4 rounded-3xl bg-surface-warm p-8 lg:flex">
-          <MapPinIcon
-            aria-hidden="true"
-            weight="fill"
-            className="mt-1 size-8 shrink-0 text-primary"
-          />
-          <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-bold">{m.home_how_3_title()}</h2>
-            <p className="text-lg text-muted-foreground">
-              {m.home_how_3_text()}
-            </p>
-          </div>
+        <aside className="hidden flex-col gap-2 border-t-2 border-foreground/80 pt-4 lg:flex">
+          <h2 className="text-xl font-bold">{m.home_how_3_title()}</h2>
+          <p className="text-lg text-muted-foreground">{m.home_how_3_text()}</p>
         </aside>
       )}
     </div>

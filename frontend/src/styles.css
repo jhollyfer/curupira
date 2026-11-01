@@ -708,7 +708,7 @@
     min-height: 2.75rem;
   }
 
-  .panel-touch [data-slot='button'] {
+  .panel-touch :is(a, button)[class*='group/button'] {
     min-width: 2.75rem;
     min-height: 2.75rem;
   }

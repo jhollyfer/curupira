@@ -1,4 +1,3 @@
-import { MegaphoneIcon } from '@phosphor-icons/react'
 import * as React from 'react'
 
 import { cn } from '#/lib/cn'
@@ -20,7 +19,11 @@ type NoticeListItemsProps = Readonly<{
   className?: string
 }>
 
-/** The notices as a list of cards. Renders nothing when there is nothing to show. */
+/**
+ * The notices as a list of entries, each opened by a heavy rule: a notice is a line in
+ * a bulletin board, not a card, so there is no tile, no icon and no shadow to compete
+ * with its title. Renders nothing when there is nothing to show.
+ */
 export function NoticeListItems({
   limit,
   as: Heading = 'h3',
@@ -39,32 +42,24 @@ export function NoticeListItems({
       {shown.map((notice) => (
         <li
           key={notice.id}
-          className="flex gap-4 rounded-2xl bg-card p-4 shadow-card"
+          className="flex min-w-0 flex-col gap-1.5 border-t-2 border-foreground/80 pt-3"
         >
-          <span
-            aria-hidden="true"
-            className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent text-accent-foreground"
-          >
-            <MegaphoneIcon className="size-6" weight="fill" />
-          </span>
-          <div className="flex min-w-0 flex-col gap-1">
-            <Heading className="text-lg leading-snug font-bold text-balance">
-              {notice.title}
-            </Heading>
-            <p className="text-base text-pretty text-muted-foreground">
-              {notice.body}
+          <Heading className="text-lg leading-snug font-bold text-balance">
+            {notice.title}
+          </Heading>
+          <p className="text-base text-pretty text-muted-foreground">
+            {notice.body}
+          </p>
+          {notice.endsAt && (
+            <p className="text-sm font-semibold text-foreground">
+              {m.notice_until({
+                date: formatTownDate(notice.endsAt, {
+                  day: 'numeric',
+                  month: 'long',
+                }),
+              })}
             </p>
-            {notice.endsAt && (
-              <p className="text-sm font-medium text-muted-foreground">
-                {m.notice_until({
-                  date: formatTownDate(notice.endsAt, {
-                    day: 'numeric',
-                    month: 'long',
-                  }),
-                })}
-              </p>
-            )}
-          </div>
+          )}
         </li>
       ))}
     </ul>

@@ -124,7 +124,7 @@ export function WasteCalendarStrip({
             <li
               key={day.date}
               data-today={index === 0}
-              className="relative flex w-16 shrink-0 snap-start flex-col items-center gap-1.5 rounded-2xl bg-card px-1 py-3 shadow-card data-[today=true]:bg-primary data-[today=true]:text-primary-foreground md:w-auto md:py-4"
+              className="relative flex w-16 shrink-0 snap-start flex-col items-center gap-1.5 rounded-xl border bg-card px-1 py-3 data-[today=true]:border-primary data-[today=true]:bg-primary data-[today=true]:text-primary-foreground md:w-auto md:py-4"
             >
               <span className="text-xs font-bold uppercase">
                 {date.toLocaleString({ weekday: 'short' })}
@@ -249,7 +249,7 @@ export function WasteCalendarMonth({
                       data-outside={!cell.inMonth}
                       data-today={cell.date === today}
                       onClick={() => select(cell.date)}
-                      className="flex min-h-14 w-full flex-col items-center justify-start gap-1 rounded-xl bg-card px-0.5 py-1.5 text-base font-bold lg:min-h-20 lg:py-2.5 lg:text-lg tabular-nums shadow-card transition-colors outline-none hover:bg-accent focus-visible:ring-4 focus-visible:ring-ring/60 aria-pressed:bg-primary aria-pressed:text-primary-foreground data-[outside=true]:opacity-40 data-[today=true]:shadow-[0_0_0_2px_var(--primary)] motion-reduce:transition-none"
+                      className="flex min-h-14 w-full flex-col items-center justify-start gap-1 rounded-lg border bg-card px-0.5 py-1.5 text-base font-bold lg:min-h-20 lg:py-2.5 lg:text-lg tabular-nums transition-colors outline-none hover:bg-accent focus-visible:ring-4 focus-visible:ring-ring/60 aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground data-[outside=true]:opacity-40 data-[today=true]:shadow-[0_0_0_2px_var(--primary)] motion-reduce:transition-none"
                     >
                       <span aria-hidden="true">{date.day}</span>
                       <DayDots day={cell} />
