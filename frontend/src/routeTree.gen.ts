@@ -27,6 +27,8 @@ import { Route as PublicMapaIndexRouteImport } from './routes/_public/mapa/index
 import { Route as PublicPrivacidadeIndexRouteImport } from './routes/_public/privacidade/index'
 import { Route as PublicSobreIndexRouteImport } from './routes/_public/sobre/index'
 import { Route as PublicTermosIndexRouteImport } from './routes/_public/termos/index'
+import { Route as PrivateGestaoReportsIndexRouteImport } from './routes/_private/gestao/reports/index'
+import { Route as PrivateGestaoReportsIdIndexRouteImport } from './routes/_private/gestao/reports/$id/index'
 
 const AuthenticationLayoutRoute = AuthenticationLayoutRouteImport.update({
   id: '/_authentication',
@@ -136,6 +138,24 @@ const PublicTermosIndexRoute = PublicTermosIndexRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_public/termos/index.lazy').then((d) => d.Route),
 )
+const PrivateGestaoReportsIndexRoute =
+  PrivateGestaoReportsIndexRouteImport.update({
+    id: '/gestao/reports/',
+    path: '/gestao/reports/',
+    getParentRoute: () => PrivateLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_private/gestao/reports/index.lazy').then((d) => d.Route),
+  )
+const PrivateGestaoReportsIdIndexRoute =
+  PrivateGestaoReportsIdIndexRouteImport.update({
+    id: '/gestao/reports/$id/',
+    path: '/gestao/reports/$id/',
+    getParentRoute: () => PrivateLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_private/gestao/reports/$id/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -153,6 +173,8 @@ export interface FileRoutesByFullPath {
   '/privacidade/': typeof PublicPrivacidadeIndexRoute
   '/sobre/': typeof PublicSobreIndexRoute
   '/termos/': typeof PublicTermosIndexRoute
+  '/gestao/reports/': typeof PrivateGestaoReportsIndexRoute
+  '/gestao/reports/$id/': typeof PrivateGestaoReportsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -170,6 +192,8 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PublicPrivacidadeIndexRoute
   '/sobre': typeof PublicSobreIndexRoute
   '/termos': typeof PublicTermosIndexRoute
+  '/gestao/reports': typeof PrivateGestaoReportsIndexRoute
+  '/gestao/reports/$id': typeof PrivateGestaoReportsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -191,6 +215,8 @@ export interface FileRoutesById {
   '/_public/privacidade/': typeof PublicPrivacidadeIndexRoute
   '/_public/sobre/': typeof PublicSobreIndexRoute
   '/_public/termos/': typeof PublicTermosIndexRoute
+  '/_private/gestao/reports/': typeof PrivateGestaoReportsIndexRoute
+  '/_private/gestao/reports/$id/': typeof PrivateGestaoReportsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -210,6 +236,8 @@ export interface FileRouteTypes {
     | '/privacidade/'
     | '/sobre/'
     | '/termos/'
+    | '/gestao/reports/'
+    | '/gestao/reports/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -227,6 +255,8 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/sobre'
     | '/termos'
+    | '/gestao/reports'
+    | '/gestao/reports/$id'
   id:
     | '__root__'
     | '/_authentication'
@@ -247,6 +277,8 @@ export interface FileRouteTypes {
     | '/_public/privacidade/'
     | '/_public/sobre/'
     | '/_public/termos/'
+    | '/_private/gestao/reports/'
+    | '/_private/gestao/reports/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -386,6 +418,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicTermosIndexRouteImport
       parentRoute: typeof PublicLayoutRoute
     }
+    '/_private/gestao/reports/': {
+      id: '/_private/gestao/reports/'
+      path: '/gestao/reports'
+      fullPath: '/gestao/reports/'
+      preLoaderRoute: typeof PrivateGestaoReportsIndexRouteImport
+      parentRoute: typeof PrivateLayoutRoute
+    }
+    '/_private/gestao/reports/$id/': {
+      id: '/_private/gestao/reports/$id/'
+      path: '/gestao/reports/$id'
+      fullPath: '/gestao/reports/$id/'
+      preLoaderRoute: typeof PrivateGestaoReportsIdIndexRouteImport
+      parentRoute: typeof PrivateLayoutRoute
+    }
   }
 }
 
@@ -402,10 +448,14 @@ const AuthenticationLayoutRouteWithChildren =
 
 interface PrivateLayoutRouteChildren {
   PrivateGestaoIndexRoute: typeof PrivateGestaoIndexRoute
+  PrivateGestaoReportsIndexRoute: typeof PrivateGestaoReportsIndexRoute
+  PrivateGestaoReportsIdIndexRoute: typeof PrivateGestaoReportsIdIndexRoute
 }
 
 const PrivateLayoutRouteChildren: PrivateLayoutRouteChildren = {
   PrivateGestaoIndexRoute: PrivateGestaoIndexRoute,
+  PrivateGestaoReportsIndexRoute: PrivateGestaoReportsIndexRoute,
+  PrivateGestaoReportsIdIndexRoute: PrivateGestaoReportsIdIndexRoute,
 }
 
 const PrivateLayoutRouteWithChildren = PrivateLayoutRoute._addFileChildren(

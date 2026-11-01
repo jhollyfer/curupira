@@ -12,6 +12,7 @@ import { breadcrumbTitle, buildBreadcrumbs } from '#/lib/breadcrumbs'
 import { m } from '#/paraglide/messages'
 
 import { Header } from './-components/header'
+import { PanelNotFound } from './-components/panel-not-found'
 import { Sidebar } from './-components/sidebar'
 
 /**
@@ -76,6 +77,7 @@ export const Route = createFileRoute('/_private')({
       { name: 'robots', content: 'noindex, nofollow' },
     ],
   }),
+  notFoundComponent: PanelNotFound,
   component: RouteComponent,
 })
 

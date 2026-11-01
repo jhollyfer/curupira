@@ -128,7 +128,7 @@ export function TableGrid<TRow extends RowData>({
               className={cn(onRowClick && 'cursor-pointer')}
               onClick={() => onRowClick?.(row.original)}
             >
-              {row.getVisibleCells().map((cell) => (
+              {row.getAllCells().map((cell) => (
                 <TableCell
                   key={cell.id}
                   className={cell.column.columnDef.meta?.className}

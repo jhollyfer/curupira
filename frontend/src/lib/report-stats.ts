@@ -1,4 +1,3 @@
-import type { ReportKind, ReportStatus } from '@curupira/shared'
 import { DateTime } from 'luxon'
 
 import { TOWN_TIME_ZONE } from './i18n'
@@ -49,9 +48,9 @@ export function axisCeiling(peak: number): number {
   return Math.ceil(peak / 2) * 2
 }
 
-export function countOf<TKey extends ReportKind | ReportStatus>(
-  record: Partial<Record<TKey, number>>,
-  key: TKey,
+export function countOf(
+  record: Readonly<Partial<Record<string, number>>>,
+  key: string,
 ): number {
   return record[key] ?? 0
 }
