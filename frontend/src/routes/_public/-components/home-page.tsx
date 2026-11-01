@@ -38,6 +38,14 @@ import { NextCollection } from './next-collection'
 
 const route = getRouteApi('/_public/')
 
+/**
+ * The call to action on the deep green band: always the light fill with dark green text,
+ * in both themes. The `secondary` token flips dark in dark mode and would sink into the
+ * band, and this is the one button the whole page exists for.
+ */
+const STAGE_CTA =
+  'bg-stage-foreground text-stage hover:bg-stage-foreground/90 hover:text-stage'
+
 /** The page's content column: the same width on every section. */
 const CONTAINER = 'mx-auto w-full max-w-6xl px-4'
 
@@ -80,6 +88,7 @@ export function HomePage(): React.JSX.Element {
               <Button
                 size="touch-lg"
                 variant="secondary"
+                className={STAGE_CTA}
                 render={<Link to="/denunciar" />}
               >
                 <WarningCircleIcon aria-hidden="true" weight="fill" />
@@ -172,6 +181,7 @@ export function HomePage(): React.JSX.Element {
           <Button
             size="touch-lg"
             variant="secondary"
+            className={STAGE_CTA}
             render={<Link to="/denunciar" />}
           >
             <WarningCircleIcon aria-hidden="true" weight="fill" />

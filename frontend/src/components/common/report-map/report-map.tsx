@@ -1,5 +1,6 @@
 import { ClientOnly } from '@tanstack/react-router'
 import * as React from 'react'
+import { ErrorBoundary } from 'react-error-boundary'
 
 import { Skeleton } from '#/components/ui/skeleton'
 import { cn } from '#/lib/cn'
@@ -52,6 +53,15 @@ export function ReportMap({
     />
   )
 
+  const unavailable = (
+    <p
+      role="alert"
+      className="grid size-full place-items-center p-6 text-center text-base font-semibold text-muted-foreground"
+    >
+      {m.map_unavailable()}
+    </p>
+  )
+
   return (
     <ReportMapProvider value={{ center, zoom, label }}>
       <div
@@ -62,9 +72,14 @@ export function ReportMap({
         )}
       >
         <ClientOnly fallback={placeholder}>
-          <React.Suspense fallback={placeholder}>
-            <ReportMapCanvas>{children}</ReportMapCanvas>
-          </React.Suspense>
+          {/* The map chunk is a network request like any other, and a resident with no
+              signal may never have opened a map: without this boundary the failed import
+              would take the whole screen down with it (the form must still work). */}
+          <ErrorBoundary fallback={unavailable}>
+            <React.Suspense fallback={placeholder}>
+              <ReportMapCanvas>{children}</ReportMapCanvas>
+            </React.Suspense>
+          </ErrorBoundary>
         </ClientOnly>
       </div>
     </ReportMapProvider>

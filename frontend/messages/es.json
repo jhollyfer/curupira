@@ -211,6 +211,7 @@
   "map_intro": "Mira dónde hay ocurrencias en curso y ya resueltas. Aparece solo el tipo, la situación y el día.",
   "map_label": "Mapa con las ocurrencias",
   "map_loading": "Cargando el mapa…",
+  "map_unavailable": "El mapa no cargó. Sin conexión, usa tu ubicación para marcar el lugar.",
   "map_filter_label": "Filtrar por tipo",
   "map_filter_all": "Todas",
   "map_privacy": "El mapa no muestra quién hizo la denuncia, ni foto, ni descripción.",

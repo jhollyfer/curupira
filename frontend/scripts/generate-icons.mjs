@@ -63,7 +63,10 @@ const out = (name, data) => writeFile(join(PUBLIC, name), data)
 
 const png48 = await shot(mark(48), 48, 48, true)
 await out('favicon.ico', ico(png48, 48))
-await out('apple-touch-icon.png', await shot(mark(180, 0).replace('transparent', GREEN), 180, 180))
+await out(
+  'apple-touch-icon.png',
+  await shot(mark(180, 0).replace('transparent', GREEN), 180, 180),
+)
 await out('icon-192.png', await shot(mark(192), 192, 192, true))
 await out('icon-512.png', await shot(mark(512), 512, 512, true))
 // Maskable: the mark inside the 80% safe zone over a solid green square, so any

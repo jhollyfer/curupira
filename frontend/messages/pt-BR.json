@@ -211,6 +211,7 @@
   "map_intro": "Veja onde há ocorrências em andamento e já resolvidas. Aparece só o tipo, a situação e o dia.",
   "map_label": "Mapa com as ocorrências",
   "map_loading": "Carregando o mapa…",
+  "map_unavailable": "O mapa não carregou. Sem conexão, use sua localização para marcar o lugar.",
   "map_filter_label": "Filtrar por tipo",
   "map_filter_all": "Todas",
   "map_privacy": "O mapa não mostra quem fez a denúncia, nem foto, nem descrição.",

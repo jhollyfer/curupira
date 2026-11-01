@@ -211,6 +211,7 @@
   "map_intro": "See where occurrences are in progress and already resolved. Only the type, status and day are shown.",
   "map_label": "Map with the occurrences",
   "map_loading": "Loading the map…",
+  "map_unavailable": "The map did not load. With no connection, use your location to mark the place.",
   "map_filter_label": "Filter by type",
   "map_filter_all": "All",
   "map_privacy": "The map does not show who made the report, nor photo, nor description.",

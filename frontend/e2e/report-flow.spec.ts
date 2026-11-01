@@ -25,11 +25,17 @@ test.describe('report and follow', () => {
     await page.getByRole('button', { name: 'Continuar' }).click()
 
     // Step 2: one photo (the picker takes a file; no camera in CI) and the GPS pin.
-    await page.locator('input[type=file]').last().setInputFiles({
-      name: 'foto.jpg',
-      mimeType: 'image/jpeg',
-      buffer: Buffer.from('/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=', 'base64'),
-    })
+    await page
+      .locator('input[type=file]')
+      .last()
+      .setInputFiles({
+        name: 'foto.jpg',
+        mimeType: 'image/jpeg',
+        buffer: Buffer.from(
+          '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=',
+          'base64',
+        ),
+      })
     await expect(page.getByText(/lugar marcado/i)).toBeVisible()
     await page.getByRole('button', { name: 'Continuar' }).click()
 
@@ -59,16 +65,24 @@ test.describe('report and follow', () => {
 
     await page.getByText('Descarte irregular de lixo').click()
     await page.getByRole('button', { name: 'Continuar' }).click()
-    await page.locator('input[type=file]').last().setInputFiles({
-      name: 'foto.png',
-      mimeType: 'image/png',
-      buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'),
-    })
+    await page
+      .locator('input[type=file]')
+      .last()
+      .setInputFiles({
+        name: 'foto.png',
+        mimeType: 'image/png',
+        buffer: Buffer.from(
+          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+          'base64',
+        ),
+      })
     await page.getByRole('button', { name: 'Continuar' }).click()
     await page.getByRole('button', { name: 'Enviar denúncia' }).click()
 
     await expect(
-      page.getByText(/salva no aparelho e será enviada quando voltar a conexão/i),
+      page.getByText(
+        /salva no aparelho e será enviada quando voltar a conexão/i,
+      ),
     ).toBeVisible()
 
     // The connection returns: the queue leaves by itself and the protocol shows as a toast.
