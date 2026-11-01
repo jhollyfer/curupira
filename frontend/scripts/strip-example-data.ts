@@ -17,7 +17,11 @@ import type { Plugin } from 'vite'
 const DATA_DIR = '/src/data/'
 
 /** The text of a module-export name: an identifier, or a string literal (`export { x as 'a-b' }`). */
-function textOf(name: { type: string; name?: string; value?: unknown }): string {
+function textOf(name: {
+  type: string
+  name?: string
+  value?: unknown
+}): string {
   if (typeof name.name === 'string') return name.name
   if (typeof name.value === 'string') return name.value
 
@@ -37,7 +41,10 @@ export function stripExampleData(dataSource: string | undefined): Plugin {
       const names: Array<string> = []
 
       for (const node of this.parse(code).body) {
-        if (node.type !== 'ExportNamedDeclaration' || node.exportKind === 'type') {
+        if (
+          node.type !== 'ExportNamedDeclaration' ||
+          node.exportKind === 'type'
+        ) {
           continue
         }
 
