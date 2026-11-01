@@ -91,6 +91,7 @@ describe('TableGrid', () => {
     const [first] = within(
       screen.getByRole('list', { name: 'Bairros' }),
     ).getAllByRole('listitem')
+    if (!first) throw new Error('no card rendered')
     expect(within(first).getByRole('link', { name: 'Centro' })).toBeTruthy()
     expect(within(first).getByRole('button', { name: 'Abrir' })).toBeTruthy()
     expect(within(first).getByText('Cidade')).toBeTruthy()
