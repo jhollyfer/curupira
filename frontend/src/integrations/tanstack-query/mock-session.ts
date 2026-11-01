@@ -48,22 +48,30 @@ export function mockProfile(): AccountProfileShowResponse {
   return findUser(account.id)
 }
 
-export function mockSignIn(email: string, password: string): void {
-  const account = mockAccountByEmail(email)
+function invalidCredentials(): HTTPError {
+  return new HTTPError({
+    message: 'E-mail ou senha incorretos',
+    status: 401,
+    code: 'INVALID_CREDENTIALS',
+    errors: { root: 'E-mail ou senha incorretos' },
+  })
+}
 
-  if (!enabled || !account || password !== MOCK_PASSWORD) {
-    throw new HTTPError({
-      message: 'E-mail ou senha incorretos',
-      status: 401,
-      code: 'INVALID_CREDENTIALS',
-      errors: { root: 'E-mail ou senha incorretos' },
-    })
-  }
+export function mockSignIn(email: string, password: string): void {
+  // The `enabled` check comes first and alone: written as `!enabled || !account || ...`
+  // the account lookup still ran before it, so the bundler kept the accounts and the
+  // example password in the production bundle even though no path could use them.
+  if (!enabled) throw invalidCredentials()
+
+  const account = mockAccountByEmail(email)
+  if (!account || password !== MOCK_PASSWORD) throw invalidCredentials()
 
   document.cookie = `${MOCK_SESSION_COOKIE}=${account.id}; path=/; SameSite=Lax`
 }
 
 export function mockSignOut(): void {
+  if (!enabled) return
+
   document.cookie = `${MOCK_SESSION_COOKIE}=; path=/; max-age=0; SameSite=Lax`
 }
 
