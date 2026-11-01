@@ -55,3 +55,7 @@ todos.json
 
 # Worktrees de agentes do Claude Code.
 .claude/worktrees/
+
+# Carimbo da revisao: o CI o grava antes do build (main-build-frontend.yml).
+# Nunca versionado, senao o smoke test de /revision.txt confere um sha velho.
+frontend/public/revision.txt
