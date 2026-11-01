@@ -1,34 +1,37 @@
 # Memória do projeto
 
-**<Projeto>** · onde a gente está, para a próxima conversa
+**Curupira** · onde a gente está, para a próxima conversa
 
 > O agente lê **no início** de toda sessão e atualiza **no fim**. Curto: é um ponto de
 > retomada, não um diário. Histórico vai para `CHANGELOG.md` e `DECISIONS.md`.
 
 | Atualizado | Fase atual | Progresso | Status |
 |---|---|---|---|
-| AAAA-MM-DD HH:MM | <2 · Pedidos> | <21%> | <Em desenvolvimento · MVP v1.0> |
+| 2026-11-01 | 1 · Fundação | 15% | Em desenvolvimento · MVP v1.0 |
 
 ## Já feito
 
-- <Projeto, banco e login prontos>
-- <Cardápio publicado>
+- Régua sincronizada, workspace pnpm, husky, commitlint e workflows de CI/CD
+- `shared/` com enums, validators Zod e responses do domínio, verde (check e 21 testes)
+- `AGENTS.md`, `CLAUDE.md`, PRD, fluxos, decisões e tarefas
 
 ## Parou em
 
-<Uma ou duas frases concretas, com arquivo e o que falta.>
-Ex.: Tela do carrinho: falta conferir o estoque antes de fechar o pedido
-(`app/features/orders/create-order/create-order.use-case.ts`).
+Backend e frontend sendo reescritos a partir do molde do interclasse (o starter foi descartado). `docs/ARCHITECTURE.md`, `ENV.md`, `SECURITY.md`, `TEST-PLAN.md`, `DESIGN.md`, `RULES.md` e `CHANGELOG.md` ainda são modelo: preencher com o que o código real ficar sendo.
 
 ## Próximos passos
 
-1. <próxima ação, na ordem>
-2.
+1. Fechar backend e app do morador (Fases 2 e 3) e rodar `pnpm check` na raiz.
+2. Painel `/gestao` (Fase 4) em cima da base do frontend.
+3. Trocar os mocks de `src/data` pela API e rodar o E2E.
+4. Preencher os docs pendentes.
 
 ## Contexto importante
 
-- <coisa que não está no código e que a próxima sessão precisa saber — ex.: cliente pediu
-  para não mostrar preço no cardápio público até AAAA-MM-DD>
+- Bairros e cronograma do seed são de exemplo: a prefeitura confere antes de abrir.
+- Commits de migração usam `HUSKY=0` enquanto `backend/` e `frontend/` não passam no `check`; depois disso o gate volta inteiro.
+- Branch de trabalho: `feat/curupira-plataforma` (a sessão sugeria um nome com prefixo de agente, proibido pela régua).
+- Toolchain local: Node 24 e pnpm 12 instalados num prefixo à parte, o sistema tem Node 22 e pnpm 10.
 
 ## Lições
 
@@ -43,8 +46,8 @@ Ex.: Tela do carrinho: falta conferir o estoque antes de fechar o pedido
 
 | Problema | Onde | Contorno |
 |---|---|---|
-| <…> | <arquivo/tela> | <…> |
+| Leaflet, vite-plugin-pwa, sharp sem entrada na `_doc-lib` | `docs/DECISIONS.md` #3 e #4 | propor ao upstream |
 
 ## Links úteis
 
-- Repositório: <url> · Produção: <url> · Design: <url>
+- Repositório: `jhollyfer/curupira`
