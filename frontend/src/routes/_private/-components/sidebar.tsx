@@ -73,7 +73,7 @@ function NavigationItem({
         <span>{label}</span>
       </SidebarMenuButton>
       {Boolean(badge) && (
-        <SidebarMenuBadge className="bg-primary text-primary-foreground">
+        <SidebarMenuBadge className="bg-primary text-primary-foreground peer-data-active/menu-button:text-primary-foreground">
           <span aria-hidden="true">{badge}</span>
           <span className="sr-only">
             {m.panel_menu_untreated_count({ count: badge ?? 0 })}
@@ -95,8 +95,16 @@ export function Sidebar(): React.JSX.Element {
     '/gestao/reports': untreated,
   }
 
+  // `role="navigation"` on the container, not on an inner `<nav>`: the brand and the
+  // sign-out button sit in the header and footer, and axe's `region` rule wants every
+  // piece of the sidebar inside a landmark.
   return (
-    <Root collapsible="icon" variant="sidebar">
+    <Root
+      collapsible="icon"
+      variant="sidebar"
+      role="navigation"
+      aria-label={m.panel_title()}
+    >
       <SidebarHeader className="h-14 justify-center border-b">
         <SidebarMenu>
           <SidebarMenuItem>
