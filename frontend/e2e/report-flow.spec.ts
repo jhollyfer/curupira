@@ -1,4 +1,11 @@
-import { PROTOCOL_PATTERN } from '@curupira/shared'
+import {
+  PROTOCOL_PATTERN,
+  StorefrontReportMapResponse,
+  StorefrontScheduleShowResponse,
+  paginatedResponse,
+  z,
+} from '@curupira/shared'
+import type { WasteType } from '@curupira/shared'
 import type { APIRequestContext, Page } from '@playwright/test'
 
 import { API_URL, apiClient } from './support/api'
@@ -100,7 +107,9 @@ test.describe('resident', () => {
     const schedules = await request.get(
       `${API_URL}/storefront/schedules?perPage=100&neighborhoodId=${centro.id}`,
     )
-    const { data: passes } = await schedules.json()
+    const { data: passes } = paginatedResponse(
+      StorefrontScheduleShowResponse,
+    ).parse(await schedules.json())
     expect(passes.length).toBeGreaterThan(0)
 
     const labels = {
@@ -108,18 +117,13 @@ test.describe('resident', () => {
       RECYCLABLE: 'Recicláveis',
       BULKY: 'Móveis e volumosos',
       DEBRIS: 'Entulho',
-    } as const
-    const kinds = new Set<string>(
-      passes.map((pass: { wasteType: keyof typeof labels }) => pass.wasteType),
-    )
+    } satisfies Record<WasteType, string>
     const shown = await page
       .locator('section[aria-labelledby=next-collection]')
       .innerText()
-    expect(
-      [...kinds].some((kind) =>
-        shown.includes(labels[kind as keyof typeof labels]),
-      ),
-    ).toBe(true)
+    expect(passes.some((pass) => shown.includes(labels[pass.wasteType]))).toBe(
+      true,
+    )
   })
 
   test('files an anonymous report with a real photo, follows it and the panel answers it', async ({
@@ -151,7 +155,7 @@ test.describe('resident', () => {
     const pins = async () => {
       const response = await request.get(`${API_URL}/storefront/reports/map`)
 
-      return (await response.json()) as Array<{ id: string }>
+      return z.array(StorefrontReportMapResponse).parse(await response.json())
     }
     expect((await pins()).map((pin) => pin.id)).not.toContain(stored.id)
     await page.goto('/mapa')
@@ -294,13 +298,14 @@ test.describe('resident', () => {
     // The limiter runs before the validator, so an empty body spends the quota the same
     // way a real report does, without needing a photo per attempt.
     const resident = await apiClient(playwright)
-    let refusedAt = 0
+    const statuses: Array<number> = []
 
-    for (let attempt = 1; attempt <= 11 && refusedAt === 0; attempt += 1) {
+    for (let attempt = 1; attempt <= 11; attempt += 1) {
       const response = await resident.post('/storefront/reports', { data: {} })
-      if (response.status() === 429) refusedAt = attempt
+      statuses.push(response.status())
     }
     await resident.dispose()
+    const refusedAt = statuses.indexOf(429) + 1
 
     // With a clean bucket the refusal is the 11th overall; earlier ones already spent some.
     expect(refusedAt).toBeGreaterThan(0)
