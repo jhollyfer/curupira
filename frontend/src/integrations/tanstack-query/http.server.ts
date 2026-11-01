@@ -15,8 +15,11 @@
 import {
   appendResponseHeader,
   getRequestHeader,
+  getRequestIP,
 } from '@tanstack/react-start/server'
 import { AsyncLocalStorage } from 'node:async_hooks'
+
+import { env } from '#/env'
 
 /**
  * What needs to hold per request, and not per process.
@@ -128,4 +131,58 @@ export function mergeCookieHeader(
   }
 
   return Array.from(pairs, ([name, value]) => `${name}=${value}`).join('; ')
+}
+
+const SAFE_METHODS: ReadonlySet<string> = new Set(['GET', 'HEAD', 'OPTIONS'])
+
+/**
+ * The `X-Forwarded-For` the API must see for an SSR call: the chain the visitor's request
+ * arrived with, plus the address of the peer that opened that connection.
+ *
+ * Without it the API sees Nitro's address for every server-rendered call, and the
+ * per-IP limiters (30 protocol lookups per 10 minutes on `/acompanhar`) become one bucket
+ * for the whole city. Appending, and not replacing, keeps the proxy chain: the API's
+ * `TRUSTED_PROXIES` strips the trusted hops from the right and reads the visitor.
+ * The header is only ever sent to the API (`SERVER_API_URL`), never to the browser.
+ */
+export function forwardedFor(): string | undefined {
+  try {
+    return joinForwardedFor(getRequestHeader('x-forwarded-for'), getRequestIP())
+  } catch {
+    // Outside a request cycle - test, script - there is no visitor to forward.
+    return undefined
+  }
+}
+
+/** Pure half of `forwardedFor`, exported for testing. */
+export function joinForwardedFor(
+  incoming: string | undefined,
+  peer: string | undefined,
+): string | undefined {
+  const chain = [incoming, peer].filter(Boolean).join(', ')
+
+  return chain || undefined
+}
+
+/**
+ * What an SSR call needs to look like a browser call to the API.
+ *
+ * `Origin`: the API refuses every unsafe method that carries neither an allowed `Origin`
+ * nor `Sec-Fetch-Site` (`origin.middleware.ts`), and Node's `fetch` sends neither. Without it
+ * the `POST /authentication/refresh` made on the server (F5 on a private route with the
+ * access token expired) answered 403 `ORIGIN_NOT_ALLOWED`, and the visitor was sent back to
+ * the sign-in with a valid refresh token. It is the site's own address, the one
+ * `SITE_URL` lists on the API side.
+ */
+export function serverHeaders(method: string | undefined): Record<string, string> {
+  const headers: Record<string, string> = {}
+
+  const chain = forwardedFor()
+  if (chain) headers['x-forwarded-for'] = chain
+
+  if (!SAFE_METHODS.has((method ?? 'GET').toUpperCase())) {
+    headers.origin = env.VITE_SITE_URL
+  }
+
+  return headers
 }

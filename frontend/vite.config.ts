@@ -38,9 +38,21 @@ const config = defineConfig(({ mode }) => {
     "object-src 'none'",
   ].join('; ')
 
-  let securityHeaders = {}
+  // Never stored by a browser, a proxy or the service worker: the panel and the sign-in
+  // are rendered for one session. Every locale prefix has its own entry (Nitro route
+  // rules match the path as it is served).
+  const noStore = { headers: { 'Cache-Control': 'no-store' } }
+  let securityHeaders: Record<string, unknown> = {
+    '/gestao/**': noStore,
+    '/sign-in': noStore,
+    '/en/gestao/**': noStore,
+    '/en/sign-in': noStore,
+    '/es/gestao/**': noStore,
+    '/es/sign-in': noStore,
+  }
   if (mode === 'production') {
     securityHeaders = {
+      ...securityHeaders,
       '/**': {
         headers: {
           'Content-Security-Policy': csp,
@@ -111,8 +123,14 @@ const config = defineConfig(({ mode }) => {
           cleanupOutdatedCaches: true,
           runtimeCaching: [
             {
-              // Pages already visited keep opening with no signal.
-              urlPattern: ({ request }) => request.mode === 'navigate',
+              // Pages already visited keep opening with no signal - the public ones. The panel
+              // and the sign-in render per session (the account name, the reports): caching
+              // that HTML kept it on the device after sign-out. The regex lives inside the
+              // function because workbox serializes it into `sw.js`, where nothing from
+              // this file exists; `(en|es)` are the Paraglide URL prefixes.
+              urlPattern: ({ request, url }) =>
+                request.mode === 'navigate' &&
+                !/^(?:\/(?:en|es))?\/(?:gestao|sign-in)(?:\/|$)/.test(url.pathname),
               handler: 'NetworkFirst',
               options: {
                 cacheName: 'pages',

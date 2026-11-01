@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from '@tanstack/react-router'
 
 import { useAuthenticationSignOutMutation } from '#/integrations/tanstack-query/mutations/authentication'
+import { clearPageCaches } from '#/lib/pwa'
 
 /**
  * Signing out of the dashboard: ends the session, empties the cache and goes back to the sign-in.
@@ -27,6 +28,9 @@ export function useSignOut() {
       // The whole cache, not only `account`: the dashboard, the listings and the records
       // are all data from a session that has just ceased to exist.
       queryClient.clear()
+
+      // The service worker's saved pages are session data too (`/gestao` HTML).
+      await clearPageCaches()
 
       // After clearing, not before: navigating first remounts the `_private`
       // guard over a cache that still holds the old session, and it would let

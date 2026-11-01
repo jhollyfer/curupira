@@ -14,7 +14,7 @@ const MOCK_PASSWORD = 'Exemplo@2026'
 
 export function ownerCredentials(): Credentials {
   return {
-    email: process.env.E2E_OWNER_EMAIL ?? 'marcelo.tananta@benjamin.am.gov.br',
+    email: process.env.E2E_OWNER_EMAIL ?? 'marcelo.tananta@exemplo.invalid',
     password: process.env.E2E_OWNER_PASSWORD ?? MOCK_PASSWORD,
   }
 }

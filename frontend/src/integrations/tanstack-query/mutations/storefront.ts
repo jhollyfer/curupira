@@ -15,11 +15,21 @@ import { HTTPError, request, send } from '../http'
 import { fromSource } from '../source'
 
 /**
+ * The storage answers 403 to a PUT whose signature is no longer valid. The upload URL
+ * lives only a few minutes, and a slow connection (or a phone that was suspended
+ * between the URL and the PUT) can outlive it: that case gets one fresh URL.
+ */
+const STORAGE_REFUSED = 403
+
+/**
  * Sends the photos, then the report. The browser PUTs each photo straight to the
  * storage with the presigned URL the API gave (`storefront/report-photos`) and then confirms it with
  * `complete`: the bytes never pass through the API. `photoIds` is what the report references.
  */
-async function putPhoto(uploadUrl: string, photo: Blob): Promise<void> {
+async function putPhoto(
+  uploadUrl: string,
+  photo: Blob,
+): Promise<'stored' | 'expired'> {
   let response: Response
 
   try {
@@ -36,6 +46,8 @@ async function putPhoto(uploadUrl: string, photo: Blob): Promise<void> {
     })
   }
 
+  if (response.status === STORAGE_REFUSED) return 'expired'
+
   if (!response.ok) {
     throw new HTTPError({
       message: m.report_error_upload(),
@@ -43,6 +55,35 @@ async function putPhoto(uploadUrl: string, photo: Blob): Promise<void> {
       code: 'UPLOAD_FAILED',
     })
   }
+
+  return 'stored'
+}
+
+/**
+ * Asks for an upload slot and puts the photo in it. The slot is requested here, right
+ * before the PUT, and never kept: a report waiting in the offline queue holds the photo
+ * itself, not a URL, so a queued report that goes out hours later still signs a new one.
+ * One retry with a new slot when the first one expired; a second refusal is an upload error.
+ */
+async function uploadPhoto(
+  metadata: unknown,
+  photo: Blob,
+): Promise<StorefrontReportPhotoCreateResponse> {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const slot = await request(
+      '/storefront/report-photos',
+      StorefrontReportPhotoCreateResponse,
+      { method: 'POST', body: JSON.stringify(metadata) },
+    )
+
+    if ((await putPhoto(slot.uploadUrl, photo)) === 'stored') return slot
+  }
+
+  throw new HTTPError({
+    message: m.report_error_upload(),
+    status: 502,
+    code: 'UPLOAD_FAILED',
+  })
 }
 
 async function sendToApi(
@@ -64,13 +105,7 @@ async function sendToApi(
       })
     }
 
-    const slot = await request(
-      '/storefront/report-photos',
-      StorefrontReportPhotoCreateResponse,
-      { method: 'POST', body: JSON.stringify(metadata.data) },
-    )
-
-    await putPhoto(slot.uploadUrl, photo)
+    const slot = await uploadPhoto(metadata.data, photo)
 
     // The server only trusts a photo after `complete`: it checks the size and the real
     // image type and re-encodes the file to strip EXIF/GPS. A report that references

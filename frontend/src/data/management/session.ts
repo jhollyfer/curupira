@@ -26,13 +26,13 @@ export const MOCK_ACCOUNTS: ReadonlyArray<MockAccount> = [
   {
     id: MOCK_ADMINISTRATOR_ID,
     name: 'Marcelo Tananta',
-    email: 'marcelo.tananta@benjamin.am.gov.br',
+    email: 'marcelo.tananta@exemplo.invalid',
     role: 'ADMINISTRATOR',
   },
   {
     id: MOCK_OPERATOR_ID,
     name: 'Rosângela Pinto',
-    email: 'rosangela.pinto@benjamin.am.gov.br',
+    email: 'rosangela.pinto@exemplo.invalid',
     role: 'OPERATOR',
   },
 ]

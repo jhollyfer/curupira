@@ -1,40 +1,44 @@
-import { expect, test } from 'vitest'
+import { describe, expect, it, test } from 'vitest'
+
+import { env } from '#/env'
 
 import {
+  joinForwardedFor,
   mergeCookieHeader,
   requestScope,
   runInRequestScope,
+  serverHeaders,
 } from './http.server'
 
 test('replaces the pair that already existed and preserves the rest', () => {
-  const merged = mergeCookieHeader('access-token=s:velho.aaa; outro=1', [
-    'access-token=s:novo.bbb; Path=/; HttpOnly; Max-Age=86400',
+  const merged = mergeCookieHeader('curupira-access-token=s:velho.aaa; outro=1', [
+    'curupira-access-token=s:novo.bbb; Path=/; HttpOnly; Max-Age=86400',
   ])
 
-  expect(merged).toBe('access-token=s:novo.bbb; outro=1')
+  expect(merged).toBe('curupira-access-token=s:novo.bbb; outro=1')
 })
 
 test('appends the pair that did not exist yet', () => {
   const merged = mergeCookieHeader('outro=1', [
-    'refresh-token=s:novo.ccc; Path=/; HttpOnly',
+    'curupira-refresh-token=s:novo.ccc; Path=/; HttpOnly',
   ])
 
-  expect(merged).toBe('outro=1; refresh-token=s:novo.ccc')
+  expect(merged).toBe('outro=1; curupira-refresh-token=s:novo.ccc')
 })
 
 test('starts from an absent header', () => {
   expect(
-    mergeCookieHeader(undefined, ['access-token=s:novo.bbb; Path=/']),
-  ).toBe('access-token=s:novo.bbb')
+    mergeCookieHeader(undefined, ['curupira-access-token=s:novo.bbb; Path=/']),
+  ).toBe('curupira-access-token=s:novo.bbb')
 })
 
 test('does not split the signed value at the inner `=`', () => {
   // AdonisJS's signed value is base64 and can end in `=`.
   const merged = mergeCookieHeader(undefined, [
-    'access-token=s:abc==.hmac; Path=/',
+    'curupira-access-token=s:abc==.hmac; Path=/',
   ])
 
-  expect(merged).toBe('access-token=s:abc==.hmac')
+  expect(merged).toBe('curupira-access-token=s:abc==.hmac')
 })
 
 test('when outside a request cycle, there is no scope', () => {
@@ -73,4 +77,32 @@ test('does not share scope between two concurrent runs', async () => {
 
   expect(a).toBe('a')
   expect(b).toBe('b')
+})
+
+describe('joinForwardedFor', () => {
+  it('appends the peer to the chain the request arrived with', () => {
+    expect(joinForwardedFor('203.0.113.7', '10.0.0.5')).toBe(
+      '203.0.113.7, 10.0.0.5',
+    )
+  })
+
+  it('is the peer alone when no proxy sent a chain', () => {
+    expect(joinForwardedFor(undefined, '198.51.100.2')).toBe('198.51.100.2')
+  })
+
+  it('is absent when there is neither', () => {
+    expect(joinForwardedFor(undefined, undefined)).toBeUndefined()
+  })
+})
+
+describe('serverHeaders', () => {
+  it('sends the site Origin on writes, so the API origin check passes', () => {
+    expect(serverHeaders('POST').origin).toBe(env.VITE_SITE_URL)
+    expect(serverHeaders('DELETE').origin).toBe(env.VITE_SITE_URL)
+  })
+
+  it('does not send Origin on reads', () => {
+    expect(serverHeaders('GET').origin).toBeUndefined()
+    expect(serverHeaders(undefined).origin).toBeUndefined()
+  })
 })

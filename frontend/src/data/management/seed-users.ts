@@ -16,32 +16,32 @@ export function seedUsers(): Array<ManagementUserShowResponse> {
   const rows = [
     [
       'Marcelo Tananta',
-      'marcelo.tananta@benjamin.am.gov.br',
+      'marcelo.tananta@exemplo.invalid',
       'ADMINISTRATOR',
       'ACTIVE',
     ],
     [
       'Rosângela Pinto',
-      'rosangela.pinto@benjamin.am.gov.br',
+      'rosangela.pinto@exemplo.invalid',
       'OPERATOR',
       'ACTIVE',
     ],
-    ['Edvaldo Cruz', 'edvaldo.cruz@benjamin.am.gov.br', 'OPERATOR', 'ACTIVE'],
+    ['Edvaldo Cruz', 'edvaldo.cruz@exemplo.invalid', 'OPERATOR', 'ACTIVE'],
     [
       'Lucimar Ferreira',
-      'lucimar.ferreira@benjamin.am.gov.br',
+      'lucimar.ferreira@exemplo.invalid',
       'OPERATOR',
       'INACTIVE',
     ],
     [
       'Antônia Ramos',
-      'antonia.ramos@benjamin.am.gov.br',
+      'antonia.ramos@exemplo.invalid',
       'ADMINISTRATOR',
       'ACTIVE',
     ],
     [
       'Josué Mendonça',
-      'josue.mendonca@benjamin.am.gov.br',
+      'josue.mendonca@exemplo.invalid',
       'OPERATOR',
       'ACTIVE',
     ],

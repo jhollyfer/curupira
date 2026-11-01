@@ -169,6 +169,14 @@ const inboundCookie = createIsomorphicFn()
   .client((): string | undefined => undefined)
   .server(server.inboundCookie)
 
+/**
+ * Headers only the SSR server adds (`X-Forwarded-For` of the visitor, `Origin` of the site
+ * on writes): the browser sets both itself and forbids a script from setting `Origin`.
+ */
+const serverHeaders = createIsomorphicFn()
+  .client((_method: string | undefined): Record<string, string> => ({}))
+  .server(server.serverHeaders)
+
 const applySetCookie = createIsomorphicFn()
   .client((cookie: string | undefined, _response: Response) => cookie)
   .server(server.applySetCookie)
@@ -374,6 +382,7 @@ async function perform(
       signal: deadline(init?.signal),
       headers: {
         ...headers,
+        ...serverHeaders(init?.method),
         ...(cookie && { cookie }),
         ...init?.headers,
       },

@@ -22,6 +22,13 @@ test('refuses an external destination', () => {
     '/\\evil.com',
     'javascript:alert(1)',
     'evil.com',
+    '/%09/evil.com',
+    '/%0a/evil.com',
+    '/\t/evil.com',
+    '/\n/evil.com',
+    '/\r/evil.com',
+    '/\u0000/evil.com',
+    '/a\\b',
   ]
 
   for (const redirect of attacks) {

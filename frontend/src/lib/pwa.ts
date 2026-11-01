@@ -17,3 +17,26 @@ export async function registerServiceWorker(): Promise<void> {
     // No worker: the app still works online.
   }
 }
+
+/**
+ * Every Cache Storage bucket that may hold a rendered page. The service worker caches the
+ * HTML of each public navigation (`pages`); the panel is excluded from it in
+ * `vite.config.ts`, but a worker installed before that exclusion may still hold panel
+ * pages, so sign-out empties the bucket whatever is in it.
+ */
+const PAGE_CACHES = ['pages'] as const
+
+/**
+ * Forgets the pages the worker saved. Called on sign-out: the next person on a shared
+ * phone must not be able to open the previous session's panel pages from the cache.
+ * Silent on failure (no Cache Storage, private mode): there is nothing else to do.
+ */
+export async function clearPageCaches(): Promise<void> {
+  if (typeof caches === 'undefined') return
+
+  try {
+    await Promise.all(PAGE_CACHES.map((name) => caches.delete(name)))
+  } catch {
+    // Cache Storage refused: the session is already over on the server.
+  }
+}

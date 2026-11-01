@@ -49,11 +49,11 @@ const DESCRIPTIONS = {
 const CONTACTS: ReadonlyArray<string | null> = [
   null,
   null,
-  '(97) 98123-4567',
+  '(97) 90000-0001',
   null,
   'moradora.umariacu@exemplo.test',
   null,
-  '(97) 99211-0088',
+  '(97) 90000-0002',
 ]
 
 const STATUS_PLAN: ReadonlyArray<ReportStatus> = [
