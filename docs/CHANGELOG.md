@@ -21,7 +21,8 @@ espera a prefeitura conferir bairros e cronograma.
   - denúncia salva no aparelho quando falta sinal, com reenvio automático ao voltar a conexão;
   - protocolo `CUR-XXXX-XXXX` ao enviar, e acompanhamento sem login pela linha do tempo (Recebida, Em análise,
     Encaminhada, Resolvida) com a resposta da gestão;
-  - mapa público das ocorrências já analisadas, sem foto, descrição nem contato;
+  - mapa público das ocorrências já analisadas, sem foto, descrição nem contato, com o ponto aproximado
+    (cerca de 110 m) e as 500 mais recentes;
   - páginas Sobre, Privacidade e Termos (textos em rascunho).
 - Painel da gestão em `/gestao`, para operador e administrador:
   - visão geral com contagens por situação e tipo e gráfico dos últimos 30 dias;
@@ -34,8 +35,17 @@ espera a prefeitura conferir bairros e cronograma.
   documentação em `/documentation`.
 - Entrada por cookie `httpOnly`, com renovação de sessão e limite de tentativas.
 - Envio de foto direto ao armazenamento, com conferência do arquivo e remoção dos dados de câmera e GPS.
+- Comando `node ace users:create-owner`, para criar o primeiro administrador em produção.
+- Comando `node ace storages:prune`, que também apaga foto enviada sem denúncia há mais de 24 horas (precisa de
+  um cron no servidor).
 - Esteira de entrega: verificações em todo PR, imagens `curupira-api` e `curupira-app` e implantação no
   Coolify (aguardando os identificadores das aplicações).
+
+### Alterado
+
+- Movimento reduzido (`prefers-reduced-motion`): deixou de ser uma regra global e passou a valer por peça, o
+  mapa incluído.
+- Acessibilidade: o mapa tem nome acessível, os marcadores têm título e os alvos de toque têm 44 px.
 
 ### Segurança
 
@@ -43,3 +53,20 @@ espera a prefeitura conferir bairros e cronograma.
 - Limite de envios por IP em denúncia (10 por hora), fotos (60 por hora) e consulta de protocolo (30 em 10 minutos).
 - Foto sem EXIF e coordenada sempre a do pin confirmado.
 - Barreira de origem contra CSRF e cabeçalhos de segurança no app e na API.
+- Auditoria de segurança do código, com as correções aplicadas (`SECURITY.md` §10):
+  - `TRUSTED_PROXIES` aceita lista separada por vírgula, é validada na partida da API e recusa vazio, `true`,
+    `*` e `0.0.0.0/0` (antes o valor de produção documentado quebrava toda requisição);
+  - o IP de quem usa as rotas anônimas deixa de ser guardado em texto claro: o limite usa um hash com chave, e
+    a API não registra o IP ao recusar com 429 em `/storefront`;
+  - o mapa público ganhou limite de 60 consultas por 10 minutos por IP e mostra o ponto aproximado (cerca de
+    110 m); o painel segue com o ponto exato;
+  - foto de denúncia: chave com prefixo próprio, arquivo da biblioteca da gestão não pode ser anexado a
+    denúncia, URL de envio válida por 3 minutos (antes 15), limite de 50 milhões de pixels e no máximo 2
+    conversões ao mesmo tempo;
+  - cookies de sessão renomeados para `curupira-access-token` e `curupira-refresh-token`: quem estava logado
+    entra de novo;
+  - o painel e a entrada não ficam mais no cache do aparelho, e sair da conta apaga as páginas guardadas;
+  - o endereço de retorno depois do login só aceita caminho do próprio site;
+  - o app em produção não leva mais os dados de exemplo no pacote;
+  - o texto de privacidade passou a dizer que o endereço de rede vira um hash guardado por cerca de 2 horas e
+    que o ponto do mapa é aproximado.
