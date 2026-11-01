@@ -8,6 +8,8 @@ import { nitro } from 'nitro/vite'
 import { defineConfig, loadEnv } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+import { stripExampleData } from './scripts/strip-example-data'
+
 const config = defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
 
@@ -55,6 +57,8 @@ const config = defineConfig(({ mode }) => {
     resolve: { tsconfigPaths: true },
     plugins: [
       devtools(),
+      // `VITE_DATA_SOURCE=api` builds ship none of `src/data/*` (scripts/strip-example-data.ts).
+      stripExampleData(env.VITE_DATA_SOURCE),
       // The three languages (_standards/i18n.md §2). The compiler options live in
       // `project.inlang/paraglide.config.ts`, read by this plugin and by the CLI
       // (_doc-lib/paraglide.md#/vite).
