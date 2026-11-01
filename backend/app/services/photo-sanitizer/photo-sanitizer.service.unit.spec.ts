@@ -46,6 +46,41 @@ test.group('services > photo sanitizer (unit)', () => {
     })
   }
 
+  test('a 48 MP phone photo (8000x6000) still passes', async ({ assert }) => {
+    const service = await sanitizer()
+    const flat = sharp({
+      create: { width: 8000, height: 6000, channels: 3, background: { r: 10, g: 120, b: 60 } },
+    })
+    const original = new Uint8Array(await flat.jpeg({ quality: 40 }).toBuffer())
+
+    const clean = await service.strip('image/jpeg', original)
+
+    assert.isNotNull(clean)
+  }).timeout(20_000)
+
+  test('a canvas above 50 MP is refused with null (decompression bomb)', async ({ assert }) => {
+    const service = await sanitizer()
+    const flat = sharp({
+      create: { width: 9000, height: 6000, channels: 3, background: { r: 10, g: 120, b: 60 } },
+    })
+    const original = new Uint8Array(await flat.jpeg({ quality: 40 }).toBuffer())
+
+    assert.isNull(await service.strip('image/jpeg', original))
+  }).timeout(20_000)
+
+  test('several photos at once all come out clean (the gate queues, it does not drop)', async ({
+    assert,
+  }) => {
+    const service = await sanitizer()
+    const original = await photoWithGps('jpeg')
+
+    const results = await Promise.all(
+      Array.from({ length: 6 }, () => service.strip('image/jpeg', original)),
+    )
+
+    assert.isTrue(results.every((clean) => clean !== null))
+  })
+
   test('bytes that only start like an image are refused with null', async ({ assert }) => {
     const service = await sanitizer()
     const liar = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4, 5, 6, 7, 8])

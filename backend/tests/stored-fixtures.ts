@@ -91,6 +91,24 @@ export class Stored {
     return UserModel.find(id)
   }
 
+  static userByEmail(email: string) {
+    return UserModel.findBy('email', email)
+  }
+
+  static users() {
+    return UserModel.all()
+  }
+
+  /** Empties `users`, for the specs whose subject is the database with nobody in it. */
+  static async removeAllUsers(): Promise<void> {
+    await UserModel.query().delete()
+  }
+
+  /** Throws when the credentials do not match, as the sign-in does. */
+  static verifyCredentials(email: string, password: string) {
+    return UserModel.verifyCredentials(email, password)
+  }
+
   static userByEmailOrFail(email: string) {
     return UserModel.findByOrFail('email', email)
   }
