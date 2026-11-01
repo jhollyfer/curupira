@@ -54,13 +54,16 @@ export default defineConfig({
     },
   ],
   webServer: {
-    // The example data answers (`VITE_DATA_SOURCE=mock`): the flows need no backend.
+    // The specs run against the real API (backend on `E2E_API_URL`, seeded with
+    // `db:seed:demo`; its `SITE_URL` must be this server's origin).
     command: `pnpm exec vite dev --port ${port} --strictPort`,
     cwd: '..',
     url: baseURL,
-    // `E2E_DATA_SOURCE=api` points the same specs at a real backend (then the seeder's
-    // `E2E_OWNER_*` account signs in, see `support/credentials.ts`).
-    env: { VITE_DATA_SOURCE: process.env.E2E_DATA_SOURCE ?? 'mock' },
+    env: {
+      VITE_DATA_SOURCE: 'api',
+      VITE_API_URL: process.env.E2E_API_URL ?? 'http://localhost:3333',
+      VITE_SITE_URL: baseURL,
+    },
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
