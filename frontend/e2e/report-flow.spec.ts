@@ -29,9 +29,17 @@ async function fileReport(page: Page, kind: string): Promise<void> {
   await page.getByRole('button', { name: 'Continuar' }).click()
 
   await page.locator('input[type=file]').last().setInputFiles(PHOTO)
+  // The preview grows the page: tapping before it settles lands on a map that moved.
+  await expect(page.getByText(/1 de 3 fotos/)).toBeVisible()
   // The pin is placed by tapping the map: the resident's GPS is not the only way.
-  await page.locator('.leaflet-container').click({ position: { x: 200, y: 160 } })
-  await expect(page.getByText(/lugar marcado/i)).toBeVisible()
+  // The map mounts lazily and the first tap can land before its handler is attached, so
+  // the tap is repeated until the pin shows (a second tap only moves the same pin).
+  await expect(async () => {
+    await page
+      .locator('.leaflet-container')
+      .click({ position: { x: 200, y: 160 } })
+    await expect(page.getByText(/lugar marcado/i)).toBeVisible({ timeout: 1500 })
+  }).toPass({ timeout: 15_000 })
   await page.getByRole('button', { name: 'Continuar' }).click()
 
   await expect(page.getByLabel('Enviar anônimo')).toBeChecked()
