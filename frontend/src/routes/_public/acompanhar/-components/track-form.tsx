@@ -70,7 +70,7 @@ export function TrackForm({
               spellCheck={false}
               inputMode="text"
               placeholder={`${PROTOCOL_PREFIX}-XXXX-XXXX`}
-              className="h-14 text-xl font-bold tracking-wider uppercase"
+              className="h-14 bg-card text-xl font-bold tracking-wider uppercase"
             />
             <FieldDescription>{m.track_hint()}</FieldDescription>
             {fieldState.invalid && (

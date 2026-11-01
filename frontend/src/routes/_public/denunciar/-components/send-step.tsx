@@ -58,7 +58,7 @@ export function SendStep({ form }: SendStepProps): React.JSX.Element {
               rows={4}
               maxLength={LIST_LIMITS.REPORT_DESCRIPTION}
               placeholder={m.report_description_placeholder()}
-              className="min-h-28 text-base"
+              className="min-h-28 bg-card text-base"
             />
             <FieldDescription>{m.report_description_hint()}</FieldDescription>
             {fieldState.invalid && (
@@ -117,7 +117,7 @@ export function SendStep({ form }: SendStepProps): React.JSX.Element {
                 autoComplete="tel"
                 inputMode="text"
                 placeholder={m.report_contact_placeholder()}
-                className="h-12 text-base"
+                className="h-12 bg-card text-base"
               />
               {fieldState.invalid && (
                 <FieldError

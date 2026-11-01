@@ -194,7 +194,7 @@ export function WasteCalendarMonth({
         </Button>
         <h2
           aria-live="polite"
-          className="text-xl font-extrabold tracking-tight capitalize"
+          className="text-xl font-extrabold tracking-tight first-letter:uppercase"
         >
           {first.setLocale(getLocale()).toLocaleString({
             month: 'long',
@@ -273,7 +273,7 @@ export function WasteCalendarDetail(): React.JSX.Element {
       aria-live="polite"
       className="flex flex-col gap-3 rounded-2xl bg-surface-warm p-4"
     >
-      <h3 className="text-lg font-extrabold capitalize">
+      <h3 className="text-lg font-extrabold first-letter:uppercase">
         {date.toLocaleString({
           weekday: 'long',
           day: 'numeric',

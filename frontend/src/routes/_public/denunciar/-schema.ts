@@ -20,6 +20,10 @@ export const ReportFormValidator = StorefrontReportCreateValidator.omit({
   .extend({
     photos: z.array(z.instanceof(Blob)).min(1).max(LIST_LIMITS.REPORT_PHOTOS),
     anonymous: z.boolean(),
+    // The contract's `contact` has `min(3)`, which an untouched (empty) field would
+    // fail even when anonymous: here only the ceiling is enforced, and the `refine`
+    // below demands the content when it matters.
+    contact: z.string().trim().max(120).optional(),
   })
   .refine(
     (value) => value.anonymous || (value.contact?.trim().length ?? 0) >= 3,

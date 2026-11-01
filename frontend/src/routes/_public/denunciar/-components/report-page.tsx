@@ -31,6 +31,23 @@ import { EvidenceStep } from './evidence-step'
 import { ReportDone } from './report-done'
 import { SendStep } from './send-step'
 
+/** Which wizard step holds each field, so an invalid submit can point at the right one. */
+const FIELD_STEPS: Record<string, number | undefined> = {
+  kind: 0,
+  photos: 1,
+  latitude: 1,
+  longitude: 1,
+  description: 2,
+  contact: 2,
+}
+
+function firstStepWithError(errors: object): number {
+  return Math.min(
+    ...Object.keys(errors).map((field) => FIELD_STEPS[field] ?? 2),
+    2,
+  )
+}
+
 function toDraft(values: ReportFormValues): ReportDraft {
   return {
     kind: values.kind,
@@ -64,7 +81,6 @@ export function ReportPage(): React.JSX.Element {
   const latitude = useWatch({ control: form.control, name: 'latitude' })
   const longitude = useWatch({ control: form.control, name: 'longitude' })
 
-  console.log('DBG', kind, photos.length, latitude, longitude, step)
   const canContinue = [
     Boolean(kind),
     photos.length > 0 && toCoordinate(latitude, longitude) !== undefined,
@@ -72,7 +88,12 @@ export function ReportPage(): React.JSX.Element {
   ]
 
   function onSubmit(event?: React.BaseSyntheticEvent): void {
-    void form.handleSubmit((values) => submit(toDraft(values)))(event)
+    void form.handleSubmit(
+      (values) => submit(toDraft(values)),
+      // A failing field may live on a step that is not on screen: take the resident
+      // to the first step that has an error, or the tap on "Enviar" would do nothing.
+      (errors) => setStep(firstStepWithError(errors)),
+    )(event)
   }
 
   if (outcome) {

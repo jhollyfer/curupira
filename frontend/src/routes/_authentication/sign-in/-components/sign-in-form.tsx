@@ -97,7 +97,7 @@ export function SignInForm(): React.JSX.Element {
                   type="email"
                   autoComplete="email"
                   placeholder={m.auth_email_placeholder()}
-                  className="h-12 text-base"
+                  className="h-12 bg-card text-base"
                 />
               )}
             </AppField>
@@ -113,7 +113,7 @@ export function SignInForm(): React.JSX.Element {
                   {...field}
                   {...control}
                   autoComplete="current-password"
-                  className="h-12 text-base"
+                  className="h-12 bg-card text-base"
                 />
               )}
             </AppField>
