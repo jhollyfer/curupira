@@ -16,11 +16,11 @@ describe('stubExportsOf', () => {
 
     const stub = stubExportsOf(parseAst(code))
 
-    expect(stub.split('\n').filter(Boolean)).toEqual([
-      'export const visible = undefined',
+    expect(stub.split('\n').filter(Boolean).toSorted()).toEqual([
       'export const NEIGHBORHOODS = undefined',
-      'export const schedulesOf = undefined',
       'export const Store = undefined',
+      'export const schedulesOf = undefined',
+      'export const visible = undefined',
     ])
     expect(stub).not.toContain('Centro')
   })
@@ -42,7 +42,10 @@ describe('shouldStrip', () => {
   it('leaves the rest of the app and the data tests alone', () => {
     expect(shouldStrip('api', '/app/frontend/src/lib/schedule.ts')).toBe(false)
     expect(
-      shouldStrip('api', '/app/frontend/src/data/management/management.test.ts'),
+      shouldStrip(
+        'api',
+        '/app/frontend/src/data/management/management.test.ts',
+      ),
     ).toBe(false)
   })
 })

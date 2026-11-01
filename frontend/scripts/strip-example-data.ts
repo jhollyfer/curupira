@@ -64,7 +64,10 @@ export function stubExportsOf(program: Program): string {
   return names.map((name) => `export const ${name} = undefined\n`).join('')
 }
 
-export function shouldStrip(dataSource: string | undefined, id: string): boolean {
+export function shouldStrip(
+  dataSource: string | undefined,
+  id: string,
+): boolean {
   if (dataSource !== 'api') return false
 
   return id.includes(DATA_DIR) && !id.includes('.test.')
