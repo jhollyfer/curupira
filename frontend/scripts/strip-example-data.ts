@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite'
+import type { Plugin, Rollup } from 'vite'
 
 /**
  * Drops the example data from a build that talks to the API.
@@ -28,6 +28,48 @@ function textOf(name: {
   return ''
 }
 
+type Program = ReturnType<Rollup.PluginContext['parse']>
+
+/**
+ * `export const NAME = undefined` for every runtime export of a parsed module (types are
+ * already gone: the plugin runs after the TypeScript transform). Pure, so the unit test
+ * does not need a bundler.
+ */
+export function stubExportsOf(program: Program): string {
+  const names: Array<string> = []
+
+  for (const node of program.body) {
+    if (node.type !== 'ExportNamedDeclaration' || node.exportKind === 'type') {
+      continue
+    }
+
+    for (const specifier of node.specifiers) {
+      names.push(textOf(specifier.exported))
+    }
+
+    const declaration = node.declaration
+    if (declaration?.type === 'VariableDeclaration') {
+      for (const item of declaration.declarations) {
+        if (item.id.type === 'Identifier') names.push(item.id.name)
+      }
+    }
+    if (
+      declaration?.type === 'FunctionDeclaration' ||
+      declaration?.type === 'ClassDeclaration'
+    ) {
+      if (declaration.id) names.push(declaration.id.name)
+    }
+  }
+
+  return names.map((name) => `export const ${name} = undefined\n`).join('')
+}
+
+export function shouldStrip(dataSource: string | undefined, id: string): boolean {
+  if (dataSource !== 'api') return false
+
+  return id.includes(DATA_DIR) && !id.includes('.test.')
+}
+
 export function stripExampleData(dataSource: string | undefined): Plugin {
   return {
     name: 'curupira:strip-example-data',
@@ -35,43 +77,9 @@ export function stripExampleData(dataSource: string | undefined): Plugin {
     // After the TypeScript transform, so the AST is plain JavaScript.
     enforce: 'post',
     transform(code, id) {
-      if (dataSource !== 'api') return null
-      if (!id.includes(DATA_DIR) || id.includes('.test.')) return null
+      if (!shouldStrip(dataSource, id)) return null
 
-      const names: Array<string> = []
-
-      for (const node of this.parse(code).body) {
-        if (
-          node.type !== 'ExportNamedDeclaration' ||
-          node.exportKind === 'type'
-        ) {
-          continue
-        }
-
-        for (const specifier of node.specifiers) {
-          names.push(textOf(specifier.exported))
-        }
-
-        const declaration = node.declaration
-        if (declaration?.type === 'VariableDeclaration') {
-          for (const item of declaration.declarations) {
-            if (item.id.type === 'Identifier') names.push(item.id.name)
-          }
-        }
-        if (
-          declaration?.type === 'FunctionDeclaration' ||
-          declaration?.type === 'ClassDeclaration'
-        ) {
-          if (declaration.id) names.push(declaration.id.name)
-        }
-      }
-
-      return {
-        code: names
-          .map((name) => `export const ${name} = undefined\n`)
-          .join(''),
-        map: null,
-      }
+      return { code: stubExportsOf(this.parse(code)), map: null }
     },
   }
 }
