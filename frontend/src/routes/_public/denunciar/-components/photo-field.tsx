@@ -69,7 +69,7 @@ function PhotoPreview({
 
 const PICK_BUTTON = cn(
   buttonVariants({ variant: 'outline', size: 'touch' }),
-  'flex-1 cursor-pointer has-focus-visible:ring-4 has-focus-visible:ring-ring/60 has-disabled:pointer-events-none has-disabled:opacity-50',
+  'relative flex-1 cursor-pointer has-focus-visible:ring-4 has-focus-visible:ring-ring/60 has-disabled:pointer-events-none has-disabled:opacity-50',
 )
 
 /**

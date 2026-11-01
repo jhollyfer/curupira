@@ -8,7 +8,6 @@ const envFile = resolve(import.meta.dirname, '..', '.env.e2e')
 if (existsSync(envFile)) process.loadEnvFile(envFile)
 
 const port = process.env.E2E_PORT ?? '3010'
-const apiUrl = process.env.E2E_API_URL ?? 'http://localhost:3333'
 const baseURL = `http://localhost:${port}`
 
 // https://playwright.dev/docs/test-configuration
@@ -19,8 +18,6 @@ export default defineConfig({
   // Unconditional retry turns a broken test into a flaky one
   // (_doc-lib/playwright.md#docs/test-retries).
   retries: 0,
-  // The flows touch the same data (sport, photos, About text): one worker at
-  // a time keeps each spec the owner of what it created.
   workers: 1,
   // Without a global cap, a job killed by the provider produces no report
   // (_doc-lib/playwright.md#docs/test-timeouts).
@@ -32,7 +29,6 @@ export default defineConfig({
   ],
   use: {
     baseURL,
-    // The API answers in the request's language (CSV, messages): pt-BR is fixed.
     locale: 'pt-BR',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
@@ -41,20 +37,19 @@ export default defineConfig({
     },
   },
   projects: [
-    // Signs in once per role; the specs depend on it (`docs/auth`).
-    { name: 'setup', testMatch: /auth\.setup\.ts/ },
+    // The resident app is a phone app: the flows run in a phone-sized viewport.
     {
-      name: 'chromium',
+      name: 'mobile',
       testMatch: /.*\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'] },
-      dependencies: ['setup'],
+      use: { ...devices['Pixel 7'] },
     },
   ],
   webServer: {
+    // The example data answers (`VITE_DATA_SOURCE=mock`): the flows need no backend.
     command: `pnpm exec vite dev --port ${port} --strictPort`,
     cwd: '..',
     url: baseURL,
-    env: { VITE_API_URL: apiUrl },
+    env: { VITE_DATA_SOURCE: 'mock' },
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },

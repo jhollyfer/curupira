@@ -59,7 +59,7 @@ export function NeighborhoodPickerList(): React.JSX.Element | null {
         {neighborhoods.map((neighborhood) => (
           <label
             key={neighborhood.id}
-            className="flex min-h-12 cursor-pointer items-center justify-center rounded-xl bg-card px-3 py-2 text-center text-base font-semibold shadow-card transition-shadow hover:shadow-card-hover has-checked:bg-primary has-checked:text-primary-foreground has-focus-visible:shadow-[0_0_0_4px_var(--ring)] motion-reduce:transition-none"
+            className="relative flex min-h-12 cursor-pointer items-center justify-center rounded-xl bg-card px-3 py-2 text-center text-base font-semibold shadow-card transition-shadow hover:shadow-card-hover has-checked:bg-primary has-checked:text-primary-foreground has-focus-visible:shadow-[0_0_0_4px_var(--ring)] motion-reduce:transition-none"
           >
             <input
               type="radio"

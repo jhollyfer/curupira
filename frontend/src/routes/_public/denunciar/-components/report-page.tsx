@@ -59,11 +59,12 @@ export function ReportPage(): React.JSX.Element {
     },
   })
 
-  const [kind, photos, latitude, longitude] = useWatch({
-    control: form.control,
-    name: ['kind', 'photos', 'latitude', 'longitude'],
-  })
+  const kind = useWatch({ control: form.control, name: 'kind' })
+  const photos = useWatch({ control: form.control, name: 'photos' })
+  const latitude = useWatch({ control: form.control, name: 'latitude' })
+  const longitude = useWatch({ control: form.control, name: 'longitude' })
 
+  console.log('DBG', kind, photos.length, latitude, longitude, step)
   const canContinue = [
     Boolean(kind),
     photos.length > 0 && toCoordinate(latitude, longitude) !== undefined,

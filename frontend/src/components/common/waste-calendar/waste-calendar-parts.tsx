@@ -122,7 +122,7 @@ export function WasteCalendarStrip({
             <li
               key={day.date}
               data-today={index === 0}
-              className="flex w-16 shrink-0 snap-start flex-col items-center gap-1.5 rounded-2xl bg-card px-1 py-3 shadow-card data-[today=true]:bg-primary data-[today=true]:text-primary-foreground"
+              className="relative flex w-16 shrink-0 snap-start flex-col items-center gap-1.5 rounded-2xl bg-card px-1 py-3 shadow-card data-[today=true]:bg-primary data-[today=true]:text-primary-foreground"
             >
               <span className="text-xs font-bold uppercase">
                 {date.toLocaleString({ weekday: 'short' })}
