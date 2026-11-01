@@ -1,3 +1,5 @@
+import db from '@adonisjs/lucid/services/db'
+
 import CollectionScheduleModel from '#models/collection-schedule'
 import NeighborhoodModel from '#models/neighborhood'
 import NoticeModel from '#models/notice'
@@ -100,5 +102,12 @@ export class Stored {
   /** Opens a session for the account, as the sign-in does. */
   static issueToken(user: UserModel) {
     return UserModel.accessTokens.create(user)
+  }
+
+  /** The keys the rate limiter has stored, as the package keeps them (no model). */
+  static async rateLimitKeys(): Promise<string[]> {
+    const rows = await db.from('rate_limits').select('key')
+
+    return rows.map((row) => String(row.key))
   }
 }

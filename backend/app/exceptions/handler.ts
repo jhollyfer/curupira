@@ -105,7 +105,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       {
         route: ctx.route?.pattern,
         method: ctx.request.method(),
-        ip: ctx.request.ip(),
+        ip: this.loggableIp(ctx),
         limit: error.response.limit,
         retryAfter: error.response.availableIn,
       },
@@ -120,6 +120,17 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       .header('Retry-After', String(error.response.availableIn))
 
     return this.send(ctx, exception.toResponse())
+  }
+
+  /**
+   * The anonymous `/storefront/` routes are throttled by a keyed hash of the IP exactly so
+   * that no address is kept next to who filed a report; logging it on the 429 would put it
+   * back. The sign-in doors keep it: there the IP is the evidence of an attack.
+   */
+  private loggableIp(ctx: HttpContext): string | undefined {
+    if (ctx.route?.pattern.startsWith('/storefront/')) return undefined
+
+    return ctx.request.ip()
   }
 
   /**

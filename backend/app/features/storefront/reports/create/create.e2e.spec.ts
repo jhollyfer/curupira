@@ -104,6 +104,16 @@ test.group('storefront/reports > create', (group) => {
     assert.property(body(bad).errors, 'latitude')
   })
 
+  test('the rate-limit table never holds the caller IP', async ({ client, assert }) => {
+    await client.post('/storefront/reports').json({ ...SPOT, photoIds: [] })
+
+    const keys = await Stored.rateLimitKeys()
+    assert.isAbove(keys.length, 0)
+    for (const key of keys) {
+      assert.notMatch(key, /\d+\.\d+\.\d+\.\d+|::1|ip_/)
+    }
+  })
+
   test('throttles the filing per IP: the 11th within the hour is 429', async ({ client }) => {
     let last = 0
     for (let attempt = 0; attempt < 11; attempt++) {
