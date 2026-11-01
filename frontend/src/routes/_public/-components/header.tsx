@@ -28,7 +28,7 @@ export function Header(): React.JSX.Element {
                 <Link
                   to={item.to}
                   activeOptions={{ exact: item.to === '/' }}
-                  className="inline-flex min-h-11 items-center rounded-xl px-2 text-base lg:px-3.5 font-semibold text-muted-foreground transition-colors outline-none hover:bg-accent hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/60 data-[status=active]:bg-accent data-[status=active]:text-foreground motion-reduce:transition-none"
+                  className="inline-flex min-h-11 items-center rounded-xl px-2 text-sm lg:px-3.5 lg:text-base font-semibold text-muted-foreground transition-colors outline-none hover:bg-accent hover:text-foreground focus-visible:ring-4 focus-visible:ring-ring/60 data-[status=active]:bg-accent data-[status=active]:text-foreground motion-reduce:transition-none"
                 >
                   {item.label()}
                 </Link>
