@@ -78,7 +78,12 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
 
         const admin = await apiClient(playwright, ownerCredentials())
         const created = await admin.post('/management/users', {
-          data: { name: 'Operador E2E', ...credentials, role: 'OPERATOR' },
+          data: {
+            name: 'Operador E2E',
+            ...credentials,
+            passwordConfirmation: credentials.password,
+            role: 'OPERATOR',
+          },
         })
         // 409: the account is already there from an earlier run.
         if (!created.ok() && created.status() !== 409) {

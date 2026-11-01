@@ -122,7 +122,7 @@ test.describe('administrator', () => {
     // Leave the seed as found.
     await page.reload()
     await page.getByLabel('Bairro').selectOption({ label: 'Umariaçu' })
-    await page.getByRole('button', { name: /Entulho.*editar coleta/i }).first().click()
+    await page.getByRole('button', { name: /editar coleta de Entulho/i }).first().click()
     await page.getByRole('button', { name: 'Excluir' }).click()
     await page.getByRole('alertdialog').getByRole('button', { name: 'Excluir' }).click()
     await expect(page.getByText('Coleta excluída')).toBeVisible()
