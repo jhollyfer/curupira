@@ -20,6 +20,9 @@ allowBuilds:
   esbuild: true
   # Compilador de CSS do Tailwind 4, mesmo motivo.
   lightningcss: true
+  # Remoção de EXIF/GPS das fotos de denúncia (backend): o postinstall confere o
+  # binário nativo pré-compilado da plataforma.
+  sharp: true
 
 minimumReleaseAgeExclude:
   - '@tanstack/query-core@5.105.1'
