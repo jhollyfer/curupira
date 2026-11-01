@@ -42,7 +42,7 @@ const config = defineConfig(({ mode }) => {
   // are rendered for one session. Every locale prefix has its own entry (Nitro route
   // rules match the path as it is served).
   const noStore = { headers: { 'Cache-Control': 'no-store' } }
-  let securityHeaders: Record<string, unknown> = {
+  let securityHeaders: Record<string, { headers: Record<string, string> }> = {
     '/gestao/**': noStore,
     '/sign-in': noStore,
     '/en/gestao/**': noStore,
