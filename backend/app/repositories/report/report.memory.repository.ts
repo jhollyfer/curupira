@@ -175,9 +175,11 @@ export class ReportMemoryRepository extends ReportRepository {
     }
   }
 
-  async publicMap(): Promise<StorefrontReportMapResponse[]> {
+  async publicMap(limit: number): Promise<StorefrontReportMapResponse[]> {
     return [...this.rows.values()]
       .filter((row) => REPORT_PUBLIC_STATUSES.some((status) => status === row.status))
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, limit)
       .map((row) => ({
         id: row.id,
         kind: row.kind,

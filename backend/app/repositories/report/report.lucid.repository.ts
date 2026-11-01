@@ -348,7 +348,7 @@ export class ReportLucidRepository extends ReportRepository {
     }
   }
 
-  async publicMap(): Promise<StorefrontReportMapResponse[]> {
+  async publicMap(limit: number): Promise<StorefrontReportMapResponse[]> {
     const rows: Array<{
       id: string
       kind: ReportKind
@@ -361,6 +361,7 @@ export class ReportLucidRepository extends ReportRepository {
       .from('reports')
       .whereIn('status', [...REPORT_PUBLIC_STATUSES])
       .orderBy('created_at', 'desc')
+      .limit(limit)
       .select('id', 'kind', 'status', 'latitude', 'longitude', 'created_at')
 
     return rows.map((row) => ({

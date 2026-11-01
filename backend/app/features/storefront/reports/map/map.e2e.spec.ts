@@ -1,10 +1,30 @@
 import { test } from '@japa/runner'
 
 import { ReportFactory } from '#database/factories/report.factory'
-import { body, resetDatabase } from '#tests/http-fixtures'
+import { authenticateAsOperator, body, resetDatabase } from '#tests/http-fixtures'
 
 test.group('storefront/reports > map', (group) => {
   group.each.setup(() => resetDatabase())
+
+  test('the public pin is rounded to 3 decimals, the panel one is exact', async ({
+    client,
+    assert,
+  }) => {
+    await ReportFactory.merge({
+      status: 'IN_REVIEW',
+      latitude: -4.376941,
+      longitude: -70.031467,
+    }).create()
+    const session = await authenticateAsOperator(client)
+
+    const publicPin = body(await client.get('/storefront/reports/map'))[0]
+    const panelPin = body(await client.get('/management/reports/map').cookies(session))[0]
+
+    assert.equal(publicPin.latitude, -4.377)
+    assert.equal(publicPin.longitude, -70.031)
+    assert.equal(panelPin.latitude, -4.376941)
+    assert.equal(panelPin.longitude, -70.031467)
+  })
 
   test('only reports already looked at, with no hour, no text and no contact', async ({
     client,

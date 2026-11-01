@@ -11,7 +11,7 @@ export default class StorefrontReportMapController {
     summary: 'Public report map',
     description:
       'The pins of the public map: only reports already looked at (IN_REVIEW, FORWARDED, RESOLVED), so a hoax or a misplaced pin never shows before someone reviewed it.\n\n' +
-      'Each pin carries the kind, status, coordinates and the **day** (no hour). No text, no contact, no protocol, no photo. Public.',
+      'Each pin carries the kind, status, coordinates **rounded to about 110 m** and the **day** (no hour). The newest 500 only. No text, no contact, no protocol, no photo. Public.',
   })
 
   constructor(private readonly useCase: StorefrontReportMapUseCase) {}

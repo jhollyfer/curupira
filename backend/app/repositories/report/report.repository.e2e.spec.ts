@@ -307,7 +307,7 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       )
       await repository.save(reviewed)
 
-      const pins = await repository.publicMap()
+      const pins = await repository.publicMap(10)
 
       assert.lengthOf(pins, 1)
       assert.deepEqual(Object.keys(pins[0] ?? {}).sort(), [
@@ -319,6 +319,23 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
         'status',
       ])
       assert.match(pins[0]?.day ?? '', /^\d{4}-\d{2}-\d{2}$/)
+    })
+
+    test('publicMap keeps only the newest pins up to the limit', async ({ assert }) => {
+      const { repository, author } = await build()
+      const reviewer = await author('Ana')
+      for (const [index, suffix] of ['0001', '0002', '0003'].entries()) {
+        const entity = report(`CUR-2AAA-${suffix}`)
+        entity.advance(
+          { eventId: randomUUID(), status: 'IN_REVIEW', authorId: reviewer },
+          new Date(NOW.getTime() + index * 1000),
+        )
+        await repository.save(entity)
+      }
+
+      const pins = await repository.publicMap(2)
+
+      assert.lengthOf(pins, 2)
     })
 
     test('delete removes the report and its photo links', async ({ assert }) => {

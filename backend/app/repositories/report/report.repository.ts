@@ -82,6 +82,10 @@ export abstract class ReportRepository {
    * the description, the photos, the coordinates or who answered.
    */
   abstract showByProtocol(protocol: string): Promise<StorefrontReportShowByProtocolResponse | null>
-  /** The public map: only the public statuses, the day without the hour, no text, no contact. */
-  abstract publicMap(): Promise<StorefrontReportMapResponse[]>
+  /**
+   * The public map: only the public statuses, the day without the hour, no text, no contact.
+   * At most `limit` pins, the newest first: the route is anonymous, and a map that grows
+   * without a ceiling is a response that grows without one.
+   */
+  abstract publicMap(limit: number): Promise<StorefrontReportMapResponse[]>
 }

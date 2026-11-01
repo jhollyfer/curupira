@@ -38,4 +38,17 @@ test.group('storefront/reports > map (unit)', () => {
     ])
     assert.equal(pins[0]?.day, '2026-10-29')
   })
+
+  test('the coordinates leave rounded to 3 decimals (about 110 m)', async ({ assert }) => {
+    const reports = MemoryRepositories.reports()
+    const useCase = await makeWithMemory(StorefrontReportMapUseCase, [[ReportRepository, reports]])
+    const report = await seedReport(reports, { latitude: -4.376941, longitude: -70.031467 })
+    report.advance({ eventId: 'e2', status: 'IN_REVIEW', authorId: 'u1' }, new Date())
+    await reports.save(report)
+
+    const pins = rightOf(await useCase.execute())
+
+    assert.equal(pins[0]?.latitude, -4.377)
+    assert.equal(pins[0]?.longitude, -70.031)
+  })
 })
