@@ -7,6 +7,7 @@ import { NeighborhoodRepository } from '#repositories/neighborhood/neighborhood.
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { seedNeighborhood, seedSchedule } from '#tests/domain-unit-fixtures'
+import { rightOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const neighborhoods = MemoryRepositories.neighborhoods()
@@ -36,7 +37,7 @@ test.group('management/schedules > update (unit)', () => {
 
     const result = await useCase.execute({ id, note: null })
 
-    assert.isNull((result.value as { note: string | null }).note)
+    assert.isNull(rightOf(result).note)
   })
 
   test('moving onto a slot that exists is 409 SCHEDULE_ALREADY_EXISTS', async ({ assert }) => {

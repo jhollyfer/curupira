@@ -5,6 +5,7 @@ import ManagementNoticeCreateUseCase from './create.use-case.ts'
 import { NoticeRepository } from '#repositories/notice/notice.repository'
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { makeWithMemory } from '#tests/container-fixtures'
+import { leftOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const notices = MemoryRepositories.notices()
@@ -45,6 +46,6 @@ test.group('management/notices > create (unit)', () => {
     })
 
     assert.deepInclude(result.value, { status: 422, code: 'NOTICE_INVALID_PERIOD' })
-    assert.property((result.value as { errors: object }).errors, 'endsAt')
+    assert.property(leftOf(result).errors ?? {}, 'endsAt')
   })
 })

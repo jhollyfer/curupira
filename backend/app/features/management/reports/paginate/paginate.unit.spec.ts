@@ -6,6 +6,7 @@ import { ReportRepository } from '#repositories/report/report.repository'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { seedReport } from '#tests/domain-unit-fixtures'
+import { rightOf } from '#tests/result-unit-fixtures'
 
 test.group('management/reports > paginate (unit)', () => {
   test('lists the most recent first and cuts by kind, status and date', async ({ assert }) => {
@@ -23,9 +24,7 @@ test.group('management/reports > paginate (unit)', () => {
     const protocols = async (payload: Parameters<typeof useCase.execute>[0]) => {
       const result = await useCase.execute(payload)
 
-      return (result.value as { data: Array<{ protocol: string }> }).data.map(
-        (item) => item.protocol,
-      )
+      return rightOf(result).data.map((item) => item.protocol)
     }
 
     assert.deepEqual(await protocols({}), ['CUR-2AAA-0002', 'CUR-2AAA-0001'])
@@ -43,7 +42,7 @@ test.group('management/reports > paginate (unit)', () => {
     await seedReport(reports, { contact: '(97) 99999-0000', description: 'texto' })
 
     const result = await useCase.execute({})
-    const item = (result.value as { data: object[] }).data[0]
+    const item = rightOf(result).data[0]
 
     assert.notProperty(item, 'contact')
     assert.notProperty(item, 'description')

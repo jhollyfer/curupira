@@ -7,6 +7,7 @@ import { NeighborhoodRepository } from '#repositories/neighborhood/neighborhood.
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { seedNeighborhood } from '#tests/domain-unit-fixtures'
+import { leftOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const neighborhoods = MemoryRepositories.neighborhoods()
@@ -44,7 +45,7 @@ test.group('management/schedules > create (unit)', () => {
     })
 
     assert.deepInclude(result.value, { status: 422, code: 'NEIGHBORHOOD_NOT_FOUND' })
-    assert.property((result.value as { errors: object }).errors, 'neighborhoodId')
+    assert.property(leftOf(result).errors ?? {}, 'neighborhoodId')
   })
 
   test('the same neighborhood, type, weekday and shift is 409 SCHEDULE_ALREADY_EXISTS', async ({

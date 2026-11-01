@@ -41,7 +41,8 @@ test.group('management/reports > delete (unit)', () => {
         now: new Date(),
       }),
     )
-    const { id } = (await seedReport(reports, { photoIds: [PHOTO] })).snapshot()
+    const report = await seedReport(reports, { photoIds: [PHOTO] })
+    const { id } = report.snapshot()
 
     const result = await useCase.execute({ id })
 

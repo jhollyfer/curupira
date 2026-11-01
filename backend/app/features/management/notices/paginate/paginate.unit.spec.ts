@@ -6,6 +6,7 @@ import { NoticeRepository } from '#repositories/notice/notice.repository'
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { seedNotice } from '#tests/domain-unit-fixtures'
+import { rightOf } from '#tests/result-unit-fixtures'
 
 test.group('management/notices > paginate (unit)', () => {
   test('cuts by the derived status', async ({ assert }) => {
@@ -25,7 +26,7 @@ test.group('management/notices > paginate (unit)', () => {
     const titles = async (status?: 'ACTIVE' | 'SCHEDULED' | 'CLOSED') => {
       const result = await useCase.execute({ status })
 
-      return (result.value as { data: Array<{ title: string }> }).data.map((item) => item.title)
+      return rightOf(result).data.map((item) => item.title)
     }
 
     assert.deepEqual(await titles('ACTIVE'), ['Ativo'])

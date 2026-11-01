@@ -6,6 +6,7 @@ import { ReportRepository } from '#repositories/report/report.repository'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { seedReport } from '#tests/domain-unit-fixtures'
+import { rightOf } from '#tests/result-unit-fixtures'
 
 test.group('management/reports > map (unit)', () => {
   test('returns every pin matching the cuts, with no pagination', async ({ assert }) => {
@@ -17,8 +18,8 @@ test.group('management/reports > map (unit)', () => {
     const all = await useCase.execute({})
     const burning = await useCase.execute({ kind: 'BURNING' })
 
-    assert.lengthOf(all.value as unknown[], 2)
-    assert.lengthOf(burning.value as unknown[], 1)
-    assert.deepInclude((burning.value as object[])[0], { protocol: 'CUR-2AAA-0001' })
+    assert.lengthOf(rightOf(all), 2)
+    assert.lengthOf(rightOf(burning), 1)
+    assert.deepInclude(rightOf(burning)[0], { protocol: 'CUR-2AAA-0001' })
   })
 })

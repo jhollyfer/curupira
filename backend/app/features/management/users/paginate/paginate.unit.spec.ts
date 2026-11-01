@@ -5,6 +5,7 @@ import ManagementUserPaginateUseCase from './paginate.use-case.ts'
 import { UserRepository } from '#repositories/user/user.repository'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { identityDoubles, OTHER_ID, seedUser } from '#tests/identity-unit-fixtures'
+import { rightOf } from '#tests/result-unit-fixtures'
 
 test.group('management/users > paginate (unit)', () => {
   test('lists by name and cuts by role, status and search', async ({ assert }) => {
@@ -24,7 +25,7 @@ test.group('management/users > paginate (unit)', () => {
     const names = async (payload: Parameters<typeof useCase.execute>[0]) => {
       const result = await useCase.execute(payload)
 
-      return (result.value as { data: Array<{ name: string }> }).data.map((item) => item.name)
+      return rightOf(result).data.map((item) => item.name)
     }
 
     assert.deepEqual(await names({}), ['Ana', 'Bia'])

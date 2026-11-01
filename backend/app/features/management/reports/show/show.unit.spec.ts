@@ -6,6 +6,7 @@ import { ReportRepository } from '#repositories/report/report.repository'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { seedReport } from '#tests/domain-unit-fixtures'
+import { rightOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const reports = MemoryRepositories.reports()
@@ -19,13 +20,12 @@ test.group('management/reports > show (unit)', () => {
     assert,
   }) => {
     const { reports, useCase } = await setup()
-    const { id } = (
-      await seedReport(reports, {
-        contact: '(97) 99999-0000',
-        description: 'Entulho na calçada',
-        photoIds: ['p1'],
-      })
-    ).snapshot()
+    const seeded = await seedReport(reports, {
+      contact: '(97) 99999-0000',
+      description: 'Entulho na calçada',
+      photoIds: ['p1'],
+    })
+    const { id } = seeded.snapshot()
 
     const result = await useCase.execute({ id })
 
@@ -33,7 +33,7 @@ test.group('management/reports > show (unit)', () => {
       contact: '(97) 99999-0000',
       description: 'Entulho na calçada',
     })
-    const photos = (result.value as { photos: Array<{ id: string; url: string }> }).photos
+    const { photos } = rightOf(result)
     assert.equal(photos[0]?.id, 'p1')
     assert.include(photos[0]?.url ?? '', '?signed')
   })

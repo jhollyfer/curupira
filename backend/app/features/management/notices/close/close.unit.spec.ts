@@ -6,6 +6,7 @@ import { NoticeRepository } from '#repositories/notice/notice.repository'
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { seedNotice } from '#tests/domain-unit-fixtures'
+import { rightOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const notices = MemoryRepositories.notices()
@@ -25,7 +26,7 @@ test.group('management/notices > close (unit)', () => {
     const result = await useCase.execute({ id })
 
     assert.deepInclude(result.value, { status: 'CLOSED' })
-    assert.isString((result.value as { closedAt: string }).closedAt)
+    assert.isString(rightOf(result).closedAt)
     assert.lengthOf(await notices.listActive(new Date()), 0)
   })
 

@@ -6,6 +6,7 @@ import { NoticeRepository } from '#repositories/notice/notice.repository'
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { seedNotice } from '#tests/domain-unit-fixtures'
+import { rightOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const notices = MemoryRepositories.notices()
@@ -31,8 +32,8 @@ test.group('management/notices > update (unit)', () => {
     const set = await useCase.execute({ id, endsAt: '2999-01-01T00:00:00Z' })
     const removed = await useCase.execute({ id, endsAt: null })
 
-    assert.equal((set.value as { endsAt: string }).endsAt, '2999-01-01T00:00:00.000Z')
-    assert.isNull((removed.value as { endsAt: string | null }).endsAt)
+    assert.equal(rightOf(set).endsAt, '2999-01-01T00:00:00.000Z')
+    assert.isNull(rightOf(removed).endsAt)
   })
 
   test('an end before the existing start is 422 NOTICE_INVALID_PERIOD', async ({ assert }) => {

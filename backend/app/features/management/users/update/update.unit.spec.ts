@@ -50,7 +50,8 @@ test.group('management/users > update (unit)', () => {
     const result = await useCase.execute({ id: USER_ID, email: 'bia@mail.com' })
 
     assert.deepInclude(result.value, { status: 409, code: 'USER_ALREADY_EXISTS' })
-    assert.equal((await users.findById(USER_ID))?.snapshot().email, 'ana@mail.com')
+    const stored = await users.findById(USER_ID)
+    assert.equal(stored?.snapshot().email, 'ana@mail.com')
   })
 
   test('nonexistent is 404 USER_NOT_FOUND', async ({ assert }) => {

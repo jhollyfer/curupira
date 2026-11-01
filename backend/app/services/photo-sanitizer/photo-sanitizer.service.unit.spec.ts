@@ -32,7 +32,8 @@ test.group('services > photo sanitizer (unit)', () => {
     }) => {
       const service = await sanitizer()
       const original = await photoWithGps(format)
-      assert.isDefined((await sharp(original).metadata()).exif, 'arrangement: EXIF must exist')
+      const before = await sharp(original).metadata()
+      assert.isDefined(before.exif, 'arrangement: EXIF must exist')
 
       const clean = await service.strip(`image/${format}`, original)
 

@@ -6,6 +6,7 @@ import { NeighborhoodRepository } from '#repositories/neighborhood/neighborhood.
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { seedNeighborhood } from '#tests/domain-unit-fixtures'
+import { rightOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const neighborhoods = MemoryRepositories.neighborhoods()
@@ -25,10 +26,10 @@ test.group('management/neighborhoods > paginate (unit)', () => {
     const result = await useCase.execute({})
 
     assert.deepEqual(
-      (result.value as { data: Array<{ name: string }> }).data.map((item) => item.name),
+      rightOf(result).data.map((item) => item.name),
       ['Centro', 'Cohab'],
     )
-    assert.equal((result.value as { meta: { perPage: number } }).meta.perPage, 20)
+    assert.equal(rightOf(result).meta.perPage, 20)
   })
 
   test('searches by name and reverses with direction', async ({ assert }) => {
@@ -40,7 +41,7 @@ test.group('management/neighborhoods > paginate (unit)', () => {
     const searched = await useCase.execute({ search: 'co' })
     const reversed = await useCase.execute({ direction: 'desc' })
 
-    assert.equal((searched.value as { meta: { total: number } }).meta.total, 2)
-    assert.equal((reversed.value as { data: Array<{ name: string }> }).data[0]?.name, 'Colônia')
+    assert.equal(rightOf(searched).meta.total, 2)
+    assert.equal(rightOf(reversed).data[0]?.name, 'Colônia')
   })
 })

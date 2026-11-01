@@ -6,13 +6,7 @@ import { ReportRepository } from '#repositories/report/report.repository'
 import { makeWithMemory } from '#tests/container-fixtures'
 import { MemoryRepositories } from '#tests/memory-fixtures'
 import { seedReport } from '#tests/domain-unit-fixtures'
-
-type Stats = {
-  total: number
-  byKind: Record<string, number>
-  byStatus: Record<string, number>
-  lastThirtyDays: Array<{ day: string; total: number }>
-}
+import { rightOf } from '#tests/result-unit-fixtures'
 
 test.group('management/reports > stats (unit)', () => {
   test('an empty base has every key at zero and 30 days of series', async ({ assert }) => {
@@ -21,7 +15,7 @@ test.group('management/reports > stats (unit)', () => {
       [ReportRepository, reports],
     ])
 
-    const stats = (await useCase.execute()).value as Stats
+    const stats = rightOf(await useCase.execute())
 
     assert.equal(stats.total, 0)
     assert.deepEqual(stats.byKind, { BURNING: 0, DUMPING: 0, DEFORESTATION: 0, OTHER: 0 })
@@ -42,7 +36,7 @@ test.group('management/reports > stats (unit)', () => {
       now: new Date(Date.now() - 400 * 24 * 60 * 60 * 1000),
     })
 
-    const stats = (await useCase.execute()).value as Stats
+    const stats = rightOf(await useCase.execute())
 
     assert.equal(stats.total, 3)
     assert.equal(stats.byKind['BURNING'], 1)
