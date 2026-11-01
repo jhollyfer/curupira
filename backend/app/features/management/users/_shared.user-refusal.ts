@@ -1,0 +1,36 @@
+import type { I18n } from '@adonisjs/i18n'
+
+import { RefusalBase, type RefusalTable } from '#features/_shared.refusal.base'
+import HTTPException from '#exceptions/http.exception'
+import type { UserError } from '#domain/user/user.errors'
+
+/**
+ * Each refusal of the account as an HTTP response, the same in the accounts panel and in
+ * editing the own account (`_standards/domain.md` §2). Table by `code`: a new
+ * fact without an entry does not compile. The 409 of the repeated email is the one of the check
+ * before saving and the one of the race on the `unique`, which the repository returns as a fact.
+ */
+export class UserRefusal extends RefusalBase {
+  private static readonly TABLE = {
+    USER_ALREADY_EXISTS: (_fact, i18n) =>
+      HTTPException.Conflict(i18n.t('users.already_exists'), 'USER_ALREADY_EXISTS', {
+        email: i18n.t('users.email_taken'),
+      }),
+    CURRENT_PASSWORD_INVALID: (_fact, i18n) =>
+      HTTPException.UnprocessableEntity(
+        i18n.t('users.current_password_invalid'),
+        'CURRENT_PASSWORD_INVALID',
+        { currentPassword: i18n.t('users.current_password_invalid') },
+      ),
+    PASSWORD_SAME_AS_CURRENT: (_fact, i18n) =>
+      HTTPException.UnprocessableEntity(
+        i18n.t('users.password_same_as_current'),
+        'PASSWORD_SAME_AS_CURRENT',
+        { password: i18n.t('users.password_same_as_current') },
+      ),
+  } satisfies RefusalTable<UserError>
+
+  static http(error: UserError, i18n: I18n): HTTPException {
+    return UserRefusal.translate(UserRefusal.TABLE, error.code, error, i18n)
+  }
+}

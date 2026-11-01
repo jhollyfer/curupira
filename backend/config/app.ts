@@ -1,13 +1,14 @@
-import env from '#start/env'
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/core/http'
+
+import env from '#start/env'
 
 /**
  * The app URL can be used in various places where you want to create absolute
  * URLs to your application. For example, when sending emails, images should
  * use absolute URLs.
  */
-export const appUrl = env.get('APP_URL')
+export const serverUrl = env.get('APP_URL')
 
 /**
  * The configuration settings used by the HTTP server
@@ -20,6 +21,15 @@ export const http = defineConfig({
   generateRequestId: true,
 
   /**
+   * The proxies whose word about the client IP counts (`TRUSTED_PROXIES`).
+   * Required by `start/env.ts`. Without the production proxy here,
+   * `request.ip()` is its IP and the per-IP limit becomes global
+   * (_standards/backend.md §4.10; _doc-lib/adonisjs.md#guides/basics/request,
+   * https://docs.adonisjs.com/guides/basics/request).
+   */
+  trustProxy: env.get('TRUSTED_PROXIES'),
+
+  /**
    * Allow HTTP method spoofing via the "_method" form/query parameter.
    * This lets HTML forms target PUT/PATCH/DELETE routes while still
    * submitting with POST.
@@ -27,14 +37,11 @@ export const http = defineConfig({
   allowMethodSpoofing: false,
 
   /**
-   * Enabling async local storage will let you access HTTP context
-   * from anywhere inside your application.
+   * Off: the request language reaches the use case by `I18n` injection
+   * (`providers/i18n.provider.ts`), the form the doc prefers over async local
+   * storage (_doc-lib/adonisjs.md#guides/basics/http-context).
    */
   useAsyncLocalStorage: false,
-
-  router: {
-    matcher: 'tree',
-  },
 
   /**
    * Redirect configuration controls the behavior of

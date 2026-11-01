@@ -1,0 +1,84 @@
+name: curupira-backend
+
+# Só infraestrutura local: banco e MinIO de teste. A aplicação roda fora dele
+# (`pnpm dev`). Portas próprias, para conviver com outros projetos na mesma
+# máquina (_standards/tooling.md §8.4).
+services:
+  database:
+    image: postgres:18-alpine
+    container_name: curupira-backend-database
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_PASSWORD: curupira
+      POSTGRES_DB: curupira
+      POSTGRES_USER: curupira
+    # 5436 no host por default, e não 5432: outros projetos na mesma máquina
+    # ocupam a porta padrão. Dentro da rede do compose o Postgres segue em 5432.
+    ports:
+      - '${DB_PORT:-5436}:5432'
+    # Postgres 18: o volume vai em /var/lib/postgresql (o PGDATA fica numa
+    # subpasta versionada por major).
+    volumes:
+      - curupira-backend-database-volume:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U curupira -d curupira']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Bucket S3-compatível para desenvolvimento e testes; produção é S3 ou R2,
+  # nunca MinIO. Multipart é API do S3 que o disco `local` não tem, então dev
+  # exercita o mesmo caminho de código de produção. A imagem é compilada do
+  # código-fonte numa release fixa (`infra/minio/Dockerfile`).
+  minio:
+    build: ./infra/minio
+    image: curupira-minio-test:2025-10-15
+    container_name: curupira-backend-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-curupira-root}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-curupira-root-secret}
+      # O navegador envia cada parte direto para cá: sem CORS liberado, o
+      # preflight do PUT morre antes de qualquer byte sair. Lista explícita.
+      MINIO_API_CORS_ALLOW_ORIGIN: ${STORAGE_CORS_ORIGIN:-http://localhost:3001,http://localhost:3010}
+      # Multipart abandonado some sozinho.
+      MINIO_API_STALE_UPLOADS_EXPIRY: 24h
+      MINIO_API_STALE_UPLOADS_CLEANUP_INTERVAL: 6h
+    # 9006/9007 por default, pelo mesmo motivo do 5436. Console em
+    # http://localhost:9007.
+    ports:
+      - '${STORAGE_PORT:-9006}:9000'
+      - '${STORAGE_CONSOLE_PORT:-9007}:9001'
+    volumes:
+      - curupira-backend-minio-volume:/data
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1:9000/minio/health/live']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Cria os buckets (dev e teste) privados e o usuário `app-rw` da aplicação;
+  # o root só existe para isto. Roda uma vez e sai.
+  minio-setup:
+    image: curupira-minio-test:2025-10-15
+    container_name: curupira-backend-minio-setup
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ['/bin/sh', '/setup/minio-setup.sh']
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-curupira-root}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-curupira-root-secret}
+      STORAGE_KEY: ${STORAGE_KEY:-curupira}
+      STORAGE_SECRET: ${STORAGE_SECRET:-curupira-secret}
+      STORAGE_BUCKET: ${STORAGE_BUCKET:-curupira}
+    volumes:
+      - ./infra/minio:/setup:ro
+
+volumes:
+  curupira-backend-database-volume:
+    driver: local
+  curupira-backend-minio-volume:
+    driver: local

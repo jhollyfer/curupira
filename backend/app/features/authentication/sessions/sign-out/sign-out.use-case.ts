@@ -1,0 +1,50 @@
+import { inject } from '@adonisjs/core'
+import { I18n } from '@adonisjs/i18n'
+import logger from '@adonisjs/core/services/logger'
+import { left, right, type Actor, type Either } from '@curupira/shared'
+
+import HTTPException from '#exceptions/http.exception'
+import { SessionRepository } from '#repositories/session/session.repository'
+
+type Payload = {
+  readonly actor: Actor
+  /** The access token that authenticated this request. */
+  readonly accessTokenId?: string
+  readonly refreshToken?: string
+}
+
+type Response = Either<HTTPException, null>
+
+@inject()
+export default class AuthenticationSessionSignOutUseCase {
+  constructor(
+    private readonly sessions: SessionRepository,
+    private readonly i18n: I18n,
+  ) {}
+
+  async execute({ actor, accessTokenId, refreshToken }: Payload): Promise<Response> {
+    try {
+      if (accessTokenId) await this.sessions.revoke(actor.id, accessTokenId)
+
+      if (refreshToken) {
+        // An unreadable refresh token does not prevent sign-out: the cookies are
+        // cleared anyway by the controller. `readRefresh` already returns
+        // `null` for the unreadable one and for what is not a refresh token.
+        const grant = await this.sessions.readRefresh(refreshToken)
+
+        if (grant) await this.sessions.revoke(actor.id, grant.identifier)
+      }
+
+      return right(null)
+    } catch (error) {
+      logger.error({ err: error }, '[authentication/sessions > sign-out][error]')
+
+      return left(
+        HTTPException.InternalServerError(
+          this.i18n.t('errors.internal'),
+          'AUTHENTICATION_SESSION_SIGN_OUT_ERROR',
+        ),
+      )
+    }
+  }
+}
