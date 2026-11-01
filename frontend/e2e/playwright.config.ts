@@ -68,6 +68,12 @@ export default defineConfig({
       grep: /no horizontal scroll/,
       use: { ...devices['Desktop Chrome'] },
     },
+    // The panel at every width of the matrix: the spec sets its own viewport per test.
+    {
+      name: 'responsive',
+      testMatch: /responsive-panel\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
   webServer: {
     // The specs run against the real API (backend on `E2E_API_URL`, seeded with
