@@ -52,9 +52,10 @@ export class NoticeLucidRepository extends NoticeRepository {
   }
 
   async paginate(criteria: NoticeListCriteria): Promise<Paginated<ManagementNoticeShowResponse>> {
-    const query = this.query()
-    if (criteria.search) query.whereILike('title', `%${criteria.search}%`)
-    if (criteria.status) this.byStatus(query, criteria.status, criteria.now)
+    const searched = this.query().if(criteria.search, (builder) =>
+      builder.whereILike('title', `%${criteria.search}%`),
+    )
+    const query = this.cutByStatus(searched, criteria.status, criteria.now)
 
     const page = await query
       .orderBy(criteria.sort, criteria.direction)
@@ -67,9 +68,10 @@ export class NoticeLucidRepository extends NoticeRepository {
   }
 
   async listActive(now: Date): Promise<StorefrontNoticeShowResponse[]> {
-    const query = this.query()
-    this.byStatus(query, NOTICE_STATUS.ACTIVE, now)
-    const rows = await query.orderBy('startsAt', 'desc')
+    const rows = await this.byStatus(this.query(), NOTICE_STATUS.ACTIVE, now).orderBy(
+      'startsAt',
+      'desc',
+    )
 
     return rows.map((row) => ({
       id: row.id,
@@ -80,27 +82,31 @@ export class NoticeLucidRepository extends NoticeRepository {
     }))
   }
 
+  /** No status asked means no cut. */
+  private cutByStatus(query: NoticeQuery, status: NoticeStatus | undefined, at: Date): NoticeQuery {
+    if (!status) return query
+
+    return this.byStatus(query, status, at)
+  }
+
   /** The same three-way rule as `Notice.statusOf`, expressed as SQL. */
-  private byStatus(query: NoticeQuery, status: NoticeStatus, now: Date): void {
-    const at = now
+  private byStatus(query: NoticeQuery, status: NoticeStatus, at: Date): NoticeQuery {
     const cuts = {
       [NOTICE_STATUS.SCHEDULED]: () => query.whereNull('closedAt').where('startsAt', '>', at),
       [NOTICE_STATUS.ACTIVE]: () =>
         query
           .whereNull('closedAt')
           .where('startsAt', '<=', at)
-          .where((builder) => {
-            builder.whereNull('endsAt').orWhere('endsAt', '>', at)
-          }),
+          .where((builder) => builder.whereNull('endsAt').orWhere('endsAt', '>', at)),
       [NOTICE_STATUS.CLOSED]: () =>
-        query.where((builder) => {
-          builder.whereNotNull('closedAt').orWhere((ended) => {
-            ended.whereNotNull('endsAt').where('endsAt', '<=', at)
-          })
-        }),
-    } satisfies Record<NoticeStatus, () => unknown>
+        query.where((builder) =>
+          builder
+            .whereNotNull('closedAt')
+            .orWhere((ended) => ended.whereNotNull('endsAt').where('endsAt', '<=', at)),
+        ),
+    } satisfies Record<NoticeStatus, () => NoticeQuery>
 
-    cuts[status]()
+    return cuts[status]()
   }
 
   private query() {

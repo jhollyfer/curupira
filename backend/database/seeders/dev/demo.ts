@@ -18,6 +18,7 @@ import {
   type WasteType,
   type Weekday,
 } from '@curupira/shared'
+import app from '@adonisjs/core/services/app'
 
 import CollectionSchedule from '#models/collection-schedule'
 import Neighborhood from '#models/neighborhood'
@@ -28,7 +29,6 @@ import ReportStatusEvent from '#models/report-status-event'
 import Storage from '#models/storage'
 import User from '#models/user'
 import NeighborhoodSeeder from '#database/seeders/neighborhood.seed'
-import app from '@adonisjs/core/services/app'
 
 /**
  * A demonstration of the whole product: a sample collection schedule, about fifteen
@@ -281,7 +281,8 @@ export default class extends BaseSeeder {
 
   private async reports() {
     const author = await User.query().where('role', USER_ROLE.ADMINISTRATOR).first()
-    const centers = new Map((await Neighborhood.all()).map((each) => [each.name, each]))
+    const everyone = await Neighborhood.all()
+    const centers = new Map(everyone.map((each) => [each.name, each]))
 
     for (const [index, seed] of REPORTS.entries()) {
       const center = centers.get(seed.neighborhood)
@@ -319,12 +320,16 @@ export default class extends BaseSeeder {
     await ReportStatusEvent.query().where('reportId', report.id).delete()
 
     for (const [step, each] of reached.entries()) {
+      // The first line is the resident's own: no author.
+      let eventAuthor = authorId
+      if (step === 0) eventAuthor = null
+
       await ReportStatusEvent.create({
         id: randomUUID(),
         reportId: report.id,
         status: each,
         message: STEP_MESSAGES[each],
-        authorId: step === 0 ? null : authorId,
+        authorId: eventAuthor,
         at: createdAt.plus({ hours: step * 20 }),
       })
     }

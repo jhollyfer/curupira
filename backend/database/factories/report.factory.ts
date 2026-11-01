@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 
 import factory from '@adonisjs/lucid/factories'
 import { DateTime } from 'luxon'
-import { PROTOCOL_ALPHABET, REPORT_KIND, REPORT_STATUS, formatProtocol } from '@curupira/shared'
+import { REPORT_KIND, REPORT_STATUS, formatProtocol } from '@curupira/shared'
 
 import Report from '#models/report'
 import ReportStatusEvent from '#models/report-status-event'
@@ -12,11 +12,11 @@ let counter = 0
 /** A distinct valid protocol per call, without randomness: a flaky `unique` has no place in a spec. */
 function protocol(): string {
   counter += 1
+  // Base 32 digits (0-9, a-v) contain `I`, `L`, `O` and `U`, which the protocol alphabet
+  // leaves out; `Z` is not a base 32 digit, so the replacement cannot collide with another counter.
   const symbols = counter.toString(32).toUpperCase().padStart(8, '0')
 
-  return formatProtocol(
-    [...symbols].map((symbol) => (PROTOCOL_ALPHABET.includes(symbol) ? symbol : '0')).join(''),
-  )
+  return formatProtocol(symbols.replace(/[ILOU]/g, 'Z'))
 }
 
 /**

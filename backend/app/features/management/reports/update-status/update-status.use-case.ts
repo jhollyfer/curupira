@@ -1,8 +1,8 @@
+import { randomUUID } from 'node:crypto'
+
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { randomUUID } from 'node:crypto'
-
 import {
   left,
   right,

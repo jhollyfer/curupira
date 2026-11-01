@@ -59,7 +59,7 @@ export class Notice {
 
   update(changes: NoticeChanges, now: Date): Either<NoticeError, Notice> {
     const startsAt = changes.startsAt ?? this.props.startsAt
-    const endsAt = changes.endsAt === undefined ? this.props.endsAt : changes.endsAt
+    const endsAt = Notice.keep(changes.endsAt, this.props.endsAt)
     if (endsAt !== null && endsAt <= startsAt) return left({ code: 'NOTICE_INVALID_PERIOD' })
 
     if (changes.title !== undefined) this.props.title = changes.title
@@ -79,6 +79,13 @@ export class Notice {
     this.props.updatedAt = now
 
     return right(this)
+  }
+
+  /** An absent change keeps the current value; `null` is a change (erase). */
+  private static keep(change: Date | null | undefined, current: Date | null): Date | null {
+    if (change === undefined) return current
+
+    return change
   }
 
   status(at: Date): NoticeStatus {

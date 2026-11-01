@@ -100,7 +100,7 @@ export class ReportMemoryRepository extends ReportRepository {
       events: row.events.map((event) => ({
         status: event.status,
         message: event.message,
-        authorName: event.authorId ? (this.authors.get(event.authorId) ?? null) : null,
+        authorName: this.authors.get(event.authorId ?? '') ?? null,
         at: event.at.toISOString(),
       })),
       updatedAt: row.updatedAt?.toISOString() ?? null,
@@ -208,9 +208,7 @@ export class ReportMemoryRepository extends ReportRepository {
       latitude: row.latitude,
       longitude: row.longitude,
       neighborhoodId: row.neighborhoodId,
-      neighborhoodName: row.neighborhoodId
-        ? (this.neighborhoods.get(row.neighborhoodId) ?? null)
-        : null,
+      neighborhoodName: this.neighborhoods.get(row.neighborhoodId ?? '') ?? null,
       createdAt: row.createdAt.toISOString(),
     }
   }

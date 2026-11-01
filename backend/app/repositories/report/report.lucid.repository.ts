@@ -55,6 +55,9 @@ const SORT_COLUMNS = {
   kind: 'reports.kind',
 } as const
 
+/** The base query of the list, the map and the detail (see `listing`). */
+type ListingQuery = ReturnType<ReturnType<QueryClientContract['from']>['leftJoin']>
+
 const PROTOCOL_CONSTRAINT = 'reports_protocol_unique'
 
 @inject()
@@ -115,7 +118,7 @@ export class ReportLucidRepository extends ReportRepository {
         {
           ...columns,
           createdAt: DateTime.fromJSDate(createdAt),
-          updatedAt: updatedAt ? DateTime.fromJSDate(updatedAt) : null,
+          updatedAt: this.dateOrNull(updatedAt),
         },
         { client },
       )
@@ -380,17 +383,20 @@ export class ReportLucidRepository extends ReportRepository {
       .select('neighborhoods.name as neighborhood_name')
   }
 
-  private filtered<TQuery extends ReturnType<ReportLucidRepository['listing']>>(
+  private filtered<TQuery extends ListingQuery>(
     query: TQuery,
     criteria: ReportFilterCriteria,
   ): TQuery {
-    if (criteria.kind) query.where('reports.kind', criteria.kind)
-    if (criteria.status) query.where('reports.status', criteria.status)
-    if (criteria.neighborhoodId) query.where('reports.neighborhood_id', criteria.neighborhoodId)
-    if (criteria.from) query.where('reports.created_at', '>=', criteria.from)
-    if (criteria.to) query.where('reports.created_at', '<=', criteria.to)
-
     return query
+      .if(criteria.kind, (builder) => builder.where('reports.kind', String(criteria.kind)))
+      .if(criteria.status, (builder) => builder.where('reports.status', String(criteria.status)))
+      .if(criteria.neighborhoodId, (builder) =>
+        builder.where('reports.neighborhood_id', String(criteria.neighborhoodId)),
+      )
+      .if(criteria.from, (builder) =>
+        builder.where('reports.created_at', '>=', criteria.from ?? ''),
+      )
+      .if(criteria.to, (builder) => builder.where('reports.created_at', '<=', criteria.to ?? ''))
   }
 
   private toListItem(row: ListRow): ManagementReportListItemResponse {
@@ -405,5 +411,11 @@ export class ReportLucidRepository extends ReportRepository {
       neighborhoodName: row.neighborhood_name,
       createdAt: row.created_at.toISOString(),
     }
+  }
+
+  private dateOrNull(date: Date | null): DateTime | null {
+    if (!date) return null
+
+    return DateTime.fromJSDate(date)
   }
 }

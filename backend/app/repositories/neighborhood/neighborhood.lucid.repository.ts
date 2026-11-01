@@ -74,7 +74,7 @@ export class NeighborhoodLucidRepository extends NeighborhoodRepository {
         {
           ...columns,
           createdAt: DateTime.fromJSDate(createdAt),
-          updatedAt: updatedAt ? DateTime.fromJSDate(updatedAt) : null,
+          updatedAt: this.dateOrNull(updatedAt),
         },
         { client: this.transaction.client() },
       )
@@ -146,5 +146,11 @@ export class NeighborhoodLucidRepository extends NeighborhoodRepository {
       createdAt: row.createdAt.toISO() ?? '',
       updatedAt: row.updatedAt?.toISO() ?? null,
     }
+  }
+
+  private dateOrNull(date: Date | null): DateTime | null {
+    if (!date) return null
+
+    return DateTime.fromJSDate(date)
   }
 }

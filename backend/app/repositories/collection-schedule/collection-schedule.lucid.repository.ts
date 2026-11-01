@@ -53,7 +53,7 @@ export class CollectionScheduleLucidRepository extends CollectionScheduleReposit
         {
           ...columns,
           createdAt: DateTime.fromJSDate(createdAt),
-          updatedAt: updatedAt ? DateTime.fromJSDate(updatedAt) : null,
+          updatedAt: this.dateOrNull(updatedAt),
         },
         { client: this.transaction.client() },
       )
@@ -154,5 +154,11 @@ export class CollectionScheduleLucidRepository extends CollectionScheduleReposit
       createdAt: row.createdAt.toISO() ?? '',
       updatedAt: row.updatedAt?.toISO() ?? null,
     }
+  }
+
+  private dateOrNull(date: Date | null): DateTime | null {
+    if (!date) return null
+
+    return DateTime.fromJSDate(date)
   }
 }

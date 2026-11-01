@@ -60,8 +60,8 @@ export class Neighborhood {
 
   /** Absent field means "leave alone"; `null` on a coordinate erases the center. */
   update(changes: NeighborhoodChanges, now: Date): Either<NeighborhoodError, Neighborhood> {
-    const latitude = changes.latitude === undefined ? this.props.latitude : changes.latitude
-    const longitude = changes.longitude === undefined ? this.props.longitude : changes.longitude
+    const latitude = Neighborhood.keep(changes.latitude, this.props.latitude)
+    const longitude = Neighborhood.keep(changes.longitude, this.props.longitude)
     if ((latitude === null) !== (longitude === null))
       return left({ code: 'NEIGHBORHOOD_CENTER_INCOMPLETE' })
 
@@ -74,6 +74,13 @@ export class Neighborhood {
     this.props.updatedAt = now
 
     return right(this)
+  }
+
+  /** An absent change keeps the current value; `null` is a change (erase). */
+  private static keep(change: number | null | undefined, current: number | null): number | null {
+    if (change === undefined) return current
+
+    return change
   }
 
   /** Whether the name changes: only then is it worth checking for duplicates. */
