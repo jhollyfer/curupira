@@ -1,0 +1,31 @@
+# Built from the workspace ROOT, like the backend's:
+#   docker build -f frontend/Dockerfile-production .
+# Image pinned by digest, updated by Dependabot (tooling.md §8.2, §9).
+FROM node:24-alpine@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85
+
+WORKDIR /app
+
+# curl for the healthcheck
+RUN apk add --no-cache curl
+
+# Copies the ready .output (comes from the build artifact). The root `.dockerignore`
+# reopens only `frontend/.output`.
+COPY frontend/.output/ ./.output/
+
+# Non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nitro && \
+    chown -R nitro:nodejs /app/.output
+
+USER nitro
+
+# The `curl` installed above had no consumer. The orchestrator needs to know
+# whether Nitro came up, and not only whether the process is alive: an SSR that died
+# on boot leaves the container alive and the page blank.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD curl -fsS http://127.0.0.1:3000/health-check || exit 1
+
+EXPOSE 3000
+ENV PORT=3000
+
+CMD ["node", ".output/server/index.mjs"]

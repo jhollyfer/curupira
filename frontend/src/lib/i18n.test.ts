@@ -1,0 +1,54 @@
+import { afterEach, describe, expect, it } from 'vitest'
+
+import { overwriteGetLocale } from '#/paraglide/runtime'
+
+import {
+  TOWN_TIME_ZONE,
+  formatNumber,
+  formatTownDate,
+  localized,
+  townDay,
+} from './i18n'
+
+afterEach(() => {
+  overwriteGetLocale(() => 'pt-BR')
+})
+
+const TEXT = { 'pt-BR': 'Olá', es: 'Hola', en: 'Hello' }
+
+describe('localized', () => {
+  it('reads the text of the current language', () => {
+    overwriteGetLocale(() => 'es')
+    expect(localized(TEXT)).toBe('Hola')
+
+    overwriteGetLocale(() => 'en')
+    expect(localized(TEXT)).toBe('Hello')
+  })
+})
+
+describe('formatNumber', () => {
+  it('follows the separator of the language', () => {
+    overwriteGetLocale(() => 'pt-BR')
+    expect(formatNumber(1234.5)).toBe('1.234,5')
+
+    overwriteGetLocale(() => 'en')
+    expect(formatNumber(1234.5)).toBe('1,234.5')
+  })
+})
+
+describe('town clock', () => {
+  it('is the Manaus time zone', () => {
+    expect(TOWN_TIME_ZONE).toBe('America/Manaus')
+  })
+
+  it('shows an instant at UTC-4, not in UTC', () => {
+    // 02:30Z on Jan 1st is still Dec 31st at 22:30 in Manaus.
+    expect(
+      formatTownDate('2027-01-01T02:30:00Z', { day: '2-digit', month: '2-digit' }),
+    ).toBe('31/12')
+  })
+
+  it('reads a bare day on the town clock', () => {
+    expect(townDay('2026-12-31').offset).toBe(-240)
+  })
+})
