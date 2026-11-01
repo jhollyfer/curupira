@@ -67,7 +67,7 @@ function Trail(): React.JSX.Element {
               {crumb.to && (
                 <BreadcrumbLink
                   render={<Link to={crumb.to} />}
-                  className="max-md:inline-flex max-md:min-h-11 max-md:items-center pointer-coarse:inline-flex pointer-coarse:min-h-11 pointer-coarse:items-center"
+                  className="max-md:inline-flex max-md:min-h-11 max-md:min-w-11 max-md:items-center max-md:justify-center pointer-coarse:inline-flex pointer-coarse:min-h-11 pointer-coarse:min-w-11 pointer-coarse:items-center pointer-coarse:justify-center"
                 >
                   {crumb.label}
                 </BreadcrumbLink>
