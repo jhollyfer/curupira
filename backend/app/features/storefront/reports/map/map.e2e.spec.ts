@@ -26,7 +26,10 @@ test.group('storefront/reports > map', (group) => {
     assert.equal(panelPin.longitude, -70.031467)
   })
 
-  test('throttles the map per IP: the 61st within ten minutes is 429', async ({ client, assert }) => {
+  test('throttles the map per IP: the 61st within ten minutes is 429', async ({
+    client,
+    assert,
+  }) => {
     let last = 0
     for (let attempt = 0; attempt < 61; attempt++) {
       const response = await client.get('/storefront/reports/map')

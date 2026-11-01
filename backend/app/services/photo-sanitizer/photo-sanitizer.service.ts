@@ -1,4 +1,4 @@
-import sharp from 'sharp'
+import sharp, { type Sharp } from 'sharp'
 
 import { Semaphore } from '#core/semaphore'
 import { PhotoSanitizerContract } from '#services/photo-sanitizer/photo-sanitizer.contract'
@@ -55,8 +55,8 @@ export default class PhotoSanitizerService extends PhotoSanitizerContract {
     }
   }
 
-  private static encode(image: sharp.Sharp, mimetype: string): sharp.Sharp {
-    const encoders: Record<string, (pipeline: sharp.Sharp) => sharp.Sharp> = {
+  private static encode(image: Sharp, mimetype: string): Sharp {
+    const encoders: Record<string, (pipeline: Sharp) => Sharp> = {
       'image/jpeg': (pipeline) => pipeline.jpeg({ quality: 90 }),
       'image/png': (pipeline) => pipeline.png(),
       'image/webp': (pipeline) => pipeline.webp({ quality: 90 }),

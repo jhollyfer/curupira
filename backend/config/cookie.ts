@@ -11,8 +11,8 @@ import env from '#start/env'
  */
 export const COOKIE_TOKEN = {
   DRIVER_NAME: 'cookie-access-tokens',
-  ACCESS: 'access-token',
-  REFRESH: 'refresh-token',
+  ACCESS: 'curupira-access-token',
+  REFRESH: 'curupira-refresh-token',
   ACCESS_EXPIRY: '1d',
   REFRESH_EXPIRY: '7d',
 } as const

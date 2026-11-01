@@ -1,4 +1,5 @@
 import env from '#start/env'
+import { COOKIE_TOKEN } from '#config/cookie'
 
 /**
  * OpenAPI document configuration.
@@ -14,17 +15,17 @@ import env from '#start/env'
  * Name of the security scheme referenced by every authenticated operation.
  *
  * It is `apiKey` in a cookie, not `bearer`: the application guard reads the token from
- * `request.cookie('access-token')` and has no fallback to the `Authorization`
+ * `request.cookie(COOKIE_TOKEN.ACCESS)` and has no fallback to the `Authorization`
  * header (`app/guards/cookie-access-tokens.guard.ts`). Documenting bearer here would
  * make Scalar's "Test Request" always fail.
  */
 export const SECURITY_SCHEME = 'cookieAuth'
 
 /**
- * Cookie that carries the access token. Mirrors `COOKIE_TOKEN.ACCESS` of
- * `config/cookie.ts`.
+ * Cookie that carries the access token: the very constant the guard reads, so the
+ * documented name cannot drift from the real one.
  */
-export const SECURITY_COOKIE = 'access-token'
+export const SECURITY_COOKIE = COOKIE_TOKEN.ACCESS
 
 /**
  * Label of an operation group in the Scalar sidebar.
@@ -172,7 +173,7 @@ const openapi = {
       'Curupira API: the collection schedule by neighborhood, anonymous environmental reports with ' +
       'photo and map, and the management panel for the city team.\n\n' +
       'The site (`/storefront`) answers without a session. Everything else requires the `httpOnly` cookie ' +
-      '`access-token`, issued by `POST /authentication/sign-in` and renewed by ' +
+      '`curupira-access-token`, issued by `POST /authentication/sign-in` and renewed by ' +
       '`POST /authentication/refresh`.\n\n' +
       'Every failure returns the same body: `{ message, status, code, errors? }`, where `code` is the ' +
       'machine identifier and `errors` maps field to message when the failure is per ' +

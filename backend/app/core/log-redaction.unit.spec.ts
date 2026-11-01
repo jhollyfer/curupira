@@ -50,7 +50,7 @@ test.group('config > logger > redaction (unit)', () => {
         accessToken: 'oat_segredo',
         refreshToken: 'ort_segredo',
         authorization: 'Bearer segredo',
-        req: { headers: { cookie: 'access-token=segredo' } },
+        req: { headers: { cookie: 'curupira-access-token=segredo' } },
       },
       'requisição',
     )

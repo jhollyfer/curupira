@@ -26,6 +26,18 @@ test.group('authentication > sign-in', (group) => {
     assert.isDefined(response.cookie(COOKIE_TOKEN.REFRESH)?.value)
   })
 
+  test('the cookie names carry the project prefix, so a sibling app on the same parent domain cannot collide', async ({
+    client,
+    assert,
+  }) => {
+    const response = await client.post('/authentication/sign-in').json(ADMINISTRATOR)
+
+    assert.isDefined(response.cookie('curupira-access-token'))
+    assert.isDefined(response.cookie('curupira-refresh-token'))
+    assert.isUndefined(response.cookie('access-token'))
+    assert.isUndefined(response.cookie('refresh-token'))
+  })
+
   test('wrong credential responds 401 without revealing whether the email exists', async ({
     client,
     assert,

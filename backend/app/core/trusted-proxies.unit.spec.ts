@@ -32,13 +32,24 @@ test.group('TrustedProxies', () => {
   })
 
   test('never trusts everyone: true, *, and the catch-all ranges', ({ assert }) => {
-    for (const value of ['true', '*', 'TRUE', 'loopback,true', '0.0.0.0/0', '::/0', '0.0.0.0/0,loopback']) {
+    for (const value of [
+      'true',
+      '*',
+      'TRUE',
+      'loopback,true',
+      '0.0.0.0/0',
+      '::/0',
+      '0.0.0.0/0,loopback',
+    ]) {
       assert.throws(() => TrustedProxies.compile(value), /TRUSTED_PROXIES/, value)
     }
   })
 
   test('validate returns the raw value the schema keeps', ({ assert }) => {
-    assert.equal(TrustedProxies.validate('TRUSTED_PROXIES', 'loopback,uniquelocal'), 'loopback,uniquelocal')
+    assert.equal(
+      TrustedProxies.validate('TRUSTED_PROXIES', 'loopback,uniquelocal'),
+      'loopback,uniquelocal',
+    )
     assert.throws(() => TrustedProxies.validate('TRUSTED_PROXIES', undefined), /TRUSTED_PROXIES/)
     assert.throws(() => TrustedProxies.validate('TRUSTED_PROXIES', 'true'), /TRUSTED_PROXIES/)
   })
