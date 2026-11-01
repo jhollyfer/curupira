@@ -1,4 +1,10 @@
-import type { ListSearch, StorefrontSearch } from '#/lib/list-search'
+import type { StorefrontSearch } from '#/lib/list-search'
+import type {
+  NoticesSearch,
+  ReportsFilter,
+  ReportsSearch,
+  UsersSearch,
+} from '#/lib/management-search'
 
 /**
  * The cache keys, in one place, with one section per API module
@@ -11,8 +17,7 @@ import type { ListSearch, StorefrontSearch } from '#/lib/list-search'
  * A module with no cached read (`authentication`, `storages`) has no section:
  * a key nobody reads or invalidates is just an extra name.
  *
- * The `management` section is the entry point for the panel (`/gestao`): add each
- * resource here when its screen is built.
+ * The `management` section is the panel's (`/gestao`), one entry per screen.
  */
 export const queryKeys = {
   account: {
@@ -25,9 +30,37 @@ export const queryKeys = {
     all: ['management'] as const,
     reports: {
       all: ['management', 'reports'] as const,
-      list: (params: ListSearch) =>
+      list: (params: ReportsSearch) =>
         ['management', 'reports', 'list', params] as const,
+      map: (filter: ReportsFilter) =>
+        ['management', 'reports', 'map', filter] as const,
+      stats: ['management', 'reports', 'stats'] as const,
       detail: (id: string) => ['management', 'reports', 'detail', id] as const,
+    },
+    notices: {
+      all: ['management', 'notices'] as const,
+      list: (params: NoticesSearch) =>
+        ['management', 'notices', 'list', params] as const,
+      detail: (id: string) => ['management', 'notices', 'detail', id] as const,
+    },
+    neighborhoods: {
+      all: ['management', 'neighborhoods'] as const,
+      list: (params: StorefrontSearch) =>
+        ['management', 'neighborhoods', 'list', params] as const,
+      options: ['management', 'neighborhoods', 'options'] as const,
+      detail: (id: string) =>
+        ['management', 'neighborhoods', 'detail', id] as const,
+    },
+    schedules: {
+      all: ['management', 'schedules'] as const,
+      byNeighborhood: (neighborhoodId: string | undefined) =>
+        ['management', 'schedules', neighborhoodId ?? 'none'] as const,
+    },
+    users: {
+      all: ['management', 'users'] as const,
+      list: (params: UsersSearch) =>
+        ['management', 'users', 'list', params] as const,
+      detail: (id: string) => ['management', 'users', 'detail', id] as const,
     },
   },
 
@@ -63,7 +96,11 @@ export const queryKeys = {
  * and a report moved forward changes the public map and the tracking page.
  */
 export const DEPENDENTS = {
-  neighborhoods: [queryKeys.storefront.all],
+  neighborhoods: [
+    queryKeys.storefront.all,
+    queryKeys.management.schedules.all,
+    queryKeys.management.reports.all,
+  ],
   schedules: [queryKeys.storefront.schedules.all],
   notices: [queryKeys.storefront.notices.all],
   reports: [queryKeys.storefront.reports.all],
