@@ -6,10 +6,12 @@ import * as React from 'react'
 import { OptionSelect } from '#/components/common/option-select'
 import { useTable } from '#/components/common/table'
 import { managementUsersQueryOptions } from '#/integrations/tanstack-query/queries/management'
+import { countActiveFilters } from '#/lib/active-filters'
 import { ACTIVE_STATUS_LABELS, USER_ROLE_LABELS } from '#/lib/labels'
 import { m } from '#/paraglide/messages'
 
 import { userColumns } from './columns'
+import { FilterPanel } from '../../../-components/filter-panel'
 import { ListPage } from '../../../-components/list-page'
 import { SearchFilter } from '../../../-components/search-filter'
 
@@ -40,11 +42,10 @@ export function UsersPage(): React.JSX.Element {
       emptyDescription={m.panel_users_empty_description()}
       create={{ to: '/gestao/users/new', label: m.panel_users_new() }}
       filters={
-        <form
-          role="search"
-          aria-label={m.panel_users_filters_label()}
-          className="flex shrink-0 flex-wrap items-end gap-3"
-          onSubmit={(event) => event.preventDefault()}
+        <FilterPanel
+          label={m.panel_users_filters_label()}
+          activeCount={countActiveFilters(search, ['role', 'status', 'search'])}
+          onClear={() => void navigate({ search: {} })}
         >
           <OptionSelect
             id={ids.concat('-role')}
@@ -98,7 +99,7 @@ export function UsersPage(): React.JSX.Element {
               })
             }
           />
-        </form>
+        </FilterPanel>
       }
       onRowClick={(row) =>
         void navigate({ to: '/gestao/users/$id/edit', params: { id: row.id } })

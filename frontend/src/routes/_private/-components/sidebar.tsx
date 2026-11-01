@@ -67,6 +67,9 @@ function NavigationItem({
         isActive={isActive}
         tooltip={label}
         render={<Link to={to} />}
+        // The drawer is a phone surface: rows are 44px there, the dense 32px is the
+        // desktop rail's.
+        className="max-md:h-11 max-md:text-base"
         onClick={() => setOpenMobile(false)}
       >
         <Icon aria-hidden="true" />
@@ -144,7 +147,10 @@ export function Sidebar(): React.JSX.Element {
                 signing out, so a stray click on a shared computer does not end the session. */}
             <SignOutConfirm
               render={
-                <SidebarMenuButton tooltip={m.panel_sign_out()}>
+                <SidebarMenuButton
+                  tooltip={m.panel_sign_out()}
+                  className="max-md:h-11 max-md:text-base"
+                >
                   <SignOutIcon aria-hidden="true" />
                   <span>{m.panel_sign_out()}</span>
                 </SidebarMenuButton>

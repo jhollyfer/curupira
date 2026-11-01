@@ -18,6 +18,7 @@ export function reportColumns(): TableColumns<ManagementReportListItemResponse> 
     {
       id: 'protocol',
       header: () => m.panel_reports_col_protocol(),
+      meta: { card: 'title' },
       cell: ({ row }) => (
         <Link
           to="/gestao/reports/$id"

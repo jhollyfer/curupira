@@ -13,6 +13,9 @@ type ProsePageProps = Readonly<{
  * The frame of a text page (about, privacy, terms): title, a line of context and
  * sections with a readable measure (65 characters). One component for the three pages
  * so the legal text reads the same everywhere.
+ *
+ * From `lg` the title stays on the left (sticky) and the text on the right: the measure
+ * stays readable and the width is used, instead of one narrow column lost in the middle.
  */
 export function ProsePage({
   title,
@@ -24,19 +27,19 @@ export function ProsePage({
     <article
       data-slot="prose-page"
       className={cn(
-        'mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8',
+        'page-container grid grid-cols-[minmax(0,1fr)] gap-8 py-8 md:py-12 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-16',
         className,
       )}
     >
-      <header className="flex flex-col gap-3">
-        <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance">
+      <header className="flex flex-col gap-3 lg:sticky lg:top-28 lg:self-start">
+        <h1 className="text-fluid-title font-extrabold tracking-tight text-balance">
           {title}
         </h1>
         {intro && (
           <p className="text-lg text-pretty text-muted-foreground">{intro}</p>
         )}
       </header>
-      {children}
+      <div className="flex max-w-3xl flex-col gap-8">{children}</div>
     </article>
   )
 }

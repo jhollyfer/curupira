@@ -342,7 +342,6 @@
   "panel_reports_filter_from": "From",
   "panel_reports_filter_to": "To",
   "panel_reports_filter_search": "Protocol",
-  "panel_reports_filter_clear": "Clear filters",
   "panel_reports_col_protocol": "Protocol",
   "panel_reports_col_kind": "Kind",
   "panel_reports_col_status": "Status",
@@ -487,5 +486,19 @@
   "panel_profile_password_confirmation": "Repeat the new password",
   "panel_profile_current_password": "Current password",
   "panel_profile_saved": "Profile updated",
-  "panel_users_field_password_keep": "Leave empty to keep the current password."
+  "panel_users_field_password_keep": "Leave empty to keep the current password.",
+  "panel_account_theme": "Theme",
+  "panel_theme_light": "Light",
+  "panel_theme_dark": "Dark",
+  "panel_theme_system": "System",
+  "panel_table_sort_group": "Sort by",
+  "panel_filters_clear": "Clear filters",
+  "panel_filters_title": "Filters",
+  "panel_filters_description": "The list and the map update as you choose.",
+  "panel_filters_show_results": "Show results",
+  "panel_filters_button": "Filters",
+  "panel_filters_button_count": "Filters ({count})",
+  "panel_reports_views_label": "View reports as",
+  "panel_reports_view_list": "List",
+  "panel_reports_view_map": "Map"
 }

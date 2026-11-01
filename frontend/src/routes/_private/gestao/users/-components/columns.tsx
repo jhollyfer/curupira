@@ -17,7 +17,7 @@ export function userColumns(): TableColumns<ManagementUserShowResponse> {
     {
       id: 'name',
       header: () => m.panel_users_col_name(),
-      meta: { sortKey: 'name' },
+      meta: { sortKey: 'name', card: 'title' },
       cell: ({ row }) => (
         <Link
           to="/gestao/users/$id/edit"
@@ -51,7 +51,7 @@ export function userColumns(): TableColumns<ManagementUserShowResponse> {
     {
       id: 'actions',
       header: () => <span className="sr-only">{m.common_actions()}</span>,
-      meta: { className: 'w-12 text-right' },
+      meta: { className: 'w-12 text-right', card: 'actions' },
       cell: ({ row }) => <UserRowActions user={row.original} />,
     },
   ]

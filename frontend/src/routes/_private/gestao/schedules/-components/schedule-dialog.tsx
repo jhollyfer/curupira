@@ -26,8 +26,10 @@ import {
   useManagementScheduleUpdateMutation,
 } from '#/integrations/tanstack-query/mutations/management'
 import type { ScheduleUpdateVariables } from '#/integrations/tanstack-query/mutations/management'
+import { cn } from '#/lib/cn'
 import { createDialogHandle } from '#/lib/dialog-handle'
 import type { DialogHandle } from '#/lib/dialog-handle'
+import { PHONE_SHEET_CLASSES } from '#/lib/dialog-layout'
 import { weekdayLabel, WASTE_TYPE_LABELS } from '#/lib/labels'
 import { m } from '#/paraglide/messages'
 
@@ -94,19 +96,27 @@ function ScheduleFormBody({
       <AppFormRootError form={form} />
       <DialogFooter className="sm:justify-between">
         {onDelete && (
-          <Button type="button" variant="destructive" onClick={onDelete}>
+          <Button
+            type="button"
+            variant="destructive"
+            className="max-sm:w-full"
+            onClick={onDelete}
+          >
             {m.common_delete()}
           </Button>
         )}
-        <div className="flex gap-2 sm:ml-auto">
+        <div className="flex flex-col-reverse gap-2 sm:ml-auto sm:flex-row">
           <Button
             type="button"
             variant="outline"
+            className="max-sm:w-full"
             onClick={() => handle.close()}
           >
             {m.common_cancel()}
           </Button>
-          <SubmitButton isPending={isPending}>{m.common_save()}</SubmitButton>
+          <SubmitButton isPending={isPending} className="max-sm:w-full">
+            {m.common_save()}
+          </SubmitButton>
         </div>
       </DialogFooter>
     </form>
@@ -193,7 +203,7 @@ export function ScheduleDialog({
   return (
     <Dialog handle={handle}>
       {({ payload }) => (
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className={cn(PHONE_SHEET_CLASSES, 'sm:max-w-md')}>
           {payload?.mode === 'create' && (
             <CreateForm
               handle={handle}

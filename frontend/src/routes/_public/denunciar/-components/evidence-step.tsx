@@ -17,7 +17,11 @@ type EvidenceStepProps = Readonly<{
   kind: ReportKind | undefined
 }>
 
-/** Step 2: the photo and the place. Both are required to continue. */
+/**
+ * Step 2: the photo and the place. Both are required to continue. From `lg` they sit side
+ * by side: the photo on the left, the map on the right at a size you can actually place a
+ * pin on, instead of a 288px strip under the photos.
+ */
 export function EvidenceStep({
   form,
   kind,
@@ -29,7 +33,7 @@ export function EvidenceStep({
   const placed = toCoordinate(latitude, longitude)
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-10">
       <Controller
         name="photos"
         control={form.control}

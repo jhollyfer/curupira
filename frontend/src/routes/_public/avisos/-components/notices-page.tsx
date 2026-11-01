@@ -13,15 +13,18 @@ export function NoticesPage(): React.JSX.Element {
   const { data: notices } = useSuspenseQuery(storefrontNoticesQueryOptions())
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance">
+    <div className="page-container flex flex-col gap-6 py-8 md:py-12">
+      <header className="flex max-w-3xl flex-col gap-2">
+        <h1 className="text-fluid-title font-extrabold tracking-tight text-balance">
           {m.notices_title()}
         </h1>
         <p className="text-lg text-muted-foreground">{m.notices_intro()}</p>
       </header>
       <NoticeList notices={notices}>
-        <NoticeListItems as="h2" />
+        <NoticeListItems
+          as="h2"
+          className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+        />
         <NoticeListEmpty />
       </NoticeList>
     </div>

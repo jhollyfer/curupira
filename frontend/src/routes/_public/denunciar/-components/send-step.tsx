@@ -42,7 +42,7 @@ export function SendStep({ form }: SendStepProps): React.JSX.Element {
   const anonymous = useWatch({ control: form.control, name: 'anonymous' })
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-10">
       <Controller
         name="description"
         control={form.control}
@@ -71,64 +71,66 @@ export function SendStep({ form }: SendStepProps): React.JSX.Element {
         )}
       />
 
-      <Controller
-        name="anonymous"
-        control={form.control}
-        render={({ field }) => (
-          <fieldset className="flex min-w-0 flex-col gap-3 border-0 p-0">
-            <legend className="mb-3 text-base font-semibold">
-              {m.report_who_legend()}
-            </legend>
-            {CHOICES.map((choice) => (
-              <label
-                key={choice.title()}
-                className="relative flex min-h-20 cursor-pointer flex-col justify-center gap-0.5 rounded-2xl bg-card p-4 shadow-card transition-shadow has-checked:shadow-[0_0_0_3px_var(--primary)] has-focus-visible:shadow-[0_0_0_4px_var(--ring)] motion-reduce:transition-none"
-              >
-                <input
-                  type="radio"
-                  name={field.name}
-                  checked={field.value === choice.anonymous}
-                  onChange={() => field.onChange(choice.anonymous)}
-                  className="sr-only"
-                />
-                <span className="text-lg font-bold">{choice.title()}</span>
-                <span className="text-base text-muted-foreground">
-                  {choice.text()}
-                </span>
-              </label>
-            ))}
-          </fieldset>
-        )}
-      />
-
-      {!anonymous && (
+      <div className="flex flex-col gap-6">
         <Controller
-          name="contact"
+          name="anonymous"
           control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="report-contact">
-                {m.report_contact_label()}
-              </FieldLabel>
-              <Input
-                {...field}
-                {...invalidProps(fieldState.invalid, 'report-contact')}
-                id="report-contact"
-                autoComplete="tel"
-                inputMode="text"
-                placeholder={m.report_contact_placeholder()}
-                className="h-12 bg-card text-base"
-              />
-              {fieldState.invalid && (
-                <FieldError
-                  id={errorId('report-contact')}
-                  errors={[fieldState.error]}
-                />
-              )}
-            </Field>
+          render={({ field }) => (
+            <fieldset className="flex min-w-0 flex-col gap-3 border-0 p-0">
+              <legend className="mb-3 text-base font-semibold">
+                {m.report_who_legend()}
+              </legend>
+              {CHOICES.map((choice) => (
+                <label
+                  key={choice.title()}
+                  className="relative flex min-h-20 cursor-pointer flex-col justify-center gap-0.5 rounded-2xl bg-card p-4 shadow-card transition-shadow has-checked:shadow-[0_0_0_3px_var(--primary)] has-focus-visible:shadow-[0_0_0_4px_var(--ring)] motion-reduce:transition-none"
+                >
+                  <input
+                    type="radio"
+                    name={field.name}
+                    checked={field.value === choice.anonymous}
+                    onChange={() => field.onChange(choice.anonymous)}
+                    className="sr-only"
+                  />
+                  <span className="text-lg font-bold">{choice.title()}</span>
+                  <span className="text-base text-muted-foreground">
+                    {choice.text()}
+                  </span>
+                </label>
+              ))}
+            </fieldset>
           )}
         />
-      )}
+
+        {!anonymous && (
+          <Controller
+            name="contact"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="report-contact">
+                  {m.report_contact_label()}
+                </FieldLabel>
+                <Input
+                  {...field}
+                  {...invalidProps(fieldState.invalid, 'report-contact')}
+                  id="report-contact"
+                  autoComplete="tel"
+                  inputMode="text"
+                  placeholder={m.report_contact_placeholder()}
+                  className="h-12 bg-card text-base"
+                />
+                {fieldState.invalid && (
+                  <FieldError
+                    id={errorId('report-contact')}
+                    errors={[fieldState.error]}
+                  />
+                )}
+              </Field>
+            )}
+          />
+        )}
+      </div>
     </div>
   )
 }

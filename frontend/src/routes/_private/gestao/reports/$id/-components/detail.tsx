@@ -64,6 +64,8 @@ export function ReportDetail(): React.JSX.Element {
         </PageHeaderDescription>
       </PageHeader>
 
+      {/* One column up to 1024px: photos, small map, then the update form and the
+          history, so on a phone the form is reached after the evidence it is about. */}
       <div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="flex flex-col gap-8">
           <section
@@ -174,7 +176,7 @@ export function ReportDetail(): React.JSX.Element {
                 longitude: report.longitude,
               }}
               zoom={16}
-              className="h-64 rounded-md border shadow-none"
+              className="h-52 rounded-md border shadow-none md:h-64"
             >
               <React.Suspense fallback={null}>
                 <ReportMapSelectablePins

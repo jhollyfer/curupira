@@ -4,9 +4,11 @@ import * as React from 'react'
 
 import { useTable } from '#/components/common/table'
 import { managementNeighborhoodsQueryOptions } from '#/integrations/tanstack-query/queries/management'
+import { countActiveFilters } from '#/lib/active-filters'
 import { m } from '#/paraglide/messages'
 
 import { neighborhoodColumns } from './columns'
+import { FilterPanel } from '../../../-components/filter-panel'
 import { ListPage } from '../../../-components/list-page'
 import { SearchFilter } from '../../../-components/search-filter'
 
@@ -40,11 +42,10 @@ export function NeighborhoodsPage(): React.JSX.Element {
         label: m.panel_neighborhoods_new(),
       }}
       filters={
-        <form
-          role="search"
-          aria-label={m.panel_neighborhoods_filters_label()}
-          className="flex shrink-0 flex-wrap items-end gap-3"
-          onSubmit={(event) => event.preventDefault()}
+        <FilterPanel
+          label={m.panel_neighborhoods_filters_label()}
+          activeCount={countActiveFilters(search, ['search'])}
+          onClear={() => void navigate({ search: {} })}
         >
           <SearchFilter
             id={searchId}
@@ -60,7 +61,7 @@ export function NeighborhoodsPage(): React.JSX.Element {
               })
             }
           />
-        </form>
+        </FilterPanel>
       }
       onRowClick={(row) =>
         void navigate({

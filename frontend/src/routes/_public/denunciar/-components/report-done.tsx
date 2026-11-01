@@ -44,7 +44,7 @@ export function ReportDone({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
+    <div className="page-container-sm flex flex-col gap-6 py-8 md:py-12">
       {outcome.state === 'sent' && (
         <>
           <div className="flex flex-col gap-3">

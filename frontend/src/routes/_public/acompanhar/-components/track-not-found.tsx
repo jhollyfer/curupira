@@ -8,7 +8,7 @@ import { m } from '#/paraglide/messages'
 /** The protocol does not exist: say what to check, and offer the way back to the form. */
 export function TrackNotFound(): React.JSX.Element {
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col items-start gap-4 px-4 py-10">
+    <div className="page-container-md flex flex-col items-start gap-4 py-10 md:py-16">
       <SmileyXEyesIcon
         aria-hidden="true"
         weight="fill"

@@ -192,7 +192,10 @@ export function StatusForm({ report }: StatusFormProps): React.JSX.Element {
         <AppFormRootError form={form} />
 
         <Field>
-          <SubmitButton isPending={mutation.isPending} className="self-start">
+          <SubmitButton
+            isPending={mutation.isPending}
+            className="w-full self-start sm:w-auto"
+          >
             {m.panel_report_status_submit()}
           </SubmitButton>
         </Field>

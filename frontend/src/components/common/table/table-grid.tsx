@@ -1,11 +1,5 @@
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ArrowsDownUpIcon,
-} from '@phosphor-icons/react'
-import { Link } from '@tanstack/react-router'
 import { FlexRender } from '@tanstack/react-table'
-import type { Header, RowData } from '@tanstack/react-table'
+import type { RowData } from '@tanstack/react-table'
 import type * as React from 'react'
 
 import {
@@ -16,11 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from '#/components/ui/table'
+import { useIsMobile } from '#/hooks/use-mobile'
 import { cn } from '#/lib/cn'
-import { m } from '#/paraglide/messages'
 
+import { TableCards } from './table-cards'
 import { useTableContext } from './table-context'
-import type { TableFeaturesOfPanel, TableInstance } from './use-table'
+import { isRowClick } from './table-row-click'
+import { SortHeader } from './table-sort-header'
+import type { TableInstance } from './use-table'
 
 type TableGridProps<TRow extends RowData> = Readonly<{
   table: TableInstance<TRow>
@@ -30,73 +27,10 @@ type TableGridProps<TRow extends RowData> = Readonly<{
   caption: string
 }>
 
-/**
- * A click on the row opens the record - unless it was meant for something inside it. The
- * link, the actions menu and the dialogs it opens all live under the row in the React
- * tree (a portal's events bubble through it), so `contains` filters the portal's and
- * `closest` the interactive controls' own clicks.
- */
-function isRowClick(event: React.MouseEvent<HTMLElement>): boolean {
-  const target = event.target
-  if (!(target instanceof Element)) return false
-  if (!event.currentTarget.contains(target)) return false
-
-  return !target.closest(
-    'a, button, input, select, textarea, [role="menuitem"]',
-  )
-}
-
 const ARIA_SORT = {
   asc: 'ascending',
   desc: 'descending',
 } as const
-
-/**
- * Sorting is a link, not a button with state: it writes `?sort=&direction=` into the
- * URL (so F5 and a shared link keep the order) and drops `page`, because page 4 of
- * another order is not the page the manager was looking at. Asc, then desc, then back to
- * the default order.
- */
-function SortHeader<TRow extends RowData>({
-  header,
-}: Readonly<{
-  header: Header<TableFeaturesOfPanel, TRow, unknown>
-}>): React.JSX.Element {
-  const { to, search } = useTableContext('TableGrid')
-  const sortKey = header.column.columnDef.meta?.sortKey
-  const content = <FlexRender header={header} />
-
-  if (!sortKey) return content
-
-  const active = search.sort === sortKey
-  const direction = search.direction ?? 'asc'
-  let next: { sort?: string; direction?: 'asc' | 'desc' } = {
-    sort: sortKey,
-    direction: 'asc',
-  }
-  if (active && direction === 'asc') next = { sort: sortKey, direction: 'desc' }
-  if (active && direction === 'desc') next = {}
-
-  return (
-    <Link
-      to={to}
-      search={{ ...search, ...next, page: undefined }}
-      className="-mx-2 inline-flex min-h-8 items-center gap-1.5 rounded-md px-2 font-medium hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-    >
-      {content}
-      {!active && (
-        <ArrowsDownUpIcon aria-hidden="true" className="size-3.5 opacity-50" />
-      )}
-      {active && direction === 'asc' && (
-        <ArrowUpIcon aria-hidden="true" className="size-3.5" />
-      )}
-      {active && direction === 'desc' && (
-        <ArrowDownIcon aria-hidden="true" className="size-3.5" />
-      )}
-      <span className="sr-only">{m.panel_table_sort_by()}</span>
-    </Link>
-  )
-}
 
 export function TableGrid<TRow extends RowData>({
   table,
@@ -105,8 +39,15 @@ export function TableGrid<TRow extends RowData>({
 }: TableGridProps<TRow>): React.JSX.Element | null {
   const { search, isPlaceholderData } = useTableContext('TableGrid')
   const rows = table.getRowModel().rows
+  // A phone has no width for five columns: the same rows, columns and sort links are
+  // drawn as stacked cards instead of a second table to keep in sync.
+  const isMobile = useIsMobile()
 
   if (rows.length === 0) return null
+
+  if (isMobile) {
+    return <TableCards table={table} caption={caption} />
+  }
 
   return (
     <div

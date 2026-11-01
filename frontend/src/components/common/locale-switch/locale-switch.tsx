@@ -19,7 +19,7 @@ import type { Locale } from '#/paraglide/runtime'
  * Each language in its own name, not translated: whoever looks for Spanish looks for
  * "Español", not for "Espanhol" (pattern from the Mangangá switcher).
  */
-const NATIVE_NAMES = {
+export const LOCALE_NATIVE_NAMES = {
   'pt-BR': 'Português',
   es: 'Español',
   en: 'English',
@@ -69,7 +69,7 @@ export function LocaleSwitch(): React.JSX.Element {
                 lang={item}
                 className="min-h-11 text-base"
               >
-                {NATIVE_NAMES[item]}
+                {LOCALE_NATIVE_NAMES[item]}
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>

@@ -93,7 +93,7 @@ export function LocationField({
 
       <ReportMap
         label={m.report_location_map_label()}
-        className="h-72"
+        className="h-72 md:h-96 lg:h-[30rem]"
         center={value}
         zoom={zoom}
       >

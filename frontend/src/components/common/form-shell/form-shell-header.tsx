@@ -11,6 +11,7 @@ import {
 } from '#/components/common/page-shell'
 import { SubmitButton } from '#/components/common/submit-button'
 import { Button } from '#/components/ui/button'
+import { cn } from '#/lib/cn'
 import { m } from '#/paraglide/messages'
 
 import { useFormShellContext } from './form-shell-context'
@@ -58,7 +59,15 @@ export function FormShellTitle(
 export function FormShellActions(
   props: React.ComponentProps<typeof PageHeaderActions>,
 ): React.JSX.Element | null {
-  return <PageHeaderActions data-slot="form-shell-actions" {...props} />
+  // On a phone the two buttons share the row equally: "Salvar" is the thumb's target and
+  // should not be a 70px chip at one corner.
+  return (
+    <PageHeaderActions
+      data-slot="form-shell-actions"
+      {...props}
+      className={cn('max-sm:*:flex-1', props.className)}
+    />
+  )
 }
 
 /**

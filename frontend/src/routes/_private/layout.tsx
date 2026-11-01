@@ -94,7 +94,10 @@ function RouteComponent(): React.JSX.Element {
     // `h-svh`, not `min-h-svh`: a height that grows limits no one, and the screens'
     // `PageShell` could never pin its footer. A fixed height gives the ceiling and what
     // scrolls becomes each screen's inner area.
-    <SidebarProvider collapsed={tablet} className="h-svh overflow-hidden">
+    <SidebarProvider
+      collapsed={tablet}
+      className="panel-touch h-svh overflow-hidden"
+    >
       {/* `sr-only` with `focus:not-sr-only`, not `display: none`: truly hidden it would
           not take focus and would stop existing for whoever it serves. */}
       <a
@@ -112,7 +115,7 @@ function RouteComponent(): React.JSX.Element {
       <SidebarInset id={MAIN_ID} tabIndex={-1} className="min-h-0 min-w-0">
         <Header />
 
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-auto p-4 lg:p-6">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-auto p-4 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] lg:p-6">
           {/* A query error that escapes a screen lands here and not at the router
               boundary: the panel stays up, and "Tentar de novo" clears the error held in
               Query's cache before remounting - otherwise the boundary would keep showing

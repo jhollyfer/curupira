@@ -11,7 +11,7 @@ import { m } from '#/paraglide/messages'
 export function Footer(): React.JSX.Element {
   return (
     <footer className="stage-band pb-28 md:pb-0">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-2">
+      <div className="page-container grid gap-8 py-10 md:grid-cols-2 lg:py-14">
         <div className="flex flex-col gap-3">
           <BrandMark className="text-stage-foreground" />
           <p className="max-w-prose text-base text-stage-muted">
@@ -22,7 +22,7 @@ export function Footer(): React.JSX.Element {
           </p>
         </div>
         <nav aria-label={m.footer_nav_label()}>
-          <ul className="flex flex-col gap-1 md:items-end">
+          <ul className="flex flex-col gap-1 md:flex-row md:flex-wrap md:justify-end md:gap-x-6">
             {[
               { to: '/avisos', label: m.nav_notices() },
               { to: '/sobre', label: m.nav_about() },
@@ -41,7 +41,7 @@ export function Footer(): React.JSX.Element {
           </ul>
         </nav>
       </div>
-      <p className="mx-auto max-w-6xl px-4 pb-6 text-sm text-stage-muted">
+      <p className="page-container pb-6 text-sm text-stage-muted">
         {m.footer_sample_notice()}
       </p>
     </footer>

@@ -193,7 +193,10 @@ export function ProfileForm(): React.JSX.Element {
 
             <AppFormRootError form={form} />
 
-            <SubmitButton isPending={mutation.isPending} className="self-start">
+            <SubmitButton
+              isPending={mutation.isPending}
+              className="w-full self-start sm:w-auto"
+            >
               {m.common_save()}
             </SubmitButton>
           </form>

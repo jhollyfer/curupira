@@ -80,9 +80,9 @@ export function SchedulePage(): React.JSX.Element {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance">
+    <div className="page-container flex flex-col gap-6 py-8 md:py-12">
+      <header className="flex max-w-3xl flex-col gap-2">
+        <h1 className="text-fluid-title font-extrabold tracking-tight text-balance">
           {m.schedule_title()}
         </h1>
         <p className="text-lg text-muted-foreground">{m.schedule_intro()}</p>
@@ -106,25 +106,34 @@ export function SchedulePage(): React.JSX.Element {
           <NeighborhoodPickerList />
           <NeighborhoodPickerClosed>
             {schedules.data && (
-              <WasteCalendar passes={passes} now={now} className="gap-6">
+              <WasteCalendar
+                passes={passes}
+                now={now}
+                className="gap-6 lg:grid lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:gap-10 xl:grid-cols-[minmax(0,1fr)_24rem]"
+              >
                 <WasteCalendarMonth
                   month={month}
                   onMonthChange={(next) =>
                     navigate({ search: { month: next }, replace: true })
                   }
                 />
-                <WasteCalendarDetail />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="touch"
-                  className="self-start"
-                  onClick={exportCalendar}
-                >
-                  <CalendarPlusIcon aria-hidden="true" />
-                  {m.schedule_export()}
-                </Button>
-                <WasteCalendarLegend />
+                {/* The month on the left, what it means on the right: the aside stays under
+                    the header while a long month scrolls, so the selected day is always
+                    in sight from `lg`. */}
+                <div className="flex flex-col gap-6 lg:sticky lg:top-24">
+                  <WasteCalendarDetail />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="touch"
+                    className="self-start"
+                    onClick={exportCalendar}
+                  >
+                    <CalendarPlusIcon aria-hidden="true" />
+                    {m.schedule_export()}
+                  </Button>
+                  <WasteCalendarLegend />
+                </div>
               </WasteCalendar>
             )}
             {!schedules.data && (

@@ -3,12 +3,19 @@ import { getRouteApi } from '@tanstack/react-router'
 import * as React from 'react'
 
 import { OptionSelect } from '#/components/common/option-select'
+import { countActiveFilters } from '#/lib/active-filters'
 import { NOTICE_STATUS_LABELS } from '#/lib/labels'
+import type { NoticesSearch } from '#/lib/management-search'
 import { m } from '#/paraglide/messages'
 
+import { FilterPanel } from '../../../-components/filter-panel'
 import { SearchFilter } from '../../../-components/search-filter'
 
 const route = getRouteApi('/_private/gestao/notices/')
+
+const FILTER_KEYS = ['status', 'search'] satisfies ReadonlyArray<
+  keyof NoticesSearch
+>
 
 export function NoticesFilters(): React.JSX.Element {
   const search = route.useSearch()
@@ -16,11 +23,10 @@ export function NoticesFilters(): React.JSX.Element {
   const ids = React.useId()
 
   return (
-    <form
-      role="search"
-      aria-label={m.panel_notices_filters_label()}
-      className="flex shrink-0 flex-wrap items-end gap-3"
-      onSubmit={(event) => event.preventDefault()}
+    <FilterPanel
+      label={m.panel_notices_filters_label()}
+      activeCount={countActiveFilters(search, FILTER_KEYS)}
+      onClear={() => void navigate({ search: {} })}
     >
       <OptionSelect
         id={ids.concat('-status')}
@@ -55,6 +61,6 @@ export function NoticesFilters(): React.JSX.Element {
           })
         }
       />
-    </form>
+    </FilterPanel>
   )
 }

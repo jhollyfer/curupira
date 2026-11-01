@@ -32,6 +32,7 @@ import {
   storefrontNoticesQueryOptions,
   storefrontSchedulesQueryOptions,
 } from '#/integrations/tanstack-query/queries/storefront'
+import { cn } from '#/lib/cn'
 import { m } from '#/paraglide/messages'
 
 import { NextCollection } from './next-collection'
@@ -45,9 +46,6 @@ const route = getRouteApi('/_public/')
  */
 const STAGE_CTA =
   'bg-stage-foreground text-stage hover:bg-stage-foreground/90 hover:text-stage'
-
-/** The page's content column: the same width on every section. */
-const CONTAINER = 'mx-auto w-full max-w-6xl px-4'
 
 /**
  * The home: hero with the question, the next collection of the resident's
@@ -74,14 +72,15 @@ export function HomePage(): React.JSX.Element {
   return (
     <>
       <section className="stage-band">
-        <div
-          className={`${CONTAINER} grid gap-8 py-10 md:grid-cols-2 md:items-center md:py-16`}
-        >
+        {/* Two columns from `md`: the question on the left, the answer (the next collection)
+            on the right. The ratio leans to the question from `lg` so the title keeps
+            two lines on a wide monitor instead of a thin column. */}
+        <div className="page-container grid gap-8 py-10 md:grid-cols-2 md:items-center md:gap-10 md:py-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-16 lg:py-20">
           <div className="flex flex-col gap-5">
-            <h1 className="text-4xl leading-[1.05] font-extrabold tracking-tight text-balance md:text-6xl">
+            <h1 className="text-fluid-display font-extrabold tracking-tight text-balance">
               {m.home_title()}
             </h1>
-            <p className="max-w-prose text-lg text-pretty text-stage-muted">
+            <p className="max-w-prose text-lg text-pretty text-stage-muted lg:text-xl">
               {m.home_subtitle()}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
@@ -105,7 +104,7 @@ export function HomePage(): React.JSX.Element {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-card p-5 text-card-foreground shadow-card-elevated md:p-6">
+          <div className="rounded-3xl bg-card p-5 text-card-foreground shadow-card-elevated md:p-6 lg:p-8">
             {neighborhoodId === undefined && (
               <div
                 className="flex flex-col gap-4"
@@ -141,42 +140,56 @@ export function HomePage(): React.JSX.Element {
         </div>
       </section>
 
-      {hasSchedule && (
-        <section className={`${CONTAINER} flex flex-col gap-3 pt-8`}>
-          <h2 className="text-2xl font-extrabold tracking-tight">
-            {m.home_next_days()}
+      {/* The 14 days and the notices side by side from `lg`: the strip becomes a grid
+          of two weeks and the notices sit beside it, so a wide screen shows both without
+          scrolling. With no neighborhood chosen yet there is no strip and the notices
+          take the whole row. */}
+      <div
+        data-has-schedule={Boolean(hasSchedule)}
+        className="page-container grid grid-cols-[minmax(0,1fr)] gap-10 pt-10 lg:gap-14 lg:pt-14 lg:data-[has-schedule=true]:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+      >
+        {hasSchedule && (
+          <section className="flex flex-col gap-3 lg:gap-5">
+            <h2 className="text-fluid-section font-extrabold tracking-tight">
+              {m.home_next_days()}
+            </h2>
+            <WasteCalendar passes={passes} now={now}>
+              <WasteCalendarStrip />
+            </WasteCalendar>
+          </section>
+        )}
+
+        <section className="flex flex-col gap-4 lg:gap-5">
+          <h2 className="text-fluid-section font-extrabold tracking-tight">
+            {m.home_notices()}
           </h2>
-          <WasteCalendar passes={passes} now={now}>
-            <WasteCalendarStrip />
-          </WasteCalendar>
+          <NoticeList notices={notices}>
+            <NoticeListItems
+              limit={2}
+              className={cn({ 'md:grid md:grid-cols-2': !hasSchedule })}
+            />
+            <NoticeListEmpty />
+          </NoticeList>
+          <Button
+            variant="ghost"
+            size="touch"
+            className="self-start"
+            render={<Link to="/avisos" />}
+          >
+            {m.home_all_notices()}
+          </Button>
         </section>
-      )}
+      </div>
 
-      <section className={`${CONTAINER} flex flex-col gap-4 pt-10`}>
-        <h2 className="text-2xl font-extrabold tracking-tight">
-          {m.home_notices()}
-        </h2>
-        <NoticeList notices={notices}>
-          <NoticeListItems limit={2} />
-          <NoticeListEmpty />
-        </NoticeList>
-        <Button
-          variant="ghost"
-          size="touch"
-          className="self-start"
-          render={<Link to="/avisos" />}
-        >
-          {m.home_all_notices()}
-        </Button>
-      </section>
-
-      <section className={`${CONTAINER} pt-10`}>
-        <div className="stage-band flex flex-col gap-4 rounded-3xl p-6 md:flex-row md:items-center md:justify-between md:p-8">
+      <section className="page-container pt-10 lg:pt-14">
+        <div className="stage-band flex flex-col gap-4 rounded-3xl p-6 md:flex-row md:items-center md:justify-between md:gap-10 md:p-8 lg:p-12">
           <div className="flex max-w-xl flex-col gap-2">
-            <h2 className="text-3xl leading-tight font-extrabold tracking-tight text-balance">
+            <h2 className="text-fluid-section font-extrabold tracking-tight text-balance">
               {m.home_report_title()}
             </h2>
-            <p className="text-lg text-stage-muted">{m.home_report_text()}</p>
+            <p className="text-lg text-stage-muted lg:text-xl">
+              {m.home_report_text()}
+            </p>
           </div>
           <Button
             size="touch-lg"
@@ -190,11 +203,12 @@ export function HomePage(): React.JSX.Element {
         </div>
       </section>
 
-      <section className={`${CONTAINER} flex flex-col gap-5 py-10`}>
-        <h2 className="text-2xl font-extrabold tracking-tight">
+      <section className="page-container flex flex-col gap-5 py-10 lg:gap-6 lg:py-14">
+        <h2 className="text-fluid-section font-extrabold tracking-tight">
           {m.home_how_title()}
         </h2>
-        <ol className="flex max-w-2xl flex-col divide-y">
+        {/* A divided list on a phone, three cards in a row from `md`. */}
+        <ol className="flex flex-col divide-y md:grid md:grid-cols-3 md:gap-5 md:divide-y-0">
           {[
             {
               icon: ListChecksIcon,
@@ -214,7 +228,7 @@ export function HomePage(): React.JSX.Element {
           ].map((item) => (
             <li
               key={item.title}
-              className="flex gap-4 py-4 first:pt-0 last:pb-0"
+              className="flex gap-4 py-4 first:pt-0 last:pb-0 md:flex-col md:rounded-2xl md:bg-card md:p-5 md:shadow-card md:first:pt-5 md:last:pb-5"
             >
               <span
                 aria-hidden="true"
@@ -232,7 +246,7 @@ export function HomePage(): React.JSX.Element {
 
         <aside
           aria-labelledby="emergency-title"
-          className="flex max-w-2xl gap-4 rounded-2xl bg-badge-alert p-4 text-badge-alert-foreground"
+          className="flex gap-4 rounded-2xl bg-badge-alert p-4 text-badge-alert-foreground md:p-6"
         >
           <PhoneCallIcon
             aria-hidden="true"

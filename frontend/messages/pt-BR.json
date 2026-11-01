@@ -342,7 +342,6 @@
   "panel_reports_filter_from": "De",
   "panel_reports_filter_to": "Até",
   "panel_reports_filter_search": "Protocolo",
-  "panel_reports_filter_clear": "Limpar filtros",
   "panel_reports_col_protocol": "Protocolo",
   "panel_reports_col_kind": "Tipo",
   "panel_reports_col_status": "Status",
@@ -487,5 +486,19 @@
   "panel_profile_password_confirmation": "Repita a nova senha",
   "panel_profile_current_password": "Senha atual",
   "panel_profile_saved": "Perfil atualizado",
-  "panel_users_field_password_keep": "Deixe vazio para manter a senha atual."
+  "panel_users_field_password_keep": "Deixe vazio para manter a senha atual.",
+  "panel_account_theme": "Tema",
+  "panel_theme_light": "Claro",
+  "panel_theme_dark": "Escuro",
+  "panel_theme_system": "Do sistema",
+  "panel_table_sort_group": "Ordenar por",
+  "panel_filters_clear": "Limpar filtros",
+  "panel_filters_title": "Filtros",
+  "panel_filters_description": "A lista e o mapa mudam na hora, conforme você escolhe.",
+  "panel_filters_show_results": "Ver resultados",
+  "panel_filters_button": "Filtros",
+  "panel_filters_button_count": "Filtros ({count})",
+  "panel_reports_views_label": "Ver ocorrências como",
+  "panel_reports_view_list": "Lista",
+  "panel_reports_view_map": "Mapa"
 }

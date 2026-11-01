@@ -24,7 +24,7 @@ function AuthShell({
       className={cn('stage-band flex min-h-dvh flex-col', className)}
       {...props}
     >
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
+      <header className="page-container flex items-center justify-between gap-3 py-3">
         <BrandMark className="text-stage-foreground" />
         {/* The controls sit on the dark green band, not on the paper: `text-foreground`
             made the language and theme buttons near-black on dark green (about 1.3:1). */}
@@ -46,7 +46,7 @@ function AuthShellContent({
   return (
     <main
       data-slot="auth-shell-content"
-      className="m-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-8"
+      className="m-auto flex w-full max-w-md flex-1 flex-col justify-center px-(--page-gutter) py-8 md:max-w-lg"
       {...props}
     >
       <div

@@ -626,3 +626,101 @@
 .skip-link:focus-visible {
   top: 0.75rem;
 }
+
+/*
+ * ============================================================================
+ * RESPONSIVE SHELL OF THE RESIDENT APP
+ * ============================================================================
+ *
+ * One gutter and three container widths, so the header, the footer and every page
+ * share the same left edge at every viewport. The gutter is fluid (16px on a 360px
+ * phone, 40px from about 1000px) instead of stepping at breakpoints, and the strip of
+ * days reads it to bleed to the screen edge on a phone.
+ */
+:root {
+  --page-gutter: clamp(1rem, 0.4rem + 2.6vw, 2.5rem);
+}
+
+@utility page-container {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+/* Forms and wizards: wide enough for two columns, never a stretched line. */
+@utility page-container-md {
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+/* Confirmation screens: one column, centered by the container. */
+@utility page-container-sm {
+  width: 100%;
+  max-width: 44rem;
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+/* Fluid type: the size follows the viewport between two bounds, so a 360px phone and
+   a 1920px monitor each get a title in proportion without a breakpoint step. */
+@utility text-fluid-display {
+  font-size: clamp(2.25rem, 1.35rem + 3.6vw, 4.5rem);
+  line-height: 1.04;
+}
+
+@utility text-fluid-title {
+  font-size: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+  line-height: 1.1;
+}
+
+@utility text-fluid-section {
+  font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+  line-height: 1.2;
+}
+
+/* The public map fills what is left under the sticky header (4rem) and the title block,
+   with a floor so a short landscape phone still gets a usable map. */
+@utility h-map-fill {
+  height: max(32rem, calc(100dvh - 11rem));
+}
+
+/* On a landscape phone the sticky header would take a fifth of the screen: it scrolls
+   away there instead. */
+@custom-variant short (@media (max-height: 30rem));
+
+/* The panel's 44px touch targets, in one place. The shadcn primitives in `components/ui/`
+   are sized for a mouse (h-7 buttons, h-9 inputs) and are not edited by hand, so every
+   control inside `.panel-touch` is raised to the finger's size when the screen is a phone
+   or the pointer is coarse (a tablet at any width). A desktop mouse keeps the dense
+   sizes. Radios and checkboxes are left alone: their `label` is the 44px target. */
+@media (pointer: coarse), (max-width: 47.99rem) {
+  .panel-touch
+    :is(
+      button,
+      select,
+      summary,
+      [role='button'],
+      input:not([type='radio'], [type='checkbox'], [type='hidden'])
+    ) {
+    min-height: 2.75rem;
+  }
+
+  .panel-touch [data-slot='button'] {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+}
+
+/* Leaflet's zoom buttons are 30px: under the 44px touch target. Only on a coarse pointer,
+   where a thumb taps them; with a mouse the compact size stays. The `html` prefix wins
+   over leaflet's own `.leaflet-touch .leaflet-bar a` without `!important`. */
+@media (pointer: coarse) {
+  html .leaflet-touch .leaflet-bar a {
+    width: 2.75rem;
+    height: 2.75rem;
+    line-height: 2.75rem;
+  }
+}

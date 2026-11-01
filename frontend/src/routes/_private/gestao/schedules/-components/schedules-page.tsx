@@ -97,7 +97,7 @@ export function SchedulesPage(): React.JSX.Element {
           onValueChange={(value) =>
             void navigate({ search: { neighborhoodId: value } })
           }
-          className="min-w-64"
+          className="w-full md:w-auto md:min-w-64"
         />
         {neighborhoodId && schedules.isSuccess && (
           <p

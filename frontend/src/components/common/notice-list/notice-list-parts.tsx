@@ -1,6 +1,7 @@
 import { MegaphoneIcon } from '@phosphor-icons/react'
 import * as React from 'react'
 
+import { cn } from '#/lib/cn'
 import { formatTownDate } from '#/lib/i18n'
 import { m } from '#/paraglide/messages'
 
@@ -15,12 +16,15 @@ type NoticeListItemsProps = Readonly<{
    * screen reader users navigate by.
    */
   as?: 'h2' | 'h3'
+  /** Layout of the list: a column by default; a screen with room passes a grid. */
+  className?: string
 }>
 
 /** The notices as a list of cards. Renders nothing when there is nothing to show. */
 export function NoticeListItems({
   limit,
   as: Heading = 'h3',
+  className,
 }: NoticeListItemsProps): React.JSX.Element | null {
   const { notices } = useNoticeListContext('NoticeListItems')
   const shown = notices.slice(0, limit)
@@ -28,7 +32,10 @@ export function NoticeListItems({
   if (shown.length === 0) return null
 
   return (
-    <ul data-slot="notice-list-items" className="flex flex-col gap-3">
+    <ul
+      data-slot="notice-list-items"
+      className={cn('flex flex-col gap-3', className)}
+    >
       {shown.map((notice) => (
         <li
           key={notice.id}

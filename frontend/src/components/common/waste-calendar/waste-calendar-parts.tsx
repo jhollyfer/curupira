@@ -96,8 +96,10 @@ function DayDots({ day }: Readonly<{ day: CollectionDay }>): React.JSX.Element {
 }
 
 /**
- * The next 14 days in a row you scroll sideways (snap to each day), today first. A
- * scrollable region needs to be reachable by keyboard, hence `tabIndex={0}` and a name.
+ * The next 14 days, today first. On a phone a row you scroll sideways (snap to each
+ * day, bleeding to the screen edge through the page gutter); from `md` a grid of two
+ * weeks with nothing to scroll. A scrollable region needs to be reachable by keyboard,
+ * hence `tabIndex={0}` and a name.
  */
 export function WasteCalendarStrip({
   days = 14,
@@ -112,9 +114,9 @@ export function WasteCalendarStrip({
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be reachable by keyboard (WCAG 2.1.1)
       tabIndex={0}
       aria-label={m.calendar_strip_label()}
-      className="-mx-4 overflow-x-auto px-4 pb-2 outline-none focus-visible:ring-4 focus-visible:ring-ring/60"
+      className="-mx-(--page-gutter) overflow-x-auto px-(--page-gutter) pb-2 outline-none focus-visible:ring-4 focus-visible:ring-ring/60 md:mx-0 md:overflow-visible md:px-0 md:pb-0"
     >
-      <ul className="flex snap-x snap-mandatory gap-2">
+      <ul className="flex snap-x snap-mandatory gap-2 md:grid md:grid-cols-7 md:gap-3">
         {list.map((day, index) => {
           const date = townDay(day.date)
 
@@ -122,12 +124,12 @@ export function WasteCalendarStrip({
             <li
               key={day.date}
               data-today={index === 0}
-              className="relative flex w-16 shrink-0 snap-start flex-col items-center gap-1.5 rounded-2xl bg-card px-1 py-3 shadow-card data-[today=true]:bg-primary data-[today=true]:text-primary-foreground"
+              className="relative flex w-16 shrink-0 snap-start flex-col items-center gap-1.5 rounded-2xl bg-card px-1 py-3 shadow-card data-[today=true]:bg-primary data-[today=true]:text-primary-foreground md:w-auto md:py-4"
             >
               <span className="text-xs font-bold uppercase">
                 {date.toLocaleString({ weekday: 'short' })}
               </span>
-              <span className="text-2xl leading-none font-extrabold tabular-nums">
+              <span className="text-2xl leading-none font-extrabold tabular-nums lg:text-3xl">
                 {date.day}
               </span>
               <DayDots day={day} />
@@ -194,7 +196,7 @@ export function WasteCalendarMonth({
         </Button>
         <h2
           aria-live="polite"
-          className="text-xl font-extrabold tracking-tight first-letter:uppercase"
+          className="text-xl font-extrabold tracking-tight first-letter:uppercase lg:text-2xl"
         >
           {first.setLocale(getLocale()).toLocaleString({
             month: 'long',
@@ -215,7 +217,7 @@ export function WasteCalendarMonth({
       </div>
       {/* 2px between columns, not 4: at 360px the day buttons came out 42px wide, under the
           44px touch target; vertical spacing keeps the 4px rhythm. */}
-      <table className="w-full table-fixed border-separate border-spacing-x-0.5 border-spacing-y-1">
+      <table className="w-full table-fixed border-separate border-spacing-x-0.5 border-spacing-y-1 lg:border-spacing-x-1.5 lg:border-spacing-y-1.5">
         <caption className="sr-only">{m.calendar_caption()}</caption>
         <thead>
           <tr>
@@ -247,7 +249,7 @@ export function WasteCalendarMonth({
                       data-outside={!cell.inMonth}
                       data-today={cell.date === today}
                       onClick={() => select(cell.date)}
-                      className="flex min-h-14 w-full flex-col items-center justify-start gap-1 rounded-xl bg-card px-0.5 py-1.5 text-base font-bold tabular-nums shadow-card transition-colors outline-none hover:bg-accent focus-visible:ring-4 focus-visible:ring-ring/60 aria-pressed:bg-primary aria-pressed:text-primary-foreground data-[outside=true]:opacity-40 data-[today=true]:shadow-[0_0_0_2px_var(--primary)] motion-reduce:transition-none"
+                      className="flex min-h-14 w-full flex-col items-center justify-start gap-1 rounded-xl bg-card px-0.5 py-1.5 text-base font-bold lg:min-h-20 lg:py-2.5 lg:text-lg tabular-nums shadow-card transition-colors outline-none hover:bg-accent focus-visible:ring-4 focus-visible:ring-ring/60 aria-pressed:bg-primary aria-pressed:text-primary-foreground data-[outside=true]:opacity-40 data-[today=true]:shadow-[0_0_0_2px_var(--primary)] motion-reduce:transition-none"
                     >
                       <span aria-hidden="true">{date.day}</span>
                       <DayDots day={cell} />
@@ -323,7 +325,7 @@ export function WasteCalendarLegend(): React.JSX.Element {
   return (
     <section data-slot="waste-calendar-legend" className="flex flex-col gap-3">
       <h3 className="text-lg font-extrabold">{m.calendar_legend_title()}</h3>
-      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
         {types.map((type) => (
           <li key={type} className="flex items-start gap-3">
             <WasteDot type={type} />

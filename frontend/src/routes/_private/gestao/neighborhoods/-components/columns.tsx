@@ -13,7 +13,7 @@ export function neighborhoodColumns(): TableColumns<ManagementNeighborhoodShowRe
     {
       id: 'name',
       header: () => m.panel_neighborhoods_col_name(),
-      meta: { sortKey: 'name' },
+      meta: { sortKey: 'name', card: 'title' },
       cell: ({ row }) => (
         <Link
           to="/gestao/neighborhoods/$id/edit"
@@ -55,7 +55,7 @@ export function neighborhoodColumns(): TableColumns<ManagementNeighborhoodShowRe
     {
       id: 'actions',
       header: () => <span className="sr-only">{m.common_actions()}</span>,
-      meta: { className: 'w-12 text-right' },
+      meta: { className: 'w-12 text-right', card: 'actions' },
       cell: ({ row }) => <NeighborhoodRowActions neighborhood={row.original} />,
     },
   ]

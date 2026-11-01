@@ -21,7 +21,7 @@ export function noticeColumns(): TableColumns<ManagementNoticeShowResponse> {
     {
       id: 'title',
       header: () => m.panel_notices_col_title(),
-      meta: { sortKey: 'title', className: 'max-w-80' },
+      meta: { sortKey: 'title', className: 'max-w-80', card: 'title' },
       cell: ({ row }) => (
         <Link
           to="/gestao/notices/$id/edit"
@@ -65,7 +65,7 @@ export function noticeColumns(): TableColumns<ManagementNoticeShowResponse> {
     {
       id: 'actions',
       header: () => <span className="sr-only">{m.common_actions()}</span>,
-      meta: { className: 'w-12 text-right' },
+      meta: { className: 'w-12 text-right', card: 'actions' },
       cell: ({ row }) => <NoticeRowActions notice={row.original} />,
     },
   ]

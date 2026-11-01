@@ -49,7 +49,7 @@ export function NextCollection({
         {m.home_next_collection()}
       </h2>
       <div className="flex flex-col">
-        <p className="text-5xl leading-none font-extrabold tracking-tight first-letter:uppercase">
+        <p className="text-5xl leading-none font-extrabold lg:text-6xl tracking-tight first-letter:uppercase">
           {headline}
         </p>
         <p className="mt-1 text-lg font-medium text-muted-foreground">

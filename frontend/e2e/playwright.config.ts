@@ -54,6 +54,20 @@ export default defineConfig({
         viewport: { width: 1440, height: 900 },
       },
     },
+    // The responsive matrix runs twice: with touch (the 44px targets are asserted) and
+    // with a mouse (only the page overflow is).
+    {
+      name: 'responsive-touch',
+      testMatch: /responsive-public\.spec\.ts/,
+      use: { ...devices['Pixel 7'] },
+    },
+    {
+      name: 'responsive-pointer',
+      testMatch: /responsive-public\.spec\.ts/,
+      // The target size is a touch rule: only the overflow tests run with a mouse.
+      grep: /no horizontal scroll/,
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
   webServer: {
     // The specs run against the real API (backend on `E2E_API_URL`, seeded with

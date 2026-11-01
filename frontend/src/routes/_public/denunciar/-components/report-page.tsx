@@ -126,8 +126,8 @@ export function ReportPage(): React.JSX.Element {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
-      <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance">
+    <div className="page-container-md flex flex-col gap-6 py-8 md:py-12">
+      <h1 className="text-fluid-title font-extrabold tracking-tight text-balance">
         {m.report_title()}
       </h1>
 
@@ -152,6 +152,7 @@ export function ReportPage(): React.JSX.Element {
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-3">
                   <ReportKindPicker
+                    className="sm:grid sm:grid-cols-2 sm:gap-4"
                     name={field.name}
                     value={field.value}
                     onValueChange={field.onChange}

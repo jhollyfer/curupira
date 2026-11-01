@@ -1,22 +1,31 @@
 import { REPORT_KINDS, REPORT_STATUSES } from '@curupira/shared'
-import { XIcon } from '@phosphor-icons/react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
 import * as React from 'react'
 
 import { OptionSelect } from '#/components/common/option-select'
-import { Button } from '#/components/ui/button'
 import { Field, FieldLabel } from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
 import { managementNeighborhoodChoicesQueryOptions } from '#/integrations/tanstack-query/queries/management'
+import { countActiveFilters } from '#/lib/active-filters'
 import { REPORT_KIND_LABELS, REPORT_STATUS_LABELS } from '#/lib/labels'
-import { hasReportsFilter } from '#/lib/management-search'
 import type { ReportsSearch } from '#/lib/management-search'
 import { m } from '#/paraglide/messages'
 
+import { FilterPanel } from '../../../-components/filter-panel'
 import { SearchFilter } from '../../../-components/search-filter'
 
 const route = getRouteApi('/_private/gestao/reports/')
+
+/** What narrows the list - not the page, the page size or the order. */
+const FILTER_KEYS = [
+  'kind',
+  'status',
+  'neighborhoodId',
+  'from',
+  'to',
+  'search',
+] satisfies ReadonlyArray<keyof ReportsSearch>
 
 /**
  * Every control writes one param of the URL and drops `page` (page 3 of a narrower cut
@@ -41,14 +50,11 @@ export function ReportsFilters(): React.JSX.Element {
     void navigate({ search: {} })
   }
 
-  const filtered = hasReportsFilter(search) || Boolean(search.search)
-
   return (
-    <form
-      role="search"
-      aria-label={m.panel_reports_filters_label()}
-      className="flex shrink-0 flex-wrap items-end gap-3"
-      onSubmit={(event) => event.preventDefault()}
+    <FilterPanel
+      label={m.panel_reports_filters_label()}
+      activeCount={countActiveFilters(search, FILTER_KEYS)}
+      onClear={clear}
     >
       <OptionSelect
         id={ids.concat('-kind')}
@@ -98,7 +104,7 @@ export function ReportsFilters(): React.JSX.Element {
           value={search.from ?? ''}
           max={search.to}
           onChange={(event) => apply({ from: event.target.value || undefined })}
-          className="h-9 w-40 text-sm"
+          className="h-9 w-full text-sm md:w-40"
         />
       </Field>
       <Field className="w-auto gap-1.5">
@@ -111,7 +117,7 @@ export function ReportsFilters(): React.JSX.Element {
           value={search.to ?? ''}
           min={search.from}
           onChange={(event) => apply({ to: event.target.value || undefined })}
-          className="h-9 w-40 text-sm"
+          className="h-9 w-full text-sm md:w-40"
         />
       </Field>
 
@@ -122,13 +128,6 @@ export function ReportsFilters(): React.JSX.Element {
         placeholder="CUR-"
         onCommit={(value) => apply({ search: value })}
       />
-
-      {filtered && (
-        <Button type="button" variant="ghost" onClick={clear} className="h-9">
-          <XIcon aria-hidden="true" data-icon="inline-start" />
-          {m.panel_reports_filter_clear()}
-        </Button>
-      )}
-    </form>
+    </FilterPanel>
   )
 }
