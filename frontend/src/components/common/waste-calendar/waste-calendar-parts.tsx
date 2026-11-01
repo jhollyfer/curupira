@@ -213,7 +213,9 @@ export function WasteCalendarMonth({
           <CaretRightIcon aria-hidden="true" weight="bold" />
         </Button>
       </div>
-      <table className="w-full table-fixed border-separate border-spacing-1">
+      {/* 2px between columns, not 4: at 360px the day buttons came out 42px wide, under the
+          44px touch target; vertical spacing keeps the 4px rhythm. */}
+      <table className="w-full table-fixed border-separate border-spacing-x-0.5 border-spacing-y-1">
         <caption className="sr-only">{m.calendar_caption()}</caption>
         <thead>
           <tr>

@@ -16,37 +16,12 @@ import type { Plugin } from 'vite'
  */
 const DATA_DIR = '/src/data/'
 
-type ExportNode = Readonly<{
-  type: string
-  exportKind?: string
-  declaration?: Readonly<{
-    type: string
-    id?: Readonly<{ name: string }>
-    declarations?: ReadonlyArray<Readonly<{ id: Readonly<{ name?: string }> }>>
-  }> | null
-  specifiers?: ReadonlyArray<
-    Readonly<{ exported: Readonly<{ name?: string }> }>
-  >
-}>
+/** The text of a module-export name: an identifier, or a string literal (`export { x as 'a-b' }`). */
+function textOf(name: { type: string; name?: string; value?: unknown }): string {
+  if (typeof name.name === 'string') return name.name
+  if (typeof name.value === 'string') return name.value
 
-function namesOf(node: ExportNode): ReadonlyArray<string> {
-  if (node.type !== 'ExportNamedDeclaration' || node.exportKind === 'type') {
-    return []
-  }
-
-  const fromSpecifiers = (node.specifiers ?? []).map(
-    (specifier) => specifier.exported.name ?? '',
-  )
-  const declaration = node.declaration
-  const fromDeclaration = (declaration?.declarations ?? []).map(
-    (item) => item.id.name ?? '',
-  )
-
-  return [
-    ...fromSpecifiers,
-    ...fromDeclaration,
-    declaration?.id?.name ?? '',
-  ].filter(Boolean)
+  return ''
 }
 
 export function stripExampleData(dataSource: string | undefined): Plugin {
@@ -59,7 +34,30 @@ export function stripExampleData(dataSource: string | undefined): Plugin {
       if (dataSource !== 'api') return null
       if (!id.includes(DATA_DIR) || id.includes('.test.')) return null
 
-      const names = this.parse(code).body.flatMap(namesOf)
+      const names: Array<string> = []
+
+      for (const node of this.parse(code).body) {
+        if (node.type !== 'ExportNamedDeclaration' || node.exportKind === 'type') {
+          continue
+        }
+
+        for (const specifier of node.specifiers) {
+          names.push(textOf(specifier.exported))
+        }
+
+        const declaration = node.declaration
+        if (declaration?.type === 'VariableDeclaration') {
+          for (const item of declaration.declarations) {
+            if (item.id.type === 'Identifier') names.push(item.id.name)
+          }
+        }
+        if (
+          declaration?.type === 'FunctionDeclaration' ||
+          declaration?.type === 'ClassDeclaration'
+        ) {
+          if (declaration.id) names.push(declaration.id.name)
+        }
+      }
 
       return {
         code: names

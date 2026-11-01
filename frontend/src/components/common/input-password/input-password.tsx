@@ -38,7 +38,7 @@ export function InputPassword({
 
   return (
     <InputGroup className={cn('bg-primary/5', className)}>
-      <InputGroupInput {...props} type={type} />
+      <InputGroupInput {...props} type={type} className="h-full" />
       <InputGroupAddon align="inline-end">
         <InputGroupButton
           size="icon-xs"

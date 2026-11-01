@@ -36,7 +36,7 @@ export function MapPage(): React.JSX.Element {
           off the first screen. The row bleeds to the screen edge so a cut chip says "there is
           more"; from `md` up everything fits and wraps again. */}
       <nav aria-label={m.map_filter_label()} className="-mx-4 md:mx-0">
-        <ul className="flex snap-x gap-2 overflow-x-auto px-4 pb-1 md:flex-wrap md:overflow-visible md:px-0">
+        <ul className="flex snap-x scroll-px-4 gap-2 overflow-x-auto px-4 pt-0.5 pb-1.5 md:flex-wrap md:overflow-visible md:px-0">
           <li>
             <Link to="/mapa" search={{}} data-active={!kind} className={CHIP}>
               {m.map_filter_all()}
