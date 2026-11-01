@@ -1,7 +1,7 @@
 import { PROTOCOL_PATTERN } from '@curupira/shared'
 
-import { expect, test } from './support/test'
 import { waitForHydration } from './support/hydration'
+import { expect, test } from './support/test'
 
 /**
  * SKELETON of the resident's critical flow: report in three steps, get the protocol,
