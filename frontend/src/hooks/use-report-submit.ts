@@ -4,6 +4,7 @@ import * as React from 'react'
 import { toast } from 'sonner'
 
 import { DEPENDENTS } from '#/hooks/tanstack-query/_query-keys'
+import { HTTPStatus } from '#/integrations/tanstack-query/http'
 import { useStorefrontReportCreateMutation } from '#/integrations/tanstack-query/mutations/storefront'
 import { rememberProtocol } from '#/lib/report-history'
 import { enqueueReport } from '#/lib/report-queue'
@@ -50,6 +51,13 @@ export function useReportSubmit() {
     onError: async (error, draft) => {
       if (error.isServerError) {
         await keep(draft)
+        return
+      }
+
+      // The API's 429 says "attempts exceeded", which reads like a sign-in problem; a
+      // resident who filed ten reports in an hour needs to hear what to do instead.
+      if (error.status === HTTPStatus.TOO_MANY_REQUESTS) {
+        toast.error(m.report_error_throttled())
         return
       }
 

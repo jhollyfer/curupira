@@ -11,13 +11,13 @@ import type { MutationProps } from '#/hooks/tanstack-query/_mutation-props'
 import type { ReportDraft } from '#/lib/report-queue'
 import { m } from '#/paraglide/messages'
 
-import { HTTPError, request } from '../http'
+import { HTTPError, request, send } from '../http'
 import { fromSource } from '../source'
 
 /**
  * Sends the photos, then the report. The browser PUTs each photo straight to the
- * storage with the presigned URL the API gave (`storefront/report-photos`): the bytes
- * never pass through the API. `photoIds` is what the report references.
+ * storage with the presigned URL the API gave (`storefront/report-photos`) and then confirms it with
+ * `complete`: the bytes never pass through the API. `photoIds` is what the report references.
  */
 async function putPhoto(uploadUrl: string, photo: Blob): Promise<void> {
   let response: Response
@@ -71,6 +71,14 @@ async function sendToApi(
     )
 
     await putPhoto(slot.uploadUrl, photo)
+
+    // The server only trusts a photo after `complete`: it checks the size and the real
+    // image type and re-encodes the file to strip EXIF/GPS. A report that references
+    // a photo that was never completed is refused, and the stored file would keep the
+    // location of whoever took it.
+    await send(`/storefront/report-photos/${slot.id}/complete`, {
+      method: 'POST',
+    })
     photoIds.push(slot.id)
   }
 

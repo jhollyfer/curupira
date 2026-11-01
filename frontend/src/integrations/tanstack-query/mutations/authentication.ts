@@ -9,7 +9,7 @@ import { mockSignIn, mockSignOut } from '../mock-session'
 import { fromSource } from '../source'
 
 /**
- * Signs in (`authentication/sessions`, the shared `AuthenticationSessionSignIn*`
+ * Signs in (`authentication/sign-in`, the shared `AuthenticationSessionSignIn*`
  * contract). Answers `204` and delivers the tokens in `Set-Cookie`, `httpOnly` -
  * there is nothing to store on screen, and whoever comes to know who is logged in is
  * `GET /account`.
@@ -25,7 +25,7 @@ export function useAuthenticationSignInMutation(
       return fromSource<void>({
         mock: () => mockSignIn(payload.email, payload.password),
         api: () =>
-          send('/authentication/sessions', {
+          send('/authentication/sign-in', {
             method: 'POST',
             body: JSON.stringify(payload),
           }),
@@ -43,7 +43,7 @@ export function useAuthenticationSignOutMutation(
     mutationFn: function () {
       return fromSource<void>({
         mock: mockSignOut,
-        api: () => send('/authentication/sessions', { method: 'DELETE' }),
+        api: () => send('/authentication/sign-out', { method: 'POST' }),
       })
     },
   })

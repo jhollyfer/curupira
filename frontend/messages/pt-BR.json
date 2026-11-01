@@ -187,6 +187,7 @@
   "report_error_queue": "Não deu para salvar a denúncia no aparelho. Tente enviar quando tiver conexão.",
   "report_error_upload": "Não foi possível enviar a foto. Tente novamente.",
   "report_error_photo_type": "Use fotos em JPEG, PNG ou WebP.",
+  "report_error_throttled": "Você enviou muitas denúncias em pouco tempo. Espere um pouco e tente de novo.",
   "wizard_progress_label": "Etapas da denúncia",
   "wizard_progress": "Passo {current} de {total}",
   "wizard_next": "Continuar",

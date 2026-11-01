@@ -187,6 +187,7 @@
   "report_error_queue": "Could not save the report on the device. Try sending when you have a connection.",
   "report_error_upload": "Could not send the photo. Try again.",
   "report_error_photo_type": "Use JPEG, PNG or WebP photos.",
+  "report_error_throttled": "You have sent many reports in a short time. Wait a little and try again.",
   "wizard_progress_label": "Report steps",
   "wizard_progress": "Step {current} of {total}",
   "wizard_next": "Continue",
