@@ -11,18 +11,23 @@ import { REPORT_KIND_ICONS } from '#/lib/icons'
  * in `styles.css`, from the tokens), so a theme change needs no new icon.
  * The default image marker is not used: its PNG paths break under bundlers.
  */
+const PIN_SIZES = {
+  normal: { icon: 18, pixels: 32, classes: 'report-pin' },
+  picker: { icon: 26, pixels: 44, classes: 'report-pin report-pin-picker' },
+}
+
 export function reportPinIcon(
   kind: ReportKind,
   status: ReportStatus | undefined,
-  size: 'normal' | 'picker' = 'normal',
+  size: keyof typeof PIN_SIZES = 'normal',
 ): L.DivIcon {
   const Icon = REPORT_KIND_ICONS[kind]
+  const { icon, pixels, classes } = PIN_SIZES[size]
   const markup = renderToStaticMarkup(
-    createElement(Icon, { weight: 'fill', size: size === 'picker' ? 26 : 18 }),
+    createElement(Icon, { weight: 'fill', size: icon }),
   )
-  const classes = size === 'picker' ? 'report-pin report-pin-picker' : 'report-pin'
-  const statusAttribute = status ? ` data-status="${status}"` : ''
-  const pixels = size === 'picker' ? 44 : 32
+  let statusAttribute = ''
+  if (status) statusAttribute = ` data-status="${status}"`
 
   return L.divIcon({
     className: '',

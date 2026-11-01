@@ -1,5 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import { PROTOCOL_PREFIX } from '@curupira/shared'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { MagnifyingGlassIcon } from '@phosphor-icons/react'
 import { useNavigate } from '@tanstack/react-router'
 import type * as React from 'react'
@@ -20,7 +20,7 @@ type TrackFormProps = Readonly<{
 
 /** The code field: it moves the protocol into the URL, where the loader reads it. */
 export function TrackForm({ defaultProtocol }: TrackFormProps): React.JSX.Element {
-  const navigate = useNavigate({ from: '/acompanhar' })
+  const navigate = useNavigate({ from: '/acompanhar/' })
   const form = useForm<TrackFormInput, unknown, TrackFormOutput>({
     resolver: zodResolver(TrackFormValidator),
     mode: 'onTouched',

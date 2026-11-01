@@ -13,6 +13,15 @@ const LIMIT = 10
 
 const schema = z.array(z.string())
 
+/**
+ * The list as one string, for `useSyncExternalStore`: its snapshot must be a stable
+ * value, and a fresh array on every read would loop forever. Protocols never contain
+ * `|`, so it is a safe separator.
+ */
+export function readProtocolsSnapshot(): string {
+  return readProtocols().join('|')
+}
+
 export function readProtocols(): Array<string> {
   return readLocal({ theme: THEME, schema, fallback: [] })
 }

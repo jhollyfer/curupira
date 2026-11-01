@@ -41,6 +41,9 @@ export function LocationField({
   describedBy,
 }: LocationFieldProps): React.JSX.Element {
   const [status, setStatus] = React.useState<Status>('idle')
+  // Close enough to see the street once a pin exists; the town view before that.
+  let zoom: number | undefined
+  if (value) zoom = 16
 
   async function locate(): Promise<void> {
     setStatus('locating')
@@ -79,7 +82,9 @@ export function LocationField({
         size="touch"
         className="self-start"
         disabled={status === 'locating'}
-        onClick={locate}
+        onClick={() => {
+          void locate()
+        }}
       >
         <CrosshairIcon aria-hidden="true" />
         {m.report_location_use_mine()}
@@ -89,7 +94,7 @@ export function LocationField({
         label={m.report_location_map_label()}
         className="h-72"
         center={value}
-        zoom={value ? 16 : undefined}
+        zoom={zoom}
       >
         <React.Suspense fallback={null}>
           <ReportMapPicker value={value} onChange={onChange} kind={kind} />

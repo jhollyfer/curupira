@@ -1,10 +1,9 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import { REPORT_KINDS } from '@curupira/shared'
+import { zodResolver } from '@hookform/resolvers/zod'
 import * as React from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 
 import { ReportKindPicker, ReportKindPickerLegend, ReportKindPickerOption } from '#/components/common/report-kind-picker'
-import { SubmitButton } from '#/components/common/submit-button'
 import {
   StepWizard,
   StepWizardActions,
@@ -14,15 +13,16 @@ import {
   StepWizardNext,
   StepWizardPanel,
 } from '#/components/common/step-wizard'
+import { SubmitButton } from '#/components/common/submit-button'
 import { FieldError } from '#/components/ui/field'
 import { useReportSubmit } from '#/hooks/use-report-submit'
-import { errorId } from '#/lib/form-a11y'
+import { errorDescribedBy, errorId } from '#/lib/form-a11y'
+import { toCoordinate } from '#/lib/geo'
 import type { ReportDraft } from '#/lib/report-queue'
 import { m } from '#/paraglide/messages'
 
 import { ReportFormValidator } from '../-schema'
 import type { ReportFormValues } from '../-schema'
-
 import { EvidenceStep } from './evidence-step'
 import { ReportDone } from './report-done'
 import { SendStep } from './send-step'
@@ -61,8 +61,8 @@ export function ReportPage(): React.JSX.Element {
   })
 
   const canContinue = [
-    kind !== undefined,
-    photos.length > 0 && latitude !== undefined && longitude !== undefined,
+    Boolean(kind),
+    photos.length > 0 && toCoordinate(latitude, longitude) !== undefined,
     true,
   ]
 
@@ -110,7 +110,7 @@ export function ReportPage(): React.JSX.Element {
                     value={field.value}
                     onValueChange={field.onChange}
                     invalid={fieldState.invalid}
-                    describedBy={fieldState.invalid ? errorId(field.name) : undefined}
+                    describedBy={errorDescribedBy(fieldState.invalid, field.name)}
                   >
                     <ReportKindPickerLegend className="sr-only">
                       {m.report_kind_legend()}

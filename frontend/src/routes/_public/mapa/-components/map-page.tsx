@@ -46,7 +46,7 @@ export function MapPage(): React.JSX.Element {
                   to="/mapa"
                   search={{ kind: item }}
                   data-active={kind === item}
-                  aria-current={kind === item ? 'true' : undefined}
+                  aria-current={(kind === item && 'true') || undefined}
                   className={CHIP}
                 >
                   <Icon aria-hidden="true" weight="fill" />

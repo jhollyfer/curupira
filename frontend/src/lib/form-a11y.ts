@@ -10,6 +10,16 @@ export function errorId(id: string): string {
   return `${id}-error`
 }
 
+/**
+ * The `aria-describedby` of a control whose error lives outside it (a custom group, a
+ * wizard step): the message `id` only while there is a message to point at.
+ */
+export function errorDescribedBy(invalid: boolean, id: string): string | undefined {
+  if (!invalid) return undefined
+
+  return errorId(id)
+}
+
 type InvalidProps = Readonly<{
   'aria-invalid': boolean
   /** Present only with an error: pointing at a message that does not exist confuses the screen reader. */

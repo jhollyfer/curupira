@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon'
+import type { DateTime } from 'luxon'
 
 import { ICS_BYDAY, SHIFT_HOURS, firstOccurrence } from './schedule'
 import type { CollectionPass } from './schedule'
@@ -37,7 +37,7 @@ const MAX_OCTETS = 75
 export function escapeIcsText(value: string): string {
   return value
     .replaceAll('\\', '\\\\')
-    .replaceAll(';', '\;')
+    .replaceAll(';', '\\;')
     .replaceAll(',', '\\,')
     .replaceAll(/\r?\n/g, '\\n')
 }
@@ -56,7 +56,8 @@ export function foldIcsLine(line: string): string {
   for (const char of line) {
     const width = encoder.encode(char).length
     // Continuation lines carry the leading space, which counts too.
-    const limit = chunks.length === 0 ? MAX_OCTETS : MAX_OCTETS - 1
+    let limit = MAX_OCTETS - 1
+    if (chunks.length === 0) limit = MAX_OCTETS
 
     if (size + width > limit) {
       chunks.push(current)

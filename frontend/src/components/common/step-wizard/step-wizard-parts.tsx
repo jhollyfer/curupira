@@ -30,7 +30,7 @@ export function StepWizardIndicator({
         {titles.map((title, index) => (
           <li
             key={title}
-            aria-current={index === step ? 'step' : undefined}
+            aria-current={(index === step && 'step') || undefined}
             data-state={
               (index < step && 'done') || (index === step && 'current') || 'todo'
             }

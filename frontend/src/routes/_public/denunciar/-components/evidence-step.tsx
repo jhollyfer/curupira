@@ -4,11 +4,11 @@ import { Controller, useWatch } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
 
 import { Field, FieldError, FieldLabel } from '#/components/ui/field'
-import { errorId } from '#/lib/form-a11y'
+import { errorDescribedBy, errorId } from '#/lib/form-a11y'
+import { toCoordinate } from '#/lib/geo'
 import { m } from '#/paraglide/messages'
 
 import type { ReportFormValues } from '../-schema'
-
 import { LocationField } from './location-field'
 import { PhotoField } from './photo-field'
 
@@ -26,10 +26,7 @@ export function EvidenceStep({
     control: form.control,
     name: ['latitude', 'longitude'],
   })
-  const placed =
-    latitude !== undefined && longitude !== undefined
-      ? { latitude, longitude }
-      : undefined
+  const placed = toCoordinate(latitude, longitude)
 
   return (
     <div className="flex flex-col gap-8">
@@ -43,7 +40,7 @@ export function EvidenceStep({
               value={field.value}
               onChange={field.onChange}
               invalid={fieldState.invalid}
-              describedBy={fieldState.invalid ? errorId(field.name) : undefined}
+              describedBy={errorDescribedBy(fieldState.invalid, field.name)}
             />
             {fieldState.invalid && (
               <FieldError id={errorId(field.name)} errors={[fieldState.error]} />

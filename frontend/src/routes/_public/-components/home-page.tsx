@@ -19,12 +19,12 @@ import { NoticeList, NoticeListEmpty, NoticeListItems } from '#/components/commo
 import { WasteCalendar, WasteCalendarStrip } from '#/components/common/waste-calendar'
 import { Button } from '#/components/ui/button'
 import { Skeleton } from '#/components/ui/skeleton'
+import { useResidentNeighborhood } from '#/hooks/use-resident-neighborhood'
 import {
   storefrontNeighborhoodsQueryOptions,
   storefrontNoticesQueryOptions,
   storefrontSchedulesQueryOptions,
 } from '#/integrations/tanstack-query/queries/storefront'
-import { useResidentNeighborhood } from '#/hooks/use-resident-neighborhood'
 import { m } from '#/paraglide/messages'
 
 import { NextCollection } from './next-collection'

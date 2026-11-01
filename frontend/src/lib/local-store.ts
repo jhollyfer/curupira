@@ -50,6 +50,26 @@ export function readLocal<TSchema extends z.ZodType>({
   }
 }
 
+const listeners = new Set<() => void>()
+
+/**
+ * Subscribes to changes of the stored themes, for `useSyncExternalStore`: this tab's
+ * own writes (the storage event does not fire in the tab that wrote) and other tabs'.
+ */
+export function subscribeLocal(listener: () => void): () => void {
+  listeners.add(listener)
+  globalThis.addEventListener('storage', listener)
+
+  return () => {
+    listeners.delete(listener)
+    globalThis.removeEventListener('storage', listener)
+  }
+}
+
+function notifyLocal(): void {
+  listeners.forEach((listener) => listener())
+}
+
 /** Saves a theme. Without quota or without storage, the preference does not persist and the screen carries on. */
 export function writeLocal(theme: string, value: unknown): void {
   try {
@@ -57,6 +77,7 @@ export function writeLocal(theme: string, value: unknown): void {
   } catch {
     // Quota exceeded, private mode or SSR.
   }
+  notifyLocal()
 }
 
 export function removeLocal(theme: string): void {
@@ -65,6 +86,7 @@ export function removeLocal(theme: string): void {
   } catch {
     // Idem.
   }
+  notifyLocal()
 }
 
 /** The stored themes that start with `themePrefix`, for sweeping expired ones. */

@@ -3,11 +3,11 @@ import { useQueryClient } from '@tanstack/react-query'
 import * as React from 'react'
 import { toast } from 'sonner'
 
-import { useStorefrontReportCreateMutation } from '#/integrations/tanstack-query/mutations/storefront'
 import { DEPENDENTS } from '#/hooks/tanstack-query/_query-keys'
+import { useStorefrontReportCreateMutation } from '#/integrations/tanstack-query/mutations/storefront'
+import { rememberProtocol } from '#/lib/report-history'
 import { enqueueReport } from '#/lib/report-queue'
 import type { ReportDraft } from '#/lib/report-queue'
-import { rememberProtocol } from '#/lib/report-history'
 import { m } from '#/paraglide/messages'
 
 /** What happened to the report the resident just sent. */
@@ -37,7 +37,25 @@ export function useReportSubmit() {
     }
   }
 
-  const mutation = useStorefrontReportCreateMutation()
+  const mutation = useStorefrontReportCreateMutation({
+    onSuccess: async ({ protocol }, draft) => {
+      rememberProtocol(protocol)
+      setOutcome({ state: 'sent', protocol, kind: draft.kind })
+      await Promise.all(
+        DEPENDENTS.reports.map((queryKey) =>
+          queryClient.invalidateQueries({ queryKey }),
+        ),
+      )
+    },
+    onError: async (error, draft) => {
+      if (error.isServerError) {
+        await keep(draft)
+        return
+      }
+
+      toast.error(error.message)
+    },
+  })
 
   async function submit(draft: ReportDraft): Promise<void> {
     if (!navigator.onLine) {
@@ -45,25 +63,7 @@ export function useReportSubmit() {
       return
     }
 
-    mutation.mutate(draft, {
-      onSuccess: async ({ protocol }) => {
-        rememberProtocol(protocol)
-        setOutcome({ state: 'sent', protocol, kind: draft.kind })
-        await Promise.all(
-          DEPENDENTS.reports.map((queryKey) =>
-            queryClient.invalidateQueries({ queryKey }),
-          ),
-        )
-      },
-      onError: async (error) => {
-        if (error.isServerError) {
-          await keep(draft)
-          return
-        }
-
-        toast.error(error.message)
-      },
-    })
+    mutation.mutate(draft)
   }
 
   return {

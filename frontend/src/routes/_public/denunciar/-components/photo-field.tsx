@@ -1,5 +1,5 @@
-import { CameraIcon, ImagesIcon, XIcon } from '@phosphor-icons/react'
 import { LIST_LIMITS } from '@curupira/shared'
+import { CameraIcon, ImagesIcon, XIcon } from '@phosphor-icons/react'
 import * as React from 'react'
 
 import { buttonVariants } from '#/components/ui/button'
@@ -15,18 +15,52 @@ type PhotoFieldProps = Readonly<{
   describedBy?: string
 }>
 
-/** Object URLs for the previews, released when the photos change or the field leaves. */
-function usePreviews(photos: ReadonlyArray<Blob>): Array<string> {
-  const [urls, setUrls] = React.useState<Array<string>>([])
+/**
+ * One thumbnail. Read as a data URL by `FileReader`: unlike an object URL it needs no
+ * revoking (nothing leaks when the field leaves), and the state is set from the
+ * reader's callback, not synchronously in the effect.
+ */
+function PhotoPreview({
+  blob,
+  number,
+  onRemove,
+}: Readonly<{ blob: Blob; number: number; onRemove: () => void }>): React.JSX.Element {
+  const [url, setUrl] = React.useState<string | undefined>(undefined)
 
   React.useEffect(() => {
-    const created = photos.map((photo) => URL.createObjectURL(photo))
-    setUrls(created)
+    let alive = true
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (alive && typeof reader.result === 'string') setUrl(reader.result)
+    }
+    reader.readAsDataURL(blob)
 
-    return () => created.forEach((url) => URL.revokeObjectURL(url))
-  }, [photos])
+    return () => {
+      alive = false
+    }
+  }, [blob])
 
-  return urls
+  return (
+    <li className="relative aspect-square overflow-hidden rounded-xl bg-muted">
+      {url && (
+        <img
+          src={url}
+          alt={m.report_photo_alt({ number })}
+          width={240}
+          height={240}
+          className="size-full object-cover"
+        />
+      )}
+      <button
+        type="button"
+        aria-label={m.report_photo_remove({ number })}
+        onClick={onRemove}
+        className="absolute top-1 right-1 grid size-11 place-items-center rounded-full bg-foreground/80 text-background outline-none focus-visible:ring-4 focus-visible:ring-ring"
+      >
+        <XIcon aria-hidden="true" weight="bold" className="size-5" />
+      </button>
+    </li>
+  )
 }
 
 const PICK_BUTTON = cn(
@@ -48,7 +82,6 @@ export function PhotoField({
   describedBy,
 }: PhotoFieldProps): React.JSX.Element {
   const [processing, setProcessing] = React.useState(false)
-  const previews = usePreviews(value)
   const full = value.length >= LIST_LIMITS.REPORT_PHOTOS
 
   async function add(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
@@ -76,7 +109,9 @@ export function PhotoField({
             capture="environment"
             disabled={full || processing}
             aria-invalid={invalid}
-            onChange={add}
+            onChange={(event) => {
+              void add(event)
+            }}
             className="sr-only"
           />
         </label>
@@ -89,7 +124,9 @@ export function PhotoField({
             multiple
             disabled={full || processing}
             aria-invalid={invalid}
-            onChange={add}
+            onChange={(event) => {
+              void add(event)
+            }}
             className="sr-only"
           />
         </label>
@@ -105,26 +142,17 @@ export function PhotoField({
         {!processing && m.report_photo_count({ count: value.length, max: LIST_LIMITS.REPORT_PHOTOS })}
       </p>
 
-      {previews.length > 0 && (
+      {value.length > 0 && (
         <ul className="grid grid-cols-3 gap-2">
-          {previews.map((url, index) => (
-            <li key={url} className="relative aspect-square overflow-hidden rounded-xl bg-muted">
-              <img
-                src={url}
-                alt={m.report_photo_alt({ number: index + 1 })}
-                width={240}
-                height={240}
-                className="size-full object-cover"
-              />
-              <button
-                type="button"
-                aria-label={m.report_photo_remove({ number: index + 1 })}
-                onClick={() => onChange(value.filter((_, i) => i !== index))}
-                className="absolute top-1 right-1 grid size-11 place-items-center rounded-full bg-foreground/80 text-background outline-none focus-visible:ring-4 focus-visible:ring-ring"
-              >
-                <XIcon aria-hidden="true" weight="bold" className="size-5" />
-              </button>
-            </li>
+          {value.map((blob, index) => (
+            <PhotoPreview
+              // The blob has no id and photos are only appended or removed, so the
+              // position plus the size is stable between renders.
+              key={`${index}-${blob.size}`}
+              blob={blob}
+              number={index + 1}
+              onRemove={() => onChange(value.filter((_, i) => i !== index))}
+            />
           ))}
         </ul>
       )}

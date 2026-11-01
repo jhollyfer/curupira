@@ -18,11 +18,11 @@ import {
 } from '#/components/common/waste-calendar'
 import { Button } from '#/components/ui/button'
 import { Skeleton } from '#/components/ui/skeleton'
+import { useResidentNeighborhood } from '#/hooks/use-resident-neighborhood'
 import {
   storefrontNeighborhoodsQueryOptions,
   storefrontSchedulesQueryOptions,
 } from '#/integrations/tanstack-query/queries/storefront'
-import { useResidentNeighborhood } from '#/hooks/use-resident-neighborhood'
 import { TOWN_TIME_ZONE } from '#/lib/i18n'
 import { buildIcs } from '#/lib/ics'
 import { WASTE_TYPE_LABELS } from '#/lib/labels'
@@ -46,7 +46,7 @@ function download(name: string, content: string): void {
 export function SchedulePage(): React.JSX.Element {
   const { now } = route.useLoaderData()
   const search = route.useSearch()
-  const navigate = useNavigate({ from: '/coleta' })
+  const navigate = useNavigate({ from: '/coleta/' })
   const { data: neighborhoods } = useSuspenseQuery(
     storefrontNeighborhoodsQueryOptions(),
   )

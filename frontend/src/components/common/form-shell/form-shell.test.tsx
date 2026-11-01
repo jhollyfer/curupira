@@ -38,10 +38,10 @@ function renderForm(
   onSubmit: React.ComponentProps<'form'>['onSubmit'] = undefined,
 ) {
   render(
-    <FormShell formId="turma" backTo="/about" isPending={isPending}>
+    <FormShell formId="form-teste" backTo="/sobre" isPending={isPending}>
       <FormShellHeader>
         <FormShellBack />
-        <FormShellTitle>Nova turma</FormShellTitle>
+        <FormShellTitle>Nova form-teste</FormShellTitle>
         <FormShellActions>
           <FormShellDiscard />
           <FormShellSubmit />
@@ -65,25 +65,25 @@ describe('FormShell', () => {
 
     expect(
       screen.getByRole('link', { name: m.common_back() }).getAttribute('href'),
-    ).toBe('/about')
+    ).toBe('/sobre')
     expect(
       screen
         .getByRole('link', { name: m.common_discard() })
         .getAttribute('href'),
-    ).toBe('/about')
+    ).toBe('/sobre')
   })
 
   it('renders the title as the h1 and points Salvar at the shell form', () => {
     renderForm(false)
 
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Nova turma' }),
+      screen.getByRole('heading', { level: 1, name: 'Nova form-teste' }),
     ).toBeTruthy()
     expect(
       screen
         .getByRole('button', { name: m.common_save() })
         .getAttribute('form'),
-    ).toBe('turma')
+    ).toBe('form-teste')
   })
 
   it('when the header Salvar is clicked, submits the scrolling form', async () => {

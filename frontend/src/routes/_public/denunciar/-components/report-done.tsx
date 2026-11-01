@@ -74,7 +74,9 @@ export function ReportDone({
               variant="outline"
               size="touch"
               className="self-start"
-              onClick={() => copy(outcome.protocol)}
+              onClick={() => {
+                void copy(outcome.protocol)
+              }}
             >
               <CopyIcon aria-hidden="true" />
               {m.report_done_copy()}

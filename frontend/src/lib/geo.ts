@@ -32,6 +32,21 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
 }
 
+/**
+ * A pair of form numbers as a coordinate, or `undefined` while either is missing. The
+ * form state types them as numbers, but an unplaced pin leaves them `undefined` at
+ * runtime - `Number.isFinite` is the check that is true to both.
+ */
+export function toCoordinate(
+  latitude: number | undefined,
+  longitude: number | undefined,
+): Coordinate | undefined {
+  if (latitude === undefined || longitude === undefined) return undefined
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return undefined
+
+  return { latitude, longitude }
+}
+
 export function isInsideTown({ latitude, longitude }: Coordinate): boolean {
   return (
     latitude >= TOWN_BOUNDS.south &&

@@ -28,7 +28,7 @@ function build(from: string, passes: ReadonlyArray<CollectionPass> = [PASS]) {
 
 describe('escapeIcsText', () => {
   it('escapes commas, semicolons, backslashes and newlines', () => {
-    expect(escapeIcsText('a,b;c\\d\ne')).toBe('a\\,b\;c\\\\d\\ne')
+    expect(escapeIcsText('a,b;c\\d\ne')).toBe('a\\,b\\;c\\\\d\\ne')
   })
 })
 

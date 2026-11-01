@@ -90,10 +90,18 @@ const config = defineConfig(({ mode }) => {
       // `public/` that the root route links to.
       VitePWA({
         registerType: 'autoUpdate',
+        // Start's client build lands in `.output/public` (Nitro's public dir), not in
+        // Vite's default `dist`: pointed there, the precache sees the real assets.
+        outDir: '.output/public',
         injectRegister: false,
         manifest: false,
         workbox: {
-          globPatterns: ['**/*.{js,css,woff2,svg,png,ico}'],
+          // Precache only the light things every page needs (styles, font, icons: about
+          // 200 KB). The route chunks (about 1.4 MB with the map) are cached the first
+          // time each is used instead: an install that downloads everything is a cost
+          // the resident pays up front, on the weakest network, for pages they may
+          // never open.
+          globPatterns: ['**/*.{css,woff2,svg,png,ico}'],
           // SSR: navigations are answered by the server, never by a precached shell.
           navigateFallback: null,
           cleanupOutdatedCaches: true,
@@ -106,6 +114,17 @@ const config = defineConfig(({ mode }) => {
                 cacheName: 'pages',
                 networkTimeoutSeconds: 4,
                 expiration: { maxEntries: 30 },
+              },
+            },
+            {
+              // Hashed build assets never change under the same name, so the cache
+              // answers first and the network is only asked on a miss.
+              urlPattern: ({ url }) => url.pathname.startsWith('/assets/'),
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'assets',
+                expiration: { maxEntries: 120 },
+                cacheableResponse: { statuses: [200] },
               },
             },
             {

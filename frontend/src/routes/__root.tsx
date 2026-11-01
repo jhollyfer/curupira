@@ -1,3 +1,4 @@
+import fontUrl from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url'
 import { IconContext } from '@phosphor-icons/react'
 import type { QueryClient } from '@tanstack/react-query'
 import {
@@ -21,7 +22,6 @@ import { m } from '#/paraglide/messages'
 import { getLocale } from '../paraglide/runtime'
 import appCss from '../styles.css?url'
 
-import fontUrl from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url'
 
 /**
  * What every route sees in `context`.

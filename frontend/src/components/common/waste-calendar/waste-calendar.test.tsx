@@ -74,7 +74,9 @@ describe('WasteCalendar', () => {
     const months: Array<string> = []
     render(
       <WasteCalendar passes={PASSES} now={NOW}>
-        <WasteCalendarMonth month="2027-01" onMonthChange={(m) => months.push(m)} />
+        <WasteCalendarMonth month="2027-01" onMonthChange={(next) => {
+            months.push(next)
+          }} />
       </WasteCalendar>,
     )
 

@@ -30,13 +30,13 @@ function StatusTimelineStep({
 }: Readonly<{ status: ReportStatus; index: number }>): React.JSX.Element {
   const { current, events } = useStatusTimelineContext('StatusTimelineSteps')
   const state = stateOf(index, REPORT_STATUSES.indexOf(current))
-  const event = events.findLast((item) => item.status === status)
+  const event = [...events].reverse().find((item) => item.status === status)
   const Icon = REPORT_STATUS_ICONS[status]
 
   return (
     <li
       data-state={state}
-      aria-current={state === 'current' ? 'step' : undefined}
+      aria-current={(state === 'current' && 'step') || undefined}
       className="group relative flex gap-4 pb-8 last:pb-0"
     >
       <span

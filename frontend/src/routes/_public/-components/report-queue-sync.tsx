@@ -46,12 +46,15 @@ export function ReportQueueSync(): null {
       }
     }
 
-    void flush()
-    globalThis.addEventListener('online', flush)
+    const onOnline = (): void => {
+      void flush()
+    }
+    onOnline()
+    globalThis.addEventListener('online', onOnline)
 
     return () => {
       alive = false
-      globalThis.removeEventListener('online', flush)
+      globalThis.removeEventListener('online', onOnline)
     }
   }, [queryClient])
 

@@ -1,3 +1,4 @@
+import type { ReportKind, ReportStatus, WasteType } from '@curupira/shared'
 import {
   WallIcon,
   CheckCircleIcon,
@@ -13,7 +14,6 @@ import {
   TrayArrowDownIcon,
 } from '@phosphor-icons/react'
 import type { Icon } from '@phosphor-icons/react'
-import type { ReportKind, ReportStatus, WasteType } from '@curupira/shared'
 
 /**
  * The icon of each domain value: the second cue beside the color, so no meaning

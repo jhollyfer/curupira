@@ -195,7 +195,7 @@ export function monthGrid(
   // Sunday is 7 in Luxon and must be column 0.
   const lead = first.weekday % 7
   const start = first.minus({ days: lead })
-  const total = Math.ceil((lead + first.daysInMonth) / 7) * 7
+  const total = Math.ceil((lead + (first.daysInMonth ?? 31)) / 7) * 7
 
   const cells = Array.from({ length: total }, (_, index): MonthCell => {
     const day = start.plus({ days: index })

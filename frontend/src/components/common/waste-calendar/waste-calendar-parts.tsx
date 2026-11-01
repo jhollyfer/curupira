@@ -99,6 +99,7 @@ export function WasteCalendarStrip({
     <div
       data-slot="waste-calendar-strip"
       role="region"
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be reachable by keyboard (WCAG 2.1.1)
       tabIndex={0}
       aria-label={m.calendar_strip_label()}
       className="-mx-4 overflow-x-auto px-4 pb-2 outline-none focus-visible:ring-4 focus-visible:ring-ring/60"
@@ -175,7 +176,9 @@ export function WasteCalendarMonth({
           variant="outline"
           size="icon-touch"
           aria-label={m.calendar_previous_month()}
-          onClick={() => onMonthChange(shiftMonth(month, -1))}
+          onClick={() => {
+            void onMonthChange(shiftMonth(month, -1))
+          }}
         >
           <CaretLeftIcon aria-hidden="true" weight="bold" />
         </Button>
@@ -193,7 +196,9 @@ export function WasteCalendarMonth({
           variant="outline"
           size="icon-touch"
           aria-label={m.calendar_next_month()}
-          onClick={() => onMonthChange(shiftMonth(month, 1))}
+          onClick={() => {
+            void onMonthChange(shiftMonth(month, 1))
+          }}
         >
           <CaretRightIcon aria-hidden="true" weight="bold" />
         </Button>

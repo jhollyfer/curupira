@@ -2,7 +2,8 @@ import { Link, getRouteApi } from '@tanstack/react-router'
 import * as React from 'react'
 
 import { Skeleton } from '#/components/ui/skeleton'
-import { readProtocols } from '#/lib/report-history'
+import { subscribeLocal } from '#/lib/local-store'
+import { readProtocolsSnapshot } from '#/lib/report-history'
 import { m } from '#/paraglide/messages'
 
 import { TrackForm } from './track-form'
@@ -12,12 +13,13 @@ const route = getRouteApi('/_public/acompanhar/')
 
 export function TrackPage(): React.JSX.Element {
   const { protocol } = route.useSearch()
-  // Read after mount: `localStorage` does not exist on the server.
-  const [mine, setMine] = React.useState<Array<string>>([])
-
-  React.useEffect(() => {
-    setMine(readProtocols())
-  }, [])
+  // `localStorage` does not exist on the server: the snapshot there is empty.
+  const remembered = React.useSyncExternalStore(
+    subscribeLocal,
+    readProtocolsSnapshot,
+    () => '',
+  )
+  const mine = remembered.split('|').filter(Boolean)
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">

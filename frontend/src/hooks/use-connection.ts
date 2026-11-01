@@ -36,18 +36,21 @@ export function useConnection(): Connection {
     }
 
     const update = (): void => setOnline(navigator.onLine)
+    const onQueueChange = (): void => {
+      void recount()
+    }
     update()
-    void recount()
+    onQueueChange()
 
     globalThis.addEventListener('online', update)
     globalThis.addEventListener('offline', update)
-    globalThis.addEventListener(QUEUE_EVENT, recount)
+    globalThis.addEventListener(QUEUE_EVENT, onQueueChange)
 
     return () => {
       alive = false
       globalThis.removeEventListener('online', update)
       globalThis.removeEventListener('offline', update)
-      globalThis.removeEventListener(QUEUE_EVENT, recount)
+      globalThis.removeEventListener(QUEUE_EVENT, onQueueChange)
     }
   }, [])
 
