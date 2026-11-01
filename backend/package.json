@@ -17,7 +17,6 @@
     "dev": "node ace serve --hmr",
     "test:unit": "node ace test unit",
     "test:e2e": "node ace test functional",
-    "db:seed:demo": "node ace db:seed --files database/seeders/dev/demo.ts",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
@@ -28,7 +27,9 @@
     "pattern:check": "node --import @poppinss/ts-exec scripts/pattern-check.ts",
     "authz:check": "node --import @poppinss/ts-exec scripts/authz-check.ts",
     "depcruise": "depcruise app --config scripts/depcruise.config.ts",
-    "di:check": "node ace di:check"
+    "di:check": "node ace di:check",
+    "db:seed:demo": "node ace db:seed --files database/seeders/dev/demo.ts",
+    "validators:check": "pnpm pattern:check"
   },
   "imports": {
     "#features/*": "./app/features/*.js",

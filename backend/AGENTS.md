@@ -12,9 +12,10 @@ contexto do produto: `../AGENTS.md` e `../docs/`. O que cada operação faz, rec
 - `pnpm depcruise`: direção das camadas e ciclo (`domain.md` §8).
 - `pnpm test:unit`: a suíte `unit`, sem banco. `pnpm test:e2e`: a suíte `functional`, contra Postgres
   e MinIO do `docker-compose.yml` (`tooling.md` §8.4).
-- `pnpm di:check`: constrói service, repository e policy pelo container (exige banco).
+- `pnpm di:check`: constrói service e policy pelo container (exige banco).
 - `pnpm openapi:generate`: reescreve o `openapi.json`.
-- `pnpm db:seed:demo`: a demonstração, com `SEED_DEMO_PASSWORD`.
+- `pnpm db:seed:demo`: a demonstração (cronograma, denúncias, avisos), só em `development`. Os
+  bairros vêm do `neighborhood.seed.ts`; o dono, do `user.seed.ts` com `SEED_OWNER_PASSWORD`.
 
 ## Gerados e commitados
 
