@@ -142,7 +142,10 @@ export function reportPeriod(search: Pick<ReportsSearch, 'from' | 'to'>): {
   if (search.to) {
     const end = DateTime.fromFormat(search.to, 'yyyy-LL-dd', {
       zone: TOWN_TIME_ZONE,
-    }).endOf('day')
+    })
+      .endOf('day')
+      // The API's instants carry whole seconds; `.999` would round-trip as a different filter.
+      .set({ millisecond: 0 })
     period.to = end.toISO({ suppressMilliseconds: true }) ?? undefined
   }
 

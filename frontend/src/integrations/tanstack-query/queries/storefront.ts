@@ -61,15 +61,20 @@ export const storefrontSchedulesQueryOptions = (
     queryFn: ({ signal }) =>
       fromSource<ReadonlyArray<StorefrontScheduleShowResponse>>({
         mock: () => schedulesOf(neighborhoodId),
-        api: () => {
-          const query = new URLSearchParams()
+        api: async () => {
+          // Paginated like every listing (`backend/openapi.json`); 100 is the cap and a
+          // neighborhood has at most 84 collections (4 types x 7 days x 3 shifts). With
+          // no neighborhood chosen the public calendar still shows the first 100.
+          const query = new URLSearchParams({ perPage: '100' })
           if (neighborhoodId) query.set('neighborhoodId', neighborhoodId)
 
-          return request(
+          const page = await request(
             `/storefront/schedules?${query.toString()}`,
-            z.array(StorefrontScheduleShowResponse),
+            paginatedResponse(StorefrontScheduleShowResponse),
             { signal },
           )
+
+          return page.data
         },
       }),
     staleTime: 6 * HOUR,

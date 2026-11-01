@@ -1,1 +1,6 @@
-export { ReportMap, ReportMapPicker, ReportMapPins } from './report-map'
+export {
+  ReportMap,
+  ReportMapPicker,
+  ReportMapPins,
+  ReportMapSelectablePins,
+} from './report-map'

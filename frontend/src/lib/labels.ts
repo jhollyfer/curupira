@@ -1,14 +1,19 @@
 import type {
+  ActiveStatus,
   CollectionShift,
   NoticeStatus,
   ReportKind,
   ReportStatus,
+  UserRole,
   WasteType,
+  Weekday,
 } from '@curupira/shared'
 import type { VariantProps } from 'class-variance-authority'
+import { Info } from 'luxon'
 
 import type { badgeVariants } from '#/components/ui/badge'
 import { m } from '#/paraglide/messages'
+import { getLocale } from '#/paraglide/runtime'
 
 type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
 
@@ -102,3 +107,57 @@ export const NOTICE_STATUS_VARIANTS = {
   ACTIVE: 'success',
   CLOSED: 'neutral',
 } satisfies Record<NoticeStatus, BadgeVariant>
+
+export const ACTIVE_STATUS_LABELS = {
+  ACTIVE: () => m.label_active_status_active(),
+  INACTIVE: () => m.label_active_status_inactive(),
+} satisfies Record<ActiveStatus, () => string>
+
+export const ACTIVE_STATUS_VARIANTS = {
+  ACTIVE: 'success',
+  INACTIVE: 'neutral',
+} satisfies Record<ActiveStatus, BadgeVariant>
+
+export const USER_ROLE_LABELS = {
+  ADMINISTRATOR: () => m.label_user_role_administrator(),
+  OPERATOR: () => m.label_user_role_operator(),
+} satisfies Record<UserRole, () => string>
+
+/**
+ * Weekday names come from Luxon's `Info` in the screen's language, not from message
+ * keys: the public calendar already reads them that way, and fourteen keys per language
+ * would only restate what the platform's calendar data knows. Luxon's list starts on
+ * Monday, hence the index map.
+ */
+const LUXON_WEEKDAY_INDEX = {
+  MONDAY: 0,
+  TUESDAY: 1,
+  WEDNESDAY: 2,
+  THURSDAY: 3,
+  FRIDAY: 4,
+  SATURDAY: 5,
+  SUNDAY: 6,
+} satisfies Record<Weekday, number>
+
+export function weekdayLabel(
+  weekday: Weekday,
+  length: 'long' | 'short' = 'long',
+): string {
+  return Info.weekdays(length, { locale: getLocale() })[
+    LUXON_WEEKDAY_INDEX[weekday]
+  ] ?? ''
+}
+
+/**
+ * A name's initials for an avatar without a picture: first letter of the first and of the
+ * last name. A one-word name gives one initial - repeating it would read "MM" for "Marcelo".
+ */
+export function initials(name: string | undefined | null): string {
+  if (!name?.trim()) return ''
+
+  const parts = name.trim().split(/\s+/)
+  const first = parts.at(0)?.at(0) ?? ''
+  if (parts.length === 1) return first.toUpperCase()
+
+  return first.concat(parts.at(-1)?.at(0) ?? '').toUpperCase()
+}

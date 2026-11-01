@@ -99,3 +99,10 @@ export const ReportMapPicker = React.lazy(async () => {
 
   return { default: module.ReportMapPicker }
 })
+
+/** The panel's pins: selectable instead of popped up (see the component). */
+export const ReportMapSelectablePins = React.lazy(async () => {
+  const module = await import('./report-map-selectable-pins')
+
+  return { default: module.ReportMapSelectablePins }
+})

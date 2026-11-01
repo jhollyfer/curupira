@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import type { LinkProps } from '@tanstack/react-router'
 import type * as React from 'react'
 
 import { cn } from '#/lib/cn'
@@ -8,6 +9,8 @@ type BrandMarkProps = Readonly<{
   className?: string
   /** Hide the word and keep the mark (tight spaces). */
   compact?: boolean
+  /** Where the mark leads. The panel points it at its own front door. */
+  to?: LinkProps['to']
 }>
 
 /**
@@ -19,10 +22,11 @@ type BrandMarkProps = Readonly<{
 export function BrandMark({
   className,
   compact = false,
+  to = '/',
 }: BrandMarkProps): React.JSX.Element {
   return (
     <Link
-      to="/"
+      to={to}
       aria-label={m.common_home_link()}
       className={cn(
         'inline-flex min-h-11 items-center gap-2.5 rounded-xl text-xl font-extrabold tracking-tight outline-none focus-visible:ring-4 focus-visible:ring-ring/60',
