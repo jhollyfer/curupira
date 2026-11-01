@@ -4,6 +4,7 @@ import { PROTOCOL_PATTERN } from '@curupira/shared'
 import { NeighborhoodFactory } from '#database/factories/neighborhood.factory'
 import { body, invalidPayload, resetDatabase } from '#tests/http-fixtures'
 import { uploadReportPhoto } from '#tests/report-photo-fixtures'
+import { storageRow } from '#tests/storages-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 const SPOT = { kind: 'BURNING', latitude: -4.3769, longitude: -70.0314 } as const
@@ -102,6 +103,17 @@ test.group('storefront/reports > create', (group) => {
     bad.assertStatus(422)
     assert.property(body(bad).errors, 'kind')
     assert.property(body(bad).errors, 'latitude')
+  })
+
+  test('a library file cannot be attached to a report by its uuid', async ({ client, assert }) => {
+    const library = await storageRow()
+
+    const response = await client
+      .post('/storefront/reports')
+      .json({ ...SPOT, photoIds: [library.id] })
+
+    response.assertStatus(422)
+    assert.property(body(response).errors, 'photoIds')
   })
 
   test('the rate-limit table never holds the caller IP', async ({ client, assert }) => {

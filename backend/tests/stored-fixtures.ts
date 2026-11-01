@@ -75,16 +75,16 @@ export class Stored {
     return ReportPhotoModel.query().where('reportId', reportId)
   }
 
+  static storageOrFail(id: string) {
+    return StorageModel.findOrFail(id)
+  }
+
   static storages() {
     return StorageModel.all()
   }
 
   static storage(id: string) {
     return StorageModel.find(id)
-  }
-
-  static storageOrFail(id: string) {
-    return StorageModel.findOrFail(id)
   }
 
   static user(id: string) {

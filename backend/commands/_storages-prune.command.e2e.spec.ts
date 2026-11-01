@@ -13,6 +13,9 @@ import {
   type ResponseBody,
 } from '#tests/http-fixtures'
 import type { Session } from '#tests/http-fixtures'
+import { ReportFactory } from '#database/factories/report.factory'
+import { uploadReportPhoto } from '#tests/report-photo-fixtures'
+import { Stored } from '#tests/stored-fixtures'
 import { ageStorage, pngBytes, storageExists } from '#tests/storages-fixtures'
 
 /**
@@ -153,6 +156,44 @@ test.group('storages > prune', (group) => {
 
     assert.isTrue(await storageExists(storage.id))
     assert.isTrue(await drive.use().exists(storage.path))
+  })
+
+  test('deletes a report photo nobody claimed, object and row', async ({ client, assert }) => {
+    const photoId = await uploadReportPhoto(client)
+    const path = (await Stored.storageOrFail(photoId)).path
+    await age(photoId, 48)
+
+    const command = await prune()
+
+    command.assertSucceeded()
+    assert.isFalse(await storageExists(photoId))
+    assert.isFalse(await drive.use().exists(path))
+  })
+
+  test('keeps a recent unclaimed report photo, and one a report already claimed', async ({
+    client,
+    assert,
+  }) => {
+    const recent = await uploadReportPhoto(client)
+    const claimed = await uploadReportPhoto(client)
+    const report = await ReportFactory.create()
+    await Stored.attachPhoto(report.id, claimed)
+    await age(claimed, 48)
+
+    const command = await prune()
+
+    command.assertSucceeded()
+    assert.isTrue(await storageExists(recent))
+    assert.isTrue(await storageExists(claimed))
+  })
+
+  test('--dry-run leaves an unclaimed report photo alone', async ({ client, assert }) => {
+    const photoId = await uploadReportPhoto(client)
+    await age(photoId, 48)
+
+    await prune('--dry-run')
+
+    assert.isTrue(await storageExists(photoId))
   })
 
   test('--hours adjusts the cutoff', async ({ client, assert }) => {

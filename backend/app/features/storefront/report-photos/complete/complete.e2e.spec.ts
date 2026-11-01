@@ -4,6 +4,7 @@ import drive from '@adonisjs/drive/services/main'
 
 import { body, resetDatabase } from '#tests/http-fixtures'
 import { jpegWithGps, openReportPhoto, uploadReportPhoto } from '#tests/report-photo-fixtures'
+import { storageRow } from '#tests/storages-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('storefront/report-photos > complete', (group) => {
@@ -78,6 +79,18 @@ test.group('storefront/report-photos > complete', (group) => {
 
     response.assertStatus(422)
     assert.equal(body(response).code, 'STORAGE_CONTENT_MISMATCH')
+  })
+
+  test('a library file is 404: an anonymous caller cannot re-encode it by knowing its uuid', async ({
+    client,
+    assert,
+  }) => {
+    const library = await storageRow({ status: 'PENDING', mimetype: 'image/jpeg' })
+
+    const response = await client.post(`/storefront/report-photos/${library.id}/complete`)
+
+    response.assertStatus(404)
+    assert.equal((await Stored.storageOrFail(library.id)).status, 'PENDING')
   })
 
   test('an unknown id and a malformed id are refused', async ({ client, assert }) => {

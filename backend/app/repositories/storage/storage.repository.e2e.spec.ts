@@ -8,6 +8,9 @@ import type { StorageRepository } from './storage.repository.ts'
 import { resetDatabase } from '#tests/http-fixtures'
 import { PNG_HEAD } from '#tests/storages-unit-fixtures'
 import { Storage } from '#domain/storage/storage.entity'
+import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
+import { ReportFactory } from '#database/factories/report.factory'
+import { Stored } from '#tests/stored-fixtures'
 import { UserFactory } from '#database/factories/user.factory'
 import UserModel from '#models/user'
 
@@ -23,18 +26,24 @@ const IMPLEMENTATIONS = {
 
 const NOW = new Date('2026-10-29T12:00:00.000Z')
 
-function file(id: string, originalName: string, confirmed = true): Storage {
+function file(
+  id: string,
+  originalName: string,
+  confirmed = true,
+  key = `${id}.png`,
+  now = NOW,
+): Storage {
   const storage = Storage.open({
     id,
-    key: `${id}.png`,
+    key,
     originalName,
     mimetype: 'image/png',
     size: 1024,
     uploadId: null,
     partSize: 10,
-    now: NOW,
+    now,
   })
-  if (confirmed) storage.complete({ contentLength: 1024, head: PNG_HEAD }, NOW)
+  if (confirmed) storage.complete({ contentLength: 1024, head: PNG_HEAD }, now)
 
   return storage
 }
@@ -109,6 +118,74 @@ for (const [name, make] of Object.entries(IMPLEMENTATIONS)) {
       assert.isFalse(await repository.areAttachable(['0c1f9d1e-8b7a-4c3d-9e2f-1a2b3c4d5e6f']))
     })
 
+    test('a report photo attaches only as a report photo, a library file only as a library file', async ({
+      assert,
+    }) => {
+      const repository = await make()
+      const photo = file(
+        '7e1d3c2b-1a0f-4e9d-8c7b-6a5f4e3d2c21',
+        'foto.png',
+        true,
+        `${REPORT_PHOTO_KEY_PREFIX}a.png`,
+      )
+      const library = file('7e1d3c2b-1a0f-4e9d-8c7b-6a5f4e3d2c22', 'galeria.png')
+      const pending = file(
+        '7e1d3c2b-1a0f-4e9d-8c7b-6a5f4e3d2c23',
+        'pendente.png',
+        false,
+        `${REPORT_PHOTO_KEY_PREFIX}b.png`,
+      )
+      await repository.save(photo)
+      await repository.save(library)
+      await repository.save(pending)
+
+      assert.isTrue(await repository.areReportPhotos([photo.id]))
+      assert.isTrue(await repository.areReportPhotos([]))
+      assert.isFalse(await repository.areReportPhotos([library.id]))
+      assert.isFalse(await repository.areReportPhotos([photo.id, library.id]))
+      assert.isFalse(await repository.areReportPhotos([pending.id]))
+      assert.isTrue(await repository.areAttachable([library.id]))
+      assert.isFalse(await repository.areAttachable([photo.id]))
+    })
+
+    test('unclaimedReportPhotos lists only old, confirmed report photos nobody attached', async ({
+      assert,
+    }) => {
+      const repository = await make()
+      const longAgo = new Date(Date.now() - 48 * 60 * 60 * 1000)
+      const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000)
+      const old = file(
+        '8f2e4d3c-2b1a-4f0e-9d8c-7b6a5f4e3d31',
+        'a.png',
+        true,
+        `${REPORT_PHOTO_KEY_PREFIX}a.png`,
+        longAgo,
+      )
+      const recent = file(
+        '8f2e4d3c-2b1a-4f0e-9d8c-7b6a5f4e3d32',
+        'b.png',
+        true,
+        `${REPORT_PHOTO_KEY_PREFIX}b.png`,
+        new Date(),
+      )
+      const unconfirmed = file(
+        '8f2e4d3c-2b1a-4f0e-9d8c-7b6a5f4e3d33',
+        'c.png',
+        false,
+        `${REPORT_PHOTO_KEY_PREFIX}c.png`,
+        longAgo,
+      )
+      const library = file('8f2e4d3c-2b1a-4f0e-9d8c-7b6a5f4e3d34', 'd.png', true, 'd.png', longAgo)
+      for (const item of [old, recent, unconfirmed, library]) await repository.save(item)
+
+      const found = await repository.unclaimedReportPhotos(cutoff)
+
+      assert.deepEqual(
+        found.map((item) => item.id),
+        [old.id],
+      )
+    })
+
     test('paginate searches, filters by status and sorts', async ({ assert }) => {
       const repository = await make()
       await repository.save(file('1d2c3b4a-5f6e-4d8c-9b0a-1f2e3d4c5b61', 'zeta.png'))
@@ -167,5 +244,28 @@ test.group('StorageRepository (lucid) > usedBy', (group) => {
     await UserModel.query().where('id', user.id).update({ avatarId: cover.id })
 
     assert.deepEqual(await repository.usedBy(cover.id), ['avatar de usuário'])
+  })
+})
+
+test.group('StorageRepository (lucid) > unclaimedReportPhotos', (group) => {
+  group.each.setup(() => resetDatabase())
+
+  test('a photo attached to a report is not unclaimed, however old', async ({ assert }) => {
+    const repository = await app.container.make(StorageLucidRepository)
+    const longAgo = new Date(Date.now() - 72 * 60 * 60 * 1000)
+    const claimed = file(
+      '9a3f5e4d-3c2b-4a1f-8e9d-8c7b6a5f4e41',
+      'claimed.png',
+      true,
+      `${REPORT_PHOTO_KEY_PREFIX}claimed.png`,
+      longAgo,
+    )
+    await repository.save(claimed)
+    const report = await ReportFactory.create()
+    await Stored.attachPhoto(report.id, claimed.id)
+
+    const found = await repository.unclaimedReportPhotos(new Date())
+
+    assert.deepEqual(found, [])
   })
 })
