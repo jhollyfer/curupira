@@ -23,6 +23,8 @@ export default defineConfig({
   // (_doc-lib/playwright.md#docs/test-timeouts).
   globalTimeout: 15 * 60 * 1000,
   timeout: 60 * 1000,
+  // The dev server compiles each route on first visit; 5s is not enough for that.
+  expect: { timeout: 15 * 1000 },
   reporter: [
     ['list'],
     ['html', { open: 'never', outputFolder: '../playwright-report' }],

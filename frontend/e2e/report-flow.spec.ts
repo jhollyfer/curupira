@@ -24,7 +24,17 @@ const PHOTO = {
   buffer: photoWithGps(),
 }
 
-async function fileReport(page: Page, kind: string): Promise<void> {
+type Pin = 'tap-map' | 'gps'
+
+/**
+ * Offline the lazy map chunk may never have been fetched, so that path places the pin
+ * with the device location (the page asks for it on its own when the step opens).
+ */
+async function fileReport(
+  page: Page,
+  kind: string,
+  pin: Pin = 'tap-map',
+): Promise<void> {
   await page.getByText(kind, { exact: true }).click()
   await page.getByRole('button', { name: 'Continuar' }).click()
 
@@ -34,12 +44,17 @@ async function fileReport(page: Page, kind: string): Promise<void> {
   // The pin is placed by tapping the map: the resident's GPS is not the only way.
   // The map mounts lazily and the first tap can land before its handler is attached, so
   // the tap is repeated until the pin shows (a second tap only moves the same pin).
-  await expect(async () => {
-    await page
-      .locator('.leaflet-container')
-      .click({ position: { x: 200, y: 160 } })
-    await expect(page.getByText(/lugar marcado/i)).toBeVisible({ timeout: 1500 })
-  }).toPass({ timeout: 15_000 })
+  if (pin === 'tap-map') {
+    await expect(async () => {
+      await page
+        .locator('.leaflet-container')
+        .click({ position: { x: 200, y: 160 } })
+      await expect(page.getByText(/lugar marcado/i)).toBeVisible({
+        timeout: 1500,
+      })
+    }).toPass({ timeout: 15_000 })
+  }
+  await expect(page.getByText(/lugar marcado/i)).toBeVisible()
   await page.getByRole('button', { name: 'Continuar' }).click()
 
   await expect(page.getByLabel('Enviar anônimo')).toBeChecked()
@@ -158,7 +173,7 @@ test.describe('resident', () => {
     await expect(
       desk.getByRole('table').getByRole('link', { name: code }),
     ).toBeVisible()
-    await expect(desk.locator(`img[title*="${code}"]`)).toBeVisible()
+    await expect(desk.locator(`.leaflet-marker-icon[title*="${code}"]`)).toBeVisible()
 
     await desk.getByRole('table').getByRole('link', { name: code }).click()
     await desk.getByRole('radio', { name: /Em análise/ }).check()
@@ -227,11 +242,13 @@ test.describe('resident', () => {
     context,
     ownerApi,
   }) => {
+    await context.grantPermissions(['geolocation'])
+    await context.setGeolocation({ latitude: -4.3836, longitude: -70.0311 })
     await page.goto('/denunciar')
     await waitForHydration(page)
     await context.setOffline(true)
 
-    await fileReport(page, 'Descarte irregular de lixo')
+    await fileReport(page, 'Descarte irregular de lixo', 'gps')
     await expect(
       page.getByText(/salva no aparelho e será enviada quando voltar a conexão/i),
     ).toBeVisible()
