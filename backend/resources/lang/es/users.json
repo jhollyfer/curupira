@@ -1,0 +1,9 @@
+{
+  "not_found": "Usuario no encontrado",
+  "already_exists": "El usuario ya existe",
+  "email_taken": "Ya existe un usuario con este correo electrónico",
+  "current_password_invalid": "Contraseña actual inválida",
+  "password_same_as_current": "La nueva contraseña debe ser distinta de la actual",
+  "self_access_forbidden": "No puedes cambiar tu propio rol ni estado",
+  "self_delete_forbidden": "No puedes borrar tu propia cuenta"
+}

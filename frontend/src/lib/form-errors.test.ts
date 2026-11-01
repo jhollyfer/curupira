@@ -1,0 +1,270 @@
+import { fromPartial } from '@total-typescript/shoehorn'
+import type { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { HTTPError, HTTPErrorCode } from '#/integrations/tanstack-query/http'
+
+import {
+  applyHTTPErrorToForm,
+  applyMutationError,
+  httpErrorMessage,
+  isRetrySafe,
+  notifyError,
+} from './form-errors'
+
+vi.mock('sonner', () => ({ toast: { error: vi.fn() } }))
+
+type FormValues = { name: string; position: string }
+
+const FIELDS = ['name', 'position'] as const
+
+/** Only `setError` is used; the rest of the form does not enter this calculation. */
+function formStub() {
+  const setError = vi.fn()
+
+  return {
+    setError,
+    form: fromPartial<UseFormReturn<FormValues>>({ setError }),
+  }
+}
+
+/** The 5xx text: the server's message is for the log, not for the screen. */
+const SERVER_MESSAGE = 'O servidor não conseguiu concluir. Tente de novo.'
+
+function httpError(errors?: Record<string, string>, status = 422) {
+  return new HTTPError({
+    message: 'Dados inválidos',
+    status,
+    code: HTTPErrorCode.VALIDATION_ERROR,
+    errors,
+  })
+}
+
+describe('applyHTTPErrorToForm', () => {
+  it('marks the field the backend flagged', () => {
+    const { form, setError } = formStub()
+
+    const handled = applyHTTPErrorToForm({
+      form,
+      error: httpError({ name: 'O campo name deve ter no máximo 255 itens' }),
+      fields: FIELDS,
+    })
+
+    expect(handled).toBe(true)
+    expect(setError).toHaveBeenCalledWith('name', {
+      message: 'O campo name deve ter no máximo 255 itens',
+    })
+  })
+
+  it('carries `root` to the form, not to a field', () => {
+    const { form, setError } = formStub()
+
+    applyHTTPErrorToForm({
+      form,
+      error: httpError({ root: 'Credenciais inválidas' }),
+      fields: FIELDS,
+    })
+
+    expect(setError).toHaveBeenCalledWith('root', {
+      message: 'Credenciais inválidas',
+    })
+  })
+
+  it('does not swallow an unknown key: it becomes a form message', () => {
+    const { form, setError } = formStub()
+
+    const handled = applyHTTPErrorToForm({
+      form,
+      error: httpError({ campoQueNinguemConhece: 'Valor inesperado' }),
+      fields: FIELDS,
+    })
+
+    expect(handled).toBe(true)
+    expect(setError).toHaveBeenCalledWith('root', {
+      message: 'Valor inesperado',
+    })
+  })
+
+  it('marks the known field and sends the unknown one to the footer', () => {
+    const { form, setError } = formStub()
+
+    const handled = applyHTTPErrorToForm({
+      form,
+      error: httpError({
+        name: 'O campo name é obrigatório',
+        campoNovo: 'Valor inesperado',
+      }),
+      fields: FIELDS,
+    })
+
+    expect(handled).toBe(true)
+    expect(setError).toHaveBeenCalledWith('name', {
+      message: 'O campo name é obrigatório',
+    })
+    expect(setError).toHaveBeenCalledWith('root', {
+      message: 'Valor inesperado',
+    })
+  })
+
+  it('returns false when nothing is assignable - then the screen decides', () => {
+    const { form, setError } = formStub()
+
+    const handled = applyHTTPErrorToForm({
+      form,
+      error: httpError(undefined, 500),
+      fields: FIELDS,
+    })
+
+    expect(handled).toBe(false)
+    expect(setError).not.toHaveBeenCalled()
+  })
+})
+
+describe('applyMutationError', () => {
+  beforeEach(() => {
+    vi.mocked(toast.error).mockClear()
+  })
+
+  it('when it is a field error, stops there: neither notice nor footer message', () => {
+    const { form, setError } = formStub()
+
+    applyMutationError({
+      form,
+      error: httpError({ name: 'O campo name é obrigatório' }),
+      fields: FIELDS,
+      retry: { id: 'x', onClick: vi.fn() },
+    })
+
+    expect(setError).toHaveBeenCalledWith('name', {
+      message: 'O campo name é obrigatório',
+    })
+    expect(setError).not.toHaveBeenCalledWith('root', expect.anything())
+    expect(toast.error).not.toHaveBeenCalled()
+  })
+
+  it('when editing, can always resend: 5xx with `retry` becomes a notice with the action', () => {
+    const { form, setError } = formStub()
+    const onClick = vi.fn()
+
+    applyMutationError({
+      form,
+      error: httpError(undefined, 500),
+      fields: FIELDS,
+      retry: { id: 'testimonial-update-error', onClick },
+    })
+
+    expect(setError).not.toHaveBeenCalled()
+    expect(toast.error).toHaveBeenCalledWith(SERVER_MESSAGE, {
+      id: 'testimonial-update-error',
+      action: { label: 'Tentar de novo', onClick },
+    })
+  })
+
+  it('when creating directly inserts, does not pass `retry`: the 5xx falls to the footer', () => {
+    const { form, setError } = formStub()
+
+    // `POST /administrator/testimonials` inserts without checking for duplicates, so a
+    // 500 may have come after the write and the resend would create a second
+    // testimonial. The caller simply does not pass `retry`.
+    applyMutationError({
+      form,
+      error: httpError(undefined, 500),
+      fields: FIELDS,
+    })
+
+    expect(toast.error).not.toHaveBeenCalled()
+    expect(setError).toHaveBeenCalledWith('root', { message: SERVER_MESSAGE })
+  })
+
+  it("does not apply `retry` to an error that is not the server's", () => {
+    const { form, setError } = formStub()
+
+    applyMutationError({
+      form,
+      error: httpError(undefined, 403),
+      fields: FIELDS,
+      retry: { id: 'x', onClick: vi.fn() },
+    })
+
+    expect(toast.error).not.toHaveBeenCalled()
+    expect(setError).toHaveBeenCalledWith('root', {
+      message: 'Dados inválidos',
+    })
+  })
+
+  it("when the network fails, is also the server's: offers the resend", () => {
+    const { form } = formStub()
+    const onClick = vi.fn()
+
+    const error = new HTTPError({
+      message: 'Não foi possível conectar ao servidor. Tente novamente.',
+      status: 0,
+      code: HTTPErrorCode.NETWORK_ERROR,
+    })
+
+    applyMutationError({
+      form,
+      error,
+      fields: FIELDS,
+      retry: { id: 'testimonial-update-error', onClick },
+    })
+
+    expect(toast.error).toHaveBeenCalledWith(
+      'Não foi possível conectar ao servidor. Tente novamente.',
+      expect.objectContaining({ id: 'testimonial-update-error' }),
+    )
+  })
+})
+
+describe('httpErrorMessage', () => {
+  it('passes the 4xx text, which the backend writes for the screen', () => {
+    expect(httpErrorMessage(httpError(undefined, 409))).toBe('Dados inválidos')
+  })
+
+  it('swaps the 5xx text for the generic one', () => {
+    expect(httpErrorMessage(httpError(undefined, 500))).toBe(SERVER_MESSAGE)
+  })
+
+  it('when the error did not come from the API, keeps its own text', () => {
+    expect(httpErrorMessage(new Error('arquivo.zip não é aceito'))).toBe(
+      'arquivo.zip não é aceito',
+    )
+  })
+})
+
+describe('isRetrySafe', () => {
+  it('allows 409, 5xx and network to be resent', () => {
+    expect(isRetrySafe(httpError(undefined, 409))).toBe(true)
+    expect(isRetrySafe(httpError(undefined, 503))).toBe(true)
+    expect(isRetrySafe(httpError(undefined, 0))).toBe(true)
+  })
+
+  it('does not allow 422, 403 and errors outside the API', () => {
+    expect(isRetrySafe(httpError(undefined, 422))).toBe(false)
+    expect(isRetrySafe(httpError(undefined, 403))).toBe(false)
+    expect(isRetrySafe(new Error('x'))).toBe(false)
+  })
+})
+
+describe('notifyError', () => {
+  beforeEach(() => {
+    vi.mocked(toast.error).mockClear()
+  })
+
+  it('offers "Tentar de novo" only when the error is retry-safe', () => {
+    const retry = vi.fn()
+
+    notifyError(httpError(undefined, 409), { id: 'a', retry })
+    expect(toast.error).toHaveBeenLastCalledWith('Dados inválidos', {
+      id: 'a',
+      action: { label: 'Tentar de novo', onClick: retry },
+    })
+
+    notifyError(httpError(undefined, 422), { id: 'b', retry })
+    expect(toast.error).toHaveBeenLastCalledWith('Dados inválidos', {
+      id: 'b',
+      action: undefined,
+    })
+  })
+})

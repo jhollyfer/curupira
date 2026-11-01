@@ -1,0 +1,8 @@
+{
+  "not_found": "Neighborhood not found",
+  "already_exists": "Neighborhood already exists",
+  "name_taken": "A neighborhood with this name already exists",
+  "center_incomplete": "Provide latitude and longitude together",
+  "center_incomplete_field": "The neighborhood center needs both latitude and longitude",
+  "in_use": "Neighborhood has collection slots. Remove them before deleting it"
+}

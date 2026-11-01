@@ -1,5 +1,6 @@
-import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/cors'
+
+import env from '#start/env'
 
 /**
  * Configuration options to tweak the CORS policy. The following
@@ -7,18 +8,31 @@ import { defineConfig } from '@adonisjs/cors'
  *
  * https://docs.adonisjs.com/guides/security/cors
  */
+
+/**
+ * The allowlist comes from `SITE_URL`, read once here and
+ * exported: the origin middleware reads the same list instead of parsing again.
+ *
+ * It must be explicit: with `credentials: true` below, the protocol refuses
+ * `*` - the browser does not send a cookie to a wildcard origin. So either the
+ * frontend origin is listed, or there is no session between the two.
+ */
+export const corsOrigins: ReadonlyArray<string> = [env.get('SITE_URL')]
+
+/**
+ * Only the site origin, in every environment, development included: an open policy in
+ * development hides the day the real origin is wrong. `SITE_URL` is required, so the boot
+ * stops without it instead of starting with no frontend allowed.
+ */
+const origin: string[] = [...corsOrigins]
+
 const corsConfig = defineConfig({
   /**
    * Enable or disable CORS handling globally.
    */
   enabled: true,
 
-  /**
-   * In development, allow every origin to simplify local front/backend setup.
-   * In production, keep an explicit allowlist (empty by default, so no
-   * cross-origin browser access is allowed until configured).
-   */
-  origin: app.inDev ? true : [],
+  origin,
 
   /**
    * HTTP methods accepted for cross-origin requests.
@@ -26,15 +40,25 @@ const corsConfig = defineConfig({
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
 
   /**
-   * Reflect request headers by default. Use a string array to restrict
-   * allowed headers.
+   * The headers the preflight allows, not `true`.
+   *
+   * `true` reflects back whatever the browser asked for. The
+   * explicit list is what makes a new header enter by decision and not by accident.
+   *
+   * `content-type` and `accept` are the minimum of any JSON request;
+   * `x-request-id` is what the log correlates.
    */
-  headers: true,
+  headers: ['content-type', 'accept', 'x-request-id'],
 
   /**
    * Response headers exposed to the browser.
+   *
+   * `content-disposition` is not among the simple response headers, so
+   * without this line the page JavaScript reads `null` when looking for it - even with the
+   * API sending the header, and even in development. It is how the
+   * CSV export finds out the file name to save.
    */
-  exposeHeaders: [],
+  exposeHeaders: ['content-disposition'],
 
   /**
    * Allow cookies/authorization headers on cross-origin requests.

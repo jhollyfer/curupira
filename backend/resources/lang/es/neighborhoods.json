@@ -1,0 +1,8 @@
+{
+  "not_found": "Barrio no encontrado",
+  "already_exists": "El barrio ya existe",
+  "name_taken": "Ya existe un barrio con este nombre",
+  "center_incomplete": "Indica latitud y longitud juntas",
+  "center_incomplete_field": "El centro del barrio necesita latitud y longitud",
+  "in_use": "Barrio con recolecciones registradas. Elimina las recolecciones antes de borrarlo"
+}

@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # As mesmas definições que o push em `main` usa, para o PR não passar por uma
+  # régua diferente da do deploy (_standards/tooling.md §8.1).
+  backend-check:
+    uses: ./.github/workflows/main-check-backend.yml
+
+  frontend-check:
+    uses: ./.github/workflows/main-check-frontend.yml
+
+  # Vulnerabilidade alta em dependência de produção reprova; dev tool fica fora
+  # do portão. Correção é atualização revisada, nunca `audit fix` (tooling.md §7).
+  audit:
+    name: Audit de dependências
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup pnpm e Node
+        uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
+        with:
+          runtime: node@24
+          cache: true
+          install: false
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Audit
+        run: pnpm audit --prod --audit-level=high
+
+  # Varredura de segredo no diff.
+  secrets:
+    name: Varredura de segredo
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Workflow sem injeção (tooling.md §9): `pull_request_target` não entra e
+  # `github.event.*` nunca é interpolado dentro de `run:`, só passa por `env:`.
+  workflows:
+    name: Workflows sem injeção
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: grep nos workflows
+        run: |
+          if grep -rnE --exclude=ci.yml 'pull_request_target' .github/workflows; then
+            echo "gatilho pull_request_target não entra" >&2
+            exit 1
+          fi
+          if grep -rnE 'run:.*\$\{\{[^}]*github\.(event|head_ref)' .github/workflows; then
+            echo "github.event interpolado em run:; passe por env:" >&2
+            exit 1
+          fi
+          if grep -rnE '\$\{\{[^}]*github\.(event|head_ref)' .github/workflows | grep -vE '^[^:]+:[0-9]+:\s*(#|-?\s*[A-Za-z_-]+:)'; then
+            echo "github.event fora de uma chave YAML (provável run: multilinha)" >&2
+            exit 1
+          fi

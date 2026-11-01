@@ -1,18 +1,50 @@
-import { UserSchema } from '#database/schema'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
+import { belongsTo } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { type AccessToken, DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
+import { type ActiveStatus, type UserRole } from '@curupira/shared'
 
-export default class User extends compose(UserSchema, withAuthFinder(hash)) {
+import Storage from '#models/storage'
+import { UserSchema } from '#database/schema'
+
+/**
+ * The mixin does two things that must go together: it hashes the password before
+ * saving and exposes `verifyCredentials`, which looks up by uid and checks the hash in
+ * constant time. Separating them is how a creation path that saves a plain-text
+ * password is born.
+ */
+const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
+  uids: ['email'],
+  passwordColumnName: 'password',
+})
+
+export default class User extends compose(UserSchema, AuthFinder) {
   static accessTokens = DbAccessTokensProvider.forModel(User)
+
+  /**
+   * The token that authenticated **this** request, filled in by the cookie
+   * guard. Outside a request's lifecycle it does not exist, which is why it is optional.
+   */
   declare currentAccessToken?: AccessToken
 
-  get initials() {
-    const [first, last] = this.fullName ? this.fullName.split(' ') : this.email.split('@')
-    if (first && last) {
-      return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase()
-    }
-    return `${first.slice(0, 2)}`.toUpperCase()
-  }
+  /**
+   * Redeclared only to narrow the type: `database/schema.ts` is generated from the
+   * columns and delivers every enum as `string`. Without this, comparing `role` with a
+   * wrong literal would compile and only show up when Postgres refused the
+   * write.
+   */
+  declare role: UserRole
+  declare status: ActiveStatus
+
+  /**
+   * Avatar, at most one. A hand-declared relation: `database/schema.ts` is
+   * generated from the columns and knows no relationship at all.
+   *
+   * Whoever attaches keeps the reference - it is what allows a single files table,
+   * with no "owner type" column.
+   */
+  @belongsTo(() => Storage, { foreignKey: 'avatarId' })
+  declare avatar: BelongsTo<typeof Storage>
 }

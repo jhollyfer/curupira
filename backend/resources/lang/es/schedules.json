@@ -1,0 +1,5 @@
+{
+  "not_found": "Recolección no encontrada",
+  "already_exists": "Esta recolección ya está registrada",
+  "slot_taken": "Este barrio ya tiene este tipo de residuo en este día y turno"
+}

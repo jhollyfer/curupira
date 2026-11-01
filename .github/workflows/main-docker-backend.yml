@@ -1,0 +1,53 @@
+name: Docker Backend
+
+on:
+  workflow_call:
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  docker:
+    name: Build & Push Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # O Dockerfile do backend compila lá dentro: a variante arm64 recebe o
+      # binário nativo dela em vez do binário amd64 do runner.
+      - name: Build and push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          # A raiz: a imagem precisa do `shared/` e do lockfile único
+          # (_standards/tooling.md §8.2).
+          context: .
+          file: backend/Dockerfile-production
+          push: true
+          platforms: linux/amd64,linux/arm64
+          # `latest` e o SHA: a tag do commit faz do rollback um redeploy.
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/curupira-api:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/curupira-api:${{ github.sha }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend

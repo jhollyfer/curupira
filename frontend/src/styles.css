@@ -1,124 +1,198 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
-@plugin '@tailwindcss/typography';
-
 @import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/figtree/wght.css';
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  --sea-ink: #173a40;
-  --sea-ink-soft: #416166;
-  --lagoon: #4fb8b2;
-  --lagoon-deep: #328f97;
-  --palm: #2f6a4a;
-  --sand: #e7f0e8;
-  --foam: #f3faf5;
-  --surface: rgba(255, 255, 255, 0.74);
-  --surface-strong: rgba(255, 255, 255, 0.9);
-  --line: rgba(23, 58, 64, 0.14);
-  --inset-glint: rgba(255, 255, 255, 0.82);
-  --kicker: rgba(47, 106, 74, 0.9);
-  --bg-base: #e7f3ec;
-  --header-bg: rgba(251, 255, 248, 0.84);
-  --chip-bg: rgba(255, 255, 255, 0.8);
-  --chip-line: rgba(47, 106, 74, 0.18);
-  --link-bg-hover: rgba(255, 255, 255, 0.9);
-  --hero-a: rgba(79, 184, 178, 0.36);
-  --hero-b: rgba(47, 106, 74, 0.2);
+/*
+ * ============================================================================
+ * CURUPIRA PALETTE
+ * ============================================================================
+ *
+ * Public service, trust first: forest green as the one brand color, a cool
+ * green-tinted paper (no cream, no beige) and near-black green ink.
+ *
+ *   --primary / --field   the action green; passes 4.5:1 as text on --background
+ *   --stage               the deep green band (hero, footer, sign-in)
+ *   --alert               fire orange: RESERVED to burning and to status
+ *   --destructive         red: errors and status only
+ *   --waste-*             the FIXED color of each waste type, the same on every
+ *                         screen (calendar, strip, legend, map). Never reuse them
+ *                         for anything else. Color is never the only cue: every
+ *                         type also has an icon and a name.
+ *
+ * Contrast was conferred pair by pair for AA (4.5:1 text, 3:1 components) in
+ * both themes.
+ * ============================================================================
+ */
 
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
+:root {
+  --field: oklch(0.44 0.1 155);
+  --stage: oklch(0.27 0.055 158);
+  --stage-foreground: oklch(0.97 0.012 150);
+  --stage-muted: oklch(0.83 0.03 152);
+  --alert: oklch(0.55 0.17 45);
+
+  --background: oklch(0.985 0.006 150);
+  --foreground: oklch(0.22 0.03 158);
+  --muted: oklch(0.955 0.01 150);
+  --muted-foreground: oklch(0.42 0.03 155);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.871 0.006 286.286);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.871 0.006 286.286);
+  --popover-foreground: oklch(0.22 0.03 158);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.03 158);
+  --border: oklch(0.89 0.015 150);
+  --input: oklch(0.78 0.02 150);
+  --primary: var(--field);
+  --primary-foreground: oklch(0.99 0.005 150);
+  --secondary: oklch(0.94 0.025 150);
+  --secondary-foreground: oklch(0.27 0.055 158);
+  --accent: oklch(0.93 0.035 150);
+  --accent-foreground: oklch(0.27 0.055 158);
+  --destructive: oklch(0.5 0.2 27);
+  --destructive-foreground: oklch(1 0 0);
+  --ring: oklch(0.55 0.14 155);
+  --chart-1: oklch(0.44 0.1 155);
+  --chart-2: oklch(0.52 0.13 245);
+  --chart-3: oklch(0.55 0.17 45);
+  --chart-4: oklch(0.5 0.12 300);
+  --chart-5: oklch(0.68 0.13 95);
+  --radius: 0.875rem;
+  --sidebar: oklch(0.97 0.012 150);
+  --sidebar-foreground: oklch(0.22 0.03 158);
+  --sidebar-primary: var(--field);
+  --sidebar-primary-foreground: oklch(0.99 0.005 150);
+  --sidebar-accent: oklch(0.93 0.035 150);
+  --sidebar-accent-foreground: oklch(0.27 0.055 158);
+  --sidebar-border: oklch(0.89 0.015 150);
+  --sidebar-ring: var(--ring);
+
+  /* The fixed color of each waste type. */
+  --waste-organic: oklch(0.48 0.075 62);
+  --waste-recyclable: oklch(0.5 0.14 245);
+  --waste-bulky: oklch(0.48 0.14 300);
+  --waste-debris: oklch(0.66 0.13 92);
+  --waste-debris-foreground: oklch(0.22 0.04 92);
+  --waste-organic-foreground: oklch(0.99 0.005 62);
+  --waste-recyclable-foreground: oklch(0.99 0.005 245);
+  --waste-bulky-foreground: oklch(0.99 0.005 300);
+
+  /* Report status scale: neutral, review, forwarded, resolved. */
+  --badge-neutral: oklch(0.95 0.008 150);
+  --badge-neutral-fg: oklch(0.4 0.02 150);
+  --badge-info: oklch(0.94 0.04 235);
+  --badge-info-fg: oklch(0.42 0.1 245);
+  --badge-success: oklch(0.93 0.05 155);
+  --badge-success-fg: oklch(0.37 0.09 156);
+  --badge-warning: oklch(0.94 0.06 85);
+  --badge-warning-fg: oklch(0.4 0.09 70);
+  --badge-alert: oklch(0.94 0.045 50);
+  --badge-alert-fg: oklch(0.43 0.13 45);
+
+  --surface-warm: oklch(0.97 0.012 150);
+  --surface-elevated: oklch(1 0 0);
+  --elevation-card:
+    0 1px 3px oklch(0.25 0.04 158 / 0.06), 0 0 0 1px oklch(0.25 0.04 158 / 0.05);
+  --elevation-card-hover:
+    0 6px 20px oklch(0.25 0.04 158 / 0.09),
+    0 0 0 1px oklch(0.25 0.04 158 / 0.07);
+  --elevation-card-elevated:
+    0 10px 32px oklch(0.25 0.04 158 / 0.12),
+    0 0 0 1px oklch(0.25 0.04 158 / 0.08);
+
+  --space-section: clamp(3rem, 7vw, 6rem);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.32, 0.72, 0, 1);
+  --heading-tight: -0.02em;
+  --heading-tighter: -0.03em;
 }
 
 .dark {
-  --sea-ink: #d7ece8;
-  --sea-ink-soft: #afcdc8;
-  --lagoon: #60d7cf;
-  --lagoon-deep: #8de5db;
-  --palm: #6ec89a;
-  --sand: #0f1a1e;
-  --foam: #101d22;
-  --surface: rgba(16, 30, 34, 0.8);
-  --surface-strong: rgba(15, 27, 31, 0.92);
-  --line: rgba(141, 229, 219, 0.18);
-  --inset-glint: rgba(194, 247, 238, 0.14);
-  --kicker: #b8efe5;
-  --bg-base: #0a1418;
-  --header-bg: rgba(10, 20, 24, 0.8);
-  --chip-bg: rgba(13, 28, 32, 0.9);
-  --chip-line: rgba(141, 229, 219, 0.24);
-  --link-bg-hover: rgba(24, 44, 49, 0.8);
-  --hero-a: rgba(96, 215, 207, 0.18);
-  --hero-b: rgba(110, 200, 154, 0.12);
+  --stage: oklch(0.2 0.04 158);
+  --stage-foreground: oklch(0.97 0.012 150);
+  --stage-muted: oklch(0.8 0.03 152);
+  --alert: oklch(0.72 0.16 50);
 
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.141 0.005 285.823);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.141 0.005 285.823);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.274 0.006 286.033);
-  --input: oklch(0.274 0.006 286.033);
-  --ring: oklch(0.442 0.017 285.786);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.274 0.006 286.033);
-  --sidebar-ring: oklch(0.442 0.017 285.786);
+  --background: oklch(0.17 0.025 158);
+  --foreground: oklch(0.96 0.012 150);
+  --muted: oklch(0.24 0.03 158);
+  --muted-foreground: oklch(0.76 0.025 152);
+  --popover: oklch(0.21 0.03 158);
+  --popover-foreground: oklch(0.96 0.012 150);
+  --card: oklch(0.21 0.03 158);
+  --card-foreground: oklch(0.96 0.012 150);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 28%);
+  --primary: oklch(0.74 0.15 152);
+  --primary-foreground: oklch(0.2 0.04 158);
+  --secondary: oklch(0.27 0.035 158);
+  --secondary-foreground: oklch(0.96 0.012 150);
+  --accent: oklch(0.29 0.045 156);
+  --accent-foreground: oklch(0.96 0.012 150);
+  --destructive: oklch(0.72 0.17 25);
+  --destructive-foreground: oklch(0.17 0.025 158);
+  --ring: oklch(0.74 0.15 152);
+  --sidebar: oklch(0.19 0.03 158);
+  --sidebar-foreground: oklch(0.96 0.012 150);
+  --sidebar-primary: oklch(0.74 0.15 152);
+  --sidebar-primary-foreground: oklch(0.2 0.04 158);
+  --sidebar-accent: oklch(0.29 0.045 156);
+  --sidebar-accent-foreground: oklch(0.96 0.012 150);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.74 0.15 152);
+
+  --waste-organic: oklch(0.7 0.09 65);
+  --waste-recyclable: oklch(0.72 0.12 245);
+  --waste-bulky: oklch(0.72 0.13 300);
+  --waste-debris: oklch(0.8 0.13 95);
+  --waste-debris-foreground: oklch(0.2 0.04 92);
+  --waste-organic-foreground: oklch(0.18 0.03 65);
+  --waste-recyclable-foreground: oklch(0.18 0.03 245);
+  --waste-bulky-foreground: oklch(0.18 0.03 300);
+
+  --badge-neutral: oklch(0.28 0.014 150);
+  --badge-neutral-fg: oklch(0.85 0.02 150);
+  --badge-info: oklch(0.28 0.05 235);
+  --badge-info-fg: oklch(0.85 0.09 240);
+  --badge-success: oklch(0.28 0.06 155);
+  --badge-success-fg: oklch(0.86 0.11 156);
+  --badge-warning: oklch(0.3 0.06 85);
+  --badge-warning-fg: oklch(0.86 0.11 90);
+  --badge-alert: oklch(0.3 0.07 50);
+  --badge-alert-fg: oklch(0.86 0.1 55);
+
+  --surface-warm: oklch(0.19 0.028 158);
+  --surface-elevated: oklch(0.21 0.03 158);
+  --elevation-card: 0 1px 3px oklch(0 0 0 / 0.3), 0 0 0 1px oklch(1 0 0 / 0.06);
+  --elevation-card-hover:
+    0 6px 20px oklch(0 0 0 / 0.4), 0 0 0 1px oklch(1 0 0 / 0.08);
+  --elevation-card-elevated:
+    0 10px 32px oklch(0 0 0 / 0.5), 0 0 0 1px oklch(1 0 0 / 0.08);
 }
 
 @theme inline {
-  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  /* One family (Figtree, a warm and highly legible sans), with a
+     metric-adjusted fallback so the swap does not move the page. */
+  --font-sans: 'Figtree Variable', 'Figtree Fallback', system-ui, sans-serif;
+  --font-display: 'Figtree Variable', 'Figtree Fallback', system-ui, sans-serif;
+  --text-error-code: 7rem;
+  --text-error-code-lg: 9rem;
+  --leading-display: 1.05;
+  --container-aside: 20rem;
+  --aspect-photo: 4 / 3;
+  --spacing-menu-bar: 5px;
+  --spacing-menu-bar-shift: 7px;
+  /* Touch target: the house minimum for any tappable thing (44px). */
+  --spacing-touch: 2.75rem;
+  /* Layer scale, lowest to highest. */
+  --z-sticky: 10;
+  --z-overlay: 20;
+  --z-modal: 30;
+  --z-dropdown: 40;
+  --z-toast: 50;
+  --z-tooltip: 60;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -143,10 +217,11 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -155,193 +230,497 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-stage: var(--stage);
+  --color-stage-foreground: var(--stage-foreground);
+  --color-stage-muted: var(--stage-muted);
+  --color-alert: var(--alert);
+  --color-field: var(--field);
+  --color-waste-organic: var(--waste-organic);
+  --color-waste-organic-foreground: var(--waste-organic-foreground);
+  --color-waste-recyclable: var(--waste-recyclable);
+  --color-waste-recyclable-foreground: var(--waste-recyclable-foreground);
+  --color-waste-bulky: var(--waste-bulky);
+  --color-waste-bulky-foreground: var(--waste-bulky-foreground);
+  --color-waste-debris: var(--waste-debris);
+  --color-waste-debris-foreground: var(--waste-debris-foreground);
+  --color-badge-neutral: var(--badge-neutral);
+  --color-badge-neutral-foreground: var(--badge-neutral-fg);
+  --color-badge-info: var(--badge-info);
+  --color-badge-info-foreground: var(--badge-info-fg);
+  --color-badge-success: var(--badge-success);
+  --color-badge-success-foreground: var(--badge-success-fg);
+  --color-badge-warning: var(--badge-warning);
+  --color-badge-warning-foreground: var(--badge-warning-fg);
+  --color-badge-alert: var(--badge-alert);
+  --color-badge-alert-foreground: var(--badge-alert-fg);
+  --color-surface-warm: var(--surface-warm);
+  --color-surface-elevated: var(--surface-elevated);
+  --shadow-card: var(--elevation-card);
+  --shadow-card-hover: var(--elevation-card-hover);
+  --shadow-card-elevated: var(--elevation-card-elevated);
+  --spacing-section: var(--space-section);
 }
 
-html,
-body,
-#app {
-  min-height: 100%;
+/*
+ * Fallback font with Figtree's metrics: `size-adjust` and the ascent/descent
+ * overrides make Arial fill Figtree's box, so the swap when the woff2 loads
+ * does not move the page (CLS). Values are an estimate; refine with Capsize.
+ */
+@font-face {
+  font-family: 'Figtree Fallback';
+  src: local('Arial');
+  size-adjust: 101%;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
 }
 
-body {
-  margin: 0;
-  color: var(--sea-ink);
-  font-family: var(--font-sans);
-  background-color: var(--bg-base);
-  background:
-    radial-gradient(1100px 620px at -8% -10%, var(--hero-a), transparent 58%),
-    radial-gradient(1050px 620px at 112% -12%, var(--hero-b), transparent 62%),
-    radial-gradient(720px 380px at 50% 115%, rgba(79, 184, 178, 0.1), transparent 68%),
-    linear-gradient(180deg, color-mix(in oklab, var(--sand) 68%, white) 0%, var(--foam) 44%, var(--bg-base) 100%);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/*
+ * Layers: from lowest to highest, `sticky < overlay < modal < dropdown <
+ * toast < tooltip` (`frontend.md` §6, `DECISIONS.md` #257). Base UI popups
+ * (select, menu, popover, combobox) use `z-dropdown`, above `modal`: they
+ * open from inside dialogs and sheets, and a popup below the modal that opened it
+ * is unreachable. A component's local layer (`z-1`) stays outside the scale.
+ */
+@utility z-dropdown {
+  z-index: var(--z-dropdown);
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.28;
-  background:
-    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.8), transparent 34%),
-    radial-gradient(circle at 78% 26%, rgba(79, 184, 178, 0.2), transparent 42%),
-    radial-gradient(circle at 42% 82%, rgba(47, 106, 74, 0.14), transparent 36%);
+@utility z-sticky {
+  z-index: var(--z-sticky);
 }
 
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.14;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
+@utility z-overlay {
+  z-index: var(--z-overlay);
 }
 
-a {
-  color: var(--lagoon-deep);
-  text-decoration-color: rgba(50, 143, 151, 0.4);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
+@utility z-modal {
+  z-index: var(--z-modal);
 }
 
-a:hover {
-  color: #246f76;
+@utility z-toast {
+  z-index: var(--z-toast);
 }
 
-code {
-  font-size: 0.9em;
-  border: 1px solid var(--line);
-  background: color-mix(in oklab, var(--surface-strong) 82%, white 18%);
-  border-radius: 7px;
-  padding: 2px 7px;
+@utility z-tooltip {
+  z-index: var(--z-tooltip);
 }
 
-pre code {
-  border: 0;
-  background: transparent;
-  padding: 0;
-  border-radius: 0;
-  font-size: inherit;
-  color: inherit;
+/* Screen heights and widths that are not spacing: each with the role
+   it plays. */
+@utility min-h-stage {
+  min-height: 70dvh;
 }
 
-.prose pre {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #1d2e45;
-  color: #e8efff;
+@utility min-h-stage-sm {
+  min-height: 60dvh;
 }
 
-.page-wrap {
-  width: min(1080px, calc(100% - 2rem));
-  margin-inline: auto;
+@utility h-stage-half {
+  height: 40dvh;
 }
 
-.display-title {
-  font-family: 'Fraunces', Georgia, serif;
+@utility max-w-label {
+  max-width: 45%;
 }
 
-.island-shell {
-  border: 1px solid var(--line);
-  background: linear-gradient(165deg, var(--surface-strong), var(--surface));
-  box-shadow:
-    0 1px 0 var(--inset-glint) inset,
-    0 22px 44px rgba(30, 90, 72, 0.1),
-    0 6px 18px rgba(23, 58, 64, 0.08);
-  backdrop-filter: blur(4px);
+@utility max-w-bar {
+  max-width: calc(100% - 1rem);
 }
 
-.feature-card {
-  background: linear-gradient(165deg, color-mix(in oklab, var(--surface-strong) 93%, white 7%), var(--surface));
-  box-shadow:
-    0 1px 0 var(--inset-glint) inset,
-    0 18px 34px rgba(30, 90, 72, 0.1),
-    0 4px 14px rgba(23, 58, 64, 0.06);
+@utility w-carousel-half {
+  width: calc(50% - 0.5rem);
 }
 
-.feature-card:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in oklab, var(--lagoon-deep) 35%, var(--line));
+@utility w-carousel-third {
+  width: calc(33.333% - 0.667rem);
 }
 
-button,
-.island-shell,
-a {
-  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease,
-    transform 180ms ease;
+/* The pressed button shrinks a little: the touch's tactile feedback. */
+@utility scale-press {
+  scale: 0.97;
 }
 
-.island-kicker {
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 0.69rem;
-  color: var(--kicker);
+/* Grid columns and rows by role, in place of a loose `grid-cols-[...]`.
+   The name says what the grid organizes; the measure lives here, in one place. */
+@utility grid-cols-term-value {
+  grid-template-columns: auto 1fr;
 }
 
-.nav-link {
-  position: relative;
-  text-decoration: none;
-  color: var(--sea-ink-soft);
+@utility grid-cols-versus {
+  grid-template-columns: 1fr auto 1fr;
 }
 
-.nav-link::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -8px;
-  width: 100%;
-  height: 2px;
-  transform: scaleX(0);
-  transform-origin: left;
-  background: linear-gradient(90deg, var(--lagoon), #7ed3bf);
-  transition: transform 170ms ease;
+@utility grid-cols-page-header {
+  grid-template-columns: auto 1fr auto;
 }
 
-.nav-link:hover,
-.nav-link.is-active {
-  color: var(--sea-ink);
+@utility grid-cols-title-actions {
+  grid-template-columns: 1fr auto;
 }
 
-.nav-link:hover::after,
-.nav-link.is-active::after {
-  transform: scaleX(1);
+@utility grid-cols-main-aside {
+  grid-template-columns: 1fr 18rem;
 }
 
-.rise-in {
-  animation: rise-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+@utility grid-cols-agenda {
+  grid-template-columns: 3.5rem 1fr;
 }
 
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@utility grid-cols-agenda-wide {
+  grid-template-columns: 4rem 1fr 14rem;
 }
 
-.site-footer {
-  border-top: 1px solid var(--line);
-  background: color-mix(in oklab, var(--header-bg) 84%, transparent 16%);
+@utility grid-cols-field-narrow {
+  grid-template-columns: 1fr 8rem;
+}
+
+@utility grid-cols-dashboard {
+  grid-template-columns: 2fr 1fr;
+}
+
+@utility grid-cols-hero {
+  grid-template-columns: 1.1fr 0.9fr;
+}
+
+/* Open and close a panel animating the height without measuring it: `0fr` to `1fr`. */
+@utility grid-rows-collapsed {
+  grid-template-rows: 0fr;
+}
+
+@utility grid-rows-expanded {
+  grid-template-rows: 1fr;
+}
+
+@utility transition-reveal {
+  transition-property: grid-template-rows, opacity;
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    @apply scroll-smooth;
+  }
+
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    @apply bg-background text-foreground font-sans antialiased;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  /*
+   * The 4px scrollbar.
+   *
+   * Only WebKit/Blink honor it, and it is on purpose that there is no
+   * `scrollbar-width: thin` beside it: Firefox's default is already discreet, and the
+   * two together gave visibly different thicknesses on the same screen. When
+   * the bar disappears, the ruler is still the panel's border.
+   */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground;
+  }
+}
+
+/*
+ * The shimmer that crosses a loading skeleton.
+ *
+ * It sits outside `@theme` because it is a surface animation, not a token: whoever uses it
+ * is the gray shell waiting for the listing to arrive, and it needs the light band
+ * travelling over it - `background-size: 200%` with the position going from -200% to
+ * 200% is what makes the band cross the whole piece.
+ */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    oklch(0.95 0.005 60 / 0) 0%,
+    oklch(0.95 0.005 60 / 0.4) 50%,
+    oklch(0.95 0.005 60 / 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+/* In dark mode the band is darker than in light mode and less opaque: over the gray of the
+   dark skeleton, the light theme's light band becomes a flash. */
+.dark .animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    oklch(0.3 0.005 60 / 0) 0%,
+    oklch(0.3 0.005 60 / 0.3) 50%,
+    oklch(0.3 0.005 60 / 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+/*
+ * Reduced motion, by piece (`_standards/frontend.md` §10.5).
+ *
+ * The hand-written components guard themselves with `motion-reduce:`. The
+ * `components/ui/` files are generated by shadcn and cannot be annotated without leaving
+ * `shadcn diff`, so what they animate is switched off here, by the attribute each one
+ * already carries, and never with a `*` rule: the old global `animation-duration: 0.01ms
+ * !important` also flattened feedback that carries state (a focus ring easing, a toggle
+ * changing color) and was the thing the standard forbids.
+ *
+ * What goes: travel (translate, zoom, rotate) of popups and sheets, the sidebar sliding
+ * and the loops (spinner, skeleton pulse, shimmer). What stays: the fade of a popup and
+ * every color change, because they say that something changed. Unlayered on purpose:
+ * it beats the Tailwind utilities (layered) without `!important`.
+ *
+ * `@keyframes enter/exit` of tw-animate-css read these custom properties, so zeroing
+ * them leaves a plain opacity fade (a popup still unmounts on `animationend`).
+ */
+@media (prefers-reduced-motion: reduce) {
+  [data-open],
+  [data-closed] {
+    --tw-enter-translate-x: 0;
+    --tw-enter-translate-y: 0;
+    --tw-enter-scale: 1;
+    --tw-enter-rotate: 0;
+    --tw-exit-translate-x: 0;
+    --tw-exit-translate-y: 0;
+    --tw-exit-scale: 1;
+    --tw-exit-rotate: 0;
+  }
+
+  [data-slot='sheet-content'][data-starting-style],
+  [data-slot='sheet-content'][data-ending-style] {
+    translate: none;
+  }
+
+  [data-slot='sidebar-gap'],
+  [data-slot='sidebar-container'],
+  [data-slot='sidebar-rail'] {
+    transition: none;
+  }
+
+  .animate-spin,
+  .animate-pulse,
+  .animate-shimmer,
+  .dark .animate-shimmer {
+    animation: none;
+  }
+}
+
+/*
+ * ============================================================================
+ * PUBLIC SITE PIECES
+ * ============================================================================
+ *
+ * What a utility cannot say: the stage band, the waste dots and the map pin.
+ */
+@layer components {
+  /*
+   * The deep green band. Plain gradient from tokens, no image: the first paint
+   * costs no request (slow-network rule). The light only comes from one corner so it
+   * reads as a place, not as decoration.
+   */
+  .stage-band {
+    color: var(--stage-foreground);
+    background:
+      radial-gradient(
+        120% 90% at 100% 0%,
+        oklch(0.4 0.09 155 / 0.55),
+        transparent 60%
+      ),
+      var(--stage);
+  }
+
+  /* The waste dot: a color AND a shape cue (icon sits inside, never color alone). */
+  .waste-dot {
+    display: inline-grid;
+    place-items: center;
+    border-radius: 9999px;
+  }
+  .waste-organic {
+    background: var(--waste-organic);
+    color: var(--waste-organic-foreground);
+  }
+  .waste-recyclable {
+    background: var(--waste-recyclable);
+    color: var(--waste-recyclable-foreground);
+  }
+  .waste-bulky {
+    background: var(--waste-bulky);
+    color: var(--waste-bulky-foreground);
+  }
+  .waste-debris {
+    background: var(--waste-debris);
+    color: var(--waste-debris-foreground);
+  }
+
+  /* Leaflet divIcon pins: styled here because the icon markup is made by Leaflet. */
+  .report-pin {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    border: 3px solid var(--card);
+    box-shadow: 0 2px 6px oklch(0 0 0 / 0.35);
+    color: oklch(1 0 0);
+  }
+  .report-pin[data-kind='BURNING'] {
+    background: var(--alert);
+  }
+  .report-pin[data-kind='DUMPING'] {
+    background: var(--waste-bulky);
+  }
+  .report-pin[data-kind='DEFORESTATION'] {
+    background: var(--field);
+  }
+  .report-pin[data-kind='OTHER'] {
+    background: oklch(0.45 0.02 250);
+  }
+  .report-pin[data-status='RESOLVED'] {
+    opacity: 0.7;
+    border-style: dashed;
+  }
+  .report-pin-picker {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-width: 4px;
+  }
+}
+
+/* Skip link: the first tab stop, visible only on focus (WCAG 2.4.1). */
+@utility skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -4rem;
+  z-index: var(--z-toast);
+  border-radius: var(--radius-md);
+  background: var(--foreground);
+  color: var(--background);
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+}
+.skip-link:focus-visible {
+  top: 0.75rem;
+}
+
+/*
+ * ============================================================================
+ * RESPONSIVE SHELL OF THE RESIDENT APP
+ * ============================================================================
+ *
+ * One gutter and three container widths, so the header, the footer and every page
+ * share the same left edge at every viewport. The gutter is fluid (16px on a 360px
+ * phone, 40px from about 1000px) instead of stepping at breakpoints, and the strip of
+ * days reads it to bleed to the screen edge on a phone.
+ */
+:root {
+  --page-gutter: clamp(1rem, 0.4rem + 2.6vw, 2.5rem);
+}
+
+@utility page-container {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+/* Forms and wizards: wide enough for two columns, never a stretched line. */
+@utility page-container-md {
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+/* Confirmation screens: one column, centered by the container. */
+@utility page-container-sm {
+  width: 100%;
+  max-width: 44rem;
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+/* Fluid type: the size follows the viewport between two bounds, so a 360px phone and
+   a 1920px monitor each get a title in proportion without a breakpoint step. */
+@utility text-fluid-display {
+  font-size: clamp(2.25rem, 1.35rem + 3.6vw, 4.5rem);
+  line-height: 1.04;
+}
+
+@utility text-fluid-title {
+  font-size: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+  line-height: 1.1;
+}
+
+@utility text-fluid-section {
+  font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+  line-height: 1.2;
+}
+
+/* The public map fills what is left under the sticky header (4rem) and the title block,
+   with a floor so a short landscape phone still gets a usable map. */
+@utility h-map-fill {
+  height: max(32rem, calc(100dvh - 11rem));
+}
+
+/* On a landscape phone the sticky header would take a fifth of the screen: it scrolls
+   away there instead. */
+@custom-variant short (@media (max-height: 30rem));
+
+/* The panel's 44px touch targets, in one place. The shadcn primitives in `components/ui/`
+   are sized for a mouse (h-7 buttons, h-9 inputs) and are not edited by hand, so every
+   control inside `.panel-touch` is raised to the finger's size when the screen is a phone
+   or the pointer is coarse (a tablet at any width). A desktop mouse keeps the dense
+   sizes. Radios and checkboxes are left alone: their `label` is the 44px target. */
+@media (pointer: coarse), (max-width: 47.99rem) {
+  .panel-touch
+    :is(
+      button,
+      select,
+      summary,
+      [role='button'],
+      input:not([type='radio'], [type='checkbox'], [type='hidden'])
+    ) {
+    min-height: 2.75rem;
+  }
+
+  .panel-touch :is(a, button)[class*='group/button'] {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+}
+
+/* Leaflet's zoom buttons are 30px: under the 44px touch target. Only on a coarse pointer,
+   where a thumb taps them; with a mouse the compact size stays. The `html` prefix wins
+   over leaflet's own `.leaflet-touch .leaflet-bar a` without `!important`. */
+@media (pointer: coarse) {
+  html .leaflet-touch .leaflet-bar a {
+    width: 2.75rem;
+    height: 2.75rem;
+    line-height: 2.75rem;
   }
 }

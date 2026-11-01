@@ -1,0 +1,179 @@
+import {
+  StorefrontReportCreateResponse,
+  StorefrontReportPhotoCreateResponse,
+  StorefrontReportPhotoCreateValidator,
+} from '@curupira/shared'
+import type { StorefrontReportCreatePayload } from '@curupira/shared'
+import { useMutation } from '@tanstack/react-query'
+
+import { randomProtocol, saveSubmittedReport } from '#/data/reports'
+import type { MutationProps } from '#/hooks/tanstack-query/_mutation-props'
+import type { ReportDraft } from '#/lib/report-queue'
+import { m } from '#/paraglide/messages'
+
+import { HTTPError, request, send } from '../http'
+import { fromSource } from '../source'
+
+/**
+ * The storage answers 403 to a PUT whose signature is no longer valid. The upload URL
+ * lives only a few minutes, and a slow connection (or a phone that was suspended
+ * between the URL and the PUT) can outlive it: that case gets one fresh URL.
+ */
+const STORAGE_REFUSED = 403
+
+/**
+ * Sends the photos, then the report. The browser PUTs each photo straight to the
+ * storage with the presigned URL the API gave (`storefront/report-photos`) and then confirms it with
+ * `complete`: the bytes never pass through the API. `photoIds` is what the report references.
+ */
+async function putPhoto(
+  uploadUrl: string,
+  photo: Blob,
+): Promise<'stored' | 'expired'> {
+  let response: Response
+
+  try {
+    response = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': photo.type },
+      body: photo,
+    })
+  } catch {
+    throw new HTTPError({
+      message: m.common_error_network(),
+      status: 0,
+      code: 'NETWORK_ERROR',
+    })
+  }
+
+  if (response.status === STORAGE_REFUSED) return 'expired'
+
+  if (!response.ok) {
+    throw new HTTPError({
+      message: m.report_error_upload(),
+      status: 502,
+      code: 'UPLOAD_FAILED',
+    })
+  }
+
+  return 'stored'
+}
+
+/**
+ * Asks for an upload slot and puts the photo in it. The slot is requested here, right
+ * before the PUT, and never kept: a report waiting in the offline queue holds the photo
+ * itself, not a URL, so a queued report that goes out hours later still signs a new one.
+ * One retry with a new slot when the first one expired; a second refusal is an upload error.
+ */
+async function uploadPhoto(
+  metadata: unknown,
+  photo: Blob,
+): Promise<StorefrontReportPhotoCreateResponse> {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const slot = await request(
+      '/storefront/report-photos',
+      StorefrontReportPhotoCreateResponse,
+      { method: 'POST', body: JSON.stringify(metadata) },
+    )
+
+    if ((await putPhoto(slot.uploadUrl, photo)) === 'stored') return slot
+  }
+
+  throw new HTTPError({
+    message: m.report_error_upload(),
+    status: 502,
+    code: 'UPLOAD_FAILED',
+  })
+}
+
+async function sendToApi(
+  draft: ReportDraft,
+): Promise<StorefrontReportCreateResponse> {
+  const photoIds: Array<string> = []
+
+  for (const photo of draft.photos) {
+    const metadata = StorefrontReportPhotoCreateValidator.safeParse({
+      mimetype: photo.type,
+      size: photo.size,
+    })
+
+    if (!metadata.success) {
+      throw new HTTPError({
+        message: m.report_error_photo_type(),
+        status: 422,
+        code: 'VALIDATION_ERROR',
+      })
+    }
+
+    const slot = await uploadPhoto(metadata.data, photo)
+
+    // The server only trusts a photo after `complete`: it checks the size and the real
+    // image type and re-encodes the file to strip EXIF/GPS. A report that references
+    // a photo that was never completed is refused, and the stored file would keep the
+    // location of whoever took it.
+    await send(`/storefront/report-photos/${slot.id}/complete`, {
+      method: 'POST',
+    })
+    photoIds.push(slot.id)
+  }
+
+  const payload: StorefrontReportCreatePayload = {
+    kind: draft.kind,
+    latitude: draft.latitude,
+    longitude: draft.longitude,
+    description: draft.description,
+    contact: draft.contact,
+    photoIds,
+  }
+
+  return await request('/storefront/reports', StorefrontReportCreateResponse, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+/** Time the example body takes, so the sending state is visible while developing. */
+const MOCK_LATENCY = 700
+
+async function sendToMock(
+  draft: ReportDraft,
+): Promise<StorefrontReportCreateResponse> {
+  // The example body must fail like the network does, or the offline path (the
+  // queue) could never be exercised without the backend.
+  if (!navigator.onLine) {
+    throw new HTTPError({
+      message: m.common_error_network(),
+      status: 0,
+      code: 'NETWORK_ERROR',
+    })
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, MOCK_LATENCY))
+
+  const protocol = randomProtocol()
+  saveSubmittedReport(protocol, draft.kind, new Date().toISOString())
+
+  return { protocol }
+}
+
+/**
+ * The one function that leaves the device with a report: used by the form and by
+ * the offline queue's flush, so a queued report goes exactly the way a live one does.
+ */
+export function sendReport(
+  draft: ReportDraft,
+): Promise<StorefrontReportCreateResponse> {
+  return fromSource({
+    mock: () => sendToMock(draft),
+    api: () => sendToApi(draft),
+  })
+}
+
+export function useStorefrontReportCreateMutation(
+  options?: MutationProps<StorefrontReportCreateResponse, ReportDraft>,
+) {
+  return useMutation<StorefrontReportCreateResponse, HTTPError, ReportDraft>({
+    ...options,
+    mutationFn: sendReport,
+  })
+}

@@ -1,0 +1,175 @@
+import { test } from '@japa/runner'
+import type { ApiClient } from '@japa/api-client'
+import type { StorageMimetype } from '@curupira/shared'
+
+import { PART_SIZE } from '#services/multipart/multipart.contract'
+import {
+  authenticateAsAdministrator,
+  body,
+  resetDatabase,
+  type ResponseBody,
+} from '#tests/http-fixtures'
+import type { Session } from '#tests/http-fixtures'
+import { pngBytes } from '#tests/storages-fixtures'
+
+/**
+ * The file as a neutral, shared record: it does not belong to the
+ * form that submitted it, and ownership authorizes nothing. What rules is the state
+ * (`PENDING` or `UPLOADED`) and the live reference.
+ */
+
+/**
+ * Content of a non-final part. S3 refuses less than 5 MB
+ * (`EntityTooSmall`), and `PART_SIZE` is what the server promises per part.
+ */
+const FULL_PART = pngBytes(PART_SIZE, 65)
+
+const SMALL = pngBytes(1024)
+
+/** Opens an upload through the real endpoint and returns the envelope. */
+async function open(
+  client: ApiClient,
+  session: Session,
+  payload: { fileName: string; mimetype: StorageMimetype; size: number },
+): Promise<ResponseBody> {
+  const response = await client.post('/storages').cookies(session).json(payload)
+
+  response.assertStatus(201)
+
+  return body(response)
+}
+
+/** Sends a part to the signed URL and returns the `ETag`. */
+async function put(url: string, content: Uint8Array): Promise<string> {
+  const response = await fetch(url, {
+    method: 'PUT',
+    body: content,
+    headers: { 'Content-Type': 'image/png' },
+  })
+
+  if (!response.ok) throw new Error(`PUT respondeu ${response.status}`)
+
+  return response.headers.get('etag') ?? ''
+}
+
+/** The whole path, from zero to `UPLOADED`, for a single-part file. */
+async function upload(client: ApiClient, session: Session): Promise<ResponseBody> {
+  const opened = await open(client, session, {
+    fileName: 'capa.png',
+    mimetype: 'image/png',
+    size: SMALL.byteLength,
+  })
+
+  await put(opened.parts[0].url, SMALL)
+
+  const completed = await client
+    .post(`/storages/${opened.storage.id}/complete`)
+    .cookies(session)
+    .json({})
+
+  completed.assertStatus(200)
+
+  return body(completed)
+}
+
+/** A `storages` row with no binary at all: only the metadata matters here. */
+
+test.group('storages > parts', (group) => {
+  group.each.setup(() => resetDatabase())
+
+  test('lists what was uploaded and signs only what is missing', async ({ client, assert }) => {
+    const session = await authenticateAsAdministrator(client)
+
+    const opened = await open(client, session, {
+      fileName: 'galeria.png',
+      mimetype: 'image/png',
+      size: PART_SIZE * 2 + SMALL.byteLength,
+    })
+
+    assert.equal(opened.totalParts, 3)
+
+    // Uploads the first two and "drops" before the third.
+    await put(opened.parts[0].url, FULL_PART)
+    await put(opened.parts[1].url, FULL_PART)
+
+    const response = await client.get(`/storages/${opened.storage.id}/parts`).cookies(session)
+
+    response.assertStatus(200)
+
+    const resumed = body(response)
+
+    assert.deepEqual(
+      resumed.uploaded.map((part: { partNumber: number }) => part.partNumber),
+      [1, 2],
+    )
+    assert.deepEqual(
+      resumed.parts.map((part: { partNumber: number }) => part.partNumber),
+      [3],
+    )
+    assert.equal(resumed.totalParts, 3)
+    assert.equal(resumed.partSize, PART_SIZE)
+  })
+
+  test('the returned URL really uploads - re-signing cannot give a broken address', async ({
+    client,
+    assert,
+  }) => {
+    const session = await authenticateAsAdministrator(client)
+
+    const opened = await open(client, session, {
+      fileName: 'galeria.png',
+      mimetype: 'image/png',
+      size: PART_SIZE + SMALL.byteLength,
+    })
+
+    const response = await client.get(`/storages/${opened.storage.id}/parts`).cookies(session)
+
+    await put(body(response).parts[0].url, FULL_PART)
+
+    const after = await client.get(`/storages/${opened.storage.id}/parts`).cookies(session)
+
+    assert.lengthOf(body(after).uploaded, 1)
+  })
+
+  test('an already confirmed file responds with empty lists', async ({ client, assert }) => {
+    const session = await authenticateAsAdministrator(client)
+    const storage = await upload(client, session)
+
+    const response = await client.get(`/storages/${storage.id}/parts`).cookies(session)
+
+    response.assertStatus(200)
+    assert.isEmpty(body(response).parts)
+    assert.isEmpty(body(response).uploaded)
+    assert.equal(body(response).storage.status, 'UPLOADED')
+  })
+})
+
+test.group('storages > parts > acesso e identificador', (group) => {
+  group.each.setup(() => resetDatabase())
+
+  test('without a session responds 401', async ({ client }) => {
+    const response = await client.get(`/storages/00000000-0000-4000-8000-000000000000/parts`)
+
+    response.assertStatus(401)
+  })
+
+  test('nonexistent id responds 404', async ({ client, assert }) => {
+    const session = await authenticateAsAdministrator(client)
+
+    const response = await client
+      .get(`/storages/00000000-0000-4000-8000-000000000000/parts`)
+      .cookies(session)
+
+    response.assertStatus(404)
+    assert.equal(body(response).code, 'STORAGE_NOT_FOUND')
+  })
+
+  test('malformed id responds 422 instead of a Postgres 500', async ({ client, assert }) => {
+    const session = await authenticateAsAdministrator(client)
+
+    const response = await client.get('/storages/x/parts').cookies(session)
+
+    response.assertStatus(422)
+    assert.property(body(response).errors, 'id')
+  })
+})

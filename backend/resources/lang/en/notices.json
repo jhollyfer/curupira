@@ -1,0 +1,6 @@
+{
+  "not_found": "Notice not found",
+  "invalid_period": "Invalid period",
+  "ends_before_start": "The end must be after the start",
+  "already_closed": "Notice already closed"
+}

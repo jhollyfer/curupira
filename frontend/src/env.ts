@@ -1,39 +1,77 @@
-import { createEnv } from '@t3-oss/env-core'
-import { z } from 'zod'
+/**
+ * The frontend's build variables, read once and checked here.
+ *
+ * `VITE_*` only: Vite substitutes them into the bundle at build time, so
+ * everything that goes through this file is public. The check is synchronous
+ * and by hand, with no schema that resolves a promise - the module runs before
+ * the router mounts, and a bad value must stop the boot with the right message
+ * instead of becoming a request to a broken address.
+ *
+ * Server runtime values (`SERVER_API_URL`) do not belong here: they are read per
+ * request inside the `.server()` of `integrations/tanstack-query/http.ts`.
+ */
 
-export const env = createEnv({
-  server: {
-    SERVER_URL: z.string().url().optional(),
-  },
+/** Without `VITE_API_URL`, the `localhost:3333` that the backend's `pnpm dev` starts. */
+const DEV_API_URL = 'http://localhost:3333'
 
+/** Without `VITE_SITE_URL`, the `localhost:3000` that the frontend's `pnpm dev` starts. */
+const DEV_SITE_URL = 'http://localhost:3000'
+
+/**
+ * A public build URL: when absent it takes the development fallback, and a
+ * bad value stops the boot with the right message.
+ *
+ * No trailing slash: `request()` does `BASE_URL.concat(path)` with the path
+ * starting with `/` (a slash would become `//storefront`), and `canonical`
+ * and `hreflang` append the path to the site address.
+ */
+function publicUrl(
+  name: string,
+  value: string | undefined,
+  fallback: string,
+): string {
+  if (!value) return fallback
+
+  if (!URL.canParse(value)) {
+    throw new Error(`${name} is not a URL: "${value}".`)
+  }
+
+  if (value.endsWith('/')) {
+    throw new Error(`${name} must not end with "/": "${value}".`)
+  }
+
+  return value
+}
+
+/**
+ * Where the data comes from. `mock` serves `src/data/*` (the API is not ready);
+ * `api` talks to `VITE_API_URL`. This is the single switch: every query in
+ * `integrations/tanstack-query/queries/` reads it through `source()`, so moving to the API
+ * changes the value here and the body of each `queryFn`, never a screen.
+ */
+export type DataSource = 'mock' | 'api'
+
+function dataSource(value: string | undefined): DataSource {
+  if (value === 'api') return 'api'
+  if (value === undefined || value === '' || value === 'mock') return 'mock'
+
+  throw new Error(`VITE_DATA_SOURCE must be "mock" or "api": "${value}".`)
+}
+
+export const env = {
+  VITE_DATA_SOURCE: dataSource(import.meta.env.VITE_DATA_SOURCE),
+  VITE_API_URL: publicUrl(
+    'VITE_API_URL',
+    import.meta.env.VITE_API_URL,
+    DEV_API_URL,
+  ),
   /**
-   * The prefix that client-side variables must have. This is enforced both at
-   * a type-level and at runtime.
+   * The site's public address: the base for `canonical`, `hreflang` and the
+   * sitemap, which need an absolute URL that SSR has no way to discover.
    */
-  clientPrefix: 'VITE_',
-
-  client: {
-    VITE_APP_TITLE: z.string().min(1).optional(),
-  },
-
-  /**
-   * What object holds the environment variables at runtime. This is usually
-   * `process.env` or `import.meta.env`.
-   */
-  runtimeEnv: import.meta.env,
-
-  /**
-   * By default, this library will feed the environment variables directly to
-   * the Zod validator.
-   *
-   * This means that if you have an empty string for a value that is supposed
-   * to be a number (e.g. `PORT=` in a ".env" file), Zod will incorrectly flag
-   * it as a type mismatch violation. Additionally, if you have an empty string
-   * for a value that is supposed to be a string with a default value (e.g.
-   * `DOMAIN=` in an ".env" file), the default value will never be applied.
-   *
-   * In order to solve these issues, we recommend that all new projects
-   * explicitly specify this option as true.
-   */
-  emptyStringAsUndefined: true,
-})
+  VITE_SITE_URL: publicUrl(
+    'VITE_SITE_URL',
+    import.meta.env.VITE_SITE_URL,
+    DEV_SITE_URL,
+  ),
+} as const

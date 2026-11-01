@@ -1,0 +1,19 @@
+# O gate de commit (_standards/tooling.md §6): cada pacote roda o `check` e a
+# suíte unitária, só quando o commit o toca. Mexer em `shared/` testa os dois
+# consumidores, porque é o contrato deles. A suíte E2E fica no CI: precisa de
+# banco e serviços em container.
+staged=$(git diff --cached --name-only)
+
+touches() {
+  printf '%s\n' "$staged" | grep -q "^$1/"
+}
+
+if touches shared; then
+  pnpm --filter ./shared check && pnpm --filter ./shared test:unit || exit 1
+fi
+if touches backend || touches shared; then
+  pnpm --filter ./backend check && pnpm --filter ./backend test:unit || exit 1
+fi
+if touches frontend || touches shared; then
+  pnpm --filter ./frontend check && pnpm --filter ./frontend test:unit || exit 1
+fi

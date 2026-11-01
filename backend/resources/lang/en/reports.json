@@ -1,0 +1,8 @@
+{
+  "not_found": "Report not found",
+  "status_regression": "The status can only move forward",
+  "status_regression_field": "Choose a status after the current one",
+  "protocol_taken": "Could not generate the protocol. Try again",
+  "photo_taken": "One of the photos was already used in another report",
+  "photo_invalid": "The uploaded photo is not a valid image"
+}

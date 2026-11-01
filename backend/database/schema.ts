@@ -16,35 +16,209 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare createdAt: DateTime | null
   @column.dateTime()
   declare expiresAt: DateTime | null
-  @column()
+  @column({ serializeAs: null })
   declare hash: string
   @column({ isPrimary: true })
-  declare id: number
+  declare id: string
   @column.dateTime()
   declare lastUsedAt: DateTime | null
   @column()
   declare name: string | null
   @column()
-  declare tokenableId: number
+  declare tokenableId: string
   @column()
   declare type: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }
 
+export class CollectionScheduleSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'neighborhoodId', 'note', 'shift', 'updatedAt', 'wasteType', 'weekday'] as const
+  $columns = CollectionScheduleSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare neighborhoodId: string
+  @column()
+  declare note: string | null
+  @column()
+  declare shift: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare wasteType: string
+  @column()
+  declare weekday: string
+}
+
+export class NeighborhoodSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'latitude', 'longitude', 'name', 'slug', 'updatedAt'] as const
+  $columns = NeighborhoodSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare latitude: number | null
+  @column()
+  declare longitude: number | null
+  @column()
+  declare name: string
+  @column()
+  declare slug: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class NoticeSchema extends BaseModel {
+  static $columns = ['body', 'closedAt', 'createdAt', 'endsAt', 'id', 'startsAt', 'title', 'updatedAt'] as const
+  $columns = NoticeSchema.$columns
+  @column()
+  declare body: string
+  @column.dateTime()
+  declare closedAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime()
+  declare endsAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column.dateTime()
+  declare startsAt: DateTime
+  @column()
+  declare title: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class RateLimitSchema extends BaseModel {
+  static $columns = ['expire', 'key', 'points'] as const
+  $columns = RateLimitSchema.$columns
+  @column()
+  declare expire: bigint | number | null
+  @column({ isPrimary: true })
+  declare key: string
+  @column()
+  declare points: number
+}
+
+export class ReportPhotoSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'position', 'reportId', 'storageId', 'updatedAt'] as const
+  $columns = ReportPhotoSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare position: number
+  @column()
+  declare reportId: string
+  @column()
+  declare storageId: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class ReportStatusEventSchema extends BaseModel {
+  static $columns = ['at', 'authorId', 'createdAt', 'id', 'message', 'reportId', 'status', 'updatedAt'] as const
+  $columns = ReportStatusEventSchema.$columns
+  @column.dateTime()
+  declare at: DateTime
+  @column()
+  declare authorId: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare message: string | null
+  @column()
+  declare reportId: string
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class ReportSchema extends BaseModel {
+  static $columns = ['anonymous', 'contact', 'createdAt', 'description', 'id', 'kind', 'latitude', 'longitude', 'neighborhoodId', 'protocol', 'status', 'updatedAt'] as const
+  $columns = ReportSchema.$columns
+  @column()
+  declare anonymous: boolean
+  @column({ serializeAs: null })
+  declare contact: string | null | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare kind: string
+  @column()
+  declare latitude: number
+  @column()
+  declare longitude: number
+  @column()
+  declare neighborhoodId: string | null
+  @column()
+  declare protocol: string
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class StorageSchema extends BaseModel {
+  static $columns = ['createdAt', 'deletedAt', 'filename', 'id', 'mimetype', 'originalName', 'partSize', 'path', 'size', 'status', 'updatedAt', 'uploadId'] as const
+  $columns = StorageSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column.dateTime()
+  declare deletedAt: DateTime | null
+  @column()
+  declare filename: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare mimetype: string
+  @column()
+  declare originalName: string
+  @column()
+  declare partSize: number | null
+  @column()
+  declare path: string
+  @column()
+  declare size: bigint | number
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare uploadId: string | null
+}
+
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
+  static $columns = ['avatarId', 'createdAt', 'email', 'id', 'name', 'password', 'role', 'status', 'updatedAt'] as const
   $columns = UserSchema.$columns
+  @column()
+  declare avatarId: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
   declare email: string
-  @column()
-  declare fullName: string | null
   @column({ isPrimary: true })
-  declare id: number
+  declare id: string
+  @column()
+  declare name: string
   @column({ serializeAs: null })
   declare password: string
+  @column()
+  declare role: string
+  @column()
+  declare status: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 }

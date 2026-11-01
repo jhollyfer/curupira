@@ -1,0 +1,8 @@
+{
+  "not_found": "Denúncia não encontrada",
+  "status_regression": "O status só pode avançar",
+  "status_regression_field": "Escolha um status depois do atual",
+  "protocol_taken": "Não foi possível gerar o protocolo. Tente novamente",
+  "photo_taken": "Uma das fotos já foi usada em outra denúncia",
+  "photo_invalid": "A foto enviada não é uma imagem válida"
+}
