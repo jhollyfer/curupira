@@ -71,7 +71,10 @@ export function NeighborhoodFormEdit(): React.JSX.Element {
       <FormShellContent onSubmit={onSubmit}>
         <Card className="max-w-3xl">
           <CardContent>
-            <NeighborhoodFormFields form={form} idPrefix="neighborhood-update" />
+            <NeighborhoodFormFields
+              form={form}
+              idPrefix="neighborhood-update"
+            />
           </CardContent>
         </Card>
       </FormShellContent>

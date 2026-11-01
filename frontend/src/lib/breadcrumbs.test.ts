@@ -26,7 +26,11 @@ describe('buildBreadcrumbs', () => {
       },
     ])
 
-    expect(crumbs.map((crumb) => crumb.to)).toEqual(['/gestao', undefined, undefined])
+    expect(crumbs.map((crumb) => crumb.to)).toEqual([
+      '/gestao',
+      undefined,
+      undefined,
+    ])
   })
 
   it('names a dynamic segment as the record, not as its id', () => {

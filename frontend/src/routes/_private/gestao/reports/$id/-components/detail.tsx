@@ -66,7 +66,10 @@ export function ReportDetail(): React.JSX.Element {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="flex flex-col gap-8">
-          <section aria-labelledby="report-info" className="flex flex-col gap-4">
+          <section
+            aria-labelledby="report-info"
+            className="flex flex-col gap-4"
+          >
             <h2 id="report-info" className="text-lg font-semibold">
               {m.panel_report_info()}
             </h2>
@@ -116,7 +119,10 @@ export function ReportDetail(): React.JSX.Element {
             </div>
           </section>
 
-          <section aria-labelledby="report-photos" className="flex flex-col gap-3">
+          <section
+            aria-labelledby="report-photos"
+            className="flex flex-col gap-3"
+          >
             <h2 id="report-photos" className="text-lg font-semibold">
               {m.panel_report_photos({ count: report.photos.length })}
             </h2>
@@ -145,25 +151,35 @@ export function ReportDetail(): React.JSX.Element {
                       loading="lazy"
                       className="aspect-3/2 w-full object-cover"
                     />
-                    <span className="sr-only">{m.panel_report_photo_open()}</span>
+                    <span className="sr-only">
+                      {m.panel_report_photo_open()}
+                    </span>
                   </a>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section aria-labelledby="report-location" className="flex flex-col gap-3">
+          <section
+            aria-labelledby="report-location"
+            className="flex flex-col gap-3"
+          >
             <h2 id="report-location" className="text-lg font-semibold">
               {m.panel_report_location()}
             </h2>
             <ReportMap
               label={m.panel_report_map_label()}
-              center={{ latitude: report.latitude, longitude: report.longitude }}
+              center={{
+                latitude: report.latitude,
+                longitude: report.longitude,
+              }}
               zoom={16}
               className="h-64 rounded-md border shadow-none"
             >
               <React.Suspense fallback={null}>
-                <ReportMapSelectablePins reports={[{ ...report, title: report.protocol }]} />
+                <ReportMapSelectablePins
+                  reports={[{ ...report, title: report.protocol }]}
+                />
               </React.Suspense>
             </ReportMap>
             <p className="text-xs text-muted-foreground tabular-nums">
@@ -173,14 +189,20 @@ export function ReportDetail(): React.JSX.Element {
         </div>
 
         <aside className="flex flex-col gap-8">
-          <section aria-labelledby="report-update" className="flex flex-col gap-4">
+          <section
+            aria-labelledby="report-update"
+            className="flex flex-col gap-4"
+          >
             <h2 id="report-update" className="text-lg font-semibold">
               {m.panel_report_update()}
             </h2>
             <StatusForm key={report.status} report={report} />
           </section>
 
-          <section aria-labelledby="report-history" className="flex flex-col gap-4">
+          <section
+            aria-labelledby="report-history"
+            className="flex flex-col gap-4"
+          >
             <h2 id="report-history" className="text-lg font-semibold">
               {m.panel_report_history()}
             </h2>
@@ -192,7 +214,10 @@ export function ReportDetail(): React.JSX.Element {
               className="flex flex-col divide-y border-t text-sm"
             >
               {[...report.events].reverse().map((event) => (
-                <li key={event.at.concat(event.status)} className="flex flex-col gap-0.5 py-2.5">
+                <li
+                  key={event.at.concat(event.status)}
+                  className="flex flex-col gap-0.5 py-2.5"
+                >
                   <span className="font-medium">
                     {REPORT_STATUS_LABELS[event.status]()}
                   </span>

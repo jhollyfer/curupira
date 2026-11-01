@@ -1,7 +1,4 @@
-import {
-  tableFeatures,
-  useTable as useTableRoot,
-} from '@tanstack/react-table'
+import { tableFeatures, useTable as useTableRoot } from '@tanstack/react-table'
 import type { ColumnDef, RowData } from '@tanstack/react-table'
 
 /**

@@ -1,8 +1,8 @@
 import type { Paginated } from '@curupira/shared'
 import { PlusIcon } from '@phosphor-icons/react'
+import type { UseQueryResult } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import type { LinkProps } from '@tanstack/react-router'
-import type { UseQueryResult } from '@tanstack/react-query'
 import type { RowData } from '@tanstack/react-table'
 import type * as React from 'react'
 

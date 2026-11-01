@@ -8,7 +8,6 @@ import type {
 
 import { NEIGHBORHOODS } from '../neighborhoods'
 import { SCHEDULES } from '../schedules'
-
 import { seedNotices } from './seed-notices'
 import { seedReports } from './seed-reports'
 import { SEEDED_AT, seedUsers } from './seed-users'

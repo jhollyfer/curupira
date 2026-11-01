@@ -130,11 +130,9 @@ export const managementReportStatsQueryOptions = () =>
       fromSource<ManagementReportStatsResponse>({
         mock: reportStats,
         api: () =>
-          request(
-            '/management/reports/stats',
-            ManagementReportStatsResponse,
-            { signal },
-          ),
+          request('/management/reports/stats', ManagementReportStatsResponse, {
+            signal,
+          }),
       }),
     staleTime: STALE,
   })

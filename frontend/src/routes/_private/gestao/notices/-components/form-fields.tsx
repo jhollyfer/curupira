@@ -42,7 +42,12 @@ export function NoticeFormFields({
         label={m.panel_notices_field_title()}
       >
         {({ field, control }) => (
-          <Input {...field} {...control} maxLength={120} className="h-10 text-sm" />
+          <Input
+            {...field}
+            {...control}
+            maxLength={120}
+            className="h-10 text-sm"
+          />
         )}
       </AppField>
 
@@ -92,7 +97,9 @@ export function NoticeFormFields({
                 }
                 className="h-10 text-sm"
               />
-              <FieldDescription>{m.panel_notices_field_starts_hint()}</FieldDescription>
+              <FieldDescription>
+                {m.panel_notices_field_starts_hint()}
+              </FieldDescription>
             </>
           )}
         </AppField>
@@ -113,11 +120,15 @@ export function NoticeFormFields({
                 onBlur={field.onBlur}
                 value={instantToLocalInput(field.value ?? '')}
                 onChange={(event) =>
-                  field.onChange(localInputToInstant(event.target.value) ?? null)
+                  field.onChange(
+                    localInputToInstant(event.target.value) ?? null,
+                  )
                 }
                 className="h-10 text-sm"
               />
-              <FieldDescription>{m.panel_notices_field_ends_hint()}</FieldDescription>
+              <FieldDescription>
+                {m.panel_notices_field_ends_hint()}
+              </FieldDescription>
             </>
           )}
         </AppField>

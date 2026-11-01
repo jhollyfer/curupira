@@ -8,7 +8,12 @@ describe('capabilities', () => {
       .filter(([, roles]) => roles.includes('OPERATOR'))
       .map(([capability]) => capability)
 
-    expect(allowed.sort()).toEqual(['notices', 'overview', 'profile', 'reports'])
+    expect(allowed.sort()).toEqual([
+      'notices',
+      'overview',
+      'profile',
+      'reports',
+    ])
   })
 
   it('the administrator sees everything', () => {

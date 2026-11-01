@@ -1,5 +1,5 @@
-import { PlusIcon } from '@phosphor-icons/react'
 import type { ManagementScheduleShowResponse } from '@curupira/shared'
+import { PlusIcon } from '@phosphor-icons/react'
 import type * as React from 'react'
 
 import { WASTE_TYPE_ICONS } from '#/lib/icons'
@@ -44,7 +44,9 @@ export function WeeklyGrid({
   return (
     <div className="overflow-x-auto rounded-md border bg-card">
       <table className="w-full min-w-[56rem] border-collapse text-sm">
-        <caption className="sr-only">{m.panel_schedules_grid_caption()}</caption>
+        <caption className="sr-only">
+          {m.panel_schedules_grid_caption()}
+        </caption>
         <thead>
           <tr className="border-b bg-muted/40">
             <th scope="col" className="w-40 px-3 py-2 text-left font-medium">

@@ -34,7 +34,9 @@ export function TableContent({
               <WarningCircleIcon aria-hidden="true" />
             </EmptyMedia>
             <EmptyTitle>{m.panel_table_error_title()}</EmptyTitle>
-            <EmptyDescription>{m.panel_table_error_description()}</EmptyDescription>
+            <EmptyDescription>
+              {m.panel_table_error_description()}
+            </EmptyDescription>
           </EmptyHeader>
           {onRetry && (
             <EmptyContent>
@@ -49,5 +51,7 @@ export function TableContent({
     )
   }
 
-  return <PageShellContent data-slot="table-content">{children}</PageShellContent>
+  return (
+    <PageShellContent data-slot="table-content">{children}</PageShellContent>
+  )
 }

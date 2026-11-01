@@ -105,7 +105,10 @@ export function OverviewPage(): React.JSX.Element {
       <Untreated count={untreated} />
 
       <div className="grid gap-8 lg:grid-cols-2">
-        <section aria-labelledby="by-status-title" className="flex flex-col gap-4">
+        <section
+          aria-labelledby="by-status-title"
+          className="flex flex-col gap-4"
+        >
           <h2 id="by-status-title" className="text-lg font-semibold">
             {m.panel_overview_by_status()}
           </h2>
@@ -124,7 +127,10 @@ export function OverviewPage(): React.JSX.Element {
               return (
                 <span
                   key={status}
-                  style={{ flexGrow: count, background: SEGMENT_COLORS[status] }}
+                  style={{
+                    flexGrow: count,
+                    background: SEGMENT_COLORS[status],
+                  }}
                   className="min-w-1"
                 />
               )
@@ -141,8 +147,13 @@ export function OverviewPage(): React.JSX.Element {
                     className="size-2.5 shrink-0 rounded-full"
                     style={{ background: SEGMENT_COLORS[status] }}
                   />
-                  <Icon aria-hidden="true" className="size-4 text-muted-foreground" />
-                  <span className="flex-1 text-sm">{REPORT_STATUS_LABELS[status]()}</span>
+                  <Icon
+                    aria-hidden="true"
+                    className="size-4 text-muted-foreground"
+                  />
+                  <span className="flex-1 text-sm">
+                    {REPORT_STATUS_LABELS[status]()}
+                  </span>
                   <span className="text-sm font-semibold tabular-nums">
                     {formatNumber(countOf(stats.byStatus, status))}
                   </span>
@@ -152,7 +163,10 @@ export function OverviewPage(): React.JSX.Element {
           </ul>
         </section>
 
-        <section aria-labelledby="by-kind-title" className="flex flex-col gap-4">
+        <section
+          aria-labelledby="by-kind-title"
+          className="flex flex-col gap-4"
+        >
           <h2 id="by-kind-title" className="text-lg font-semibold">
             {m.panel_overview_by_kind()}
           </h2>
@@ -175,10 +189,16 @@ export function OverviewPage(): React.JSX.Element {
                   <span className="w-32 shrink-0 text-sm">
                     {REPORT_KIND_LABELS[kind]()}
                   </span>
-                  <span aria-hidden="true" className="flex h-2 flex-1 items-center">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-2 flex-1 items-center"
+                  >
                     <span
                       className="h-2 rounded-full bg-primary"
-                      style={{ width: `${(count / kindPeak) * 100}%`, minWidth: count > 0 ? 6 : 0 }}
+                      style={{
+                        width: `${(count / kindPeak) * 100}%`,
+                        minWidth: Math.min(count, 1) * 6,
+                      }}
                     />
                   </span>
                   <span className="w-10 text-right text-sm font-semibold tabular-nums">
@@ -191,13 +211,18 @@ export function OverviewPage(): React.JSX.Element {
         </section>
       </div>
 
-      <section aria-labelledby="chart-title" className="flex flex-col gap-4 border-t pt-6">
+      <section
+        aria-labelledby="chart-title"
+        className="flex flex-col gap-4 border-t pt-6"
+      >
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 id="chart-title" className="text-lg font-semibold">
             {m.panel_overview_chart_title()}
           </h2>
           <p className="text-sm text-muted-foreground tabular-nums">
-            {m.panel_overview_chart_total({ count: formatNumber(seriesTotal(series)) })}
+            {m.panel_overview_chart_total({
+              count: formatNumber(seriesTotal(series)),
+            })}
           </p>
         </div>
         <DailyChart series={series} />

@@ -41,10 +41,7 @@ export function NoticeRowActions({
   const [deleteHandle] = React.useState(createConfirmHandle)
 
   function refresh(): Promise<void> {
-    return invalidate([
-      queryKeys.management.notices.all,
-      ...DEPENDENTS.notices,
-    ])
+    return invalidate([queryKeys.management.notices.all, ...DEPENDENTS.notices])
   }
 
   const close = useManagementNoticeCloseMutation({

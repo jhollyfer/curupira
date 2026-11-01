@@ -66,11 +66,7 @@ export function noticeColumns(): TableColumns<ManagementNoticeShowResponse> {
       id: 'actions',
       header: () => <span className="sr-only">{m.common_actions()}</span>,
       meta: { className: 'w-12 text-right' },
-      cell: ({ row }) => (
-        <div onClick={(event) => event.stopPropagation()}>
-          <NoticeRowActions notice={row.original} />
-        </div>
-      ),
+      cell: ({ row }) => <NoticeRowActions notice={row.original} />,
     },
   ]
 }

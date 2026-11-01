@@ -9,10 +9,9 @@ import { managementUsersQueryOptions } from '#/integrations/tanstack-query/queri
 import { ACTIVE_STATUS_LABELS, USER_ROLE_LABELS } from '#/lib/labels'
 import { m } from '#/paraglide/messages'
 
+import { userColumns } from './columns'
 import { ListPage } from '../../../-components/list-page'
 import { SearchFilter } from '../../../-components/search-filter'
-
-import { userColumns } from './columns'
 
 const route = getRouteApi('/_private/gestao/users/')
 

@@ -1,7 +1,4 @@
-import {
-  COLLECTION_SHIFTS,
-  WASTE_TYPES,
-} from '@curupira/shared'
+import { COLLECTION_SHIFTS, WASTE_TYPES } from '@curupira/shared'
 import type { ManagementScheduleCreatePayload } from '@curupira/shared'
 import type * as React from 'react'
 import type { UseFormReturn } from 'react-hook-form'
@@ -104,7 +101,9 @@ export function ScheduleFormFields({
                 label: COLLECTION_SHIFT_LABELS[shift](),
               }))}
               onValueChange={(value) =>
-                field.onChange(COLLECTION_SHIFTS.find((shift) => shift === value))
+                field.onChange(
+                  COLLECTION_SHIFTS.find((shift) => shift === value),
+                )
               }
             />
           )}

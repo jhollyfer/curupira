@@ -16,12 +16,12 @@ import {
 import { useAuthenticationSignInMutation } from '#/integrations/tanstack-query/mutations/authentication'
 import { m } from '#/paraglide/messages'
 
+import { MockAccounts } from './mock-accounts'
 import {
   AuthShell,
   AuthShellContent,
   AuthShellHeader,
 } from '../../-components/auth-shell'
-import { MockAccounts } from './mock-accounts'
 
 const route = getRouteApi('/_authentication/sign-in/')
 

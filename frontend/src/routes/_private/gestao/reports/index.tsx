@@ -5,10 +5,7 @@ import {
   managementReportsMapQueryOptions,
   managementReportsQueryOptions,
 } from '#/integrations/tanstack-query/queries/management'
-import {
-  reportsFilterOf,
-  validateReportsSearch,
-} from '#/lib/management-search'
+import { reportsFilterOf, validateReportsSearch } from '#/lib/management-search'
 
 /**
  * The occurrences: map and table share one cut of the data, and that cut lives in the URL

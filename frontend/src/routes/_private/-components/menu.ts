@@ -1,6 +1,5 @@
 import type { UserRole } from '@curupira/shared'
 import {
-  
   CalendarDotsIcon,
   GaugeIcon,
   IdentificationCardIcon,

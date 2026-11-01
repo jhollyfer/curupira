@@ -1,4 +1,8 @@
-import { ArrowDownIcon, ArrowUpIcon, ArrowsDownUpIcon } from '@phosphor-icons/react'
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ArrowsDownUpIcon,
+} from '@phosphor-icons/react'
 import { Link } from '@tanstack/react-router'
 import { FlexRender } from '@tanstack/react-table'
 import type { Header, RowData } from '@tanstack/react-table'
@@ -25,6 +29,22 @@ type TableGridProps<TRow extends RowData> = Readonly<{
   /** The table's accessible name (a `<caption>` kept for screen readers). */
   caption: string
 }>
+
+/**
+ * A click on the row opens the record - unless it was meant for something inside it. The
+ * link, the actions menu and the dialogs it opens all live under the row in the React
+ * tree (a portal's events bubble through it), so `contains` filters the portal's and
+ * `closest` the interactive controls' own clicks.
+ */
+function isRowClick(event: React.MouseEvent<HTMLElement>): boolean {
+  const target = event.target
+  if (!(target instanceof Element)) return false
+  if (!event.currentTarget.contains(target)) return false
+
+  return !target.closest(
+    'a, button, input, select, textarea, [role="menuitem"]',
+  )
+}
 
 const ARIA_SORT = {
   asc: 'ascending',
@@ -126,7 +146,9 @@ export function TableGrid<TRow extends RowData>({
             <TableRow
               key={row.id}
               className={cn(onRowClick && 'cursor-pointer')}
-              onClick={() => onRowClick?.(row.original)}
+              onClick={(event) => {
+                if (isRowClick(event)) onRowClick?.(row.original)
+              }}
             >
               {row.getAllCells().map((cell) => (
                 <TableCell

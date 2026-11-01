@@ -30,7 +30,9 @@ export function neighborhoodColumns(): TableColumns<ManagementNeighborhoodShowRe
       cell: ({ row }) => {
         const { latitude, longitude } = row.original
         if (latitude === null || longitude === null)
-          return <Badge variant="neutral">{m.panel_neighborhoods_no_center()}</Badge>
+          return (
+            <Badge variant="neutral">{m.panel_neighborhoods_no_center()}</Badge>
+          )
 
         return (
           <span className="text-sm tabular-nums">
@@ -54,11 +56,7 @@ export function neighborhoodColumns(): TableColumns<ManagementNeighborhoodShowRe
       id: 'actions',
       header: () => <span className="sr-only">{m.common_actions()}</span>,
       meta: { className: 'w-12 text-right' },
-      cell: ({ row }) => (
-        <div onClick={(event) => event.stopPropagation()}>
-          <NeighborhoodRowActions neighborhood={row.original} />
-        </div>
-      ),
+      cell: ({ row }) => <NeighborhoodRowActions neighborhood={row.original} />,
     },
   ]
 }

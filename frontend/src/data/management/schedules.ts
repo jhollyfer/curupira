@@ -19,7 +19,10 @@ import type { StoredSchedule } from './store'
  * `SCHEDULE_ALREADY_EXISTS` pointing at `weekday`, and the form must show it there.
  */
 function present(row: StoredSchedule): ManagementScheduleShowResponse {
-  return { ...row, neighborhoodName: neighborhoodName(row.neighborhoodId) ?? '' }
+  return {
+    ...row,
+    neighborhoodName: neighborhoodName(row.neighborhoodId) ?? '',
+  }
 }
 
 function notFound(): HTTPError {

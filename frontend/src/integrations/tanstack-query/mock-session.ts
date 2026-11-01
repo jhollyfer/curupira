@@ -1,7 +1,6 @@
 import type { AccountProfileShowResponse } from '@curupira/shared'
 import { createIsomorphicFn } from '@tanstack/react-start'
 
-import { findUser } from '#/data/management/users'
 import {
   MOCK_PASSWORD,
   MOCK_SESSION_COOKIE,
@@ -9,6 +8,7 @@ import {
   mockAccountById,
   sessionIdFromCookie,
 } from '#/data/management/session'
+import { findUser } from '#/data/management/users'
 import { env } from '#/env'
 
 import { HTTPError } from './http'

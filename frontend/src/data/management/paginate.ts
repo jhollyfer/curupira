@@ -16,7 +16,10 @@ export function paginate<TItem>(
   const perPage = Math.min(query.perPage ?? PAGINATION.PER_PAGE, 100)
   const total = items.length
   const lastPage = Math.max(1, Math.ceil(total / perPage))
-  const currentPage = Math.min(Math.max(query.page ?? PAGINATION.PAGE, 1), lastPage)
+  const currentPage = Math.min(
+    Math.max(query.page ?? PAGINATION.PAGE, 1),
+    lastPage,
+  )
   const start = (currentPage - 1) * perPage
 
   const link = (page: number): string => `/?page=${page}`
@@ -49,10 +52,7 @@ export function matchesText(
   if (!term) return true
 
   const fold = (text: string): string =>
-    text
-      .normalize('NFD')
-      .replaceAll(/[̀-ͯ]/g, '')
-      .toLowerCase()
+    text.normalize('NFD').replaceAll(/[̀-ͯ]/g, '').toLowerCase()
   const needle = fold(term.trim())
 
   return haystack.some((text) => text !== null && fold(text).includes(needle))
@@ -63,7 +63,8 @@ export function sortedBy<TItem>(
   key: (item: TItem) => string | number,
   direction: SortDirection | undefined,
 ): Array<TItem> {
-  const sign = (direction ?? 'asc') === 'asc' ? 1 : -1
+  let sign = 1
+  if (direction === 'desc') sign = -1
 
   return [...items].sort((a, b) => {
     const left = key(a)
@@ -80,7 +81,10 @@ export function sortedBy<TItem>(
  * same: `null` is a real value for the optional coordinates ("clear the center"), and
  * `latitude: null` must erase it instead of falling back to the old one.
  */
-export function keep<TValue>(next: TValue | undefined, current: TValue): TValue {
+export function keep<TValue>(
+  next: TValue | undefined,
+  current: TValue,
+): TValue {
   if (next === undefined) return current
 
   return next

@@ -8,7 +8,9 @@ describe('datetime field', () => {
   })
 
   it('reads the wall clock of the town back as an instant with its offset', () => {
-    expect(localInputToInstant('2026-05-10T08:30')).toBe('2026-05-10T08:30:00-04:00')
+    expect(localInputToInstant('2026-05-10T08:30')).toBe(
+      '2026-05-10T08:30:00-04:00',
+    )
   })
 
   it('round-trips', () => {

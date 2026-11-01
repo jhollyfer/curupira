@@ -56,7 +56,10 @@ export function NeighborhoodFormCreate(): React.JSX.Element {
       <FormShellContent onSubmit={onSubmit}>
         <Card className="max-w-3xl">
           <CardContent>
-            <NeighborhoodFormFields form={form} idPrefix="neighborhood-create" />
+            <NeighborhoodFormFields
+              form={form}
+              idPrefix="neighborhood-create"
+            />
           </CardContent>
         </Card>
       </FormShellContent>

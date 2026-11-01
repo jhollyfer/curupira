@@ -5,7 +5,6 @@ import { townNow } from '#/lib/i18n'
 
 import { exampleUuid } from '../ids'
 import { NEIGHBORHOODS } from '../neighborhoods'
-
 import type { StoredReport } from './store'
 
 /**
@@ -120,8 +119,9 @@ export function seedReports(): Array<StoredReport> {
 
     const received = now.minus({ days: daysAgo, hours: hoursAgo })
     const iso = (offsetHours: number): string =>
-      received.plus({ hours: offsetHours }).toISO({ suppressMilliseconds: true }) ??
-      ''
+      received
+        .plus({ hours: offsetHours })
+        .toISO({ suppressMilliseconds: true }) ?? ''
     const options = DESCRIPTIONS[kind]
     const description = options[index % options.length] ?? null
 
@@ -140,13 +140,19 @@ export function seedReports(): Array<StoredReport> {
     let photos: StoredReport['photos'] = []
     if (index % 3 !== 2) {
       photos = [
-        { id: exampleUuid('e', index * 2 + 1), url: `/examples/photo-${kind.toLowerCase()}.svg` },
+        {
+          id: exampleUuid('e', index * 2 + 1),
+          url: `/examples/photo-${kind.toLowerCase()}.svg`,
+        },
       ]
     }
     if (index % 5 === 0) {
       photos = [
         ...photos,
-        { id: exampleUuid('e', index * 2 + 2), url: '/examples/photo-other.svg' },
+        {
+          id: exampleUuid('e', index * 2 + 2),
+          url: '/examples/photo-other.svg',
+        },
       ]
     }
 

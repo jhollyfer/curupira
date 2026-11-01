@@ -37,7 +37,9 @@ describe('report status flow', () => {
 
   it('a resolved report has no option left', () => {
     expect(isFinal('RESOLVED')).toBe(true)
-    expect(statusOptions('RESOLVED').every((option) => option.blocked)).toBe(true)
+    expect(statusOptions('RESOLVED').every((option) => option.blocked)).toBe(
+      true,
+    )
   })
 
   it('only the received ones are untreated', () => {

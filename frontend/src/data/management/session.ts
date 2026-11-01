@@ -40,7 +40,9 @@ export const MOCK_ACCOUNTS: ReadonlyArray<MockAccount> = [
 /** The password of both example accounts - typed on the sign-in form in mock mode. */
 export const MOCK_PASSWORD = 'Exemplo@2026'
 
-export function mockAccountById(id: string | undefined): MockAccount | undefined {
+export function mockAccountById(
+  id: string | undefined,
+): MockAccount | undefined {
   return MOCK_ACCOUNTS.find((account) => account.id === id)
 }
 
@@ -50,7 +52,9 @@ export function mockAccountByEmail(email: string): MockAccount | undefined {
   )
 }
 
-export function sessionIdFromCookie(cookie: string | undefined): string | undefined {
+export function sessionIdFromCookie(
+  cookie: string | undefined,
+): string | undefined {
   for (const entry of cookie?.split(';') ?? []) {
     const separator = entry.indexOf('=')
     if (separator < 0) continue

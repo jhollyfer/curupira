@@ -27,7 +27,10 @@ describe('fillDailySeries', () => {
   })
 
   it('ignores days outside the window', () => {
-    const series = fillDailySeries([{ day: '2026-03-01', total: 9 }], '2026-05-31')
+    const series = fillDailySeries(
+      [{ day: '2026-03-01', total: 9 }],
+      '2026-05-31',
+    )
 
     expect(seriesTotal(series)).toBe(0)
   })

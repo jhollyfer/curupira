@@ -29,7 +29,8 @@ function notFound(): HTTPError {
 
 function assertFreeEmail(email: string, ignoreId?: string): void {
   const taken = store.users.some(
-    (row) => row.id !== ignoreId && row.email.toLowerCase() === email.toLowerCase(),
+    (row) =>
+      row.id !== ignoreId && row.email.toLowerCase() === email.toLowerCase(),
   )
   if (!taken) return
 

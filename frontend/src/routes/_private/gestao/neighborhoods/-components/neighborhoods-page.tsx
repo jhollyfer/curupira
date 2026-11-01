@@ -6,10 +6,9 @@ import { useTable } from '#/components/common/table'
 import { managementNeighborhoodsQueryOptions } from '#/integrations/tanstack-query/queries/management'
 import { m } from '#/paraglide/messages'
 
+import { neighborhoodColumns } from './columns'
 import { ListPage } from '../../../-components/list-page'
 import { SearchFilter } from '../../../-components/search-filter'
-
-import { neighborhoodColumns } from './columns'
 
 const route = getRouteApi('/_private/gestao/neighborhoods/')
 

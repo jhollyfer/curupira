@@ -6,10 +6,9 @@ import { useTable } from '#/components/common/table'
 import { managementNoticesQueryOptions } from '#/integrations/tanstack-query/queries/management'
 import { m } from '#/paraglide/messages'
 
-import { ListPage } from '../../../-components/list-page'
-
 import { noticeColumns } from './columns'
 import { NoticesFilters } from './filters'
+import { ListPage } from '../../../-components/list-page'
 
 const route = getRouteApi('/_private/gestao/notices/')
 
@@ -38,7 +37,10 @@ export function NoticesPage(): React.JSX.Element {
       create={{ to: '/gestao/notices/new', label: m.panel_notices_new() }}
       filters={<NoticesFilters />}
       onRowClick={(row) =>
-        void navigate({ to: '/gestao/notices/$id/edit', params: { id: row.id } })
+        void navigate({
+          to: '/gestao/notices/$id/edit',
+          params: { id: row.id },
+        })
       }
     />
   )

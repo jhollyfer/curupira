@@ -52,11 +52,7 @@ export function userColumns(): TableColumns<ManagementUserShowResponse> {
       id: 'actions',
       header: () => <span className="sr-only">{m.common_actions()}</span>,
       meta: { className: 'w-12 text-right' },
-      cell: ({ row }) => (
-        <div onClick={(event) => event.stopPropagation()}>
-          <UserRowActions user={row.original} />
-        </div>
-      ),
+      cell: ({ row }) => <UserRowActions user={row.original} />,
     },
   ]
 }

@@ -143,9 +143,11 @@ export function weekdayLabel(
   weekday: Weekday,
   length: 'long' | 'short' = 'long',
 ): string {
-  return Info.weekdays(length, { locale: getLocale() })[
-    LUXON_WEEKDAY_INDEX[weekday]
-  ] ?? ''
+  return (
+    Info.weekdays(length, { locale: getLocale() })[
+      LUXON_WEEKDAY_INDEX[weekday]
+    ] ?? ''
+  )
 }
 
 /**

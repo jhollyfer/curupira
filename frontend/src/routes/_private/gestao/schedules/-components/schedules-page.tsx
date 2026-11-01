@@ -1,6 +1,6 @@
+import { CalendarBlankIcon } from '@phosphor-icons/react'
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
-import { CalendarBlankIcon } from '@phosphor-icons/react'
 import * as React from 'react'
 import { toast } from 'sonner'
 
@@ -100,7 +100,10 @@ export function SchedulesPage(): React.JSX.Element {
           className="min-w-64"
         />
         {neighborhoodId && schedules.isSuccess && (
-          <p className="text-sm text-muted-foreground tabular-nums" aria-live="polite">
+          <p
+            className="text-sm text-muted-foreground tabular-nums"
+            aria-live="polite"
+          >
             {m.panel_schedules_count({ count: countEntries(entries) })}
           </p>
         )}
@@ -113,13 +116,19 @@ export function SchedulesPage(): React.JSX.Element {
               <CalendarBlankIcon aria-hidden="true" />
             </EmptyMedia>
             <EmptyTitle>{m.panel_schedules_choose_title()}</EmptyTitle>
-            <EmptyDescription>{m.panel_schedules_choose_description()}</EmptyDescription>
+            <EmptyDescription>
+              {m.panel_schedules_choose_description()}
+            </EmptyDescription>
           </EmptyHeader>
         </Empty>
       )}
 
       {neighborhoodId && schedules.isPending && (
-        <Skeleton className="h-72 w-full" role="status" aria-label={m.common_loading()} />
+        <Skeleton
+          className="h-72 w-full"
+          role="status"
+          aria-label={m.common_loading()}
+        />
       )}
 
       {neighborhoodId && schedules.isError && (

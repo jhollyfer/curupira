@@ -10,10 +10,7 @@ import {
 
 function entry(
   id: string,
-  rest: Pick<
-    ManagementScheduleShowResponse,
-    'wasteType' | 'weekday' | 'shift'
-  >,
+  rest: Pick<ManagementScheduleShowResponse, 'wasteType' | 'weekday' | 'shift'>,
 ): ManagementScheduleShowResponse {
   return {
     id,
@@ -36,7 +33,11 @@ describe('groupSchedules', () => {
   })
 
   it('puts each collection in its type and weekday cell', () => {
-    const monday = entry('1', { wasteType: 'ORGANIC', weekday: 'MONDAY', shift: 'MORNING' })
+    const monday = entry('1', {
+      wasteType: 'ORGANIC',
+      weekday: 'MONDAY',
+      shift: 'MORNING',
+    })
     const grid = groupSchedules([monday])
 
     expect(grid.ORGANIC.MONDAY).toEqual([monday])
@@ -44,8 +45,16 @@ describe('groupSchedules', () => {
   })
 
   it('orders two shifts of the same day by the clock', () => {
-    const night = entry('n', { wasteType: 'ORGANIC', weekday: 'SUNDAY', shift: 'NIGHT' })
-    const morning = entry('m', { wasteType: 'ORGANIC', weekday: 'SUNDAY', shift: 'MORNING' })
+    const night = entry('n', {
+      wasteType: 'ORGANIC',
+      weekday: 'SUNDAY',
+      shift: 'NIGHT',
+    })
+    const morning = entry('m', {
+      wasteType: 'ORGANIC',
+      weekday: 'SUNDAY',
+      shift: 'MORNING',
+    })
 
     expect(
       groupSchedules([night, morning]).ORGANIC.SUNDAY.map((item) => item.id),
@@ -53,6 +62,10 @@ describe('groupSchedules', () => {
   })
 
   it('counts the entries', () => {
-    expect(countEntries([entry('1', { wasteType: 'BULKY', weekday: 'FRIDAY', shift: 'NIGHT' })])).toBe(1)
+    expect(
+      countEntries([
+        entry('1', { wasteType: 'BULKY', weekday: 'FRIDAY', shift: 'NIGHT' }),
+      ]),
+    ).toBe(1)
   })
 })

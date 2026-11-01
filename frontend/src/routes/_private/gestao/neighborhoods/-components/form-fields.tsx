@@ -65,7 +65,12 @@ export function NeighborhoodFormFields({
         label={m.panel_neighborhoods_field_name()}
       >
         {({ field, control }) => (
-          <Input {...field} {...control} maxLength={80} className="h-10 text-sm" />
+          <Input
+            {...field}
+            {...control}
+            maxLength={80}
+            className="h-10 text-sm"
+          />
         )}
       </AppField>
 
@@ -86,7 +91,9 @@ export function NeighborhoodFormFields({
               step="any"
               inputMode="decimal"
               value={field.value ?? ''}
-              onChange={(event) => field.onChange(numberOrNull(event.target.value))}
+              onChange={(event) =>
+                field.onChange(numberOrNull(event.target.value))
+              }
               className="h-10 text-sm tabular-nums"
             />
           )}
@@ -107,7 +114,9 @@ export function NeighborhoodFormFields({
               step="any"
               inputMode="decimal"
               value={field.value ?? ''}
-              onChange={(event) => field.onChange(numberOrNull(event.target.value))}
+              onChange={(event) =>
+                field.onChange(numberOrNull(event.target.value))
+              }
               className="h-10 text-sm tabular-nums"
             />
           )}
@@ -121,7 +130,12 @@ export function NeighborhoodFormFields({
             {m.panel_neighborhoods_map_title()}
           </p>
           {center && (
-            <Button type="button" variant="ghost" size="sm" onClick={clearCenter}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={clearCenter}
+            >
               <XIcon aria-hidden="true" data-icon="inline-start" />
               {m.panel_neighborhoods_map_clear()}
             </Button>

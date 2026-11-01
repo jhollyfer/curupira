@@ -2,15 +2,24 @@ import { useQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
 import type * as React from 'react'
 
-import { EmptyState } from '#/components/common/empty-state'
-import { EmptyStateDescription, EmptyStateTitle } from '#/components/common/empty-state'
+import {
+  EmptyState,
+  EmptyStateDescription,
+  EmptyStateTitle,
+} from '#/components/common/empty-state'
 import {
   PageHeader,
   PageHeaderDescription,
   PageHeaderTitle,
   PageShellHeader,
 } from '#/components/common/page-shell'
-import { Table, TableContent, TableGrid, TablePagination, useTable } from '#/components/common/table'
+import {
+  Table,
+  TableContent,
+  TableGrid,
+  TablePagination,
+  useTable,
+} from '#/components/common/table'
 import { managementReportsQueryOptions } from '#/integrations/tanstack-query/queries/management'
 import { hasReportsFilter } from '#/lib/management-search'
 import { m } from '#/paraglide/messages'
@@ -47,7 +56,9 @@ export function ReportsPage(): React.JSX.Element {
       <PageShellHeader>
         <PageHeader>
           <PageHeaderTitle>{m.panel_reports_title()}</PageHeaderTitle>
-          <PageHeaderDescription>{m.panel_reports_description()}</PageHeaderDescription>
+          <PageHeaderDescription>
+            {m.panel_reports_description()}
+          </PageHeaderDescription>
         </PageHeader>
       </PageShellHeader>
 
@@ -65,12 +76,17 @@ export function ReportsPage(): React.JSX.Element {
               table={table}
               caption={m.panel_reports_title()}
               onRowClick={(row) =>
-                void navigate({ to: '/gestao/reports/$id', params: { id: row.id } })
+                void navigate({
+                  to: '/gestao/reports/$id',
+                  params: { id: row.id },
+                })
               }
             />
             {query.isSuccess && rows.length === 0 && (
               <EmptyState reason={emptyReason}>
-                <EmptyStateTitle>{m.panel_reports_empty_title()}</EmptyStateTitle>
+                <EmptyStateTitle>
+                  {m.panel_reports_empty_title()}
+                </EmptyStateTitle>
                 <EmptyStateDescription>
                   {m.panel_reports_empty_description()}
                 </EmptyStateDescription>

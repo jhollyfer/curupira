@@ -20,8 +20,7 @@ import {
   FieldSet,
 } from '#/components/ui/field'
 import { Textarea } from '#/components/ui/textarea'
-import { queryKeys } from '#/hooks/tanstack-query/_query-keys'
-import { DEPENDENTS } from '#/hooks/tanstack-query/_query-keys'
+import { DEPENDENTS, queryKeys } from '#/hooks/tanstack-query/_query-keys'
 import { useMutationForm } from '#/hooks/use-mutation-form'
 import {
   AppField,
@@ -72,10 +71,7 @@ export function StatusForm({ report }: StatusFormProps): React.JSX.Element {
     defaults: { status: nextOption?.status ?? report.status, message: '' },
     fields: FIELDS,
     mutation: useManagementReportStatusMutation,
-    invalidate: [
-      queryKeys.management.reports.all,
-      ...DEPENDENTS.reports,
-    ],
+    invalidate: [queryKeys.management.reports.all, ...DEPENDENTS.reports],
     success: m.panel_report_status_saved(),
     // An edit of status is safe to resend: moving to the same target twice is refused
     // by the 422 rule, never applied twice.

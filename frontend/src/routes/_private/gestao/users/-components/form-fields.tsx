@@ -94,7 +94,9 @@ export function UserFormFields({
               value={field.value ?? ''}
               // Blank means "keep the current one" on edit: the field must be absent, not
               // an empty string the validator would refuse as too short.
-              onChange={(event) => field.onChange(event.target.value || undefined)}
+              onChange={(event) =>
+                field.onChange(event.target.value || undefined)
+              }
               autoComplete="new-password"
               className="h-10 text-sm"
             />
@@ -143,7 +145,9 @@ export function UserFormFields({
                   label: ACTIVE_STATUS_LABELS[status](),
                 }))}
                 onValueChange={(value) =>
-                  field.onChange(ACTIVE_STATUSES.find((status) => status === value))
+                  field.onChange(
+                    ACTIVE_STATUSES.find((status) => status === value),
+                  )
                 }
               />
             )}

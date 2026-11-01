@@ -50,10 +50,7 @@ export function createScheduleDialogHandle(): ScheduleDialogHandle {
   return createDialogHandle<ScheduleDialogPayload>()
 }
 
-const INVALIDATE = [
-  queryKeys.management.schedules.all,
-  ...DEPENDENTS.schedules,
-]
+const INVALIDATE = [queryKeys.management.schedules.all, ...DEPENDENTS.schedules]
 
 type FormProps = Readonly<{
   handle: ScheduleDialogHandle
@@ -102,7 +99,11 @@ function ScheduleFormBody({
           </Button>
         )}
         <div className="flex gap-2 sm:ml-auto">
-          <Button type="button" variant="outline" onClick={() => handle.close()}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handle.close()}
+          >
             {m.common_cancel()}
           </Button>
           <SubmitButton isPending={isPending}>{m.common_save()}</SubmitButton>

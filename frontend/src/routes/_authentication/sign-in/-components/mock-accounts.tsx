@@ -2,10 +2,7 @@ import type * as React from 'react'
 import type { UseFormReturn } from 'react-hook-form'
 
 import { Button } from '#/components/ui/button'
-import {
-  MOCK_ACCOUNTS,
-  MOCK_PASSWORD,
-} from '#/data/management/session'
+import { MOCK_ACCOUNTS, MOCK_PASSWORD } from '#/data/management/session'
 import { MOCK_LOGIN_AVAILABLE } from '#/integrations/tanstack-query/mock-session'
 import { USER_ROLE_LABELS } from '#/lib/labels'
 import { m } from '#/paraglide/messages'
@@ -22,7 +19,9 @@ type MockAccountsProps = Readonly<{
  * It fills the form instead of signing in directly, so the real submit path (validator,
  * mutation, redirect) is the one exercised.
  */
-export function MockAccounts({ form }: MockAccountsProps): React.JSX.Element | null {
+export function MockAccounts({
+  form,
+}: MockAccountsProps): React.JSX.Element | null {
   if (!MOCK_LOGIN_AVAILABLE) return null
 
   return (
@@ -43,7 +42,9 @@ export function MockAccounts({ form }: MockAccountsProps): React.JSX.Element | n
               size="sm"
               onClick={() => {
                 form.setValue('email', account.email, { shouldValidate: true })
-                form.setValue('password', MOCK_PASSWORD, { shouldValidate: true })
+                form.setValue('password', MOCK_PASSWORD, {
+                  shouldValidate: true,
+                })
               }}
             >
               {USER_ROLE_LABELS[account.role]()}

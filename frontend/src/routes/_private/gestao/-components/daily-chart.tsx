@@ -1,8 +1,8 @@
 import type * as React from 'react'
 
+import { formatNumber, townDay } from '#/lib/i18n'
 import { axisCeiling, seriesPeak } from '#/lib/report-stats'
 import type { DailyPoint } from '#/lib/report-stats'
-import { formatNumber, townDay } from '#/lib/i18n'
 import { m } from '#/paraglide/messages'
 
 /**
@@ -128,14 +128,18 @@ export function DailyChart({ series }: DailyChartProps): React.JSX.Element {
         />
       </svg>
 
-      <figcaption className="text-sm text-muted-foreground">{summary}</figcaption>
+      <figcaption className="text-sm text-muted-foreground">
+        {summary}
+      </figcaption>
 
       <details className="text-sm">
         <summary className="inline-flex min-h-8 cursor-pointer items-center rounded-md px-1 font-medium text-foreground underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
           {m.panel_overview_chart_table()}
         </summary>
         <table className="mt-2 w-full max-w-md border-collapse text-left tabular-nums">
-          <caption className="sr-only">{m.panel_overview_chart_title()}</caption>
+          <caption className="sr-only">
+            {m.panel_overview_chart_title()}
+          </caption>
           <thead>
             <tr className="border-b">
               <th scope="col" className="py-1.5 pr-4 font-medium">

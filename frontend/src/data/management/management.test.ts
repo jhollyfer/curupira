@@ -4,7 +4,12 @@ import { HTTPError } from '#/integrations/tanstack-query/http'
 
 import { createNeighborhood, deleteNeighborhood } from './neighborhoods'
 import { paginate } from './paginate'
-import { listReports, mapReports, reportStats, updateReportStatus } from './reports'
+import {
+  listReports,
+  mapReports,
+  reportStats,
+  updateReportStatus,
+} from './reports'
 import { createSchedule } from './schedules'
 import { store } from './store'
 
@@ -97,13 +102,18 @@ describe('example schedule and neighborhoods', () => {
     const used = store.schedules[0]?.neighborhoodId
     if (!used) throw new Error('no schedule in the example data')
 
-    expect(refusal(() => deleteNeighborhood(used)).code).toBe('NEIGHBORHOOD_IN_USE')
+    expect(refusal(() => deleteNeighborhood(used)).code).toBe(
+      'NEIGHBORHOOD_IN_USE',
+    )
   })
 
   it('refuses a repeated name and half a center', () => {
-    expect(refusal(() => createNeighborhood({ name: 'Centro' })).status).toBe(409)
+    expect(refusal(() => createNeighborhood({ name: 'Centro' })).status).toBe(
+      409,
+    )
     expect(
-      refusal(() => createNeighborhood({ name: 'Novo Bairro', latitude: -4.4 })).code,
+      refusal(() => createNeighborhood({ name: 'Novo Bairro', latitude: -4.4 }))
+        .code,
     ).toBe('NEIGHBORHOOD_CENTER_INCOMPLETE')
   })
 })

@@ -59,14 +59,19 @@ export function ReportsFilters(): React.JSX.Element {
           value: kind,
           label: REPORT_KIND_LABELS[kind](),
         }))}
-        onValueChange={(value) => apply({ kind: REPORT_KINDS.find((kind) => kind === value) })}
+        onValueChange={(value) =>
+          apply({ kind: REPORT_KINDS.find((kind) => kind === value) })
+        }
       />
       <OptionSelect
         id={ids.concat('-neighborhood')}
         label={m.panel_reports_filter_neighborhood()}
         allLabel={m.panel_reports_filter_all_neighborhoods()}
         value={search.neighborhoodId}
-        options={neighborhoods.map((item) => ({ value: item.id, label: item.name }))}
+        options={neighborhoods.map((item) => ({
+          value: item.id,
+          label: item.name,
+        }))}
         onValueChange={(neighborhoodId) => apply({ neighborhoodId })}
       />
       <OptionSelect

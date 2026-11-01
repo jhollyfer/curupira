@@ -47,7 +47,11 @@ export function NoticesFilters(): React.JSX.Element {
         value={search.search}
         onCommit={(value) =>
           void navigate({
-            search: (previous) => ({ ...previous, search: value, page: undefined }),
+            search: (previous) => ({
+              ...previous,
+              search: value,
+              page: undefined,
+            }),
           })
         }
       />

@@ -22,14 +22,19 @@ export function ReportsMap({
 }: Readonly<{ className?: string }>): React.JSX.Element {
   const search = route.useSearch()
   const navigate = route.useNavigate()
-  const { data } = useQuery(managementReportsMapQueryOptions(reportsFilterOf(search)))
+  const { data } = useQuery(
+    managementReportsMapQueryOptions(reportsFilterOf(search)),
+  )
   const reports = data ?? []
 
   return (
     <ReportMap label={m.panel_reports_map_label()} className={className}>
       <React.Suspense fallback={null}>
         <ReportMapSelectablePins
-          reports={reports.map((report) => ({ ...report, title: report.protocol }))}
+          reports={reports.map((report) => ({
+            ...report,
+            title: report.protocol,
+          }))}
           onSelect={(id) =>
             void navigate({ to: '/gestao/reports/$id', params: { id } })
           }

@@ -83,7 +83,10 @@ function AccountMenu(): React.JSX.Element {
           <span className="sr-only text-sm leading-none font-semibold lg:not-sr-only">
             {account.name}
           </span>
-          <CaretDownIcon aria-hidden="true" className="size-3 text-muted-foreground" />
+          <CaretDownIcon
+            aria-hidden="true"
+            className="size-3 text-muted-foreground"
+          />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent className="w-60" align="end">

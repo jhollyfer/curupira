@@ -23,5 +23,6 @@ export function localInputToInstant(text: string): string | undefined {
   })
   if (!parsed.isValid) return undefined
 
-  return parsed.toISO({ suppressMilliseconds: true }) ?? undefined
+  // `toISO` is typed `string | null` only for invalid dates, which returned above.
+  return parsed.toISO({ suppressMilliseconds: true })
 }

@@ -14,12 +14,37 @@ export const MOCK_OPERATOR_ID = exampleUuid('f', 2)
 
 export function seedUsers(): Array<ManagementUserShowResponse> {
   const rows = [
-    ['Marcelo Tananta', 'marcelo.tananta@benjamin.am.gov.br', 'ADMINISTRATOR', 'ACTIVE'],
-    ['Rosângela Pinto', 'rosangela.pinto@benjamin.am.gov.br', 'OPERATOR', 'ACTIVE'],
+    [
+      'Marcelo Tananta',
+      'marcelo.tananta@benjamin.am.gov.br',
+      'ADMINISTRATOR',
+      'ACTIVE',
+    ],
+    [
+      'Rosângela Pinto',
+      'rosangela.pinto@benjamin.am.gov.br',
+      'OPERATOR',
+      'ACTIVE',
+    ],
     ['Edvaldo Cruz', 'edvaldo.cruz@benjamin.am.gov.br', 'OPERATOR', 'ACTIVE'],
-    ['Lucimar Ferreira', 'lucimar.ferreira@benjamin.am.gov.br', 'OPERATOR', 'INACTIVE'],
-    ['Antônia Ramos', 'antonia.ramos@benjamin.am.gov.br', 'ADMINISTRATOR', 'ACTIVE'],
-    ['Josué Mendonça', 'josue.mendonca@benjamin.am.gov.br', 'OPERATOR', 'ACTIVE'],
+    [
+      'Lucimar Ferreira',
+      'lucimar.ferreira@benjamin.am.gov.br',
+      'OPERATOR',
+      'INACTIVE',
+    ],
+    [
+      'Antônia Ramos',
+      'antonia.ramos@benjamin.am.gov.br',
+      'ADMINISTRATOR',
+      'ACTIVE',
+    ],
+    [
+      'Josué Mendonça',
+      'josue.mendonca@benjamin.am.gov.br',
+      'OPERATOR',
+      'ACTIVE',
+    ],
   ] as const
 
   return rows.map(([name, email, role, status], index) => ({

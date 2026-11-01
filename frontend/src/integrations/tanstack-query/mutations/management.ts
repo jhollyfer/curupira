@@ -41,7 +41,8 @@ import {
 import { createUser, deleteUser, updateUser } from '#/data/management/users'
 import type { MutationProps } from '#/hooks/tanstack-query/_mutation-props'
 
-import { HTTPError, request, send } from '../http'
+import { request, send } from '../http'
+import type { HTTPError } from '../http'
 import { mockProfile } from '../mock-session'
 import { fromSource } from '../source'
 
@@ -334,21 +335,23 @@ export type UserUpdateVariables = WithId<ManagementUserUpdatePayload>
 export function useManagementUserUpdateMutation(
   options?: MutationProps<ManagementUserShowResponse, UserUpdateVariables>,
 ) {
-  return useMutation<ManagementUserShowResponse, HTTPError, UserUpdateVariables>(
-    {
-      ...options,
-      mutationFn: ({ id, ...body }) =>
-        fromSource<ManagementUserShowResponse>({
-          mock: () => updateUser(id, body),
-          api: () =>
-            request(
-              `/management/users/${encodeURIComponent(id)}`,
-              ManagementUserShowResponse,
-              { method: 'PUT', ...json(body) },
-            ),
-        }),
-    },
-  )
+  return useMutation<
+    ManagementUserShowResponse,
+    HTTPError,
+    UserUpdateVariables
+  >({
+    ...options,
+    mutationFn: ({ id, ...body }) =>
+      fromSource<ManagementUserShowResponse>({
+        mock: () => updateUser(id, body),
+        api: () =>
+          request(
+            `/management/users/${encodeURIComponent(id)}`,
+            ManagementUserShowResponse,
+            { method: 'PUT', ...json(body) },
+          ),
+      }),
+  })
 }
 
 export function useManagementUserDeleteMutation(
@@ -372,7 +375,10 @@ export function useManagementUserDeleteMutation(
  * e-mail through the same store as the user list, so the header shows the new name.
  */
 export function useAccountProfileUpdateMutation(
-  options?: MutationProps<AccountProfileShowResponse, AccountProfileUpdatePayload>,
+  options?: MutationProps<
+    AccountProfileShowResponse,
+    AccountProfileUpdatePayload
+  >,
 ) {
   return useMutation<
     AccountProfileShowResponse,

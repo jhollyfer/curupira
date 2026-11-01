@@ -55,7 +55,9 @@ describe('validateReportsSearch', () => {
   })
 
   it('drops a sort column the backend does not accept, with its direction', () => {
-    expect(validateReportsSearch({ sort: 'protocol', direction: 'asc' })).toEqual({})
+    expect(
+      validateReportsSearch({ sort: 'protocol', direction: 'asc' }),
+    ).toEqual({})
   })
 })
 
@@ -74,7 +76,11 @@ describe('reportPeriod', () => {
 
 describe('reportsFilterOf', () => {
   it('is the cut the map and the table share, without pagination or order', () => {
-    const search = validateReportsSearch({ kind: 'DUMPING', page: 3, sort: 'kind' })
+    const search = validateReportsSearch({
+      kind: 'DUMPING',
+      page: 3,
+      sort: 'kind',
+    })
 
     expect(reportsFilterOf(search)).toEqual({ kind: 'DUMPING' })
     expect(hasReportsFilter(search)).toBe(true)
@@ -84,13 +90,19 @@ describe('reportsFilterOf', () => {
 
 describe('the other listings', () => {
   it('notices accept a status of the enum only', () => {
-    expect(validateNoticesSearch({ status: 'ACTIVE' })).toEqual({ status: 'ACTIVE' })
+    expect(validateNoticesSearch({ status: 'ACTIVE' })).toEqual({
+      status: 'ACTIVE',
+    })
     expect(validateNoticesSearch({ status: 'OPEN' })).toEqual({})
   })
 
   it('users accept role and status', () => {
     expect(
-      validateUsersSearch({ role: 'OPERATOR', status: 'INACTIVE', search: 'ana' }),
+      validateUsersSearch({
+        role: 'OPERATOR',
+        status: 'INACTIVE',
+        search: 'ana',
+      }),
     ).toEqual({ role: 'OPERATOR', status: 'INACTIVE', search: 'ana' })
     expect(validateUsersSearch({ role: 'ROOT' })).toEqual({})
   })

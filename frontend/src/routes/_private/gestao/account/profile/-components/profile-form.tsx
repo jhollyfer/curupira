@@ -14,7 +14,12 @@ import {
 } from '#/components/common/page-shell'
 import { SubmitButton } from '#/components/common/submit-button'
 import { Card, CardContent } from '#/components/ui/card'
-import { FieldDescription, FieldGroup, FieldSet, FieldLegend } from '#/components/ui/field'
+import {
+  FieldDescription,
+  FieldGroup,
+  FieldSet,
+  FieldLegend,
+} from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
 import { queryKeys } from '#/hooks/tanstack-query/_query-keys'
 import { useMutationForm } from '#/hooks/use-mutation-form'
@@ -78,7 +83,11 @@ export function ProfileForm(): React.JSX.Element {
 
       <Card>
         <CardContent>
-          <form method="post" onSubmit={onSubmit} className="flex flex-col gap-6">
+          <form
+            method="post"
+            onSubmit={onSubmit}
+            className="flex flex-col gap-6"
+          >
             <FieldGroup>
               <AppField
                 control={form.control}
@@ -118,7 +127,9 @@ export function ProfileForm(): React.JSX.Element {
 
             <FieldSet>
               <FieldLegend>{m.panel_profile_password_legend()}</FieldLegend>
-              <FieldDescription>{m.panel_profile_password_hint()}</FieldDescription>
+              <FieldDescription>
+                {m.panel_profile_password_hint()}
+              </FieldDescription>
               <FieldGroup>
                 <AppField
                   control={form.control}
