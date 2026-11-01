@@ -66,6 +66,10 @@ export function ReportPage(): React.JSX.Element {
     true,
   ]
 
+  function onSubmit(event?: React.BaseSyntheticEvent): void {
+    void form.handleSubmit((values) => submit(toDraft(values)))(event)
+  }
+
   if (outcome) {
     return (
       <ReportDone
@@ -87,11 +91,7 @@ export function ReportPage(): React.JSX.Element {
 
       {/* `method="post"`: a tap on "Enviar" before hydration becomes a native submit
           instead of putting the form in the URL. */}
-      <form
-        method="post"
-        noValidate
-        onSubmit={form.handleSubmit((values) => submit(toDraft(values)))}
-      >
+      <form method="post" noValidate onSubmit={onSubmit}>
         <StepWizard
           titles={[m.report_step_kind(), m.report_step_evidence(), m.report_step_send()]}
           value={step}

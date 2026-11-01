@@ -1,5 +1,5 @@
 import {
-  BricksIcon,
+  WallIcon,
   CheckCircleIcon,
   CouchIcon,
   DotsThreeCircleIcon,
@@ -24,7 +24,7 @@ export const WASTE_TYPE_ICONS = {
   ORGANIC: LeafIcon,
   RECYCLABLE: RecycleIcon,
   BULKY: CouchIcon,
-  DEBRIS: BricksIcon,
+  DEBRIS: WallIcon,
 } satisfies Record<WasteType, Icon>
 
 export const REPORT_KIND_ICONS = {
