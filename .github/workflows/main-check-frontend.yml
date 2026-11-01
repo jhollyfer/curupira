@@ -230,11 +230,15 @@ jobs:
         run: pnpm --filter ./frontend --fail-if-no-match exec playwright install --with-deps chromium
 
       # Credenciais só de teste, as mesmas do seed acima; nenhuma tem default no
-      # código (tooling.md §7). 
+      # código (tooling.md §7). Os specs rodam contra a API real (o `playwright.config.ts`
+      # sobe o servidor com `VITE_DATA_SOURCE=api`); o operador é criado pelo próprio
+      # spec, com a sessão do dono.
       - name: Test e2e
         env:
-          E2E_ADMIN_EMAIL: owner@mail.com
-          E2E_ADMIN_PASSWORD: Ci-Owner-1!
+          E2E_OWNER_EMAIL: owner@mail.com
+          E2E_OWNER_PASSWORD: Ci-Owner-1!
+          E2E_OPERATOR_EMAIL: operador@mail.com
+          E2E_OPERATOR_PASSWORD: Ci-Operador-1!
           E2E_API_URL: http://localhost:3333
         run: pnpm --filter ./frontend --fail-if-no-match run test:e2e --workers=1 --add-reporter=github
 
