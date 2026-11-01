@@ -14,12 +14,12 @@ TanStack Start + Nitro. A régua é `../_standards/` (`frontend.md`, `i18n.md`, 
 - `routeTree.gen.ts` é regerado pelo plugin do Router (`pnpm dev` ou `pnpm build`), nunca à mão.
 - `node scripts/generate-icons.mjs`: favicon, ícones do manifesto e `og-image.png` a partir de `public/favicon.svg`.
 
-## Mapa da base (para quem constrói o painel `/gestao`)
+## Mapa da base
 
 | O quê                                                       | Onde                                                                                                                                                                                            |
 | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Guarda do painel (sessão, `account` no contexto da rota)    | `src/routes/_private/layout.tsx` (esqueleto: só `Outlet`; o shell do painel entra aqui)                                                                                                         |
-| Porta do painel (placeholder)                               | `src/routes/_private/gestao/index.tsx` + `index.lazy.tsx`                                                                                                                                       |
+| Guarda do painel (sessão, `account` no contexto da rota)    | `src/routes/_private/layout.tsx` (a guarda de sessão e o shell: sidebar, cabeçalho, trilha)                                                                                                     |
+| Visão geral do painel                                       | `src/routes/_private/gestao/index.tsx` + `index.lazy.tsx`                                                                                                                                       |
 | Entrada                                                     | `src/routes/_authentication/` (`/sign-in`, `?redirect=` validado, guarda inversa)                                                                                                               |
 | Tokens (cores, `--waste-*`, status, raio, camadas)          | `src/styles.css`                                                                                                                                                                                |
 | Kit de painel já trazido do interclasse                     | `components/common/{page-shell,form-shell,empty-state,submit-button,input-password,not-found-page,theme-toggle,locale-switch}`; `components/ui/` (inclui `sidebar`, `table`, `sheet`, `dialog`) |
@@ -33,8 +33,40 @@ TanStack Start + Nitro. A régua é `../_standards/` (`frontend.md`, `i18n.md`, 
 | Listagem na URL                                             | `lib/list-search.ts` (`ListSearch`, `withExtra`, `queryString`)                                                                                                                                 |
 | Dados de exemplo                                            | `src/data/{neighborhoods,schedules,notices,reports}.ts`                                                                                                                                         |
 
-Tabela (`common/table`), lixeira e upload de imagem do interclasse **não** foram trazidos: entram quando o
-painel precisar, do mesmo molde.
+Lixeira e upload de imagem do interclasse **não** foram trazidos (o painel não tem nenhum dos dois).
+
+## O painel da gestão (`/gestao`)
+
+Rotas em `src/routes/_private/gestao/`, em par `rota.tsx` + `rota.lazy.tsx`, nomes em inglês:
+
+| Rota                                          | Quem entra     | O que é                                                                                                         |
+| --------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------- |
+| `/gestao`                                     | os dois papéis | visão geral: atalho das "Recebidas", contagens por status e tipo, gráfico dos últimos 30 dias (SVG próprio)     |
+| `/gestao/reports`, `reports/$id`              | os dois papéis | mapa + tabela do mesmo recorte (`reportsFilterOf`), detalhe, mudança de status só para frente + resposta        |
+| `/gestao/notices` (+ `new`, `$id/edit`)       | os dois papéis | avisos: criar, agendar, encerrar, excluir; filtro por situação                                                  |
+| `/gestao/schedules`                           | administrador  | grade semanal por bairro (tipo x dia), criar/editar/excluir em diálogo; 409 de slot repetido no campo `weekday` |
+| `/gestao/neighborhoods` (+ `new`, `$id/edit`) | administrador  | bairros com ponto opcional escolhido no mapa                                                                    |
+| `/gestao/users` (+ `new`, `$id/edit`)         | administrador  | contas da gestão (papel, situação, senha)                                                                       |
+| `/gestao/account/profile`                     | os dois papéis | o próprio perfil e a troca de senha                                                                             |
+
+- **Capacidade por área**: `lib/capabilities.ts` é a tabela única (guarda e menu leem dela). Cada área
+  restrita tem o próprio `layout.tsx` com `requireCapability` (`_private/-components/require-capability.ts`).
+  O backend continua sendo quem autoriza (403); o front só redireciona e esconde o link.
+- **Listagens**: `_private/-components/list-page.tsx` (esqueleto), `common/table` (TanStack Table sem features
+  de cliente, ordenação e paginação na URL), `common/option-select`, `search-filter.tsx`. Filtros em `lib/management-search.ts`,
+  validados à mão. `reportsFilterOf` é o único lugar que separa filtro de página/ordem, e é o que garante mapa e tabela no mesmo recorte.
+- **Regras puras testadas em `lib/`**: `report-status.ts` (só avança), `schedule-grid.ts`, `report-stats.ts` (30 dias,
+  zeros incluídos), `datetime-field.ts` (hora de Benjamin Constant no `datetime-local`), `capabilities.ts`, `breadcrumbs.ts`.
+- **Dados**: `integrations/tanstack-query/{queries,mutations}/management.ts`, com `fromSource({ mock, api })`. Mocks em
+  `src/data/management/` (um `store.ts` em memória, com os mesmos 409/422 da API). Invalidação por
+  `queryKeys.management.*` + `DEPENDENTS` (mudar status ou aviso na gestão invalida também o que o público lê).
+  No modo mock o público e o painel têm bases separadas: mudar um status no painel não altera o `/acompanhar` de exemplo.
+- **Entrar no painel sem backend**: com `VITE_DATA_SOURCE=mock` **e** `pnpm dev`, a tela de entrada mostra as
+  "contas de exemplo" (administrador e operador, senha `Exemplo@2026`, em `data/management/session.ts`). A sessão é o
+  cookie `curupira-mock-session`, lido também no SSR. Tudo passa por `import.meta.env.DEV`: o build de produção
+  (mesmo com `mock`, que é o padrão) não tem contas e responde 401. Nunca remover essa guarda.
+- **E2E**: `e2e/management-flow.spec.ts` (projeto `desktop`); credenciais em `e2e/support/credentials.ts`
+  (`E2E_OWNER_*`, `E2E_OPERATOR_*`, ver `.env.e2e.example`).
 
 ## Dados de exemplo e a API
 
