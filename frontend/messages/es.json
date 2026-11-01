@@ -201,7 +201,7 @@
   "track_submit": "Consultar",
   "track_mine": "Enviadas desde este dispositivo",
   "track_result_protocol": "Protocolo",
-  "track_result_received": "recibida el {date}",
+  "track_result_received": "Denuncia recibida el {date}",
   "track_not_found_title": "Protocolo no encontrado",
   "track_not_found_text": "No encontramos ninguna denuncia con ese código. Revisa que no hayas cambiado una letra por un número e inténtalo de nuevo.",
   "track_try_again": "Escribir otro código",

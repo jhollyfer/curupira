@@ -14,7 +14,7 @@ import { m } from '#/paraglide/messages'
 const route = getRouteApi('/_public/mapa/')
 
 const CHIP =
-  'inline-flex min-h-11 items-center gap-2 rounded-xl bg-card px-4 text-base font-semibold shadow-card outline-none transition-shadow focus-visible:ring-4 focus-visible:ring-ring/60 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground motion-reduce:transition-none'
+  'inline-flex min-h-11 shrink-0 snap-start whitespace-nowrap items-center gap-2 rounded-xl bg-card px-4 text-base font-semibold shadow-card outline-none transition-shadow focus-visible:ring-4 focus-visible:ring-ring/60 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground motion-reduce:transition-none'
 
 export function MapPage(): React.JSX.Element {
   const { kind } = route.useSearch()
@@ -32,8 +32,11 @@ export function MapPage(): React.JSX.Element {
         </p>
       </header>
 
-      <nav aria-label={m.map_filter_label()}>
-        <ul className="flex flex-wrap gap-2">
+      {/* One scrolling row on a phone: five wrapped chips took four lines and pushed the map
+          off the first screen. The row bleeds to the screen edge so a cut chip says "there is
+          more"; from `md` up everything fits and wraps again. */}
+      <nav aria-label={m.map_filter_label()} className="-mx-4 md:mx-0">
+        <ul className="flex snap-x gap-2 overflow-x-auto px-4 pb-1 md:flex-wrap md:overflow-visible md:px-0">
           <li>
             <Link to="/mapa" search={{}} data-active={!kind} className={CHIP}>
               {m.map_filter_all()}

@@ -36,15 +36,14 @@ export function TrackResult({
         </h2>
         <p className="text-lg font-semibold">
           {REPORT_KIND_LABELS[report.kind]()}
-          <span className="font-medium text-muted-foreground">
-            {' '}
-            {m.track_result_received({
-              date: formatTownDate(report.createdAt, {
-                day: 'numeric',
-                month: 'long',
-              }),
-            })}
-          </span>
+        </p>
+        <p className="text-base text-muted-foreground">
+          {m.track_result_received({
+            date: formatTownDate(report.createdAt, {
+              day: 'numeric',
+              month: 'long',
+            }),
+          })}
         </p>
         <StatusBadge status={report.status} className="self-start" />
       </header>

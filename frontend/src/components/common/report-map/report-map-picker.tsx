@@ -4,6 +4,7 @@ import { Marker, useMap, useMapEvents } from 'react-leaflet'
 
 import { clampToTown } from '#/lib/geo'
 import type { Coordinate } from '#/lib/geo'
+import { prefersReducedMotion } from '#/lib/motion'
 
 import { reportPinIcon } from './report-pin-icon'
 
@@ -44,9 +45,12 @@ export function ReportMapPicker({
   React.useEffect(() => {
     if (latitude === undefined || longitude === undefined) return
 
-    map.flyTo([latitude, longitude], Math.max(map.getZoom(), 16), {
-      duration: 0.6,
-    })
+    const zoom = Math.max(map.getZoom(), 16)
+
+    // `flyTo` swoops across the map: with reduced motion the view just jumps.
+    if (prefersReducedMotion())
+      map.setView([latitude, longitude], zoom, { animate: false })
+    else map.flyTo([latitude, longitude], zoom, { duration: 0.6 })
   }, [map, latitude, longitude])
 
   React.useEffect(() => {

@@ -158,7 +158,7 @@ export function NotFoundPageHomeButton({
   return (
     <Button
       data-slot="not-found-page-home-button"
-      size="lg"
+      size="touch-lg"
       className="w-fit"
       render={<Link to={to}>{children}</Link>}
     />

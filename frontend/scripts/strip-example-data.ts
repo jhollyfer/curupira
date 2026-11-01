@@ -24,7 +24,9 @@ type ExportNode = Readonly<{
     id?: Readonly<{ name: string }>
     declarations?: ReadonlyArray<Readonly<{ id: Readonly<{ name?: string }> }>>
   }> | null
-  specifiers?: ReadonlyArray<Readonly<{ exported: Readonly<{ name?: string }> }>>
+  specifiers?: ReadonlyArray<
+    Readonly<{ exported: Readonly<{ name?: string }> }>
+  >
 }>
 
 function namesOf(node: ExportNode): ReadonlyArray<string> {
@@ -40,8 +42,11 @@ function namesOf(node: ExportNode): ReadonlyArray<string> {
     (item) => item.id.name ?? '',
   )
 
-  return [...fromSpecifiers, ...fromDeclaration, declaration?.id?.name ?? '']
-    .filter(Boolean)
+  return [
+    ...fromSpecifiers,
+    ...fromDeclaration,
+    declaration?.id?.name ?? '',
+  ].filter(Boolean)
 }
 
 export function stripExampleData(dataSource: string | undefined): Plugin {
@@ -57,7 +62,9 @@ export function stripExampleData(dataSource: string | undefined): Plugin {
       const names = this.parse(code).body.flatMap(namesOf)
 
       return {
-        code: names.map((name) => `export const ${name} = undefined\n`).join(''),
+        code: names
+          .map((name) => `export const ${name} = undefined\n`)
+          .join(''),
         map: null,
       }
     },

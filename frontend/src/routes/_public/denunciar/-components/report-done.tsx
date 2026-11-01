@@ -65,13 +65,15 @@ export function ReportDone({
             </p>
           </div>
 
-          <div className="flex flex-col gap-3 rounded-3xl bg-card p-6 shadow-card-elevated">
+          <div className="flex flex-col gap-3 rounded-3xl bg-card p-5 shadow-card-elevated sm:p-6">
             <p className="text-base font-semibold text-muted-foreground">
               {m.report_done_protocol()}
             </p>
             <p
               data-testid="protocol"
-              className="text-4xl font-extrabold tracking-wider tabular-nums select-all"
+              // Fluid on purpose: at 360px a fixed `text-4xl` broke "CUR-XXXX-XXXX" after the second
+              // dash, and a protocol split in two lines is a protocol copied wrong by hand.
+              className="text-[clamp(1.625rem,7.4vw,2.25rem)] font-extrabold tracking-wider whitespace-nowrap tabular-nums select-all"
             >
               {outcome.protocol}
             </p>

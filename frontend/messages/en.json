@@ -201,7 +201,7 @@
   "track_submit": "Check",
   "track_mine": "Sent from this device",
   "track_result_protocol": "Protocol",
-  "track_result_received": "received on {date}",
+  "track_result_received": "Report received on {date}",
   "track_not_found_title": "Protocol not found",
   "track_not_found_text": "We found no report with that code. Check that you did not swap a letter for a number and try again.",
   "track_try_again": "Enter another code",
