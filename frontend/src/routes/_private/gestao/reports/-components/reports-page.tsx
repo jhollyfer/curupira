@@ -20,6 +20,7 @@ import {
   TablePagination,
   useTable,
 } from '#/components/common/table'
+import { Skeleton } from '#/components/ui/skeleton'
 import { managementReportsQueryOptions } from '#/integrations/tanstack-query/queries/management'
 import { hasReportsFilter } from '#/lib/management-search'
 import { m } from '#/paraglide/messages'
@@ -72,6 +73,13 @@ export function ReportsPage(): React.JSX.Element {
 
         <div className="flex min-h-0 flex-col gap-3">
           <TableContent>
+            {query.isPending && (
+              <Skeleton
+                role="status"
+                aria-label={m.common_loading()}
+                className="h-64 w-full"
+              />
+            )}
             <TableGrid
               table={table}
               caption={m.panel_reports_title()}

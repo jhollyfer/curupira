@@ -27,7 +27,9 @@ import {
 } from '#/components/common/table'
 import type { TableInstance } from '#/components/common/table'
 import { Button } from '#/components/ui/button'
+import { Skeleton } from '#/components/ui/skeleton'
 import type { ListSearch } from '#/lib/list-search'
+import { m } from '#/paraglide/messages'
 
 type ListPageProps<TRow extends RowData> = Readonly<{
   /** The listing's own route, for the sort and pagination links. */
@@ -97,6 +99,13 @@ export function ListPage<TRow extends RowData>({
       {filters}
 
       <TableContent>
+        {query.isPending && (
+          <Skeleton
+            role="status"
+            aria-label={m.common_loading()}
+            className="h-64 w-full"
+          />
+        )}
         <TableGrid table={table} caption={title} onRowClick={onRowClick} />
         {isEmpty && (
           <EmptyState reason={reason}>
