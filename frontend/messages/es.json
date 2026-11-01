@@ -469,7 +469,7 @@
   "panel_users_field_name": "Nombre",
   "panel_users_field_password": "Contraseña",
   "panel_users_field_new_password": "Nueva contraseña (opcional)",
-  "panel_users_field_password_hint": "De 8 a 32 caracteres, con minúscula, mayúscula, número y símbolo. Al editar, déjalo vacío para mantener la actual.",
+  "panel_users_field_password_hint": "De 8 a 32 caracteres, con minúscula, mayúscula, número y símbolo.",
   "panel_users_field_role": "Rol",
   "panel_users_field_status": "Situación",
   "panel_users_saved": "Cuenta de {name} guardada",
@@ -483,5 +483,6 @@
   "panel_profile_password_hint": "Para cambiarla, indica la nueva contraseña dos veces y la actual.",
   "panel_profile_password_confirmation": "Repite la nueva contraseña",
   "panel_profile_current_password": "Contraseña actual",
-  "panel_profile_saved": "Perfil actualizado"
+  "panel_profile_saved": "Perfil actualizado",
+  "panel_users_field_password_keep": "Déjalo vacío para mantener la contraseña actual."
 }

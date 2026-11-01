@@ -87,7 +87,8 @@ const MAIN_ID = 'conteudo'
 function RouteComponent(): React.JSX.Element {
   // Below the tablet breakpoint the sidebar starts collapsed to its icons: the content
   // is the point of a 1024px screen, and the menu is one tap away.
-  const tablet = useIsBelow(TABLET_BREAKPOINT)
+  // `+ 1`: a 1024px tablet in landscape *is* the tablet, and `< 1024` would leave it out.
+  const tablet = useIsBelow(TABLET_BREAKPOINT + 1)
 
   return (
     // `h-svh`, not `min-h-svh`: a height that grows limits no one, and the screens'

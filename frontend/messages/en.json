@@ -469,7 +469,7 @@
   "panel_users_field_name": "Name",
   "panel_users_field_password": "Password",
   "panel_users_field_new_password": "New password (optional)",
-  "panel_users_field_password_hint": "8 to 32 characters, with lowercase, uppercase, a number and a symbol. When editing, leave empty to keep the current one.",
+  "panel_users_field_password_hint": "8 to 32 characters, with lowercase, uppercase, a number and a symbol.",
   "panel_users_field_role": "Role",
   "panel_users_field_status": "Status",
   "panel_users_saved": "Account of {name} saved",
@@ -483,5 +483,6 @@
   "panel_profile_password_hint": "To change it, enter the new password twice and the current one.",
   "panel_profile_password_confirmation": "Repeat the new password",
   "panel_profile_current_password": "Current password",
-  "panel_profile_saved": "Profile updated"
+  "panel_profile_saved": "Profile updated",
+  "panel_users_field_password_keep": "Leave empty to keep the current password."
 }

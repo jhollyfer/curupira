@@ -67,7 +67,7 @@ export function ReportsPage(): React.JSX.Element {
       {/* Map beside the table from 1280px; stacked below, where each needs the width.
           The grid is the scroll container when stacked, because the table's own area
           cannot be bounded by a map above it. */}
-      <div className="grid min-h-0 flex-1 gap-4 max-xl:overflow-auto xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+      <div className="grid min-h-0 flex-1 gap-4 max-xl:grid-rows-[18rem_minmax(26rem,auto)] max-xl:overflow-auto xl:grid-cols-[minmax(16rem,2fr)_minmax(0,3fr)]">
         <ReportsMap className="h-72 rounded-md border shadow-none xl:h-full" />
 
         <div className="flex min-h-0 flex-col gap-3">

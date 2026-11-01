@@ -54,7 +54,7 @@ export function DailyChart({ series }: DailyChartProps): React.JSX.Element {
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         role="img"
         aria-label={summary}
-        className="h-auto w-full"
+        className="h-auto w-full max-w-4xl"
       >
         {ticks.map((tick) => {
           const y = PAD.top + PLOT_H - (tick / ceiling) * PLOT_H

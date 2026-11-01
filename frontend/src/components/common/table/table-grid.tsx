@@ -112,12 +112,12 @@ export function TableGrid<TRow extends RowData>({
     <div
       data-slot="table-grid"
       className={cn(
-        'relative min-h-0 w-full flex-1 overflow-auto rounded-md border bg-card transition-opacity duration-150 motion-reduce:transition-none',
+        'relative min-h-0 w-full overflow-auto rounded-md border bg-card transition-opacity duration-150 motion-reduce:transition-none',
         isPlaceholderData && 'opacity-60',
       )}
       aria-busy={isPlaceholderData}
     >
-      <TableRoot className="min-w-[40rem]">
+      <TableRoot className="min-w-[34rem]">
         <caption className="sr-only">{caption}</caption>
         <TableHeader className="sticky top-0 z-sticky bg-card">
           {table.getHeaderGroups().map((group) => (

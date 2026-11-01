@@ -11,8 +11,7 @@ import { m } from '#/paraglide/messages'
 /**
  * The protocol is the row's real link (keyboard and middle-click work); the row click in
  * `table.tsx` is the mouse convenience on top. Kind carries icon + name, never a color
- * alone. The date is short with the hour, because two reports from the same day are told
- * apart by when they came in.
+ * alone. The date is short (the hour is on the detail): the table shares the width with the map.
  */
 export function reportColumns(): TableColumns<ManagementReportListItemResponse> {
   return [
@@ -37,7 +36,7 @@ export function reportColumns(): TableColumns<ManagementReportListItemResponse> 
         const Icon = REPORT_KIND_ICONS[row.original.kind]
 
         return (
-          <span className="inline-flex items-center gap-2">
+          <span className="inline-flex items-center gap-2 whitespace-nowrap">
             <Icon aria-hidden="true" weight="fill" className="size-4" />
             {REPORT_KIND_LABELS[row.original.kind]()}
           </span>
@@ -63,13 +62,14 @@ export function reportColumns(): TableColumns<ManagementReportListItemResponse> 
     {
       id: 'createdAt',
       header: () => m.panel_reports_col_received(),
-      meta: { sortKey: 'createdAt', className: 'tabular-nums' },
+      meta: {
+        sortKey: 'createdAt',
+        className: 'whitespace-nowrap tabular-nums',
+      },
       cell: ({ row }) =>
         formatTownDate(row.original.createdAt, {
           day: '2-digit',
           month: 'short',
-          hour: '2-digit',
-          minute: '2-digit',
         }),
     },
   ]

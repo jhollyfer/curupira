@@ -469,7 +469,7 @@
   "panel_users_field_name": "Nome",
   "panel_users_field_password": "Senha",
   "panel_users_field_new_password": "Nova senha (opcional)",
-  "panel_users_field_password_hint": "De 8 a 32 caracteres, com minúscula, maiúscula, número e símbolo. Na edição, deixe vazio para manter a atual.",
+  "panel_users_field_password_hint": "De 8 a 32 caracteres, com minúscula, maiúscula, número e símbolo.",
   "panel_users_field_role": "Papel",
   "panel_users_field_status": "Situação",
   "panel_users_saved": "Conta de {name} salva",
@@ -483,5 +483,6 @@
   "panel_profile_password_hint": "Para trocar, informe a nova senha duas vezes e a atual.",
   "panel_profile_password_confirmation": "Repita a nova senha",
   "panel_profile_current_password": "Senha atual",
-  "panel_profile_saved": "Perfil atualizado"
+  "panel_profile_saved": "Perfil atualizado",
+  "panel_users_field_password_keep": "Deixe vazio para manter a senha atual."
 }

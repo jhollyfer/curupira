@@ -102,6 +102,7 @@ export function UserFormFields({
             />
             <FieldDescription>
               {m.panel_users_field_password_hint()}
+              {editing && ` ${m.panel_users_field_password_keep()}`}
             </FieldDescription>
           </>
         )}
