@@ -27,14 +27,17 @@
   mudar um enum ou campo mexe nos três pacotes, na documentação e nos dados em produção.
 - As regras de anonimato: denúncia sem `contact` não guarda nada sobre quem enviou; `contact` nunca sai em
   rota pública; as respostas públicas (`showByProtocol`, `publicMap`) mantêm a lista fechada de colunas; o
-  mapa público mostra o dia, nunca a hora.
-- O tratamento da foto: remoção de EXIF no `photo-sanitizer`, conferência de assinatura em `storage.entity.ts`,
-  tipos aceitos (`REPORT_PHOTO_MIMETYPES`), teto `REPORT_PHOTO_MAX_SIZE`; a coordenada é a do pin, nunca a do EXIF.
+  mapa público mostra o dia, nunca a hora, e o ponto arredondado a 3 casas decimais (`DECISIONS.md` #17); o
+  IP só entra no limiter como HMAC (`LimiterKey`), e o 429 de `/storefront/*` não loga o IP.
+- O tratamento da foto: remoção de EXIF no `photo-sanitizer` (50 milhões de pixels, 2 conversões ao mesmo
+  tempo), conferência de assinatura em `storage.entity.ts`, tipos aceitos (`REPORT_PHOTO_MIMETYPES`), teto
+  `REPORT_PHOTO_MAX_SIZE`, prefixo `report-photos/` da chave e os 3 minutos da URL de envio; a coordenada é a do
+  pin, nunca a do EXIF.
 - O protocolo: alfabeto, comprimento, gerador `crypto.randomInt`, formato `CUR-XXXX-XXXX` e a normalização.
-- Os throttles de `backend/start/limiter.ts` (limites, janelas, `blockFor`), `TRUSTED_PROXIES`,
-  `COOKIE_DOMAIN`, o middleware de `Origin`, o CORS e a cadeia `auth()`/`role()` das rotas. Rota que muda de
+- Os throttles de `backend/start/limiter.ts` (limites, janelas, `blockFor`), `TRUSTED_PROXIES` (lista validada
+  em `core/trusted-proxies.ts`), `COOKIE_DOMAIN`, o nome dos cookies de sessão, o middleware de `Origin`, o CORS e a cadeia `auth()`/`role()` das rotas. Rota que muda de
   papel regrava a linha de base do `authz:check` e pede aprovação.
-- A CSP e os cabeçalhos de segurança em `frontend/vite.config.ts`.
+- A CSP, os cabeçalhos de segurança e a lista de rotas fora do cache do service worker em `frontend/vite.config.ts`.
 - A guarda de `import.meta.env.DEV` que limita as contas de exemplo do modo `mock`.
 - Os seeds de bairros (`backend/database/seeders/neighborhood.seed.ts`) e o cronograma de exemplo
   (`dev/demo.ts`): são de exemplo, a prefeitura confere; não trocar por dados "reais" sem fonte.
@@ -49,7 +52,7 @@
 | Tema | Regra | Por quê |
 |---|---|---|
 | Anonimato | a denúncia é anônima por padrão; `contact` é opcional e só o painel o lê | quem denuncia se expõe; o medo derruba a denúncia (`DECISIONS.md` #1) |
-| Resposta pública | só tipo, situação, data e mensagens da gestão (consulta); id, tipo, situação, ponto e dia (mapa) | evitar que um campo novo vaze por esquecimento |
+| Resposta pública | só tipo, situação, data e mensagens da gestão (consulta); id, tipo, situação, ponto aproximado e dia, até 500 (mapa) | evitar que um campo novo vaze por esquecimento |
 | Foto | 1 a 3 por denúncia, `jpeg`, `png` ou `webp`, sem EXIF, redimensionada no navegador e reencodada no servidor | privacidade e rede lenta |
 | Situação | só avança: `RECEIVED`, `IN_REVIEW`, `FORWARDED`, `RESOLVED`; cada mudança grava um evento com autor e mensagem | histórico confiável para o morador |
 | Mapa público | só `IN_REVIEW`, `FORWARDED` e `RESOLVED` | trote ou pin errado não aparece antes da equipe ver |
@@ -60,9 +63,11 @@
 | Toque | alvo de 44 px no app do morador | uso com uma mão, no sol, no barco |
 | Idiomas | pt-BR é a base; todo texto novo entra em pt-BR, es e en no mesmo commit | fronteira com Peru e Colômbia |
 | Mapa | Leaflet só em chunk lazy e só no cliente; nada de `import 'leaflet'` fora de `components/common/report-map` | peso e SSR |
-| Fonte de dados do frontend | `VITE_DATA_SOURCE=mock` por padrão; o ponto de troca é `integrations/tanstack-query/source.ts` | o app corre sem backend em dev (`DECISIONS.md` #10) |
+| Fonte de dados do frontend | `VITE_DATA_SOURCE=mock` por padrão em dev e `api` em produção (`frontend/.env.production`); o ponto de troca é `integrations/tanstack-query/source.ts`; dado de exemplo usa o domínio `@exemplo.invalid` | o app corre sem backend em dev (`DECISIONS.md` #10) |
 | Rotas do frontend | par `rota.tsx` + `rota.lazy.tsx`; nomes das rotas da gestão em inglês, da vitrine em português (`/coleta`, `/denunciar`) | convenção já consolidada |
-| Bucket | privado; nunca URL pública; leitura por URL assinada de 15 minutos | `SECURITY.md` |
+| Bucket | privado; nunca URL pública; leitura por URL assinada de 15 minutos, download da biblioteca de 5 e envio de foto de denúncia de 3 | `SECURITY.md` |
+| Variável de ambiente nova | testada com o valor de produção, não só com o do `.env.example` | `TRUSTED_PROXIES` com `loopback,uniquelocal` quebrou a API (A-01, `MEMORY.md`) |
+| Primeiro administrador | `node ace users:create-owner`; o seeder do dono só roda em `development` e `test` | `DECISIONS.md` #24 |
 | Enum do `shared` | entra como tipo em módulos que várias rotas alcançam | leitura de valor no topo do módulo cria ciclo de chunk |
 
 ## 4. Estrutura
@@ -88,3 +93,4 @@ desvio e se corrige; regra que não serve muda no `maiyu-pattern` (`documentatio
 | Data | Mudança |
 |---|---|
 | 2026-11-01 | Primeira versão, a partir do código do backend, do frontend e do `shared/` |
+| 2026-11-01 | Ajustada ao código depois da auditoria de segurança e do polimento de design |

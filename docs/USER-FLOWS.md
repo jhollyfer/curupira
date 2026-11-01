@@ -114,7 +114,7 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | abre o mapa | mostra ocorrências em andamento e resolvidas, por tipo | `/mapa` |
+| 1 | abre o mapa | mostra ocorrências em andamento e resolvidas, por tipo, com o ponto aproximado (cerca de 110 m) e até as 500 mais recentes | `/mapa` |
 | 2 | filtra por tipo | mostra só o tipo escolhido | `/mapa` |
 
 ---

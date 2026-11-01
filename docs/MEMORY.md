@@ -7,36 +7,44 @@
 
 | Atualizado | Fase atual | Progresso | Status |
 |---|---|---|---|
-| 2026-11-01 | 3 · integração real (3.6) e 5 · fechamento | 80% (19 de 24 tarefas) | Em desenvolvimento · MVP v1.0 |
+| 2026-11-01 | 1 · deploy (1.6, bloqueada); o resto está feito | 96% (23 de 24 tarefas) | Pronto para o deploy · falta o que é do dono · MVP v1.0 |
 
 ## Já feito
 
 - Régua sincronizada, workspace pnpm, husky, commitlint e workflows de CI/CD (Fase 1, menos o deploy 1.6).
 - `shared/` com enums, validators Zod, responses, `Either` e o protocolo; 5 arquivos de teste, 21 testes.
 - Backend AdonisJS 7 completo: 6 entidades de domínio, repositórios Lucid e em memória, 11 migrations, 47
-  operações no `openapi.json`, throttles, `Origin`, EXIF, assinatura de arquivo, seeders de bairros e do dono,
-  71 arquivos de teste unitário e 67 de e2e.
+  operações no `openapi.json`, throttles com o IP em HMAC, `Origin`, EXIF, assinatura de arquivo, seeders de
+  bairros e do dono (só em `development` e `test`), comandos `storages:prune` e `users:create-owner`; 76
+  arquivos de teste unitário (290 testes) e 69 de e2e (367 passam, 2 falham só pelo emulador S3).
 - App do morador: home, cronograma e `.ics`, denúncia em 3 passos com fila offline, acompanhar por protocolo,
-  mapa, avisos, sobre, privacidade e termos, PWA, três idiomas. Roda com dados de exemplo (`VITE_DATA_SOURCE=mock`).
+  mapa com ponto aproximado, avisos, sobre, privacidade e termos, PWA sem o painel no cache, três idiomas.
+  Fala com a API de verdade (3.6 provada por E2E); 295 testes unitários em 51 arquivos.
 - Painel `/gestao`: visão geral, ocorrências, avisos, cronograma, bairros, contas e perfil, com capacidade por papel.
-- Docs completos: PRD, fluxos, decisões, arquitetura, ambiente, segurança, plano de testes, design, regras, changelog.
+- E2E de Playwright contra a API real: 11 testes (6 do morador em celular, 5 do painel em desktop), com axe.
+- Auditoria de segurança feita, com as correções aplicadas (`SECURITY.md` §10); revisão de acessibilidade e
+  movimento reduzido por peça.
+- Docs completos: PRD, fluxos, decisões (24), arquitetura, ambiente, segurança, plano de testes, design, regras, changelog.
 
 ## Parou em
 
-Os docs foram preenchidos a partir do código real. Outro agente está provando a API de ponta a ponta contra o
-frontend (tarefa 3.6, `Em andamento`). Falta: fechar a integração (e conferir o contrato, ver "Problemas
-conhecidos"), rodar a suíte `functional` do backend contra o MinIO do compose, o E2E contra a API real, a
-auditoria de segurança e a revisão final de acessibilidade e desempenho. O deploy (1.6) espera os uuids do Coolify.
+Código, auditoria de segurança e polimento de design fechados, docs em dia com o código final. O que falta é só
+do dono, nada de código:
+
+1. Preencher `UUID_API` e `UUID_APP` em `main-deploy-coolify.yml` e configurar o painel do Coolify
+   (`ARCHITECTURE.md` §9.1).
+2. Criar o bucket de produção e definir `VITE_STORAGE_URL` em `frontend/.env.production`.
+3. Criar o cron de `node ace storages:prune` no servidor (por exemplo, de hora em hora).
+4. Criar o primeiro administrador com `node ace users:create-owner`.
+5. Conferir bairros e cronograma com a prefeitura, definir a retenção e revisar os textos de privacidade e termos.
+6. Rodar o CI de verdade (o job de E2E do GitHub nunca foi executado) e os dois e2e do backend com MinIO real.
 
 ## Próximos passos
 
-1. Fechar a 3.6: corrigir `/authentication/sessions` para `sign-in` e `sign-out`, definir `VITE_STORAGE_URL`,
-   alinhar `E2E_ADMIN_*` e `E2E_OWNER_*` e `E2E_DATA_SOURCE=api` no job de e2e do frontend.
-2. Rodar `pnpm test:e2e` do backend com `docker compose up -d` (Postgres e MinIO reais).
-3. Preencher `UUID_API` e `UUID_APP` em `main-deploy-coolify.yml` e configurar o painel do Coolify (`ARCHITECTURE.md` §9.1).
-4. E2E completo (5.1), auditoria de segurança do diff (5.2) e revisão de acessibilidade e desempenho (5.3).
-5. Propor ao `maiyu-pattern` as entradas de `_doc-lib` para Leaflet/react-leaflet, `vite-plugin-pwa`/workbox e `sharp`.
-6. Prefeitura: conferir bairros e cronograma, definir retenção e revisar privacidade e termos (`PRD.md` §8).
+1. Os seis itens de "Parou em", na ordem.
+2. Conferir no painel do Coolify se o proxy grava o IP do morador no log de acesso (`SECURITY.md` §2.8).
+3. Propor ao `maiyu-pattern` as entradas de `_doc-lib` para Leaflet/react-leaflet, `vite-plugin-pwa`/workbox e `sharp`.
+4. Teste manual antes do release (`TEST-PLAN.md` §8).
 
 ## Contexto importante
 
@@ -44,9 +52,13 @@ auditoria de segurança e a revisão final de acessibilidade e desempenho. O dep
 - Os textos de privacidade e termos (`/privacidade`, `/termos`) são rascunho: a prefeitura e a procuradoria revisam.
 - Os uuids das aplicações no Coolify (`UUID_API`, `UUID_APP`) ainda são `PREENCHER_*`; o job de deploy reprova de
   propósito enquanto for assim.
-- MinIO real não foi rodado nesta máquina: o caminho do bucket foi exercitado só com um S3 emulado (moto).
-- Leaflet/react-leaflet, `vite-plugin-pwa`/workbox e `sharp` não têm entrada na `_doc-lib`; devem ir ao
-  `maiyu-pattern`. Enquanto isso valem a página oficial de cada uma.
+- `VITE_STORAGE_URL` não está definida porque o endereço do bucket de produção é desconhecido; o build do app só
+  avisa, e a foto não sobe em produção até a variável existir (`DECISIONS.md` #15).
+- MinIO real não foi rodado nesta máquina: o caminho do bucket foi exercitado só com um S3 emulado (moto). Dois
+  e2e do backend falham por limitação dele: `refuses with 422 when what was uploaded does not have the declared size`
+  e `a signed URL stops being valid after it expires`.
+- Sessões antigas caem no deploy: os cookies passaram a se chamar `curupira-access-token` e `curupira-refresh-token`.
+- O seeder do dono só roda em `development` e `test`; em produção o primeiro administrador sai de `users:create-owner`.
 - Commits de migração usam `HUSKY=0` enquanto `backend/` e `frontend/` não passam no `check`; depois disso o gate volta inteiro.
 - Branch de trabalho: `feat/curupira-plataforma` (a sessão sugeria um nome com prefixo de agente, proibido pela régua).
 - Toolchain local: Node 24 e pnpm 12 instalados num prefixo à parte, o sistema tem Node 22 e pnpm 10.
@@ -62,18 +74,20 @@ auditoria de segurança e a revisão final de acessibilidade e desempenho. O dep
 | Data | Erro | Regra que evita | Vale para |
 |---|---|---|---|
 | 2026-11-01 | Nome de branch com prefixo de agente sugerido pela sessão | branch `<tipo>/<escopo>-<assunto>`, sem nome de agente | toda branch e todo PR |
+| 2026-11-01 | Agente seguiu a doc sem testar a variável de ambiente real: `TRUSTED_PROXIES=loopback,uniquelocal` quebrava a API (A-01) | testar `TRUSTED_PROXIES` com o valor de produção, e toda variável de ambiente nova com o valor que a produção terá, não só com o do `.env.example` | `backend/` e o `ENV.md` |
 
 ## Problemas conhecidos
 
 | Problema | Onde | Contorno |
 |---|---|---|
-| Leaflet, vite-plugin-pwa e sharp sem entrada na `_doc-lib` | `docs/DECISIONS.md` #3 e #4 | usar a página oficial; propor ao upstream |
-| O corpo `api` de entrar e sair chama `/authentication/sessions`; a API tem `/authentication/sign-in` e `/sign-out` | `frontend/src/integrations/tanstack-query/mutations/authentication.ts`, `backend/start/routes.ts` | corrigir na 3.6 |
-| `VITE_STORAGE_URL` não está em `.env.production`: a CSP de produção bloqueia o `PUT` da foto ao bucket | `frontend/vite.config.ts`, `docs/ENV.md` §1.2 | definir o valor no build |
-| Job de e2e do frontend passa `E2E_ADMIN_*` e `E2E_API_URL`, os specs leem `E2E_OWNER_*` e o modo é `mock` | `.github/workflows/main-check-frontend.yml`, `frontend/e2e/support/credentials.ts` | alinhar na 3.6 |
-| `prefers-reduced-motion` desliga animação por regra global em `*` | `frontend/src/styles.css` | trocar por `motion-reduce:` nos componentes |
+| Leaflet/react-leaflet, `vite-plugin-pwa`/workbox e `sharp` sem entrada na `_doc-lib` | `docs/DECISIONS.md` #3 e #4, `docs/SECURITY.md` §7 | usar a página oficial; propor ao upstream |
+| As skills `high-end-visual-design` e `redesign-existing-projects` só o usuário invoca e não foram aplicadas ao polimento de design | `docs/DESIGN.md` | o dono invoca quando quiser a passada |
+| `VITE_STORAGE_URL` não definida: a CSP de produção bloqueia o `PUT` da foto ao bucket | `frontend/.env.production`, `docs/ENV.md` §1.2 | definir o valor antes do primeiro build de produção |
+| Sem cron de `storages:prune`: foto abandonada e upload `PENDING` ficam no bucket | `docs/ARCHITECTURE.md` §9.1 | criar o cron no servidor |
 | Sem retenção automática de denúncia, foto e contato | `docs/SECURITY.md` §8.1 | decisão da prefeitura (`PRD.md` §8) |
-| Suíte `functional` do backend não rodada contra MinIO real aqui | `docs/TEST-PLAN.md` §7 | rodar no CI ou local com o compose |
+| IP no log do proxy não verificável pelo repositório | `docs/SECURITY.md` §2.8 | conferir no painel do Coolify |
+| Dois e2e do backend falham no emulador S3 (moto) e a suíte não rodou contra o MinIO real | `docs/TEST-PLAN.md` §7 | rodar no CI ou local com `docker compose up -d` |
+| Job de E2E do frontend no CI nunca executou | `.github/workflows/main-check-frontend.yml` | rodar o CI de verdade |
 
 ## Links úteis
 

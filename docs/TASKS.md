@@ -6,7 +6,7 @@
 > `.specs/features/<feature>/tasks.md`; aqui a linha aponta para lá.
 > Atualiza no mesmo commit em que a tarefa começa ou termina.
 
-**Resumo:** 24 tarefas · 19 feitas · 1 em andamento · 1 bloqueada · 3 a fazer (atualizado 2026-11-01)
+**Resumo:** 24 tarefas · 23 feitas · 1 bloqueada (atualizado 2026-11-01)
 
 Status: `A fazer` · `Em andamento` · `Feita` · `Bloqueada` (com motivo nas notas).
 Prioridade: `Alta` · `Média` · `Baixa`.
@@ -22,19 +22,19 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | 1.3 | `shared/` com enums, validators Zod e responses do domínio | Alta | Feita | |
 | 1.4 | `AGENTS.md`, `CLAUDE.md` e `docs/` | Alta | Feita | |
 | 1.5 | Remover as sobras do starter (backend e frontend) | Alta | Feita | backend e frontend reescritos a partir do molde do interclasse |
-| 1.6 | Deploy no Coolify: serviços, variáveis, healthcheck `/health-check` | Média | Bloqueada | domínios definidos (`api-curupira.maiyu.com.br`, `curupira.maiyu.com.br`); faltam os uuids das duas aplicações em `main-deploy-coolify.yml` (hoje `PREENCHER_*`, o job reprova de propósito) |
+| 1.6 | Deploy no Coolify: serviços, variáveis, healthcheck `/health-check` | Média | Bloqueada | domínios definidos (`api-curupira.maiyu.com.br`, `curupira.maiyu.com.br`); faltam os uuids das duas aplicações em `main-deploy-coolify.yml` (hoje `PREENCHER_*`, o job reprova de propósito) e o endereço do bucket de produção para `VITE_STORAGE_URL` (`DECISIONS.md` #15) |
 
 ## Fase 2 · Backend (5/5)
 
 | # | Tarefa | Prioridade | Status | Notas |
 |---|---|---|---|---|
 | 2.1 | Domínio, models, repositórios e migrations | Alta | Feita | seis entidades, repositórios Lucid e em memória, 11 migrations |
-| 2.2 | Features `storefront` (bairros, cronograma, avisos, fotos, denúncia, protocolo, mapa) | Alta | Feita | e2e contra Postgres e MinIO reais ainda não rodado nesta máquina (`TEST-PLAN.md` §7) |
+| 2.2 | Features `storefront` (bairros, cronograma, avisos, fotos, denúncia, protocolo, mapa) | Alta | Feita | e2e do backend: 367 passam e 2 falham só pelo emulador S3 (moto); contra o MinIO real ainda não rodado (`TEST-PLAN.md` §7) |
 | 2.3 | Features `management` (ocorrências, cronograma, bairros, avisos, contas) | Alta | Feita | mais `authentication`, `account` e `storages` |
-| 2.4 | Segurança: throttles, EXIF, Origin, mimetype | Alta | Feita | `docs/SECURITY.md`; a auditoria do diff é a 5.2 |
+| 2.4 | Segurança: throttles, EXIF, Origin, mimetype | Alta | Feita | `docs/SECURITY.md`; a auditoria do código é a 5.2 |
 | 2.5 | Seeders com bairros reais de Benjamin Constant | Média | Feita | 12 bairros e cronograma de exemplo; a prefeitura confere antes de abrir (`PRD.md` §8) |
 
-## Fase 3 · App do morador (5/6)
+## Fase 3 · App do morador (6/6)
 
 | # | Tarefa | Prioridade | Status | Notas |
 |---|---|---|---|---|
@@ -43,7 +43,7 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | 3.3 | Denúncia em 3 passos e fila offline | Alta | Feita | |
 | 3.4 | Acompanhar por protocolo | Alta | Feita | |
 | 3.5 | Mapa público | Média | Feita | |
-| 3.6 | Trocar os mocks de `src/data` pela API | Alta | Em andamento | integração real sendo provada por outro agente; achados na leitura: `/authentication/sessions` no front contra `/authentication/sign-in` e `/sign-out` na API, `VITE_STORAGE_URL` fora da CSP de produção, e o job de e2e do CI passa `E2E_ADMIN_*` enquanto os specs leem `E2E_OWNER_*` |
+| 3.6 | Trocar os mocks de `src/data` pela API | Alta | Feita | provada por E2E de Playwright contra a API real (11 testes); entrada e saída usam `/authentication/sign-in` e `/sign-out`; build com `VITE_DATA_SOURCE=api` tira `src/data/**` do bundle; resta definir `VITE_STORAGE_URL` (1.6) |
 
 ## Fase 4 · Painel da gestão (4/4)
 
@@ -54,13 +54,13 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | 4.3 | Cronograma e bairros | Média | Feita | |
 | 4.4 | Avisos e contas | Média | Feita | |
 
-## Fase 5 · Fechamento (0/3)
+## Fase 5 · Fechamento (3/3)
 
 | # | Tarefa | Prioridade | Status | Notas |
 |---|---|---|---|---|
-| 5.1 | E2E (fluxo de denúncia, protocolo, painel, offline) | Alta | A fazer | só na fase final; hoje os 6 testes de Playwright rodam em modo `mock`, falta contra a API real |
-| 5.2 | Auditoria de segurança do diff (`claude-security`) | Alta | A fazer | `docs/SECURITY.md` §2.8 e §8.1 listam o que olhar |
-| 5.3 | Revisão de acessibilidade e desempenho em rede lenta | Média | A fazer | contraste conferido com ferramenta, leitor de tela, Lighthouse em 3G |
+| 5.1 | E2E (fluxo de denúncia, protocolo, painel, offline) | Alta | Feita | 11 testes de Playwright contra a API real, com axe em cada tela; o MinIO real e o job de E2E do CI ainda não foram executados |
+| 5.2 | Auditoria de segurança do código | Alta | Feita | correções aplicadas; achados e residuais em `docs/SECURITY.md` §10 |
+| 5.3 | Revisão de acessibilidade e desempenho em rede lenta | Média | Feita | axe sem violações nas telas do morador (360x740 e 412x915) e do painel (1440x900 e 1024x768), nos temas claro e escuro; movimento reduzido por peça; o teste manual antes do release continua em `TEST-PLAN.md` §8 |
 
 ## Fase N · Ideias (fora do escopo atual)
 

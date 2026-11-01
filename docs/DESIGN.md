@@ -62,8 +62,8 @@ Situação da denúncia (`StatusBadge`, variantes de `Badge`, pares `--badge-*` 
 | Resolvida | `success` | idem |
 
 Gráficos usam `--chart-1` a `--chart-5`. Contraste (AA): texto 4,5:1, texto grande e componente 3:1, nos
-dois temas. Os pares `*-foreground` foram escolhidos para isso; a conferência com ferramenta e a data
-estão pendentes (`TASKS.md` 5.3).
+dois temas. Os pares `*-foreground` foram escolhidos para isso, e a revisão de acessibilidade (`TASKS.md`
+5.3) rodou o axe nos dois temas sem violações.
 
 ## 3. Tipografia
 
@@ -150,26 +150,32 @@ Ilustração de estado vazio: ícone Phosphor, sem ilustração.
 
 - Curvas: `--ease-out-expo` e `--ease-out-quart`; feedback curto, saída mais curta que a entrada.
 - Anima só `transform` e `opacity`; nunca `transition: all`. O botão afunda com `scale-press` (0,97).
-- `prefers-reduced-motion`: `styles.css` encurta toda animação e transição para 0,01 ms por uma regra global
-  em `*`. A régua pede `motion-reduce:` por componente e manter o feedback de ação
-  (`_standards/frontend.md`); a regra global é um desvio a corrigir.
+- `prefers-reduced-motion`: vale por peça, e não por uma regra global em `*`. Os componentes escritos à mão
+  levam `motion-reduce:`; os de `components/ui/` (shadcn, sem edição à mão) são desligados em `styles.css` pelo
+  atributo que cada um já carrega (`data-open`, `data-closed`, `data-slot`). Saem o deslocamento (translate,
+  zoom, rotação) de popup e sheet, o deslizar da barra lateral e os laços (spinner, pulso do esqueleto,
+  brilho); ficam o esmaecer do popup e toda troca de cor, porque dizem que algo mudou. O mapa Leaflet, que anima
+  por JavaScript, consulta `prefersReducedMotion()` em `lib/motion.ts` e também respeita a preferência.
 
 ## 10. Acessibilidade
 
 - Meta: WCAG 2.1 AA. O E2E roda axe em cada tela (`frontend/e2e/support/test.ts`, falha em violação grave
-  ou crítica); a revisão final está em `TASKS.md` 5.3.
+  ou crítica). A revisão de `TASKS.md` 5.3 fechou com zero violações do axe nas telas do morador (360 x 740 e
+  412 x 915) e do painel (1440 x 900 e 1024 x 768), nos temas claro e escuro.
 - Foco visível em todo interativo, anel `--ring`; link "pular para o conteúdo" (`.skip-link`).
 - Alvo de toque de 44 px no app do morador (`size-11` ou `h-11`; token `--spacing-touch: 2.75rem`);
   hover nunca é o único caminho.
 - Ícones Phosphor, uma família; botão só de ícone tem `aria-label` por chave de mensagem; ícone decorativo
   com `aria-hidden`.
 - Formulários: `aria-invalid` e `aria-describedby` do erro (`lib/form-a11y.ts`); erros em `role="alert"`.
-- Mapa: tudo que o mapa mostra também está na lista ou na tabela; o seletor de ponto aceita GPS e arraste.
+- Mapa: tudo que o mapa mostra também está na lista ou na tabela; o seletor de ponto aceita GPS e arraste. O
+  mapa tem nome acessível (`MapName` em `report-map-canvas.tsx`) e o marcador tem título, que o Leaflet usa
+  como nome acessível; o mapa público mostra o ponto aproximado.
 - Rede lenta: nenhuma imagem para o primeiro desenho (a faixa verde é gradiente de token), fonte variável com
   fallback ajustado, Leaflet só quando a tela precisa, foto reduzida a 1600 px antes do envio.
 - PWA: `manifest.webmanifest` em pt-BR (`display: standalone`, `theme_color #1f6b3d`, atalhos "Fazer denúncia",
   "Cronograma da coleta" e "Acompanhar denúncia"), ícones de 192, 512 e maskable; service worker com cache
-  descrito em `ARCHITECTURE.md` §6.2.
+  descrito em `ARCHITECTURE.md` §6.2, sem guardar `/gestao` nem `/sign-in`.
 - Datas sempre em `America/Manaus`.
 
 ## 11. Fazer / não fazer

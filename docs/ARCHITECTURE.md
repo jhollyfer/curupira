@@ -37,7 +37,7 @@ O morador não tem conta: lê o cronograma, envia a denúncia e consulta o proto
 | Banco | PostgreSQL + Lucid | 18 | |
 | Fila | Não se aplica: não há job assíncrono; o limiter usa a tabela `rate_limits` | | |
 | Arquivos | S3-compatível (MinIO em dev e teste, S3 ou R2 em produção) por URL pré-assinada | AWS SDK v3 | |
-| Imagem | `sharp` (remove EXIF da foto da denúncia) | 0.34 | |
+| Imagem | `sharp` (remove EXIF da foto da denúncia; 50 milhões de pixels, no máximo 2 conversões ao mesmo tempo) | 0.35.5 | |
 | Mapa | Leaflet + react-leaflet, tiles OpenStreetMap, só no cliente e em chunk lazy | Leaflet 1.9 | `DECISIONS.md` #3 |
 | PWA | `vite-plugin-pwa` (workbox `generateSW`), fila de denúncia em IndexedDB | 2.x | `DECISIONS.md` #4 |
 | Deploy | Docker (imagens `curupira-api` e `curupira-app`) no Coolify | | §9 |
@@ -52,12 +52,14 @@ da árvore que o projeto usa:
 
 | Pasta | Por quê |
 |---|---|
-| `backend/app/services/photo-sanitizer/` | tira EXIF e metadado da foto da denúncia com `sharp`, atrás de contrato com fake para teste |
+| `backend/app/services/photo-sanitizer/` | tira EXIF e metadado da foto da denúncia com `sharp`, atrás de contrato com fake para teste; `core/semaphore.ts` limita a 2 conversões simultâneas |
 | `backend/app/services/protocol/` | sorteia o protocolo com `crypto.randomInt`, separado para o teste fixar o valor |
 | `backend/app/services/multipart/` e `storage/` | URL pré-assinada, leitura e sobrescrita do objeto no bucket |
-| `backend/commands/storages-prune.command.ts` | varre uploads `PENDING` abandonados; não há agendador na aplicação |
+| `backend/commands/storages-prune.command.ts` | varre uploads `PENDING` abandonados e foto de denúncia `UPLOADED` sem denúncia há mais de 24 h; não há agendador na aplicação |
+| `backend/commands/users-create-owner.command.ts` | cria o primeiro administrador em produção, onde o seeder do dono não roda |
+| `backend/app/core/trusted-proxies.ts`, `report-photo-key.ts` | lê `TRUSTED_PROXIES` como lista validada no boot; prefixo `report-photos/` da chave da foto |
 | `backend/infra/minio/` | imagem do MinIO de dev e teste, e o script que cria os buckets |
-| `frontend/src/data/` | dados de exemplo do modo `VITE_DATA_SOURCE=mock` (`DECISIONS.md` #10) |
+| `frontend/src/data/` | dados de exemplo do modo `VITE_DATA_SOURCE=mock` (`DECISIONS.md` #10); o build com `api` os tira do bundle (`frontend/scripts/strip-example-data.ts`) |
 | `frontend/src/lib/` | regras puras: cronograma, `.ics`, fila offline, status, grade semanal, capacidades |
 
 ## 4. Módulos (features)
@@ -113,7 +115,7 @@ Há 47 operações no `backend/openapi.json`. `GET /health-check` fica fora do d
 | `notices` | title (120), body (600), starts_at, ends_at, closed_at | | |
 | `users` | name, email (único), password (hash), role, status, avatar_id | `storages` | |
 | `storages` | key, mimetype, size, status (`PENDING`/`UPLOADED`), upload_id | | biblioteca da gestão e fotos de denúncia |
-| `rate_limits` | key, points, expire | | contador do limiter; chave com o IP |
+| `rate_limits` | key, points, expire | | contador do limiter; nas rotas anônimas a chave é o HMAC-SHA256 do IP (`anon:<hash>`), nunca o IP |
 
 ## 6. Fluxo de dados
 
@@ -123,12 +125,13 @@ Há 47 operações no `backend/openapi.json`. `GET /health-check` fica fora do d
    foto a 1600 px e JPEG 80 (`lib/image.ts`), o que já derruba o EXIF.
 2. Para cada foto (até 3), `POST /storefront/report-photos` com `mimetype` e `size`. O `size` respeita
    `REPORT_PHOTO_MAX_SIZE`. A API grava um `Storage` `PENDING` e devolve `{ id, uploadUrl }`, uma URL
-   `PUT` pré-assinada de 15 minutos com o tamanho fixado.
+   `PUT` pré-assinada de 3 minutos com o tamanho fixado, para uma chave com o prefixo `report-photos/`.
 3. O navegador faz `PUT` da foto direto no bucket (o arquivo não passa pela API).
 4. `POST /storefront/report-photos/:id/complete`: a API confere o tamanho no bucket, confere os bytes
    iniciais contra a assinatura do tipo declarado, lê o objeto, reencoda com `sharp` (sem metadado,
-   limite de 60 milhões de pixels) e sobrescreve o objeto; só então grava `UPLOADED`. Falha em qualquer
-   passo apaga o objeto e a linha (422).
+   limite de 50 milhões de pixels, no máximo 2 conversões ao mesmo tempo) e sobrescreve o objeto; só então
+   grava `UPLOADED`. Falha em qualquer passo apaga o objeto e a linha (422). Só foto com o prefixo
+   `report-photos/` passa: arquivo da biblioteca da gestão responde 404 e não se anexa a denúncia.
 5. `POST /storefront/reports` com tipo, ponto, descrição, contato opcional e os `photoIds`. A API confere
    que as fotos são anexáveis e livres, escolhe o bairro mais próximo, sorteia o protocolo e grava a
    denúncia com o evento `RECEIVED` em transação (até 5 sorteios se o protocolo colidir). A resposta é
@@ -145,9 +148,11 @@ Há 47 operações no `backend/openapi.json`. `GET /health-check` fica fora do d
    antiga para a mais nova. Falha de rede ou 5xx para na primeira e mantém a ordem; 4xx descarta o item
    (repetir não adianta). Uma chamada em andamento é reaproveitada para não enviar duas vezes.
 3. A fila vive na página e não no service worker porque o Safari não tem Background Sync.
-4. O service worker (`vite-plugin-pwa`) faz precache só de estilos, fonte e ícones; páginas visitadas
-   usam `NetworkFirst`, `/assets/` usa `CacheFirst`, cronograma, bairros e avisos usam
-   `StaleWhileRevalidate`, e os tiles do OSM ficam 14 dias em cache.
+4. O service worker (`vite-plugin-pwa`) faz precache só de estilos, fonte e ícones; páginas públicas
+   visitadas usam `NetworkFirst`, `/assets/` usa `CacheFirst`, cronograma, bairros e avisos usam
+   `StaleWhileRevalidate`, e os tiles do OSM ficam 14 dias em cache. `/gestao` e `/sign-in` (e as versões
+   `/en` e `/es`) ficam fora do cache, o Nitro responde `Cache-Control: no-store` nelas e o sign-out apaga o
+   cache `pages` (`frontend/src/lib/pwa.ts`).
 
 ## 7. Integrações externas
 
@@ -161,7 +166,7 @@ Não há e-mail, SMS, pagamento nem API de terceiros no servidor.
 
 ## 8. Autenticação e autorização
 
-- Sessão por dois cookies `httpOnly`: `access-token` (1 dia) e `refresh-token` (7 dias), `sameSite=lax`,
+- Sessão por dois cookies `httpOnly`: `curupira-access-token` (1 dia) e `curupira-refresh-token` (7 dias), `sameSite=lax`,
   `secure` em produção, `Domain` pelo `COOKIE_DOMAIN`. `POST /authentication/refresh` renova.
 - Rotas agrupadas por papel: `middleware.auth()` e depois `middleware.role([...])` no grupo
   (`backend/start/routes.ts`). Sem sessão a resposta é 401; com sessão e papel errado, 403.
@@ -189,7 +194,7 @@ API:
 
 | Prefixo | Rotas | Quem |
 |---|---|---|
-| `/storefront` | `GET neighborhoods`, `schedules`, `notices`, `reports/map`, `reports/:protocol`; `POST reports`, `report-photos`, `report-photos/:id/complete` | público, com throttle por IP nas escritas e na consulta |
+| `/storefront` | `GET neighborhoods`, `schedules`, `notices`, `reports/map`, `reports/:protocol`; `POST reports`, `report-photos`, `report-photos/:id/complete` | público, com throttle por IP (HMAC) nas escritas, na consulta de protocolo e no mapa; o mapa devolve as 500 mais recentes com o ponto arredondado a 3 casas |
 | `/authentication` | `POST sign-in`, `sign-out`, `refresh` | gestão |
 | `/account` | `GET`, `PUT` | autenticado |
 | `/storages` | `GET`, `POST`, `GET :id`, `DELETE :id`, `POST :id/complete`, `GET :id/parts`, `GET :id/download` | autenticado |
@@ -199,11 +204,14 @@ API:
 
 ### 8.2 Fonte de dados do frontend
 
-`VITE_DATA_SOURCE=mock` (padrão) serve `frontend/src/data/*`; `api` fala com `VITE_API_URL`. O ponto de
-troca é `integrations/tanstack-query/source.ts` (`fromSource({ mock, api })`). A integração real ainda
-não foi provada de ponta a ponta (`TASKS.md` 3.6). Divergência de contrato já vista na leitura: o corpo
-`api` de entrar e sair chama `/authentication/sessions` (`POST` e `DELETE`), e a API expõe
-`POST /authentication/sign-in` e `POST /authentication/sign-out`.
+`VITE_DATA_SOURCE=mock` (padrão em dev) serve `frontend/src/data/*`; `api` fala com `VITE_API_URL`. O ponto de
+troca é `integrations/tanstack-query/source.ts` (`fromSource({ mock, api })`). A integração real foi provada
+de ponta a ponta pelos 11 testes de Playwright contra a API real (`TASKS.md` 3.6 e 5.1). O build de produção
+usa `api` (`frontend/.env.production`, conferido pelo CI) e tira `src/data/**` do bundle.
+
+Nas chamadas feitas pelo servidor do app (SSR), `integrations/tanstack-query/http.server.ts` repassa à API o
+`Cookie` recebido, o `X-Forwarded-For` (a cadeia recebida mais o IP do par, para os limites por IP verem o
+morador e não o Nitro) e o `Origin` (`VITE_SITE_URL`, que a barreira de CSRF exige em método não seguro).
 
 ## 9. Ambientes
 
@@ -223,8 +231,8 @@ API, para um app não reiniciar por causa do outro.
 | `ci.yml` | PR para `main` | `main-check-backend`, `main-check-frontend`, `pnpm audit --prod` (alta), Gitleaks, varredura de `pull_request_target` e de `github.event` em `run:` |
 | `commitlint.yml` | PR | Conventional Commits |
 | `main-check-backend.yml` | chamado | autor e trailers dos commits (só no PR), lint, typecheck, `pattern:check`, `authz:check`, `depcruise`, `openapi:check`, unitário, build; e2e em 3 shards com Postgres 18 e MinIO; `di:check` |
-| `main-check-frontend.yml` | chamado | i18n, lint, typecheck, Prettier, unitário, build, `routeTree.gen.ts` em dia, ciclos de chunk; Playwright com API, Postgres e MinIO |
-| `main-build-frontend.yml` | chamado | grava o sha em `frontend/public/revision.txt` antes do build, confere que entrou no manifesto do Nitro, publica `.output` como artifact |
+| `main-check-frontend.yml` | chamado | i18n, lint, typecheck, Prettier, unitário, build, `routeTree.gen.ts` em dia, ciclos de chunk; Playwright contra a API real (imagem `curupira-api:e2e`, Postgres e MinIO), com `E2E_OWNER_*`, `E2E_OPERATOR_*` e `E2E_API_URL` |
+| `main-build-frontend.yml` | chamado | grava o sha em `frontend/public/revision.txt` antes do build, reprova se faltar `frontend/.env.production`, se `VITE_DATA_SOURCE` não for `api` ou se `VITE_API_URL` e `VITE_SITE_URL` não forem `https`, avisa se faltar `VITE_STORAGE_URL`, confere que o carimbo entrou no manifesto do Nitro, publica `.output` como artifact |
 | `main-docker-backend.yml`, `main-docker-frontend.yml` | chamados | imagens `curupira-api` e `curupira-app` (amd64 e arm64) no Docker Hub, tags `latest` e sha |
 | `main-deploy-coolify.yml` | chamado, depois das duas imagens | `POST` em `/api/v1/deploy` para cada aplicação, exige `deployment_uuid` na resposta; smoke test |
 | `main.yml` | push na `main` | encadeia os de cima |
@@ -239,20 +247,21 @@ porque o container antigo também responde 200.
 | `UUID_API` e `UUID_APP` em `main-deploy-coolify.yml` | arquivo do workflow, com o uuid de cada aplicação no Coolify | hoje valem `PREENCHER_*` e o job reprova de propósito; uuid de outro projeto redeploya o projeto errado |
 | `node ace migration:run --force` como *Post-deployment command* da API | painel do Coolify | o `Dockerfile-production` do backend não tem `ENTRYPOINT` |
 | `COOKIE_DOMAIN=.maiyu.com.br` na API | painel | sem ela o cookie nasce host-only e o SSR do app nunca o recebe: todo F5 em rota privada desloga |
-| `TRUSTED_PROXIES=loopback,uniquelocal` na API | painel | sem ele `request.ip()` é o do Traefik e todo throttle por IP vira um balde só |
+| `TRUSTED_PROXIES=loopback,uniquelocal` na API | painel | lista separada por vírgula, validada no boot; sem ele `request.ip()` é o do Traefik e todo throttle por IP vira um balde só; vazio, `true` e `*` derrubam a partida |
 | `SITE_URL` e `APP_URL` na API | painel | `SITE_URL` é a lista do CORS e da barreira de `Origin`; `APP_URL` entra no OpenAPI |
 | Healthcheck das duas aplicações em `/health-check` | painel | o painel sobrepõe o `HEALTHCHECK` dos Dockerfiles |
 | CORS do bucket para `https://curupira.maiyu.com.br`, com `PUT` e `ETag` em `ExposeHeaders` | painel do provedor do bucket | o navegador envia a foto direto ao bucket |
-| `VITE_STORAGE_URL` no build do app | variável de build | a CSP do Nitro só libera `connect-src` para a origem do bucket se ela estiver aí; hoje não está em `.env.production` (`MEMORY.md`) |
-| Seeders no primeiro deploy: bairros e dono | comando manual | `node ace db:seed` com `SEED_OWNER_PASSWORD` |
-| `node ace storages:prune` em cron do host | agendador do ambiente | não há agendador na aplicação; sem ele, uploads abandonados ficam |
+| `VITE_STORAGE_URL` no build do app | `frontend/.env.production` | a CSP do Nitro só libera `connect-src` para a origem do bucket se ela estiver aí; hoje não está (endereço do bucket de produção desconhecido) e o CI só avisa; obrigatória antes do primeiro deploy (`DECISIONS.md` #15) |
+| Bairros no primeiro deploy | comando manual | `node ace db:seed` (o seeder de bairros roda em `development` e `production`) |
+| Primeiro administrador | comando manual | `node ace users:create-owner` com `SEED_OWNER_EMAIL` e `SEED_OWNER_PASSWORD`; o seeder do dono só roda em `development` e `test` |
+| `node ace storages:prune` em cron do host, por exemplo de hora em hora | agendador do ambiente | não há agendador na aplicação; sem ele, uploads `PENDING` e fotos sem denúncia ficam no bucket |
 | Secrets do GitHub: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `COOLIFY_TOKEN` | configurações do repositório | login no Docker Hub e chamada ao Coolify |
 
 ## 10. Escala e limites conhecidos
 
 - Um processo de API; o limiter usa o banco (`rate_limits`), sem Redis. Mais réplicas funcionam, mas cada
   contagem vira escrita no Postgres.
-- O mapa público devolve todas as denúncias em `IN_REVIEW`, `FORWARDED` e `RESOLVED` numa resposta só, sem
-  paginação nem recorte de área.
+- O mapa público devolve as 500 denúncias mais recentes em `IN_REVIEW`, `FORWARDED` e `RESOLVED` numa resposta
+  só, sem paginação nem recorte de área; as mais antigas saem do mapa.
 - Os tiles públicos do OSM têm política de uso; produção pode pedir provedor próprio.
 - Cronograma sem feriado nem exceção: vira aviso publicado pela gestão (`DECISIONS.md` #5).
