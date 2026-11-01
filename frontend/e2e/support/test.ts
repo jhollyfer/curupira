@@ -76,7 +76,13 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
         const credentials = operatorCredentials()
         if (!credentials) throw new Error('E2E_OPERATOR_* is not set')
 
-        const admin = await apiClient(playwright, ownerCredentials())
+        // The owner's session is already open: signing in again would spend one more of
+        // the five attempts a minute the limiter gives the IP.
+        const admin = await playwright.request.newContext({
+          storageState: await owner(),
+          baseURL: API_URL,
+          extraHTTPHeaders: { Origin: SITE_ORIGIN },
+        })
         const created = await admin.post('/management/users', {
           data: {
             name: 'Operador E2E',
