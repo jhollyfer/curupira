@@ -14,19 +14,23 @@ const FEATURES = join(import.meta.dirname, '../../app/features')
 test.group('scripts > openapi > introspect (unit)', () => {
   test('reads from the translator the code the use-case fact produces', async ({ assert }) => {
     const found = await introspect(
-      join(FEATURES, 'administrator/sports/update/update.controller.ts'),
+      join(FEATURES, 'management/neighborhoods/update/update.controller.ts'),
     )
     const codes = found?.errors.map((error) => error.code) ?? []
 
-    assert.include(codes, 'SPORT_ROSTER_ABOVE_LIMIT')
-    assert.include(codes, 'SPORT_INVALID_LIMITS')
+    assert.include(codes, 'NEIGHBORHOOD_ALREADY_EXISTS')
+    assert.include(codes, 'NEIGHBORHOOD_CENTER_INCOMPLETE')
   })
 
-  test('follows the use case `_shared` base to the translator', async ({ assert }) => {
-    const found = await introspect(join(FEATURES, 'advisor/photos/create/create.controller.ts'))
+  test('follows the `_shared` translator of another feature the use case imports', async ({
+    assert,
+  }) => {
+    const found = await introspect(join(FEATURES, 'storefront/reports/create/create.controller.ts'))
     const errors = found?.errors ?? []
 
-    assert.isTrue(errors.some((error) => error.code === 'PHOTO_NOT_IMAGE' && error.status === 422))
+    assert.isTrue(
+      errors.some((error) => error.code === 'REPORT_PHOTO_TAKEN' && error.status === 422),
+    )
     assert.isTrue(
       errors.some((error) => error.code === 'STORAGE_NOT_FOUND' && error.status === 422),
     )
@@ -34,11 +38,11 @@ test.group('scripts > openapi > introspect (unit)', () => {
 
   test('brings the pt-BR message of the translator key', async ({ assert }) => {
     const found = await introspect(
-      join(FEATURES, 'administrator/sports/create/create.controller.ts'),
+      join(FEATURES, 'management/neighborhoods/create/create.controller.ts'),
     )
-    const conflict = found?.errors.find((error) => error.code === 'SPORT_ALREADY_EXISTS')
+    const conflict = found?.errors.find((error) => error.code === 'NEIGHBORHOOD_ALREADY_EXISTS')
 
     assert.isString(conflict?.message)
-    assert.notInclude(conflict?.message ?? '', 'sports.')
+    assert.notInclude(conflict?.message ?? '', 'neighborhoods.')
   })
 })

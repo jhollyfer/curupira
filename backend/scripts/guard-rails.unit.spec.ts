@@ -52,14 +52,14 @@ test.group('scripts > authz-check (unit)', () => {
 
   test('a route that became public fails and shows up in the report', ({ assert }) => {
     const tampered = tamperedBaseline((baseline) => {
-      baseline['GET /storefront/site'] = 'ADMINISTRATOR'
+      baseline['GET /storefront/schedules'] = 'ADMINISTRATOR'
     })
 
     try {
       const run = runScript('authz-check.ts', { AUTHZ_BASELINE: tampered.path })
 
       assert.equal(run.status, 1)
-      assert.include(run.output, 'GET /storefront/site')
+      assert.include(run.output, 'GET /storefront/schedules')
     } finally {
       tampered.cleanup()
     }
@@ -67,14 +67,14 @@ test.group('scripts > authz-check (unit)', () => {
 
   test('a new route outside the baseline fails', ({ assert }) => {
     const tampered = tamperedBaseline((baseline) => {
-      delete baseline['GET /storefront/site']
+      delete baseline['GET /storefront/schedules']
     })
 
     try {
       const run = runScript('authz-check.ts', { AUTHZ_BASELINE: tampered.path })
 
       assert.equal(run.status, 1)
-      assert.include(run.output, '+ GET /storefront/site')
+      assert.include(run.output, '+ GET /storefront/schedules')
     } finally {
       tampered.cleanup()
     }
