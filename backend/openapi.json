@@ -3389,7 +3389,7 @@
             }
           }
         },
-        "description": "Opens an upload and returns where to upload it. **Does not receive bytes** - only the metadata of the file.\n\nThe binary goes from the browser straight to the bucket, by signed URL, and never crosses this application: a large file in an HTTP body hits the proxy limit, occupies the application for the duration of the upload, and cannot be resumed when the connection drops.\n\nAccepts image/jpeg, image/png, image/webp, image/gif, application/pdf, audio/mpeg, audio/mp4, audio/ogg, audio/wav, up to 17179869184 bytes, refused **before** any signature: a forbidden file gets no URL, so it never reaches the bucket. That the declared size is true is what `POST /storages/:id/complete` checks, against the real object.\n\nThe file is sliced into parts of 10485760 bytes. When it fits in a single part, `uploadId` is null and the only URL accepts a `PUT` with the whole file. When it does not fit, each URL accepts its part, the client keeps the `ETag` each `PUT` returns, and `parts` may carry only the first batch - the rest comes from `GET /storages/:id/parts`, which is the same endpoint as the resume.\n\nThe row is born `PENDING` and cannot be attached to anything until it is confirmed. The file is born without an owner: whoever attaches keeps the reference, informing the `id` in the resource field (today, the user `avatarId`).",
+        "description": "Opens an upload and returns where to upload it. **Does not receive bytes** - only the metadata of the file.\n\nThe binary goes from the browser straight to the bucket, by signed URL, and never crosses this application: a large file in an HTTP body hits the proxy limit, occupies the application for the duration of the upload, and cannot be resumed when the connection drops.\n\nAccepts image/jpeg, image/png, image/webp, image/gif, application/pdf, audio/mpeg, audio/mp4, audio/ogg, audio/wav, up to 1073741824 bytes, refused **before** any signature: a forbidden file gets no URL, so it never reaches the bucket. That the declared size is true is what `POST /storages/:id/complete` checks, against the real object.\n\nThe file is sliced into parts of 10485760 bytes. When it fits in a single part, `uploadId` is null and the only URL accepts a `PUT` with the whole file. When it does not fit, each URL accepts its part, the client keeps the `ETag` each `PUT` returns, and `parts` may carry only the first batch - the rest comes from `GET /storages/:id/parts`, which is the same endpoint as the resume.\n\nThe row is born `PENDING` and cannot be attached to anything until it is confirmed. The file is born without an owner: whoever attaches keeps the reference, informing the `id` in the resource field (today, the user `avatarId`).",
         "security": [
           {
             "cookieAuth": []
@@ -9404,7 +9404,7 @@
           "size": {
             "type": "integer",
             "minimum": 1,
-            "maximum": 17179869184
+            "maximum": 1073741824
           }
         },
         "required": [
