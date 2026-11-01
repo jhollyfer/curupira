@@ -21,6 +21,7 @@ import {
   AuthShellContent,
   AuthShellHeader,
 } from '../../-components/auth-shell'
+import { MockAccounts } from './mock-accounts'
 
 const route = getRouteApi('/_authentication/sign-in/')
 
@@ -82,6 +83,8 @@ export function SignInForm(): React.JSX.Element {
           <AuthShellHeader title={m.auth_sign_in_title()}>
             {m.auth_sign_in_description()}
           </AuthShellHeader>
+
+          <MockAccounts form={form} />
 
           <FieldGroup>
             <AppField
