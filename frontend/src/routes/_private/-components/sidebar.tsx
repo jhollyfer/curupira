@@ -124,7 +124,12 @@ export function Sidebar(): React.JSX.Element {
       <SidebarContent>
         {menu.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            {/* Hidden outright in the icon rail: the primitive only fades it (`opacity-0`) and
+                pulls it up with `-mt-8`, which parks the invisible label over the previous
+                group's last item and swallows its clicks (Avisos, Contas). */}
+            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+              {group.label}
+            </SidebarGroupLabel>
             <SidebarMenu>
               {group.items.map((item) => (
                 <NavigationItem
