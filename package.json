@@ -1,0 +1,32 @@
+{
+  "name": "curupira",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Curupira: cronograma da coleta, denúncia ambiental com foto e mapa, e painel da gestão de Benjamin Constant/AM",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^12.0.0",
+      "onFail": "download"
+    }
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter ./shared --filter ./backend --filter ./frontend run dev",
+    "dev:backend": "pnpm --parallel --filter \"{./backend}...\" run dev",
+    "dev:frontend": "pnpm --parallel --filter \"{./frontend}...\" run dev",
+    "build": "pnpm --filter ./shared run build",
+    "check": "pnpm --filter ./shared run build && pnpm --filter ./shared --filter ./backend --filter ./frontend --fail-if-no-match run check",
+    "prepare": "husky",
+    "test:unit": "pnpm --filter ./shared run build && pnpm --filter ./shared --filter ./backend --filter ./frontend --fail-if-no-match run test:unit"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "husky": "^9.1.7"
+  }
+}

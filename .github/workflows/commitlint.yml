@@ -1,0 +1,56 @@
+name: Commitlint
+
+# Conventional Commits em pt-BR, cobrado também fora do hook local: quem usa
+# `--no-verify` passa direto pelo `commit-msg` (_standards/tooling.md §6, §7).
+# Workflow próprio para uma mensagem inválida não esperar nem bloquear a suíte.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # O histórico inteiro: sem ele o `--from` do PR não resolve.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup pnpm e Node
+        uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
+        with:
+          runtime: node@24
+          cache: true
+          install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # A versão da devDependency, lendo o `.commitlintrc.json` do repositório.
+      - name: Commits do PR
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+
+      - name: Título e branch do PR
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BRANCH: ${{ github.head_ref }}
+        run: |
+          printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
+          printf '%s\n' "$PR_BRANCH" | grep -qE '^(feat|fix|refactor|docs|test|chore|ci|build|perf|style|revert)/[a-z0-9][a-z0-9-]*$' \
+            || { echo "branch fora do padrão <tipo>/<escopo>-<assunto>: $PR_BRANCH" >&2; exit 1; }
+          if printf '%s\n%s\n' "$PR_TITLE" "$PR_BRANCH" | grep -qiE 'claude|anthropic|codex|cursor'; then
+            echo "nome de agente no título ou na branch do PR" >&2
+            exit 1
+          fi

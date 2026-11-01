@@ -1,0 +1,19 @@
+# Um para as duas imagens, com a lista da página do pnpm (_doc-lib/pnpm.md#docker)
+# e _standards/tooling.md §8.2. `dist` fica de fora para a imagem compilar o
+# `shared/` do código, e não levar um `dist/` velho de quem rodou o build na
+# máquina.
+**/node_modules
+.git
+.gitignore
+*.md
+**/dist
+**/build
+**/.output
+**/coverage
+**/.env*
+
+# O que as imagens precisam e a lista acima esconderia: o `.env.example` e o
+# `.output` do frontend, que o `Dockerfile-production` dele copia do artifact do
+# build (o job `docker-frontend` baixa o artifact para `frontend/.output`).
+!backend/.env.example
+!frontend/.output
