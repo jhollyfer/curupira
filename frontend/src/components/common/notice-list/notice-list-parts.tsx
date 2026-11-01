@@ -9,11 +9,18 @@ import { useNoticeListContext } from './notice-list-context'
 type NoticeListItemsProps = Readonly<{
   /** Shows only the first N; absent shows all. */
   limit?: number
+  /**
+   * The heading level of each notice: `h3` under a section's `h2` (the home), `h2` right
+   * under the page's `h1` (the notices page). A skipped level breaks the outline that
+   * screen reader users navigate by.
+   */
+  as?: 'h2' | 'h3'
 }>
 
 /** The notices as a list of cards. Renders nothing when there is nothing to show. */
 export function NoticeListItems({
   limit,
+  as: Heading = 'h3',
 }: NoticeListItemsProps): React.JSX.Element | null {
   const { notices } = useNoticeListContext('NoticeListItems')
   const shown = notices.slice(0, limit)
@@ -34,9 +41,9 @@ export function NoticeListItems({
             <MegaphoneIcon className="size-6" weight="fill" />
           </span>
           <div className="flex min-w-0 flex-col gap-1">
-            <h3 className="text-lg leading-snug font-bold text-balance">
+            <Heading className="text-lg leading-snug font-bold text-balance">
               {notice.title}
-            </h3>
+            </Heading>
             <p className="text-base text-pretty text-muted-foreground">
               {notice.body}
             </p>

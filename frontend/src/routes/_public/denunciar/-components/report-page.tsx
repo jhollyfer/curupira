@@ -20,6 +20,7 @@ import {
 import { SubmitButton } from '#/components/common/submit-button'
 import { FieldError } from '#/components/ui/field'
 import { useReportSubmit } from '#/hooks/use-report-submit'
+import { useUnsavedChangesBlocker } from '#/hooks/use-unsaved-changes-blocker'
 import { errorDescribedBy, errorId } from '#/lib/form-a11y'
 import { toCoordinate } from '#/lib/geo'
 import type { ReportDraft } from '#/lib/report-queue'
@@ -76,13 +77,18 @@ export function ReportPage(): React.JSX.Element {
     },
   })
 
+  // A report half-typed is lost if the resident leaves by accident (a tab swipe, the back
+  // button): ask first, but never after it was sent or saved.
+  useUnsavedChangesBlocker(form.formState.isDirty && !outcome)
+
   const kind = useWatch({ control: form.control, name: 'kind' })
   const photos = useWatch({ control: form.control, name: 'photos' })
   const latitude = useWatch({ control: form.control, name: 'latitude' })
   const longitude = useWatch({ control: form.control, name: 'longitude' })
 
+  const hasKind = Boolean(kind)
   const canContinue = [
-    Boolean(kind),
+    hasKind,
     photos.length > 0 && toCoordinate(latitude, longitude) !== undefined,
     true,
   ]
@@ -94,6 +100,16 @@ export function ReportPage(): React.JSX.Element {
       // to the first step that has an error, or the tap on "Enviar" would do nothing.
       (errors) => setStep(firstStepWithError(errors)),
     )(event)
+  }
+
+  /** What stops "Continuar" on each step, in words: a disabled button must say why. */
+  function missingText(): string | undefined {
+    if (step === 0 && !hasKind) return m.report_missing_kind()
+    if (step === 1 && photos.length === 0) return m.report_missing_photo()
+    if (step === 1 && toCoordinate(latitude, longitude) === undefined)
+      return m.report_missing_location()
+
+    return undefined
   }
 
   if (outcome) {
@@ -170,6 +186,14 @@ export function ReportPage(): React.JSX.Element {
           <StepWizardPanel step={2} title={m.report_send_title()}>
             <SendStep form={form} />
           </StepWizardPanel>
+
+          {/* A disabled button that does not say why is a dead end: name what is missing. */}
+          <p
+            role="status"
+            className="text-base font-semibold text-muted-foreground"
+          >
+            {missingText()}
+          </p>
 
           <StepWizardActions>
             <StepWizardBack />

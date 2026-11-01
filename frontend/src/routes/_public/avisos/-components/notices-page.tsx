@@ -21,7 +21,7 @@ export function NoticesPage(): React.JSX.Element {
         <p className="text-lg text-muted-foreground">{m.notices_intro()}</p>
       </header>
       <NoticeList notices={notices}>
-        <NoticeListItems />
+        <NoticeListItems as="h2" />
         <NoticeListEmpty />
       </NoticeList>
     </div>

@@ -45,15 +45,12 @@ export function LocaleSwitch(): React.JSX.Element {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button
-            data-slot="locale-switch"
-            variant="outline"
-            size="touch"
-            aria-label={m.locale_switch_label()}
-          />
+          <Button data-slot="locale-switch" variant="outline" size="touch" />
         }
       >
         <TranslateIcon aria-hidden="true" />
+        {/* The accessible name must contain the visible text (WCAG 2.5.3): "Idioma PT". */}
+        <span className="sr-only">{m.locale_switch_label()} </span>
         {SHORT_NAMES[locale]}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-48">
