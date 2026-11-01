@@ -8,11 +8,11 @@ import { type SchemaRules } from '@adonisjs/lucid/types/schema_generator'
  * is to serialize every column, and `database/schema.ts` is generated — declaring
  * `serializeAs: null` on the model does not survive the next generation. Here it survives.
  *
- * The cut is narrow on purpose: what is **equivalent to a credential** goes in,
- * not every sensitive datum. `cpf`, `email` and `phone` are shown by the authenticated
- * screens by design, and the storefront already filters them in
- * `storefront-shape.service.ts` — hiding them here would break the panel screen
- * without closing any hole.
+ * The cut is narrow on purpose: what is **equivalent to a credential** goes in, plus the
+ * one datum that must never leave by accident, the reporter's `contact`. The panel reads
+ * the contact through an explicit repository field list (`ReportRepository.detail`) and
+ * the public reads select their own columns, so hiding it from model serialization costs
+ * nothing and closes the day someone serializes a `Report` model on a public route.
  */
 export default {
   tables: {

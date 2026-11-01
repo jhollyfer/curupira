@@ -26,8 +26,8 @@ import type { FeatureResponse } from '#core/openapi/types'
  * schema lives in `shared/src/responses/`, the same one the presenter types and the
  * frontend reads, and `core/` does not import `models/`.
  *
- * The key is the resource directory in `app/features` (`administrator/sports`),
- * and holds for all its actions; the key with the action (`administrator/brackets/show`)
+ * The key is the resource directory in `app/features` (`management/neighborhoods`),
+ * and holds for all its actions; the key with the action (`management/reports/show`)
  * wins when the action returns another shape. A listing gets the pagination
  * envelope on its own.
  */

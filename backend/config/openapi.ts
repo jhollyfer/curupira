@@ -43,7 +43,7 @@ export type TagRule = {
   description: string
   /**
    * The resource noun, used to build each operation's summary:
-   * `create` + `sport` -> "Create sport". Writing the pair once per group covers its
+   * `create` + `report` -> "Create report". Writing the pair once per group covers its
    * seven operations, instead of one summary per controller.
    */
   singular?: string
