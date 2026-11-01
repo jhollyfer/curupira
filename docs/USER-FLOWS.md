@@ -15,9 +15,9 @@
 | [Acompanhar denúncia](#acompanhar-denuncia) | morador | `/acompanhar` | linha do tempo do status |
 | [Mapa público](#mapa-publico) | morador | `/mapa` | ocorrências em andamento e resolvidas |
 | [Entrar no painel](#entrar-no-painel) | gestão | `/sign-in` | painel aberto em `/gestao` |
-| [Tratar ocorrência](#tratar-ocorrencia) | operador, administrador | `/gestao/ocorrencias` | status novo e resposta registrada |
-| [Manter cronograma](#manter-cronograma) | administrador | `/gestao/cronograma` | dias e turnos atualizados |
-| [Publicar aviso](#publicar-aviso) | operador, administrador | `/gestao/avisos` | aviso na home do morador |
+| [Tratar ocorrência](#tratar-ocorrencia) | operador, administrador | `/gestao/reports` | status novo e resposta registrada |
+| [Manter cronograma](#manter-cronograma) | administrador | `/gestao/schedules` | dias e turnos atualizados |
+| [Publicar aviso](#publicar-aviso) | operador, administrador | `/gestao/notices` | aviso na home do morador |
 
 ---
 
@@ -37,7 +37,7 @@
 
 | Situação | Resposta |
 |---|---|
-| Sem sinal | mostra o cronograma guardado do último acesso, com aviso "Dados do último acesso" |
+| Sem sinal | mostra o cronograma guardado no último acesso e a faixa "Sem conexão. O cronograma continua disponível e a denúncia fica salva no aparelho." |
 | Bairro sem cronograma | mensagem "Ainda não temos o cronograma deste bairro" e link para a prefeitura |
 | Troca de bairro | botão "Trocar bairro" volta ao passo 1 |
 
@@ -45,7 +45,7 @@
 
 ## Cronograma do mês
 
-**Entrada:** "Ver calendário" na home
+**Entrada:** "Ver calendário" na home (ou "Coleta" no menu)
 **Ação:** consultar o mês, trocar de bairro, exportar
 **Sucesso:** calendário com as cores fixas por tipo; arquivo `.ics` baixado
 
@@ -79,9 +79,11 @@
 |---|---|
 | Sem sinal ao enviar | guarda foto e dados no aparelho, avisa "Salva no aparelho. Será enviada quando voltar a conexão" e mostra "Pendente de envio" |
 | Volta o sinal | envia sozinha e mostra o protocolo |
-| GPS negado ou sem sinal de satélite | o pin fica no centro do bairro e o morador o arrasta |
+| GPS negado, sem sinal de satélite ou fora do município | explica o motivo, mostra o mapa do município e o morador toca ou arrasta o pin; o pin não sai da área do município |
 | Foto grande ou formato inválido | mensagem no campo dizendo o que fazer |
 | Muitas tentativas (429) | pede para aguardar alguns minutos |
+| Servidor fora do ar (5xx) | trata como falta de sinal: guarda no aparelho e reenvia depois |
+| Dado recusado pelo servidor (4xx) na fila | o item é descartado, porque repetir não resolve |
 
 ---
 
@@ -93,7 +95,7 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | digita o protocolo | aceita maiúscula, minúscula, espaço e `O`/`0` trocados | `/acompanhar` |
+| 1 | digita o protocolo (ou toca em um dos enviados deste aparelho) | aceita maiúscula, minúscula, espaço, hífen ausente e `O`/`0`, `I`/`L`/`1` trocados | `/acompanhar` |
 | 2 | toca em "Consultar" | mostra o status e a resposta da gestão em cada etapa | `/acompanhar` |
 
 **Caminhos alternativos**
@@ -132,7 +134,8 @@
 |---|---|
 | Credencial errada | mensagem única, sem dizer qual campo errou |
 | Muitas tentativas (429) | bloqueio temporário com aviso |
-| Operador abre área de administrador (403) | volta à visão geral com aviso |
+| Operador abre área de administrador | volta à visão geral (`/gestao`); a API responde 403 se a rota for chamada direto |
+| Sessão expirada | tenta renovar com o refresh token; se falhar, volta a `/sign-in?redirect=` com a rota de origem |
 
 ---
 
@@ -143,7 +146,7 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | filtra por tipo, bairro, status e período | atualiza o mapa e a tabela com o mesmo recorte | `/gestao/ocorrencias` |
+| 1 | filtra por tipo, bairro, status e período | atualiza o mapa e a tabela com o mesmo recorte | `/gestao/reports` |
 | 2 | clica no pin ou na linha | abre o detalhe com foto, local, descrição e histórico | detalhe |
 | 3 | muda o status e escreve a resposta | grava o evento com o autor; o status só avança | detalhe |
 
@@ -155,8 +158,8 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | escolhe o bairro | lista os dias, turnos e tipos | `/gestao/cronograma` |
-| 2 | adiciona ou edita um dia | grava; repetir tipo, dia e turno no mesmo bairro dá 409 | formulário |
+| 1 | escolhe o bairro | lista os dias, turnos e tipos | `/gestao/schedules` |
+| 2 | adiciona ou edita um dia em diálogo, na grade semanal (tipo x dia) | grava; repetir tipo, dia e turno no mesmo bairro dá 409 no campo do dia | diálogo |
 
 ---
 
@@ -166,8 +169,8 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | cria o aviso com título, texto e início | agenda ou publica | `/gestao/avisos` |
-| 2 | define o fim ou toca em "Encerrar" | o aviso sai da home | `/gestao/avisos` |
+| 1 | cria o aviso com título, texto e início | agenda (início futuro) ou publica | `/gestao/notices` |
+| 2 | define o fim ou toca em "Encerrar" | o aviso sai da home | `/gestao/notices` |
 
 ---
 

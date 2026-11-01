@@ -1,6 +1,6 @@
 # Plano de testes
 
-**<Projeto>** · o que se testa, em que nível, com que critério
+**Curupira** · o que se testa, em que nível, com que critério
 
 > Onde cada teste mora e o que cada camada leva: `_standards/architecture.md` §8; como se escreve:
 > `_standards/domain.md` §10 e `_standards/backend.md` §7. Aqui fica só o que é deste projeto: os
@@ -8,13 +8,30 @@
 
 ## 1. Níveis
 
-| Nível | Ferramenta | Onde | Roda em |
-|---|---|---|---|
-| Unitário do backend | <Japa, suíte `unit` \| Vitest, config `unit`> | `app/**/<x>.unit.spec.ts` | todo push |
-| E2E do backend | <Japa, suíte `functional` \| Vitest, config `e2e`> | `app/**/<x>.e2e.spec.ts`, banco real em container | todo push (CI) |
-| `shared/` | Vitest | `shared/src/**/<x>.test.ts` | todo push |
-| Unitário do frontend | Vitest + Testing Library | `src/**/<x>.test.ts(x)` | todo push |
-| E2E do frontend | Playwright | `e2e/<fluxo>.spec.ts`, contra o backend real | <todo push \| PR para a principal> |
+| Nível | Ferramenta | Onde | Roda em | Tamanho hoje |
+|---|---|---|---|---|
+| Unitário do backend | Japa, suíte `unit` (sem banco nem HTTP) | `backend/app/**/*.unit.spec.ts` e `scripts/`, `commands/`, `tests/`, `start/` | hook de commit, PR e `main` | 71 arquivos |
+| E2E do backend | Japa, suíte `functional` (app inteiro, Postgres e MinIO reais) | `backend/app/**/*.e2e.spec.ts` | PR e `main`, em 3 shards | 67 arquivos |
+| `shared/` | Vitest | `shared/src/**/*.test.ts` | hook de commit, PR e `main` | 5 arquivos, 21 testes |
+| Unitário do frontend | Vitest + Testing Library | `frontend/src/**/*.test.ts(x)` e `frontend/scripts/*.test.ts` | hook de commit, PR e `main` | 47 arquivos |
+| E2E do frontend | Playwright (axe-core em cada tela) | `frontend/e2e/report-flow.spec.ts` (projeto `mobile`, Pixel 7) e `management-flow.spec.ts` (projeto `desktop`, 1440 x 900) | job `e2e` de `main-check-frontend.yml` | 2 specs, 6 testes |
+
+Redes que cobram o que ninguém lembra:
+
+| Rede | O que reprova | Onde |
+|---|---|---|
+| `pattern:check` | desvio de padrão do backend (arquitetura, nomes, env sem leitor) | `backend/scripts/pattern-check.ts` |
+| `authz:check` | qualquer mudança na cadeia de autorização de uma rota (`auth`, `role`, papéis) contra a linha de base versionada | `backend/scripts/authz-check.ts`, `backend/app/core/openapi/authz-baseline.json` |
+| `openapi:check` | documento fora de dia com as rotas, operação sem resposta, id duplicado | `backend/app/core/openapi/openapi.e2e.spec.ts`, `public-routes.unit.spec.ts` |
+| `depcruise` | camada que importa a que não devia, ciclo | `backend/scripts/depcruise.config.ts` |
+| `di:check` | serviço ou policy que o container não consegue construir | `backend/commands/di-check.command.ts` |
+| mensagens de validação | texto em inglês que escapou, campo sem rótulo ou sem teto | `backend/app/core/validator.unit.spec.ts`, `validator-messages.e2e.spec.ts`, `frontend/src/lib/messages.test.ts` |
+| vazamento de resposta | credencial em qualquer nível, contato em rota pública | `backend/app/core/response-leak.e2e.spec.ts` |
+| redação de log | senha e token no log | `backend/app/core/log-redaction.unit.spec.ts` |
+| `i18n:check` | chave faltando em algum idioma | `frontend` (`inlang check`) |
+| ciclo de chunk | ciclo que quebra o SSR | `frontend/scripts/check-chunk-cycles.mjs` |
+| `routeTree.gen.ts` em dia | rota nova sem o arquivo gerado commitado | `main-check-frontend.yml` |
+| banco de teste | rodar a suíte em banco sem o sufixo `_test` | `backend/tests/database-guard.ts` |
 
 ## 2. Fluxos críticos
 
@@ -22,62 +39,112 @@ Cada fluxo de `USER-FLOWS.md` marcado aqui tem spec E2E de ponta a ponta.
 
 | Fluxo | Caminho feliz | Caminhos de erro | Teste |
 |---|---|---|---|
-| <Cadastro> | <conta criada> | <e-mail repetido, senha curta> | `e2e/sign-up.spec.ts` |
+| Nova denúncia | tipo, foto, ponto, envio e protocolo na tela | foto de formato inválido, sem sinal (fila) | `frontend/e2e/report-flow.spec.ts: sends a report and follows it by the protocol`, `saves the report on the device when offline` |
+| Acompanhar | protocolo de exemplo mostra a linha do tempo | protocolo inexistente | `report-flow.spec.ts: tracks an example protocol`, `says so when the protocol does not exist` |
+| Tratar ocorrência | entrar, abrir ocorrência recebida, avançar o status | não volta o status | `frontend/e2e/management-flow.spec.ts: signs in, handles an untreated report and cannot move it back` |
+| Manter cronograma | administrador abre a grade por bairro | operador não abre a área (quando `E2E_OPERATOR_*` existe) | `management-flow.spec.ts: an administrator reaches the schedule, grouped by neighborhood` |
+| Próxima coleta, calendário, mapa público, avisos, bairros, contas | | | sem E2E de navegador; cobertos por unitário de `lib/` e dos componentes (`schedule.test.ts`, `ics.test.ts`, `waste-calendar.test.tsx`, `report-map.test.tsx`) e pelo E2E da API (`storefront/*`, `management/*`) |
+
+O E2E do frontend roda hoje com `VITE_DATA_SOURCE=mock` (padrão de `playwright.config.ts`) e dados de exemplo.
+A prova contra a API real é a tarefa 3.6 de `TASKS.md`; sem ela, a entrada, a foto presignada e o protocolo
+não foram exercitados do navegador à API. O job do CI sobe API, Postgres e MinIO, mas passa
+`E2E_ADMIN_*` e `E2E_API_URL` enquanto os specs leem `E2E_OWNER_*` e `E2E_DATA_SOURCE`: alinhar na 3.6.
 
 ## 3. Matriz requisito × teste
 
-Cada critério de aceite (EARS, com o id do requisito) aponta o teste que o prova; o título do
-teste começa pelo mesmo id.
+Os requisitos ainda não têm id EARS próprio; a linha usa o número da funcionalidade de `PRD.md` §4.
 
 | Requisito | Critério | Nível | Teste |
 |---|---|---|---|
-| <POST-03> | <IF o post já está arquivado THEN o sistema SHALL responder 409 com code POST_ALREADY_ARCHIVED> | E2E | `<archive.e2e.spec.ts>` |
+| PRD 3 | denúncia anônima devolve só o protocolo e não guarda contato | E2E backend | `storefront/reports/create/create.e2e.spec.ts: files an anonymous report and answers only the protocol` |
+| PRD 3 | com contato a denúncia deixa de ser anônima e o contato é guardado | E2E backend | `create.e2e.spec.ts: with a contact the report is not anonymous...` |
+| PRD 3 | o bairro é o centro mais próximo | E2E, unitário | `create.e2e.spec.ts: resolves the neighborhood by the nearest center`, `domain/neighborhood/nearest-neighborhood.unit.spec.ts` |
+| PRD 3 | 1 a 3 fotos, tipo e coordenada válidos | E2E backend, shared | `create.e2e.spec.ts: requires 1 to 3 photos...`, `shared/src/validators/storefront/reports.test.ts` |
+| PRD 3 | uma foto serve a uma denúncia, e `PENDING` não anexa | E2E backend | `create.e2e.spec.ts` (dois testes) |
+| PRD 3 | EXIF removido do objeto guardado | E2E backend | `storefront/report-photos/complete/complete.e2e.spec.ts: strips the EXIF/GPS...` |
+| PRD 3 | conteúdo que não é a imagem declarada é recusado e descartado | E2E backend | `complete.e2e.spec.ts` (bytes que só começam como JPEG, PNG enviado como JPEG) |
+| PRD 3 | fila offline envia por ordem e descarta 4xx | Unitário frontend | `frontend/src/lib/report-queue.test.ts` |
+| PRD 4 | consulta aceita maiúscula, espaço e letras parecidas | E2E, unitário | `show-by-protocol.e2e.spec.ts: forgives case...`, `shared/src/value-objects/protocol.test.ts` |
+| PRD 4 | consulta pública mostra só campos públicos | E2E backend | `show-by-protocol.e2e.spec.ts: shows only the public fields...` |
+| PRD 5 | mapa público só tem o que a equipe já abriu, sem hora, texto nem contato | E2E backend | `storefront/reports/map/map.e2e.spec.ts` |
+| PRD 7 | status só avança | Unitário, E2E | `domain/report/report.entity.unit.spec.ts`, `management/reports/update-status/*.spec.ts`, `frontend/src/lib/report-status.test.ts` |
+| PRD 8 | slot repetido do cronograma responde 409 | E2E backend | `management/schedules/create/create.e2e.spec.ts`, `domain/collection-schedule/*.unit.spec.ts` |
+| PRD 10 | papel e capacidade | E2E, unitário | `middleware/role.middleware.e2e.spec.ts`, `policies/user.policy.*.spec.ts`, `frontend/src/lib/capabilities.test.ts` |
+| Segurança | CSRF por `Origin` e CORS | Unitário, E2E | `middleware/origin.middleware.unit.spec.ts`, `middleware/cors.middleware.e2e.spec.ts` |
+| Segurança | sessão por cookie | E2E | `guards/cookie-access-tokens.guard.e2e.spec.ts`, `authentication/sessions/*/*.e2e.spec.ts` |
 
 ### 3.1 Join de cobertura
 
-Todo conjunto enumerado (status de uma rota, valores de um enum, transições de estado) vira uma
-linha com **cada membro escrito como token** ao lado do teste que o prova. "Trata pausado,
-cancelado e expirado" numa frase não conta: membro sem teste aparece como lacuna.
-
 | Conjunto | Membro | Teste |
 |---|---|---|
-| <`POST /posts/:id/archive`> | 200 | `<archive.e2e.spec.ts: archives a published post>` |
-| | 401 | <…> |
-| | 403 | <…> |
-| | 404 | <…> |
-| | 409 | <…> |
-| | 422 | <…> |
-| <`PostStatus`> | `DRAFT` | <…> |
-| | `PUBLISHED` | <…> |
-| | `ARCHIVED` | <…> |
+| `POST /storefront/reports` | 201 | `create.e2e.spec.ts: files an anonymous report...` |
+| | 422 | `create.e2e.spec.ts: requires 1 to 3 photos...`, foto `PENDING`, foto repetida |
+| | 429 | `create.e2e.spec.ts: throttles the filing per IP: the 11th within the hour is 429` |
+| `GET /storefront/reports/:protocol` | 200 | `show-by-protocol.e2e.spec.ts: shows only the public fields...` |
+| | 404 | `show-by-protocol.e2e.spec.ts: an unknown and a malformed protocol answer the same 404` |
+| | 429 | `show-by-protocol.e2e.spec.ts: throttles the lookups per IP...` |
+| `ReportStatus` | `RECEIVED` | `report.entity.unit.spec.ts` (estado inicial) |
+| | `IN_REVIEW`, `FORWARDED`, `RESOLVED` | `update-status` (unitário e E2E), `map.e2e.spec.ts` (os três são públicos) |
+| `ReportKind` | `BURNING`, `DUMPING`, `DEFORESTATION`, `OTHER` | `shared/src/validators/storefront/reports.test.ts`, `report-kind-picker.test.tsx` |
+| `UserRole` | `ADMINISTRATOR` | `role.middleware.e2e.spec.ts`, todas as specs de `management/schedules`, `neighborhoods`, `users` |
+| | `OPERATOR` | `role.middleware.e2e.spec.ts` (403 nas rotas de administrador) |
+| `NoticeStatus` | `SCHEDULED`, `ACTIVE`, `CLOSED` | `domain/notice/notice.entity.unit.spec.ts`, `management/notices/paginate`, `close` |
+| `WasteType`, `CollectionShift` | todos os membros | `collection-schedule.entity.unit.spec.ts`, `frontend/src/lib/schedule.test.ts`, `schedule-grid.test.ts` |
 
-Rota nova entra aqui com os status dela; valor novo de enum, com a linha dele.
+Rota nova entra aqui com os status dela; valor novo de enum, com a linha dele. As specs de cada ação
+(`app/features/**/<ação>.e2e.spec.ts` e `.unit.spec.ts`) cobrem os demais status das rotas da gestão.
 
 ## 4. Toda rota de API cobre
 
 - [ ] Sucesso com o status certo.
-- [ ] Entrada inválida → 422 com o campo.
-- [ ] Sem login → 401; papel sem acesso → 403.
-- [ ] Recurso de outro dono → 404, igual ao inexistente, e nada muda.
-- [ ] Conflito ou estado inválido → `left(HTTPException)` com o status e o `code` certos.
-- [ ] Depois de todo 4xx de escrita: a asserção de que **nada foi gravado**.
+- [ ] Entrada inválida: 422 com o campo.
+- [ ] Sem login: 401; papel sem acesso: 403.
+- [ ] Recurso inexistente: 404 com `code` do recurso.
+- [ ] Conflito ou estado inválido: `left(HTTPException)` com o status e o `code` certos.
+- [ ] Depois de todo 4xx de escrita: a asserção de que nada foi gravado.
+- [ ] Rota pública de escrita ou de consulta: o 429 do throttle.
 
 ## 5. Dados de teste
 
-- Banco: <container local via `.env.test`>; limpo entre testes por <transação global | truncate>.
-- Factories em `database/factories/`, com o papel mínimo que o teste precisa.
-- E2E do frontend cria o próprio dado (prefixo + id único) pela API e limpa no fim; nenhum teste
-  depende de ordem.
+- Banco: `curupira_test` na porta 5436 (`backend/.env.test`), com migrações e seed por teste; o runner
+  recusa banco sem o sufixo `_test`. Postgres e MinIO sobem com `docker compose up -d` em `backend/`.
+- Bucket: `curupira-test` no MinIO do compose, com o mesmo código de produção (multipart pré-assinado).
+  Os repositórios têm versões em memória (`*.memory.repository.ts`) e os serviços têm fakes
+  (`*.fake.ts`), usados no unitário.
+- Factories em `backend/database/factories/` e fixtures em `backend/tests/`.
+- Frontend: Vitest com Testing Library; o E2E usa os dados de `frontend/src/data/` no modo `mock` e, no modo
+  `api`, o dono semeado (`E2E_OWNER_*`) e a demonstração de `pnpm db:seed:demo`.
 
 ## 6. Critério de pronto
 
-A definição de pronto da casa (prova no `HEAD`, quatro estados por portão, atalho de teste
-proibido) vale aqui sem cópia: `_standards/tooling.md` §10.1. Deste projeto:
+A definição de pronto da casa (prova no `HEAD`, quatro estados por portão, atalho de teste proibido) vale
+aqui sem cópia: `_standards/tooling.md` §10.1. Deste projeto:
 
+- `pnpm check` na raiz (shared, backend e frontend) e `pnpm test:unit` verdes.
 - Teste novo falha antes da correção e passa depois.
-- Cobertura: o join do §3.1 sem lacuna. Percentual mínimo: <não exigido | N% nas features>.
+- Mudança em rota regrava `openapi.json` e a linha de base do `authz:check` no mesmo commit.
+- Cobertura: o join do §3.1 sem lacuna. Percentual mínimo: não exigido.
+- O E2E do navegador roda só na fase final (`TASKS.md` 5.1).
 
-## 7. Teste manual antes do release
+## 7. O que não roda sem infraestrutura
 
-- [ ] <fluxo> no celular.
-- [ ] <fluxo> com rede lenta.
+- A suíte `functional` precisa de Postgres e MinIO reais. O comando completo
+  (`pnpm test:e2e` no `backend/`) não foi rodado contra o MinIO do compose nesta etapa; o caminho do bucket
+  foi exercitado só contra um S3 emulado (moto). Rodar no CI ou local com `docker compose up -d` antes
+  de dar a fase 2 por provada.
+- `pnpm di:check` exige banco.
+- O Playwright precisa do Chromium (`pnpm exec playwright install chromium` ou `E2E_CHROMIUM_PATH`).
+- A prova API real do frontend (`VITE_DATA_SOURCE=api`) depende da API no ar com `SITE_URL` igual à origem
+  do app.
+
+## 8. Teste manual antes do release
+
+- [ ] Denúncia com foto no celular, com o GPS ligado e negado.
+- [ ] Denúncia em modo avião e reenvio ao voltar a conexão; conferir o protocolo na tela.
+- [ ] Cronograma e `.ics` abertos no calendário do celular.
+- [ ] Todos os fluxos com rede lenta (3G simulado) e com o idioma em espanhol e inglês.
+- [ ] Leitor de tela e navegação por teclado nas telas do morador e do painel.
+- [ ] Contraste nos temas claro e escuro.
+- [ ] Foto enviada: baixar o objeto do bucket e conferir que não traz EXIF.
+- [ ] Entrar como operador e confirmar que cronograma, bairros e contas não abrem.
+- [ ] `/privacidade` e `/termos` revisados pela prefeitura e pela procuradoria.

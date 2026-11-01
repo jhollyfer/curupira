@@ -74,3 +74,6 @@ Muitos moradores não sabem em que dia a coleta passa no seu bairro, e o lixo va
 - [ ] Bairros e cronograma reais de Benjamin Constant: o seed é de exemplo, a prefeitura confere antes de abrir.
 - [ ] Qual órgão recebe o encaminhamento de cada tipo (queimada, desmatamento, lixo)? Define o texto de "Encaminhada".
 - [ ] A prefeitura envia retorno por telefone ou por e-mail ao denunciante que deixou contato?
+- [ ] Por quanto tempo a prefeitura guarda denúncia, foto e contato, e quem apaga? Hoje não há exclusão automática.
+- [ ] Quem recebe os avisos de segurança (contato e prazo de resposta de `SECURITY.md` §1)?
+- [ ] Os textos de `/privacidade` e `/termos` são rascunho: a prefeitura e a procuradoria revisam antes da abertura.

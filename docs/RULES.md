@@ -1,8 +1,8 @@
 # Regras de desenvolvimento
 
-**<Projeto>** · valem para quem escreve código aqui, pessoa ou agente
+**Curupira** · valem para quem escreve código aqui, pessoa ou agente
 
-> As regras da casa (TypeScript sem `any`/`as`/`!`, SOLID, `Either`, VineJS, commits) estão em
+> As regras da casa (TypeScript sem `any`/`as`/`!`, SOLID, `Either`, validators, commits) estão em
 > `_standards/` e valem integralmente. Este arquivo só **acrescenta** o que é deste projeto.
 > Regra que serviria para qualquer projeto vai para `_standards/`, não aqui.
 
@@ -12,6 +12,7 @@
 - Mudança pequena, um assunto por commit; todo ajuste vem com teste.
 - Procurar o que já existe antes de criar (`_standards/architecture.md` §1, item 10).
 - Ler `docs/DECISIONS.md` antes de uma escolha difícil de desfazer.
+- Denúncia, protocolo, foto ou mapa: ler `docs/SECURITY.md` §2 antes de tocar.
 
 ## 2. O agente não mexe sem perguntar
 
@@ -20,14 +21,49 @@
 - Teste que está falhando: investiga, não apaga nem pula.
 - `docs/PRD.md` (escopo).
 - Variável de ambiente de produção, segredo, configuração de deploy.
-- <regra específica do projeto — ex.: tabela `payments`, integração com o gateway>
+- Os uuids `UUID_API` e `UUID_APP` e qualquer outro valor de `.github/workflows/main-deploy-coolify.yml`; os
+  workflows em geral (`.github/workflows/`) e o `dependabot.yml`.
+- Contratos de `shared/` (enums, validators, responses): são o contrato dos dois apps e do `openapi.json`;
+  mudar um enum ou campo mexe nos três pacotes, na documentação e nos dados em produção.
+- As regras de anonimato: denúncia sem `contact` não guarda nada sobre quem enviou; `contact` nunca sai em
+  rota pública; as respostas públicas (`showByProtocol`, `publicMap`) mantêm a lista fechada de colunas; o
+  mapa público mostra o dia, nunca a hora.
+- O tratamento da foto: remoção de EXIF no `photo-sanitizer`, conferência de assinatura em `storage.entity.ts`,
+  tipos aceitos (`REPORT_PHOTO_MIMETYPES`), teto `REPORT_PHOTO_MAX_SIZE`; a coordenada é a do pin, nunca a do EXIF.
+- O protocolo: alfabeto, comprimento, gerador `crypto.randomInt`, formato `CUR-XXXX-XXXX` e a normalização.
+- Os throttles de `backend/start/limiter.ts` (limites, janelas, `blockFor`), `TRUSTED_PROXIES`,
+  `COOKIE_DOMAIN`, o middleware de `Origin`, o CORS e a cadeia `auth()`/`role()` das rotas. Rota que muda de
+  papel regrava a linha de base do `authz:check` e pede aprovação.
+- A CSP e os cabeçalhos de segurança em `frontend/vite.config.ts`.
+- A guarda de `import.meta.env.DEV` que limita as contas de exemplo do modo `mock`.
+- Os seeds de bairros (`backend/database/seeders/neighborhood.seed.ts`) e o cronograma de exemplo
+  (`dev/demo.ts`): são de exemplo, a prefeitura confere; não trocar por dados "reais" sem fonte.
+- Os textos de `/privacidade`, `/termos` e `/sobre` (rascunho a revisar pela prefeitura e pela procuradoria).
+- A cor fixa de cada tipo de coleta (`--waste-*`) e o uso exclusivo de laranja e vermelho.
+- Os arquivos gerados e commitados: `backend/openapi.json`, `backend/database/schema.ts`,
+  `frontend/src/routeTree.gen.ts`; regeram-se pelo comando, não à mão.
+- `frontend/src/components/ui/`: território do shadcn, não se edita à mão (variantes próprias levam `// casa:`).
 
 ## 3. Regras deste projeto
 
 | Tema | Regra | Por quê |
 |---|---|---|
-| <ex.: Dinheiro> | <valor em centavos (`number` inteiro), nunca float> | <arredondamento> |
-| <ex.: Fuso> | <`America/Sao_Paulo` só na exibição; banco em UTC> | <horário de verão e servidor em outro fuso> |
+| Anonimato | a denúncia é anônima por padrão; `contact` é opcional e só o painel o lê | quem denuncia se expõe; o medo derruba a denúncia (`DECISIONS.md` #1) |
+| Resposta pública | só tipo, situação, data e mensagens da gestão (consulta); id, tipo, situação, ponto e dia (mapa) | evitar que um campo novo vaze por esquecimento |
+| Foto | 1 a 3 por denúncia, `jpeg`, `png` ou `webp`, sem EXIF, redimensionada no navegador e reencodada no servidor | privacidade e rede lenta |
+| Situação | só avança: `RECEIVED`, `IN_REVIEW`, `FORWARDED`, `RESOLVED`; cada mudança grava um evento com autor e mensagem | histórico confiável para o morador |
+| Mapa público | só `IN_REVIEW`, `FORWARDED` e `RESOLVED` | trote ou pin errado não aparece antes da equipe ver |
+| Papéis | `ADMINISTRATOR` e `OPERATOR`; o operador não toca cronograma, bairros nem contas; ninguém muda o próprio papel nem se exclui | `SECURITY.md` §4 |
+| Fuso | banco e processo em UTC (`TZ=UTC`); a interface mostra `America/Manaus` | a mesma consulta dá a mesma data em qualquer máquina |
+| Datas de cronograma | calculadas no cliente a partir de dia da semana e turno | funciona offline (`DECISIONS.md` #5) |
+| Cor | tipo de coleta tem cor fixa e sempre vem com ícone e nome; laranja e vermelho só para queimada e erro | acessibilidade e leitura rápida |
+| Toque | alvo de 44 px no app do morador | uso com uma mão, no sol, no barco |
+| Idiomas | pt-BR é a base; todo texto novo entra em pt-BR, es e en no mesmo commit | fronteira com Peru e Colômbia |
+| Mapa | Leaflet só em chunk lazy e só no cliente; nada de `import 'leaflet'` fora de `components/common/report-map` | peso e SSR |
+| Fonte de dados do frontend | `VITE_DATA_SOURCE=mock` por padrão; o ponto de troca é `integrations/tanstack-query/source.ts` | o app corre sem backend em dev (`DECISIONS.md` #10) |
+| Rotas do frontend | par `rota.tsx` + `rota.lazy.tsx`; nomes das rotas da gestão em inglês, da vitrine em português (`/coleta`, `/denunciar`) | convenção já consolidada |
+| Bucket | privado; nunca URL pública; leitura por URL assinada de 15 minutos | `SECURITY.md` |
+| Enum do `shared` | entra como tipo em módulos que várias rotas alcançam | leitura de valor no topo do módulo cria ciclo de chunk |
 
 ## 4. Estrutura
 
@@ -41,8 +77,9 @@ desvio e se corrige; regra que não serve muda no `maiyu-pattern` (`documentatio
 - [ ] Lint, typecheck, `pattern:check` e testes rodados no `HEAD` atual, com o resultado à mão
       (critério completo em `TEST-PLAN.md` §6).
 - [ ] Teste novo cobre o comportamento e entra na matriz de `TEST-PLAN.md` §3.
-- [ ] Estados de carregando, vazio, erro e sucesso tratados na tela (`DESIGN.md` §8, `USER-FLOWS.md`).
+- [ ] Estados de carregando, vazio, erro, sem conexão e sucesso tratados na tela (`DESIGN.md` §8, `USER-FLOWS.md`).
 - [ ] Texto visível por chave i18n nos três idiomas (`_standards/i18n.md`).
+- [ ] `openapi.json` e a linha de base do `authz:check` regravados se a rota mudou.
 - [ ] `docs/` atualizado no mesmo commit (`_standards/documentation.md` §5).
 - [ ] Sem segredo, `console.log`, código comentado ou `TODO` sem dono no diff.
 
@@ -50,4 +87,4 @@ desvio e se corrige; regra que não serve muda no `maiyu-pattern` (`documentatio
 
 | Data | Mudança |
 |---|---|
-| AAAA-MM-DD | Primeira versão |
+| 2026-11-01 | Primeira versão, a partir do código do backend, do frontend e do `shared/` |
