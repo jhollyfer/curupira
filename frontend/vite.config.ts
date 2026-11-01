@@ -8,7 +8,7 @@ import { nitro } from 'nitro/vite'
 import { defineConfig, loadEnv } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-import { stripExampleData } from './scripts/strip-example-data'
+import { stripExampleData } from './scripts/strip-example-data.ts'
 
 const config = defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
