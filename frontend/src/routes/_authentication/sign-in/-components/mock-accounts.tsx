@@ -22,7 +22,10 @@ type MockAccountsProps = Readonly<{
 export function MockAccounts({
   form,
 }: MockAccountsProps): React.JSX.Element | null {
-  if (!MOCK_LOGIN_AVAILABLE) return null
+  // `import.meta.env.DEV` is read right here, and not only through `MOCK_LOGIN_AVAILABLE`:
+  // the bundler cannot see through an imported constant, so the accounts and the example
+  // password stayed in the production bundle behind a guard that never opened.
+  if (!import.meta.env.DEV || !MOCK_LOGIN_AVAILABLE) return null
 
   return (
     <section
