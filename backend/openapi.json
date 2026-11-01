@@ -3,7 +3,7 @@
   "info": {
     "title": "API Curupira",
     "version": "1.0.0",
-    "description": "Curupira API: the collection schedule by neighborhood, anonymous environmental reports with photo and map, and the management panel for the city team.\n\nThe site (`/storefront`) answers without a session. Everything else requires the `httpOnly` cookie `access-token`, issued by `POST /authentication/sign-in` and renewed by `POST /authentication/refresh`.\n\nEvery failure returns the same body: `{ message, status, code, errors? }`, where `code` is the machine identifier and `errors` maps field to message when the failure is per field."
+    "description": "Curupira API: the collection schedule by neighborhood, anonymous environmental reports with photo and map, and the management panel for the city team.\n\nThe site (`/storefront`) answers without a session. Everything else requires the `httpOnly` cookie `curupira-access-token`, issued by `POST /authentication/sign-in` and renewed by `POST /authentication/refresh`.\n\nEvery failure returns the same body: `{ message, status, code, errors? }`, where `code` is the machine identifier and `errors` maps field to message when the failure is per field."
   },
   "servers": [
     {
@@ -4114,7 +4114,7 @@
             }
           }
         },
-        "description": "The pins of the public map: only reports already looked at (IN_REVIEW, FORWARDED, RESOLVED), so a hoax or a misplaced pin never shows before someone reviewed it.\n\nEach pin carries the kind, status, coordinates and the **day** (no hour). No text, no contact, no protocol, no photo. Public."
+        "description": "The pins of the public map: only reports already looked at (IN_REVIEW, FORWARDED, RESOLVED), so a hoax or a misplaced pin never shows before someone reviewed it.\n\nEach pin carries the kind, status, coordinates **rounded to about 110 m** and the **day** (no hour). The newest 500 only. No text, no contact, no protocol, no photo. Public."
       }
     },
     "/storefront/reports/{protocol}": {
@@ -4254,7 +4254,7 @@
       "cookieAuth": {
         "type": "apiKey",
         "in": "cookie",
-        "name": "access-token"
+        "name": "curupira-access-token"
       }
     },
     "schemas": {
