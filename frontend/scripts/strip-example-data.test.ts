@@ -16,7 +16,7 @@ describe('stubExportsOf', () => {
 
     const stub = stubExportsOf(parseAst(code))
 
-    expect(stub.split('\n').filter(Boolean).toSorted()).toEqual([
+    expect(stub.split('\n').filter(Boolean).sort()).toEqual([
       'export const NEIGHBORHOODS = undefined',
       'export const Store = undefined',
       'export const schedulesOf = undefined',
