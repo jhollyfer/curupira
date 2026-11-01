@@ -191,7 +191,10 @@ export function monthGrid(
   year: number,
   month: number,
 ): Array<Array<MonthCell>> {
-  const first = DateTime.fromObject({ year, month, day: 1 }, { zone: TOWN_TIME_ZONE })
+  const first = DateTime.fromObject(
+    { year, month, day: 1 },
+    { zone: TOWN_TIME_ZONE },
+  )
   // Sunday is 7 in Luxon and must be column 0.
   const lead = first.weekday % 7
   const start = first.minus({ days: lead })

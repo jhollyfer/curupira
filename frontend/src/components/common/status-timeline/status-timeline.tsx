@@ -26,7 +26,10 @@ export function StatusTimeline({
 }: StatusTimelineProps): React.JSX.Element {
   return (
     <StatusTimelineProvider value={{ current, events }}>
-      <div data-slot="status-timeline" className={cn('flex flex-col gap-4', className)}>
+      <div
+        data-slot="status-timeline"
+        className={cn('flex flex-col gap-4', className)}
+      >
         {children}
       </div>
     </StatusTimelineProvider>

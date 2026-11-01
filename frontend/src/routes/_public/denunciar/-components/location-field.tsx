@@ -16,7 +16,8 @@ type LocationFieldProps = Readonly<{
   describedBy?: string
 }>
 
-type Status = 'idle' | 'locating' | 'denied' | 'unavailable' | 'timeout' | 'outside'
+type Status =
+  'idle' | 'locating' | 'denied' | 'unavailable' | 'timeout' | 'outside'
 
 const STATUS_TEXTS = {
   idle: () => m.report_location_hint(),

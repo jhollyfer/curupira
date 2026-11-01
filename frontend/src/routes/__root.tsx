@@ -22,7 +22,6 @@ import { m } from '#/paraglide/messages'
 import { getLocale } from '../paraglide/runtime'
 import appCss from '../styles.css?url'
 
-
 /**
  * What every route sees in `context`.
  *

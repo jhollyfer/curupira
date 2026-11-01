@@ -9,7 +9,11 @@ afterEach(cleanup)
 
 const EVENTS = [
   { status: 'RECEIVED', message: null, at: '2026-11-01T10:00:00-04:00' },
-  { status: 'IN_REVIEW', message: 'Foto conferida.', at: '2026-11-02T09:00:00-04:00' },
+  {
+    status: 'IN_REVIEW',
+    message: 'Foto conferida.',
+    at: '2026-11-02T09:00:00-04:00',
+  },
 ] as const
 
 describe('StatusTimeline', () => {
@@ -20,7 +24,9 @@ describe('StatusTimeline', () => {
       </StatusTimeline>,
     )
 
-    expect(within(screen.getByRole('list')).getAllByRole('listitem')).toHaveLength(4)
+    expect(
+      within(screen.getByRole('list')).getAllByRole('listitem'),
+    ).toHaveLength(4)
   })
 
   it('marks only the current step and shows its message', () => {

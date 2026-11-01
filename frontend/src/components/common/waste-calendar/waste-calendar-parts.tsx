@@ -36,14 +36,21 @@ type WasteDotProps = Readonly<{
  * is readable by someone who does not tell the colors apart. Decorative - the name is
  * always written next to it or in a visually hidden text.
  */
-export function WasteDot({ type, size = 'md' }: WasteDotProps): React.JSX.Element {
+export function WasteDot({
+  type,
+  size = 'md',
+}: WasteDotProps): React.JSX.Element {
   const Icon = WASTE_TYPE_ICONS[type]
   const classes = DOT_SIZES[size]
 
   return (
     <span
       aria-hidden="true"
-      className={cn('waste-dot shrink-0', WASTE_TYPE_CLASSES[type], classes.box)}
+      className={cn(
+        'waste-dot shrink-0',
+        WASTE_TYPE_CLASSES[type],
+        classes.box,
+      )}
     >
       <Icon weight="fill" className={classes.icon} />
     </span>
@@ -62,7 +69,10 @@ function describePasses(passes: ReadonlyArray<CollectionPass>): string {
     .join('; ')
 }
 
-function describeDay(day: DateTime, passes: ReadonlyArray<CollectionPass>): string {
+function describeDay(
+  day: DateTime,
+  passes: ReadonlyArray<CollectionPass>,
+): string {
   const date = day.toLocaleString({
     weekday: 'long',
     day: 'numeric',
@@ -264,7 +274,11 @@ export function WasteCalendarDetail(): React.JSX.Element {
       className="flex flex-col gap-3 rounded-2xl bg-surface-warm p-4"
     >
       <h3 className="text-lg font-extrabold capitalize">
-        {date.toLocaleString({ weekday: 'long', day: 'numeric', month: 'long' })}
+        {date.toLocaleString({
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        })}
       </h3>
       {dayPasses.length === 0 && (
         <p className="text-base text-muted-foreground">
@@ -296,7 +310,13 @@ export function WasteCalendarDetail(): React.JSX.Element {
 
 /** The four colors and what goes in each collection: the key to every dot. */
 export function WasteCalendarLegend(): React.JSX.Element {
-  const types = [...new Set(useWasteCalendarContext('WasteCalendarLegend').passes.map((pass) => pass.wasteType))]
+  const types = [
+    ...new Set(
+      useWasteCalendarContext('WasteCalendarLegend').passes.map(
+        (pass) => pass.wasteType,
+      ),
+    ),
+  ]
 
   return (
     <section data-slot="waste-calendar-legend" className="flex flex-col gap-3">

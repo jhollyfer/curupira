@@ -32,7 +32,9 @@ export function StepWizardIndicator({
             key={title}
             aria-current={(index === step && 'step') || undefined}
             data-state={
-              (index < step && 'done') || (index === step && 'current') || 'todo'
+              (index < step && 'done') ||
+              (index === step && 'current') ||
+              'todo'
             }
             className="group flex flex-col gap-2"
           >
@@ -64,7 +66,7 @@ type StepWizardPanelProps = Readonly<{
 /**
  * One step's content. Only the current one is in the DOM, and on a step change focus
  * goes to its heading (a keyboard or screen-reader user would otherwise be left on a
- * button that just disappeared). Not on the first render: nothing should steal focus
+ * button that just disappeared). Not at page load: nothing should steal focus
  * at page load.
  */
 export function StepWizardPanel({
@@ -74,14 +76,11 @@ export function StepWizardPanel({
 }: StepWizardPanelProps): React.JSX.Element | null {
   const wizard = useStepWizardContext('StepWizardPanel')
   const heading = React.useRef<HTMLHeadingElement>(null)
-  const seen = React.useRef(false)
   const active = wizard.step === step
 
   React.useEffect(() => {
-    if (!active) return
-    if (seen.current) heading.current?.focus()
-    seen.current = true
-  }, [active])
+    if (active && wizard.moved.current) heading.current?.focus()
+  }, [active, wizard.moved])
 
   if (!active) return null
 
@@ -112,7 +111,10 @@ export function StepWizardActions({
   return (
     <div
       data-slot="step-wizard-actions"
-      className={cn('flex flex-col-reverse gap-3 sm:flex-row sm:justify-between', className)}
+      className={cn(
+        'flex flex-col-reverse gap-3 sm:flex-row sm:justify-between',
+        className,
+      )}
       {...props}
     />
   )

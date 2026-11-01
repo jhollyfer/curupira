@@ -95,9 +95,11 @@
   --elevation-card:
     0 1px 3px oklch(0.25 0.04 158 / 0.06), 0 0 0 1px oklch(0.25 0.04 158 / 0.05);
   --elevation-card-hover:
-    0 6px 20px oklch(0.25 0.04 158 / 0.09), 0 0 0 1px oklch(0.25 0.04 158 / 0.07);
+    0 6px 20px oklch(0.25 0.04 158 / 0.09),
+    0 0 0 1px oklch(0.25 0.04 158 / 0.07);
   --elevation-card-elevated:
-    0 10px 32px oklch(0.25 0.04 158 / 0.12), 0 0 0 1px oklch(0.25 0.04 158 / 0.08);
+    0 10px 32px oklch(0.25 0.04 158 / 0.12),
+    0 0 0 1px oklch(0.25 0.04 158 / 0.08);
 
   --space-section: clamp(3rem, 7vw, 6rem);
 
@@ -403,7 +405,6 @@
 
   html {
     @apply scroll-smooth;
-    
   }
 
   body {

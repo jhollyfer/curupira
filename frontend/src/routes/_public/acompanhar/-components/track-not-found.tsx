@@ -9,11 +9,17 @@ import { m } from '#/paraglide/messages'
 export function TrackNotFound(): React.JSX.Element {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col items-start gap-4 px-4 py-10">
-      <SmileyXEyesIcon aria-hidden="true" weight="fill" className="size-14 text-muted-foreground" />
+      <SmileyXEyesIcon
+        aria-hidden="true"
+        weight="fill"
+        className="size-14 text-muted-foreground"
+      />
       <h1 className="text-3xl leading-tight font-extrabold tracking-tight text-balance">
         {m.track_not_found_title()}
       </h1>
-      <p className="text-lg text-muted-foreground">{m.track_not_found_text()}</p>
+      <p className="text-lg text-muted-foreground">
+        {m.track_not_found_text()}
+      </p>
       <Button size="touch-lg" render={<Link to="/acompanhar" search={{}} />}>
         {m.track_try_again()}
       </Button>

@@ -21,7 +21,11 @@ function Harness({ canContinue = true }: Readonly<{ canContinue?: boolean }>) {
   const [step, setStep] = React.useState(0)
 
   return (
-    <StepWizard titles={['Tipo', 'Foto', 'Envio']} value={step} onValueChange={setStep}>
+    <StepWizard
+      titles={['Tipo', 'Foto', 'Envio']}
+      value={step}
+      onValueChange={setStep}
+    >
       <StepWizardIndicator />
       <StepWizardPanel step={0} title="Primeiro">
         <p>conteúdo um</p>

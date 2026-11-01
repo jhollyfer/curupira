@@ -14,8 +14,20 @@ import {
 afterEach(cleanup)
 
 const NEIGHBORHOODS = [
-  { id: '00000000-0000-4000-8000-000000000001', name: 'Centro', slug: 'centro', latitude: null, longitude: null },
-  { id: '00000000-0000-4000-8000-000000000002', name: 'Cohab', slug: 'cohab', latitude: null, longitude: null },
+  {
+    id: '00000000-0000-4000-8000-000000000001',
+    name: 'Centro',
+    slug: 'centro',
+    latitude: null,
+    longitude: null,
+  },
+  {
+    id: '00000000-0000-4000-8000-000000000002',
+    name: 'Cohab',
+    slug: 'cohab',
+    latitude: null,
+    longitude: null,
+  },
 ]
 
 function Harness({ initial }: Readonly<{ initial: string | null }>) {

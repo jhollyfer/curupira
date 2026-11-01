@@ -33,9 +33,7 @@ export function NextCollection({
   )
 
   if (!next) {
-    return (
-      <p className="text-lg font-semibold">{m.home_no_collection()}</p>
-    )
+    return <p className="text-lg font-semibold">{m.home_no_collection()}</p>
   }
 
   const date = townDay(next.date)

@@ -83,7 +83,11 @@ describe('buildIcs', () => {
 
   it('moves the date forward when the night shift ends after 20:00 Manaus', () => {
     // 19:00 Manaus is 23:00Z (same day); the night end 23:00 is 03:00Z of the next.
-    const night: CollectionPass = { ...PASS, shift: 'NIGHT', weekday: 'SATURDAY' }
+    const night: CollectionPass = {
+      ...PASS,
+      shift: 'NIGHT',
+      weekday: 'SATURDAY',
+    }
     const ics = build('2026-11-01T10:00', [night])
 
     expect(ics).toContain('DTSTART:20261107T230000Z')

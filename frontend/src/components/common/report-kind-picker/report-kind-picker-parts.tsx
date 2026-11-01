@@ -36,8 +36,9 @@ const ICON_TONES = {
 export function ReportKindPickerOption({
   kind,
 }: ReportKindPickerOptionProps): React.JSX.Element {
-  const { name, value, onValueChange, invalid } =
-    useReportKindPickerContext('ReportKindPickerOption')
+  const { name, value, onValueChange, invalid } = useReportKindPickerContext(
+    'ReportKindPickerOption',
+  )
   const Icon = REPORT_KIND_ICONS[kind]
 
   return (

@@ -15,8 +15,15 @@ import {
   NeighborhoodPickerList,
   NeighborhoodPickerSummary,
 } from '#/components/common/neighborhood-picker'
-import { NoticeList, NoticeListEmpty, NoticeListItems } from '#/components/common/notice-list'
-import { WasteCalendar, WasteCalendarStrip } from '#/components/common/waste-calendar'
+import {
+  NoticeList,
+  NoticeListEmpty,
+  NoticeListItems,
+} from '#/components/common/notice-list'
+import {
+  WasteCalendar,
+  WasteCalendarStrip,
+} from '#/components/common/waste-calendar'
 import { Button } from '#/components/ui/button'
 import { Skeleton } from '#/components/ui/skeleton'
 import { useResidentNeighborhood } from '#/hooks/use-resident-neighborhood'
@@ -59,7 +66,9 @@ export function HomePage(): React.JSX.Element {
   return (
     <>
       <section className="stage-band">
-        <div className={`${CONTAINER} grid gap-8 py-10 md:grid-cols-2 md:items-center md:py-16`}>
+        <div
+          className={`${CONTAINER} grid gap-8 py-10 md:grid-cols-2 md:items-center md:py-16`}
+        >
           <div className="flex flex-col gap-5">
             <h1 className="text-4xl leading-[1.05] font-extrabold tracking-tight text-balance md:text-6xl">
               {m.home_title()}
@@ -89,7 +98,11 @@ export function HomePage(): React.JSX.Element {
 
           <div className="rounded-3xl bg-card p-5 text-card-foreground shadow-card-elevated md:p-6">
             {neighborhoodId === undefined && (
-              <div className="flex flex-col gap-4" role="status" aria-label={m.common_loading()}>
+              <div
+                className="flex flex-col gap-4"
+                role="status"
+                aria-label={m.common_loading()}
+              >
                 <Skeleton className="h-5 w-48" />
                 <Skeleton className="h-12 w-64" />
                 <Skeleton className="h-14 w-full" />
@@ -173,11 +186,26 @@ export function HomePage(): React.JSX.Element {
         </h2>
         <ol className="flex max-w-2xl flex-col divide-y">
           {[
-            { icon: ListChecksIcon, title: m.home_how_1_title(), text: m.home_how_1_text() },
-            { icon: CameraIcon, title: m.home_how_2_title(), text: m.home_how_2_text() },
-            { icon: MapPinIcon, title: m.home_how_3_title(), text: m.home_how_3_text() },
+            {
+              icon: ListChecksIcon,
+              title: m.home_how_1_title(),
+              text: m.home_how_1_text(),
+            },
+            {
+              icon: CameraIcon,
+              title: m.home_how_2_title(),
+              text: m.home_how_2_text(),
+            },
+            {
+              icon: MapPinIcon,
+              title: m.home_how_3_title(),
+              text: m.home_how_3_text(),
+            },
           ].map((item) => (
-            <li key={item.title} className="flex gap-4 py-4 first:pt-0 last:pb-0">
+            <li
+              key={item.title}
+              className="flex gap-4 py-4 first:pt-0 last:pb-0"
+            >
               <span
                 aria-hidden="true"
                 className="grid size-12 shrink-0 place-items-center rounded-xl bg-accent text-accent-foreground"
@@ -196,7 +224,11 @@ export function HomePage(): React.JSX.Element {
           aria-labelledby="emergency-title"
           className="flex max-w-2xl gap-4 rounded-2xl bg-badge-alert p-4 text-badge-alert-foreground"
         >
-          <PhoneCallIcon aria-hidden="true" weight="fill" className="mt-1 size-7 shrink-0" />
+          <PhoneCallIcon
+            aria-hidden="true"
+            weight="fill"
+            className="mt-1 size-7 shrink-0"
+          />
           <div className="flex flex-col gap-1">
             <h3 id="emergency-title" className="text-lg font-bold">
               {m.home_emergency_title()}

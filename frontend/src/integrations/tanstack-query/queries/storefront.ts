@@ -102,9 +102,13 @@ export const storefrontReportsMapQueryOptions = () =>
       fromSource<ReadonlyArray<StorefrontReportMapResponse>>({
         mock: () => exampleMapReports(townNow()),
         api: () =>
-          request('/storefront/reports/map', z.array(StorefrontReportMapResponse), {
-            signal,
-          }),
+          request(
+            '/storefront/reports/map',
+            z.array(StorefrontReportMapResponse),
+            {
+              signal,
+            },
+          ),
       }),
     staleTime: 5 * 60 * 1000,
   })

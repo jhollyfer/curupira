@@ -21,9 +21,7 @@ describe('sitemapXml', () => {
   })
 
   it('links each url to the sibling hreflangs and to x-default', () => {
-    expect(xml).toContain(
-      `hreflang="es" href="${env.VITE_SITE_URL}/es/coleta"`,
-    )
+    expect(xml).toContain(`hreflang="es" href="${env.VITE_SITE_URL}/es/coleta"`)
     expect(xml).toContain(
       `hreflang="x-default" href="${env.VITE_SITE_URL}/coleta"`,
     )

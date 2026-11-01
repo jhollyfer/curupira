@@ -54,7 +54,9 @@ async function run<T>(
 
   try {
     return await new Promise<T>((resolve, reject) => {
-      const request = action(database.transaction(STORE, mode).objectStore(STORE))
+      const request = action(
+        database.transaction(STORE, mode).objectStore(STORE),
+      )
 
       request.onsuccess = () => resolve(request.result)
       request.onerror = () => reject(request.error)
@@ -75,10 +77,28 @@ function notifyQueueChanged(): void {
   }
 }
 
+let sequence = 0
+
+/**
+ * The key sorts as the queue must send: by time, then by arrival within the same
+ * millisecond (two taps in a row), then a UUID so two tabs never collide. IndexedDB
+ * returns records in key order, so the order is a property of the store, not a sort.
+ */
+function nextId(now: Date): string {
+  sequence += 1
+
+  return [
+    String(now.getTime()).padStart(15, '0'),
+    String(sequence).padStart(6, '0'),
+    crypto.randomUUID(),
+  ].join('-')
+}
+
 export async function enqueueReport(draft: ReportDraft): Promise<QueuedReport> {
+  const now = new Date()
   const item: QueuedReport = {
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
+    id: nextId(now),
+    createdAt: now.toISOString(),
     draft,
   }
 
@@ -89,9 +109,8 @@ export async function enqueueReport(draft: ReportDraft): Promise<QueuedReport> {
 }
 
 export async function listQueuedReports(): Promise<Array<QueuedReport>> {
-  const items = await run('readonly', (store) => store.getAll())
-
-  return items.sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+  // Key order is send order (see `nextId`).
+  return await run('readonly', (store) => store.getAll())
 }
 
 export async function countQueuedReports(): Promise<number> {

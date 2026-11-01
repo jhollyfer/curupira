@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { storefrontNeighborhoodsQueryOptions, storefrontNoticesQueryOptions } from '#/integrations/tanstack-query/queries/storefront'
+import {
+  storefrontNeighborhoodsQueryOptions,
+  storefrontNoticesQueryOptions,
+} from '#/integrations/tanstack-query/queries/storefront'
 import { townNowIso } from '#/lib/i18n'
 import { pageHead } from '#/lib/page-head'
 

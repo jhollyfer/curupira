@@ -1,7 +1,11 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 import type * as React from 'react'
 
-import { ProsePage, ProsePageNotice, ProsePageSection } from '#/components/common/prose-page'
+import {
+  ProsePage,
+  ProsePageNotice,
+  ProsePageSection,
+} from '#/components/common/prose-page'
 import { m } from '#/paraglide/messages'
 
 export const Route = createLazyFileRoute('/_public/privacidade/')({

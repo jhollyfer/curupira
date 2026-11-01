@@ -14,15 +14,9 @@ import {
 
 describe('localizedUrl', () => {
   it('leaves pt-BR without prefix and gives es/en the language prefix', () => {
-    expect(localizedUrl('/coleta', 'pt-BR')).toBe(
-      `${env.VITE_SITE_URL}/coleta`,
-    )
-    expect(localizedUrl('/coleta', 'es')).toBe(
-      `${env.VITE_SITE_URL}/es/coleta`,
-    )
-    expect(localizedUrl('/coleta', 'en')).toBe(
-      `${env.VITE_SITE_URL}/en/coleta`,
-    )
+    expect(localizedUrl('/coleta', 'pt-BR')).toBe(`${env.VITE_SITE_URL}/coleta`)
+    expect(localizedUrl('/coleta', 'es')).toBe(`${env.VITE_SITE_URL}/es/coleta`)
+    expect(localizedUrl('/coleta', 'en')).toBe(`${env.VITE_SITE_URL}/en/coleta`)
   })
 
   it('strips the trailing slash, except at the root', () => {
@@ -151,4 +145,3 @@ describe('breadcrumbJsonLd', () => {
     })
   })
 })
-

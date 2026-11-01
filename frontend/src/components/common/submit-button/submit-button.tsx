@@ -32,11 +32,7 @@ export function SubmitButton({
   ...props
 }: SubmitButtonProps): React.JSX.Element {
   return (
-    <Button
-      type="submit"
-      disabled={disabled || isPending}
-      {...props}
-    >
+    <Button type="submit" disabled={disabled || isPending} {...props}>
       {isPending && <Spinner className="size-4" />}
       {children}
     </Button>

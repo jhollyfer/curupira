@@ -3,7 +3,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as React from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 
-import { ReportKindPicker, ReportKindPickerLegend, ReportKindPickerOption } from '#/components/common/report-kind-picker'
+import {
+  ReportKindPicker,
+  ReportKindPickerLegend,
+  ReportKindPickerOption,
+} from '#/components/common/report-kind-picker'
 import {
   StepWizard,
   StepWizardActions,
@@ -93,7 +97,11 @@ export function ReportPage(): React.JSX.Element {
           instead of putting the form in the URL. */}
       <form method="post" noValidate onSubmit={onSubmit}>
         <StepWizard
-          titles={[m.report_step_kind(), m.report_step_evidence(), m.report_step_send()]}
+          titles={[
+            m.report_step_kind(),
+            m.report_step_evidence(),
+            m.report_step_send(),
+          ]}
           value={step}
           onValueChange={setStep}
         >
@@ -110,7 +118,10 @@ export function ReportPage(): React.JSX.Element {
                     value={field.value}
                     onValueChange={field.onChange}
                     invalid={fieldState.invalid}
-                    describedBy={errorDescribedBy(fieldState.invalid, field.name)}
+                    describedBy={errorDescribedBy(
+                      fieldState.invalid,
+                      field.name,
+                    )}
                   >
                     <ReportKindPickerLegend className="sr-only">
                       {m.report_kind_legend()}
@@ -120,7 +131,10 @@ export function ReportPage(): React.JSX.Element {
                     ))}
                   </ReportKindPicker>
                   {fieldState.invalid && (
-                    <FieldError id={errorId(field.name)} errors={[fieldState.error]} />
+                    <FieldError
+                      id={errorId(field.name)}
+                      errors={[fieldState.error]}
+                    />
                   )}
                 </div>
               )}

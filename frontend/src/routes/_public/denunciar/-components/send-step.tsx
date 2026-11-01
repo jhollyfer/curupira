@@ -3,7 +3,12 @@ import type * as React from 'react'
 import { Controller, useWatch } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
 
-import { Field, FieldDescription, FieldError, FieldLabel } from '#/components/ui/field'
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
 import { Textarea } from '#/components/ui/textarea'
 import { errorId, invalidProps } from '#/lib/form-a11y'
@@ -57,7 +62,10 @@ export function SendStep({ form }: SendStepProps): React.JSX.Element {
             />
             <FieldDescription>{m.report_description_hint()}</FieldDescription>
             {fieldState.invalid && (
-              <FieldError id={errorId('report-description')} errors={[fieldState.error]} />
+              <FieldError
+                id={errorId('report-description')}
+                errors={[fieldState.error]}
+              />
             )}
           </Field>
         )}
@@ -112,7 +120,10 @@ export function SendStep({ form }: SendStepProps): React.JSX.Element {
                 className="h-12 text-base"
               />
               {fieldState.invalid && (
-                <FieldError id={errorId('report-contact')} errors={[fieldState.error]} />
+                <FieldError
+                  id={errorId('report-contact')}
+                  errors={[fieldState.error]}
+                />
               )}
             </Field>
           )}

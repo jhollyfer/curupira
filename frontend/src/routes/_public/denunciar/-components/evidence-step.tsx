@@ -43,7 +43,10 @@ export function EvidenceStep({
               describedBy={errorDescribedBy(fieldState.invalid, field.name)}
             />
             {fieldState.invalid && (
-              <FieldError id={errorId(field.name)} errors={[fieldState.error]} />
+              <FieldError
+                id={errorId(field.name)}
+                errors={[fieldState.error]}
+              />
             )}
           </Field>
         )}

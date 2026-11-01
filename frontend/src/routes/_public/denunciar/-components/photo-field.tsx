@@ -24,7 +24,11 @@ function PhotoPreview({
   blob,
   number,
   onRemove,
-}: Readonly<{ blob: Blob; number: number; onRemove: () => void }>): React.JSX.Element {
+}: Readonly<{
+  blob: Blob
+  number: number
+  onRemove: () => void
+}>): React.JSX.Element {
   const [url, setUrl] = React.useState<string | undefined>(undefined)
 
   React.useEffect(() => {
@@ -84,7 +88,9 @@ export function PhotoField({
   const [processing, setProcessing] = React.useState(false)
   const full = value.length >= LIST_LIMITS.REPORT_PHOTOS
 
-  async function add(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
+  async function add(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> {
     const files = Array.from(event.target.files ?? [])
     // Allows choosing the same file again after removing it.
     event.target.value = ''
@@ -139,7 +145,11 @@ export function PhotoField({
             {m.report_photo_processing()}
           </span>
         )}
-        {!processing && m.report_photo_count({ count: value.length, max: LIST_LIMITS.REPORT_PHOTOS })}
+        {!processing &&
+          m.report_photo_count({
+            count: value.length,
+            max: LIST_LIMITS.REPORT_PHOTOS,
+          })}
       </p>
 
       {value.length > 0 && (

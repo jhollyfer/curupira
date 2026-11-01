@@ -78,7 +78,9 @@ function AuthShellHeader({
       <h1 className="text-3xl leading-tight font-extrabold tracking-tight">
         {title}
       </h1>
-      {children && <p className="text-base text-muted-foreground">{children}</p>}
+      {children && (
+        <p className="text-base text-muted-foreground">{children}</p>
+      )}
     </header>
   )
 }

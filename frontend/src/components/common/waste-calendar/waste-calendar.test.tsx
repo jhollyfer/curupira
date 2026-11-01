@@ -61,11 +61,15 @@ describe('WasteCalendar', () => {
       </WasteCalendar>,
     )
 
-    await user.click(screen.getByRole('button', { name: /5 de novembro/i }))
+    await user.click(
+      screen.getByRole('button', { name: /^quinta-feira, 5 de novembro/i }),
+    )
 
     expect(
-      within(screen.getByRole('heading', { level: 3 }).parentElement ?? document.body)
-        .getByText('Lavar antes'),
+      within(
+        screen.getByRole('heading', { level: 3 }).parentElement ??
+          document.body,
+      ).getByText('Lavar antes'),
     ).toBeTruthy()
   })
 
@@ -74,9 +78,12 @@ describe('WasteCalendar', () => {
     const months: Array<string> = []
     render(
       <WasteCalendar passes={PASSES} now={NOW}>
-        <WasteCalendarMonth month="2027-01" onMonthChange={(next) => {
+        <WasteCalendarMonth
+          month="2027-01"
+          onMonthChange={(next) => {
             months.push(next)
-          }} />
+          }}
+        />
       </WasteCalendar>,
     )
 

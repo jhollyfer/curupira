@@ -27,7 +27,9 @@ export function MapPage(): React.JSX.Element {
         <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance">
           {m.map_title()}
         </h1>
-        <p className="max-w-prose text-lg text-muted-foreground">{m.map_intro()}</p>
+        <p className="max-w-prose text-lg text-muted-foreground">
+          {m.map_intro()}
+        </p>
       </header>
 
       <nav aria-label={m.map_filter_label()}>
@@ -96,7 +98,10 @@ export function MapPage(): React.JSX.Element {
                       {REPORT_KIND_LABELS[report.kind]()}
                     </span>
                     <span className="text-sm text-muted-foreground">
-                      {formatTownDate(report.day, { day: 'numeric', month: 'long' })}
+                      {formatTownDate(report.day, {
+                        day: 'numeric',
+                        month: 'long',
+                      })}
                     </span>
                   </div>
                 </div>

@@ -26,7 +26,9 @@ export function ReportMapPins({ reports }: ReportMapPinsProps) {
     >
       <Popup>
         <div className="flex flex-col gap-2 text-base">
-          <strong className="font-bold">{REPORT_KIND_LABELS[report.kind]()}</strong>
+          <strong className="font-bold">
+            {REPORT_KIND_LABELS[report.kind]()}
+          </strong>
           <StatusBadge status={report.status} />
           <span className="text-sm">
             {formatTownDate(report.day, { day: 'numeric', month: 'long' })}

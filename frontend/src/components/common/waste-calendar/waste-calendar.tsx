@@ -40,7 +40,10 @@ export function WasteCalendar({
 
   return (
     <WasteCalendarProvider value={context}>
-      <div data-slot="waste-calendar" className={cn('flex flex-col gap-5', className)}>
+      <div
+        data-slot="waste-calendar"
+        className={cn('flex flex-col gap-5', className)}
+      >
         {children}
       </div>
     </WasteCalendarProvider>

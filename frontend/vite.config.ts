@@ -132,14 +132,20 @@ const config = defineConfig(({ mode }) => {
               // bus with no signal. Stale-while-revalidate keeps it fresh when online.
               urlPattern: /\/storefront\/(schedules|neighborhoods|notices)/,
               handler: 'StaleWhileRevalidate',
-              options: { cacheName: 'storefront', expiration: { maxEntries: 20 } },
+              options: {
+                cacheName: 'storefront',
+                expiration: { maxEntries: 20 },
+              },
             },
             {
               urlPattern: /^https:\/\/tile\.openstreetmap\.org\//,
               handler: 'CacheFirst',
               options: {
                 cacheName: 'map-tiles',
-                expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 14 },
+                expiration: {
+                  maxEntries: 200,
+                  maxAgeSeconds: 60 * 60 * 24 * 14,
+                },
                 cacheableResponse: { statuses: [0, 200] },
               },
             },

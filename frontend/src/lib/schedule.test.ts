@@ -82,7 +82,10 @@ describe('nextCollection', () => {
 
   it('reads the clock in Manaus, not in UTC', () => {
     // 01:00Z on Tuesday is still Monday 21:00 in Manaus, and the Monday shift is over.
-    const next = nextCollection(SCHEDULE, DateTime.fromISO('2026-11-03T01:00:00Z'))
+    const next = nextCollection(
+      SCHEDULE,
+      DateTime.fromISO('2026-11-03T01:00:00Z'),
+    )
 
     expect(next?.date).toBe('2026-11-05')
   })
@@ -147,9 +150,9 @@ describe('monthGrid', () => {
 
 describe('firstOccurrence', () => {
   it('returns the same day when it already falls on the weekday', () => {
-    expect(firstOccurrence(at('2026-12-31T10:00'), 'THURSDAY').toISODate()).toBe(
-      '2026-12-31',
-    )
+    expect(
+      firstOccurrence(at('2026-12-31T10:00'), 'THURSDAY').toISODate(),
+    ).toBe('2026-12-31')
   })
 
   it('crosses the year for a Monday after Dec 31st', () => {

@@ -32,7 +32,9 @@ export function ProsePage({
         <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance">
           {title}
         </h1>
-        {intro && <p className="text-lg text-pretty text-muted-foreground">{intro}</p>}
+        {intro && (
+          <p className="text-lg text-pretty text-muted-foreground">{intro}</p>
+        )}
       </header>
       {children}
     </article>

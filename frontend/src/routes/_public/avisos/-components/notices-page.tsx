@@ -1,7 +1,11 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import type * as React from 'react'
 
-import { NoticeList, NoticeListEmpty, NoticeListItems } from '#/components/common/notice-list'
+import {
+  NoticeList,
+  NoticeListEmpty,
+  NoticeListItems,
+} from '#/components/common/notice-list'
 import { storefrontNoticesQueryOptions } from '#/integrations/tanstack-query/queries/storefront'
 import { m } from '#/paraglide/messages'
 

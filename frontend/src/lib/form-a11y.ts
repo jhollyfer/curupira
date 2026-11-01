@@ -14,7 +14,10 @@ export function errorId(id: string): string {
  * The `aria-describedby` of a control whose error lives outside it (a custom group, a
  * wizard step): the message `id` only while there is a message to point at.
  */
-export function errorDescribedBy(invalid: boolean, id: string): string | undefined {
+export function errorDescribedBy(
+  invalid: boolean,
+  id: string,
+): string | undefined {
   if (!invalid) return undefined
 
   return errorId(id)

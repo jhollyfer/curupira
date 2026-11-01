@@ -21,7 +21,9 @@ function PanelHome(): React.JSX.Element {
         <LocaleSwitch />
         <ThemeToggle />
       </div>
-      <h1 className="text-3xl font-extrabold tracking-tight">{m.panel_title()}</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">
+        {m.panel_title()}
+      </h1>
       <p className="text-lg text-muted-foreground">
         {m.panel_placeholder({ name: account.name })}
       </p>

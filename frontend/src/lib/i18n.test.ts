@@ -44,7 +44,10 @@ describe('town clock', () => {
   it('shows an instant at UTC-4, not in UTC', () => {
     // 02:30Z on Jan 1st is still Dec 31st at 22:30 in Manaus.
     expect(
-      formatTownDate('2027-01-01T02:30:00Z', { day: '2-digit', month: '2-digit' }),
+      formatTownDate('2027-01-01T02:30:00Z', {
+        day: '2-digit',
+        month: '2-digit',
+      }),
     ).toBe('31/12')
   })
 

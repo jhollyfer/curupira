@@ -48,7 +48,11 @@ export function ReportDone({
       {outcome.state === 'sent' && (
         <>
           <div className="flex flex-col gap-3">
-            <CheckCircleIcon aria-hidden="true" weight="fill" className="size-14 text-primary" />
+            <CheckCircleIcon
+              aria-hidden="true"
+              weight="fill"
+              className="size-14 text-primary"
+            />
             <h1
               ref={heading}
               tabIndex={-1}
@@ -56,7 +60,9 @@ export function ReportDone({
             >
               {m.report_done_title()}
             </h1>
-            <p className="text-lg text-muted-foreground">{m.report_done_text()}</p>
+            <p className="text-lg text-muted-foreground">
+              {m.report_done_text()}
+            </p>
           </div>
 
           <div className="flex flex-col gap-3 rounded-3xl bg-card p-6 shadow-card-elevated">
@@ -81,18 +87,26 @@ export function ReportDone({
               <CopyIcon aria-hidden="true" />
               {m.report_done_copy()}
             </Button>
-            <p role="status" className="min-h-6 text-base font-semibold text-primary">
+            <p
+              role="status"
+              className="min-h-6 text-base font-semibold text-primary"
+            >
               {copied && m.report_done_copied()}
             </p>
           </div>
 
-          <p className="text-base text-muted-foreground">{m.report_done_keep()}</p>
+          <p className="text-base text-muted-foreground">
+            {m.report_done_keep()}
+          </p>
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button
               size="touch-lg"
               render={
-                <Link to="/acompanhar" search={{ protocol: outcome.protocol }} />
+                <Link
+                  to="/acompanhar"
+                  search={{ protocol: outcome.protocol }}
+                />
               }
             >
               {m.report_done_track()}
@@ -107,7 +121,11 @@ export function ReportDone({
       {outcome.state === 'queued' && (
         <>
           <div className="flex flex-col gap-3">
-            <CloudArrowUpIcon aria-hidden="true" weight="fill" className="size-14 text-primary" />
+            <CloudArrowUpIcon
+              aria-hidden="true"
+              weight="fill"
+              className="size-14 text-primary"
+            />
             <h1
               ref={heading}
               tabIndex={-1}
@@ -122,7 +140,9 @@ export function ReportDone({
           >
             {m.report_queued_text()}
           </p>
-          <p className="text-base text-muted-foreground">{m.report_queued_next()}</p>
+          <p className="text-base text-muted-foreground">
+            {m.report_queued_next()}
+          </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button size="touch-lg" onClick={onNewReport}>
               {m.report_done_another()}

@@ -36,4 +36,3 @@ export const Route = createFileRoute('/_public/acompanhar/')({
     }),
   notFoundComponent: TrackNotFound,
 })
-

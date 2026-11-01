@@ -12,9 +12,8 @@ export type WasteCalendarContextValue = {
   select: (date: string) => void
 }
 
-const WasteCalendarContext = React.createContext<WasteCalendarContextValue | null>(
-  null,
-)
+const WasteCalendarContext =
+  React.createContext<WasteCalendarContextValue | null>(null)
 
 export const WasteCalendarProvider = WasteCalendarContext.Provider
 

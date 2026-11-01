@@ -6,7 +6,12 @@ import type * as React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 import { SubmitButton } from '#/components/common/submit-button'
-import { Field, FieldDescription, FieldError, FieldLabel } from '#/components/ui/field'
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
 import { errorId, invalidProps } from '#/lib/form-a11y'
 import { m } from '#/paraglide/messages'
@@ -19,7 +24,9 @@ type TrackFormProps = Readonly<{
 }>
 
 /** The code field: it moves the protocol into the URL, where the loader reads it. */
-export function TrackForm({ defaultProtocol }: TrackFormProps): React.JSX.Element {
+export function TrackForm({
+  defaultProtocol,
+}: TrackFormProps): React.JSX.Element {
   const navigate = useNavigate({ from: '/acompanhar/' })
   const form = useForm<TrackFormInput, unknown, TrackFormOutput>({
     resolver: zodResolver(TrackFormValidator),
@@ -36,13 +43,21 @@ export function TrackForm({ defaultProtocol }: TrackFormProps): React.JSX.Elemen
   }
 
   return (
-    <form method="get" noValidate onSubmit={onSubmit} className="flex flex-col gap-4">
+    <form
+      method="get"
+      noValidate
+      onSubmit={onSubmit}
+      className="flex flex-col gap-4"
+    >
       <Controller
         name="protocol"
         control={form.control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor="track-protocol" className="text-base font-semibold">
+            <FieldLabel
+              htmlFor="track-protocol"
+              className="text-base font-semibold"
+            >
               {m.track_label()}
             </FieldLabel>
             <Input

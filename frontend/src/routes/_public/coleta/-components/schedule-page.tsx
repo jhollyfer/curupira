@@ -71,7 +71,9 @@ export function SchedulePage(): React.JSX.Element {
         from: clock,
         now: DateTime.now(),
         summary: (pass) =>
-          m.schedule_event_summary({ type: WASTE_TYPE_LABELS[pass.wasteType]() }),
+          m.schedule_event_summary({
+            type: WASTE_TYPE_LABELS[pass.wasteType](),
+          }),
         calendarName: m.schedule_calendar_name({ neighborhood: chosen.name }),
       }),
     )
@@ -87,7 +89,11 @@ export function SchedulePage(): React.JSX.Element {
       </header>
 
       {neighborhoodId === undefined && (
-        <Skeleton role="status" aria-label={m.common_loading()} className="h-96 w-full rounded-2xl" />
+        <Skeleton
+          role="status"
+          aria-label={m.common_loading()}
+          className="h-96 w-full rounded-2xl"
+        />
       )}
 
       {neighborhoodId !== undefined && (
@@ -122,7 +128,11 @@ export function SchedulePage(): React.JSX.Element {
               </WasteCalendar>
             )}
             {!schedules.data && (
-              <Skeleton role="status" aria-label={m.common_loading()} className="h-96 w-full rounded-2xl" />
+              <Skeleton
+                role="status"
+                aria-label={m.common_loading()}
+                className="h-96 w-full rounded-2xl"
+              />
             )}
           </NeighborhoodPickerClosed>
         </NeighborhoodPicker>

@@ -42,7 +42,8 @@ export function toCoordinate(
   longitude: number | undefined,
 ): Coordinate | undefined {
   if (latitude === undefined || longitude === undefined) return undefined
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return undefined
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude))
+    return undefined
 
   return { latitude, longitude }
 }
@@ -98,7 +99,8 @@ export function currentPosition(): Promise<Coordinate> {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) =>
         resolve({ latitude: coords.latitude, longitude: coords.longitude }),
-      (error) => reject(new GeoError(FAILURE_BY_CODE[error.code] ?? 'unavailable')),
+      (error) =>
+        reject(new GeoError(FAILURE_BY_CODE[error.code] ?? 'unavailable')),
       { enableHighAccuracy: true, timeout: GEO_TIMEOUT, maximumAge: 30_000 },
     )
   })

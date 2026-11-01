@@ -30,6 +30,8 @@ describe('validateTrackSearch', () => {
       protocol: 'CUR-1234-5678',
     })
     expect(validateTrackSearch({ protocol: 12 })).toEqual({})
-    expect(validateTrackSearch({ protocol: 'x'.repeat(100) }).protocol).toHaveLength(40)
+    expect(
+      validateTrackSearch({ protocol: 'x'.repeat(100) }).protocol,
+    ).toHaveLength(40)
   })
 })

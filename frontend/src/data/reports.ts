@@ -73,9 +73,7 @@ type Followed = Readonly<{
   status: ReportStatus
   /** Days ago the report was received. */
   receivedDaysAgo: number
-  events: ReadonlyArray<
-    readonly [ReportStatus, string | null, number]
-  >
+  events: ReadonlyArray<readonly [ReportStatus, string | null, number]>
 }>
 
 const FOLLOWED: Record<string, Followed | undefined> = {

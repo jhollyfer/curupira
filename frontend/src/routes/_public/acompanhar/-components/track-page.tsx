@@ -36,7 +36,10 @@ export function TrackPage(): React.JSX.Element {
 
       {mine.length > 0 && (
         <section aria-labelledby="track-mine" className="flex flex-col gap-2">
-          <h2 id="track-mine" className="text-base font-semibold text-muted-foreground">
+          <h2
+            id="track-mine"
+            className="text-base font-semibold text-muted-foreground"
+          >
             {m.track_mine()}
           </h2>
           <ul className="flex flex-wrap gap-2">
@@ -57,7 +60,13 @@ export function TrackPage(): React.JSX.Element {
 
       {protocol && (
         <React.Suspense
-          fallback={<Skeleton role="status" aria-label={m.common_loading()} className="h-80 w-full rounded-3xl" />}
+          fallback={
+            <Skeleton
+              role="status"
+              aria-label={m.common_loading()}
+              className="h-80 w-full rounded-3xl"
+            />
+          }
         >
           <TrackResult protocol={protocol} />
         </React.Suspense>

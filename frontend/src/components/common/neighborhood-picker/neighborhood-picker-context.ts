@@ -23,7 +23,9 @@ export function useNeighborhoodPickerContext(
   const context = React.use(NeighborhoodPickerContext)
 
   if (!context) {
-    throw new Error(`\`${consumer}\` must be used within \`NeighborhoodPicker\``)
+    throw new Error(
+      `\`${consumer}\` must be used within \`NeighborhoodPicker\``,
+    )
   }
 
   return context

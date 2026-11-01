@@ -21,13 +21,20 @@ type ReportMapPickerProps = Readonly<{
  * follows the value, so "use my location" moves it and the map flies to it.
  * The coordinate is always pulled inside the town's box.
  */
-export function ReportMapPicker({ value, onChange, kind }: ReportMapPickerProps) {
+export function ReportMapPicker({
+  value,
+  onChange,
+  kind,
+}: ReportMapPickerProps) {
   const map = useMap()
 
   useMapEvents({
     click: (event) =>
       onChange(
-        clampToTown({ latitude: event.latlng.lat, longitude: event.latlng.lng }),
+        clampToTown({
+          latitude: event.latlng.lat,
+          longitude: event.latlng.lng,
+        }),
       ),
   })
 

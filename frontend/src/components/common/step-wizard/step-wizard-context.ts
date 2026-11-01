@@ -12,6 +12,8 @@ export type StepWizardContextValue = {
   step: number
   isFirst: boolean
   isLast: boolean
+  /** Set once the user has moved: the panels only take focus after that, not at load. */
+  moved: React.RefObject<boolean>
   goTo: (step: number) => void
   next: () => void
   back: () => void

@@ -2,7 +2,10 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import type * as React from 'react'
 
 import { StatusBadge } from '#/components/common/status-badge'
-import { StatusTimeline, StatusTimelineSteps } from '#/components/common/status-timeline'
+import {
+  StatusTimeline,
+  StatusTimelineSteps,
+} from '#/components/common/status-timeline'
 import { storefrontReportByProtocolQueryOptions } from '#/integrations/tanstack-query/queries/storefront'
 import { formatTownDate } from '#/lib/i18n'
 import { REPORT_KIND_LABELS } from '#/lib/labels'

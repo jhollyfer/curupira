@@ -8,8 +8,9 @@ import { useNeighborhoodPickerContext } from './neighborhood-picker-context'
 
 /** "Your neighborhood: Centro" with the change button. Only while one is chosen. */
 export function NeighborhoodPickerSummary(): React.JSX.Element | null {
-  const { neighborhoods, value, isOpen, open } =
-    useNeighborhoodPickerContext('NeighborhoodPickerSummary')
+  const { neighborhoods, value, isOpen, open } = useNeighborhoodPickerContext(
+    'NeighborhoodPickerSummary',
+  )
   const chosen = neighborhoods.find((item) => item.id === value)
 
   if (isOpen || !chosen) return null
@@ -20,7 +21,11 @@ export function NeighborhoodPickerSummary(): React.JSX.Element | null {
       className="flex items-center justify-between gap-3"
     >
       <p className="flex min-w-0 items-center gap-2 text-base">
-        <MapPinIcon aria-hidden="true" weight="fill" className="size-5 shrink-0 text-primary" />
+        <MapPinIcon
+          aria-hidden="true"
+          weight="fill"
+          className="size-5 shrink-0 text-primary"
+        />
         <span className="text-muted-foreground">{m.neighborhood_yours()}</span>
         <strong className="truncate font-bold">{chosen.name}</strong>
       </p>

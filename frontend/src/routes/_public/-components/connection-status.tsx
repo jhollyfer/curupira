@@ -22,8 +22,20 @@ export function ConnectionStatus(): React.JSX.Element | null {
       className="border-b bg-badge-warning text-badge-warning-foreground"
     >
       <p className="mx-auto flex max-w-6xl items-start gap-3 px-4 py-3 text-base font-semibold">
-        {!online && <CloudSlashIcon aria-hidden="true" weight="bold" className="mt-0.5 size-5 shrink-0" />}
-        {online && <PaperPlaneTiltIcon aria-hidden="true" weight="bold" className="mt-0.5 size-5 shrink-0" />}
+        {!online && (
+          <CloudSlashIcon
+            aria-hidden="true"
+            weight="bold"
+            className="mt-0.5 size-5 shrink-0"
+          />
+        )}
+        {online && (
+          <PaperPlaneTiltIcon
+            aria-hidden="true"
+            weight="bold"
+            className="mt-0.5 size-5 shrink-0"
+          />
+        )}
         <span>
           {!online && m.connection_offline()}
           {online && m.connection_sending({ count: queued })}

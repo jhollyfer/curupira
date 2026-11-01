@@ -34,16 +34,23 @@ export function StepWizard({
   const last = titles.length - 1
   const step = Math.min(Math.max(value, 0), last)
 
+  const moved = React.useRef(false)
+
+  function move(target: number): void {
+    moved.current = true
+    onValueChange(Math.min(Math.max(target, 0), last))
+  }
+
   // No `useMemo`: the React Compiler memoizes the object by what it reads.
   const context = {
     titles,
     step,
     isFirst: step === 0,
     isLast: step === last,
-    goTo: (target: number) =>
-      onValueChange(Math.min(Math.max(target, 0), last)),
-    next: () => onValueChange(Math.min(step + 1, last)),
-    back: () => onValueChange(Math.max(step - 1, 0)),
+    moved,
+    goTo: move,
+    next: () => move(step + 1),
+    back: () => move(step - 1),
   }
 
   return (

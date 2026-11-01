@@ -41,7 +41,8 @@ describe('ReportKindPicker', () => {
     await user.click(screen.getByText('Queimada'))
 
     expect(
-      screen.getByRole<HTMLInputElement>('radio', { name: /queimada/i }).checked,
+      screen.getByRole<HTMLInputElement>('radio', { name: /queimada/i })
+        .checked,
     ).toBe(true)
   })
 

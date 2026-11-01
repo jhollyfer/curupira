@@ -22,7 +22,10 @@ export function NoticeList({
 }: NoticeListProps): React.JSX.Element {
   return (
     <NoticeListProvider value={{ notices }}>
-      <div data-slot="notice-list" className={cn('flex flex-col gap-3', className)}>
+      <div
+        data-slot="notice-list"
+        className={cn('flex flex-col gap-3', className)}
+      >
         {children}
       </div>
     </NoticeListProvider>
