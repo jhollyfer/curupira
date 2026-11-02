@@ -2,8 +2,8 @@ import { waitForHydration } from './support/hydration'
 import {
   PUBLIC_ROUTES,
   VIEWPORTS,
+  expectTouchTargets,
   horizontalOverflow,
-  smallTouchTargets,
 } from './support/responsive'
 import { expect, test } from './support/test'
 
@@ -19,8 +19,8 @@ import { expect, test } from './support/test'
  * - in the touch project only, no visible interactive target under 44x44 CSS px.
  *
  * Both projects (`responsive-touch`, `responsive-pointer`) run the overflow check; the
- * target size is a touch rule, so the pointer project filters it out with `grep`. The specs read pages
- * only (no report is filed), so they spend nothing from the API's rate limits.
+ * target size is a touch rule, so only the project with `hasTouch` asserts it. The specs
+ * read pages only (no report is filed), so they spend nothing from the API's rate limits.
  */
 
 for (const viewport of VIEWPORTS) {
@@ -28,7 +28,9 @@ for (const viewport of VIEWPORTS) {
     test.use({ viewport: { width: viewport.width, height: viewport.height } })
 
     for (const route of PUBLIC_ROUTES) {
-      test(`${route} has no horizontal scroll`, async ({ page }) => {
+      // One navigation per route: the overflow and, with touch, the 44px targets are read
+      // from the same page, which halves the visits of the touch project.
+      test(`${route} fits the viewport`, async ({ page }, testInfo) => {
         await page.goto(route)
         await waitForHydration(page)
 
@@ -36,13 +38,8 @@ for (const viewport of VIEWPORTS) {
         await expect
           .poll(() => horizontalOverflow(page, viewport.width))
           .toBeLessThanOrEqual(0)
-      })
 
-      test(`${route} has touch targets of 44px`, async ({ page }) => {
-        await page.goto(route)
-        await waitForHydration(page)
-
-        await expect.poll(() => smallTouchTargets(page)).toEqual([])
+        await expectTouchTargets(page, Boolean(testInfo.project.use.hasTouch))
       })
     }
   })
