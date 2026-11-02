@@ -4,8 +4,6 @@ import { queryOptions } from '@tanstack/react-query'
 import { queryKeys } from '#/hooks/tanstack-query/_query-keys'
 
 import { request } from '../http'
-import { mockProfile } from '../mock-session'
-import { fromSource } from '../source'
 
 /**
  * The session. There is no store, context or auth hook in this repository on
@@ -22,10 +20,7 @@ export const accountQueryOptions = () =>
     // The `signal` comes from the library itself and is forwarded to `fetch`: without it,
     // a query that unmounts before resolving cancels nothing.
     queryFn: ({ signal }) =>
-      fromSource<AccountProfileShowResponse>({
-        mock: mockProfile,
-        api: () => request('/account', AccountProfileShowResponse, { signal }),
-      }),
+      request('/account', AccountProfileShowResponse, { signal }),
     // The 401 was already handled inside `request`, which tried to renew the session and
     // could not. Repeating the call does not change the answer, it only delays the
     // redirect to the sign-in.

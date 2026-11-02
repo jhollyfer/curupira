@@ -262,8 +262,6 @@
   "auth_submit": "Entrar",
   "panel_title": "Panel de gestión",
   "panel_sign_out": "Salir",
-  "auth_mock_title": "Cuentas de ejemplo",
-  "auth_mock_description": "Solo aparece con los datos de ejemplo, en desarrollo. Elige un rol para rellenar el formulario.",
   "common_actions": "Acciones",
   "common_confirm": "Confirmar",
   "common_delete": "Eliminar",

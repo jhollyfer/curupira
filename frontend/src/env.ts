@@ -43,23 +43,7 @@ function publicUrl(
   return value
 }
 
-/**
- * Where the data comes from. `mock` serves `src/data/*` (the API is not ready);
- * `api` talks to `VITE_API_URL`. This is the single switch: every query in
- * `integrations/tanstack-query/queries/` reads it through `source()`, so moving to the API
- * changes the value here and the body of each `queryFn`, never a screen.
- */
-export type DataSource = 'mock' | 'api'
-
-function dataSource(value: string | undefined): DataSource {
-  if (value === 'api') return 'api'
-  if (value === undefined || value === '' || value === 'mock') return 'mock'
-
-  throw new Error(`VITE_DATA_SOURCE must be "mock" or "api": "${value}".`)
-}
-
 export const env = {
-  VITE_DATA_SOURCE: dataSource(import.meta.env.VITE_DATA_SOURCE),
   VITE_API_URL: publicUrl(
     'VITE_API_URL',
     import.meta.env.VITE_API_URL,

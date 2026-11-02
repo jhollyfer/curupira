@@ -262,8 +262,6 @@
   "auth_submit": "Sign in",
   "panel_title": "Management panel",
   "panel_sign_out": "Sign out",
-  "auth_mock_title": "Example accounts",
-  "auth_mock_description": "Only shown with the example data, in development. Pick a role to fill in the form.",
   "common_actions": "Actions",
   "common_confirm": "Confirm",
   "common_delete": "Delete",

@@ -5,44 +5,18 @@ import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
 import { nitro } from 'nitro/vite'
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-import { stripExampleData } from './scripts/strip-example-data.ts'
-
-const config = defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), 'VITE_')
-
-  // The frontend server's security headers (`frontend.md` §3.3):
-  // Nitro sends none by default, and without `frame-ancestors` the sign-in
-  // screen can be embedded in an `iframe` by another site. `connect-src` and
-  // `img-src` open only the API and, with presigned upload, the storage's
-  // public origin (`VITE_STORAGE_URL`). `unsafe-inline` in script and style because
-  // Start writes the hydration scripts inline and emits no nonce.
-  // Production build only: the dev server needs the HMR websocket and eval.
-  // _doc-lib/nitro.md#config; https://nitro.build/docs/routing (route rules).
-  const origins = ["'self'", env.VITE_API_URL, env.VITE_STORAGE_URL]
-    .filter(Boolean)
-    .join(' ')
-  const tiles = 'https://tile.openstreetmap.org'
-  const csp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline'",
-    "style-src 'self' 'unsafe-inline'",
-    `img-src ${origins} ${tiles} data: blob:`,
-    "font-src 'self' data:",
-    `connect-src ${origins}`,
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-    "object-src 'none'",
-  ].join('; ')
-
+const config = defineConfig(() => {
+  // The security headers (CSP, HSTS) live in `src/server.ts`: the policy reads
+  // `STORAGE_PUBLIC_URL` per request, and `vite.config.ts` never sees a runtime value.
+  //
   // Never stored by a browser, a proxy or the service worker: the panel and the sign-in
   // are rendered for one session. Every locale prefix has its own entry (Nitro route
   // rules match the path as it is served).
   const noStore = { headers: { 'Cache-Control': 'no-store' } }
-  let securityHeaders: Record<string, { headers: Record<string, string> }> = {
+  const routeRules: Record<string, { headers: Record<string, string> }> = {
     '/gestao/**': noStore,
     '/sign-in': noStore,
     '/en/gestao/**': noStore,
@@ -50,27 +24,10 @@ const config = defineConfig(({ mode }) => {
     '/es/gestao/**': noStore,
     '/es/sign-in': noStore,
   }
-  if (mode === 'production') {
-    securityHeaders = {
-      ...securityHeaders,
-      '/**': {
-        headers: {
-          'Content-Security-Policy': csp,
-          'X-Content-Type-Options': 'nosniff',
-          'Referrer-Policy': 'strict-origin-when-cross-origin',
-          // No `preload`: joining the list is a commitment that cannot be undone.
-          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-        },
-      },
-    }
-  }
-
   return {
     resolve: { tsconfigPaths: true },
     plugins: [
       devtools(),
-      // `VITE_DATA_SOURCE=api` builds ship none of `src/data/*` (scripts/strip-example-data.ts).
-      stripExampleData(env.VITE_DATA_SOURCE),
       // The three languages (_standards/i18n.md §2). The compiler options live in
       // `project.inlang/paraglide.config.ts`, read by this plugin and by the CLI
       // (_doc-lib/paraglide.md#/vite).
@@ -89,7 +46,7 @@ const config = defineConfig(({ mode }) => {
       // CI environment variables - Vercel, Netlify, Cloudflare and five more identify
       // themselves - and only falls back to `node-server` when none answers.
       // It is what `Dockerfile-production` expects.
-      nitro({ preset: 'node-server', routeRules: securityHeaders }),
+      nitro({ preset: 'node-server', routeRules }),
       tailwindcss(),
       tanstackStart({
         router: {

@@ -262,8 +262,6 @@
   "auth_submit": "Entrar",
   "panel_title": "Painel da gestão",
   "panel_sign_out": "Sair",
-  "auth_mock_title": "Contas de exemplo",
-  "auth_mock_description": "Só aparece com os dados de exemplo, em desenvolvimento. Escolha um papel para preencher o formulário.",
   "common_actions": "Ações",
   "common_confirm": "Confirmar",
   "common_delete": "Excluir",

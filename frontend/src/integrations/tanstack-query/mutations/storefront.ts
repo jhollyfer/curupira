@@ -6,13 +6,11 @@ import {
 import type { StorefrontReportCreatePayload } from '@curupira/shared'
 import { useMutation } from '@tanstack/react-query'
 
-import { randomProtocol, saveSubmittedReport } from '#/data/reports'
 import type { MutationProps } from '#/hooks/tanstack-query/_mutation-props'
 import type { ReportDraft } from '#/lib/report-queue'
 import { m } from '#/paraglide/messages'
 
 import { HTTPError, request, send } from '../http'
-import { fromSource } from '../source'
 
 /**
  * The storage answers 403 to a PUT whose signature is no longer valid. The upload URL
@@ -132,30 +130,6 @@ async function sendToApi(
   })
 }
 
-/** Time the example body takes, so the sending state is visible while developing. */
-const MOCK_LATENCY = 700
-
-async function sendToMock(
-  draft: ReportDraft,
-): Promise<StorefrontReportCreateResponse> {
-  // The example body must fail like the network does, or the offline path (the
-  // queue) could never be exercised without the backend.
-  if (!navigator.onLine) {
-    throw new HTTPError({
-      message: m.common_error_network(),
-      status: 0,
-      code: 'NETWORK_ERROR',
-    })
-  }
-
-  await new Promise((resolve) => setTimeout(resolve, MOCK_LATENCY))
-
-  const protocol = randomProtocol()
-  saveSubmittedReport(protocol, draft.kind, new Date().toISOString())
-
-  return { protocol }
-}
-
 /**
  * The one function that leaves the device with a report: used by the form and by
  * the offline queue's flush, so a queued report goes exactly the way a live one does.
@@ -163,10 +137,7 @@ async function sendToMock(
 export function sendReport(
   draft: ReportDraft,
 ): Promise<StorefrontReportCreateResponse> {
-  return fromSource({
-    mock: () => sendToMock(draft),
-    api: () => sendToApi(draft),
-  })
+  return sendToApi(draft)
 }
 
 export function useStorefrontReportCreateMutation(
