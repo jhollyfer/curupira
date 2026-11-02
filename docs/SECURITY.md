@@ -323,4 +323,4 @@ Resumo das correções por tema:
 | IP no log do proxy (Traefik e Coolify) | não verificável pelo repositório |
 | `VITE_STORAGE_URL` | indefinida; o CI só avisa |
 | Cron de `storages:prune` | não existe no repositório; sem ele as fotos abandonadas ficam (`ARCHITECTURE.md` §9.1) |
-| Suíte `functional` contra o MinIO real | não rodada; dois testes falham só no emulador S3 (moto), ver `TEST-PLAN.md` §7 |
+| Suíte `functional` contra o MinIO real | roda no CI (3 shards com MinIO em container) e passou nos PRs #6 e #8; localmente, sem Docker, dois testes falham só no emulador S3 (moto), ver `TEST-PLAN.md` §7 |

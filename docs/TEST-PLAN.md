@@ -14,7 +14,7 @@
 | E2E do backend | Japa, suíte `functional` (app inteiro, Postgres e MinIO reais) | `backend/app/**/*.e2e.spec.ts` | PR e `main`, em 3 shards | 69 arquivos; 367 testes passam e 2 falham só pelo emulador S3 (§7) |
 | `shared/` | Vitest | `shared/src/**/*.test.ts` | hook de commit, PR e `main` | 5 arquivos, 21 testes |
 | Unitário do frontend | Vitest + Testing Library | `frontend/src/**/*.test.ts(x)` e `frontend/scripts/*.test.ts` | hook de commit, PR e `main` | 53 arquivos, 303 testes |
-| E2E do frontend | Playwright contra a API real (axe-core em cada tela) | `frontend/e2e/report-flow.spec.ts` (projeto `mobile`, Pixel 7), `management-flow.spec.ts` (projeto `desktop`, 1440 x 900), `responsive-public.spec.ts` (projetos `responsive-touch` e `responsive-pointer`) e `responsive-panel.spec.ts` (projeto `responsive`) | job `e2e` de `main-check-frontend.yml` | 4 specs, 264 testes (6, 5, 231 e 22); no PR #6 o job estourou o tempo (§1.1) |
+| E2E do frontend | Playwright contra a API real (axe-core em cada tela) | `frontend/e2e/report-flow.spec.ts` (projeto `mobile`, Pixel 7), `management-flow.spec.ts` (projeto `desktop`, 1440 x 900), `responsive-public.spec.ts` (projetos `responsive-touch` e `responsive-pointer`) e `responsive-panel.spec.ts` (projeto `responsive`) | job `e2e` de `main-check-frontend.yml` | 4 specs: 121 testes no CI (matriz pública de 4 larguras) e 187 com a matriz completa; o job leva cerca de 13,6 min (§1.1) |
 
 ### 1.1 Responsividade
 
@@ -27,16 +27,20 @@ deitado), 768 x 1024, 1024 x 768, 1440 x 900 e 1920 x 1080.
 | `responsive-public.spec.ts` | `responsive-pointer` (Desktop Chrome) | o mesmo, só a rolagem horizontal, porque o alvo de 44 px é regra de toque (77 testes) |
 | `responsive-panel.spec.ts` | `responsive` (Desktop Chrome) | painel nas 7 larguras: 12 telas sem rolagem horizontal e sem nenhuma violação de axe (qualquer impacto, não só sério e crítico); o detalhe da ocorrência cabe e o menu (gaveta no celular, barra lateral daí em diante) abre e navega; os filtros ficam na URL ao trocar a largura; o OPERADOR não chega a cronograma, bairros e contas, nem pelo menu nem digitando o endereço, em todas as larguras (22 testes) |
 
-Estado do código desta branch: o Playwright roda com 1 worker (`workers: 1` em `playwright.config.ts` e
-`--workers=1` no workflow), `globalTimeout` de 15 minutos e as 7 larguras também no CI. A rolagem horizontal é
-medida contra a largura pedida, e não só contra `innerWidth`, porque no celular emulado o navegador alarga a
-viewport até caber o conteúdo e o teste passaria numa página mais larga que o aparelho.
+Estado atual (PR #8, mesclado): a matriz pública do CI tem 4 larguras (360, 768, 1440 e 1920, 88 testes) e as
+7 larguras (154 testes) valem localmente ou com `E2E_FULL_MATRIX=1`. Os projetos públicos rodam em paralelo
+(`fullyParallel`) porque só leem páginas; os fluxos que gravam no banco e gastam o limite de 5 logins por minuto
+ficam encadeados por `dependencies` (`mobile`, depois `desktop`, depois `responsive` do painel). O número de
+workers vem de `E2E_WORKERS` (4 no CI, 2 local), o `globalTimeout` é de 25 minutos e o workflow não força mais
+`--workers=1`. A rolagem horizontal é medida contra a largura pedida, e não só contra `innerWidth`, porque no
+celular emulado o navegador alarga a viewport até caber o conteúdo e o teste passaria numa página mais larga que
+o aparelho.
 
-Em revisão no PR #8 (`fix/e2e-responsividade-tempo`, ainda não mesclado; nada disto vale até o merge): matriz
-pública de 4 larguras no CI (360, 768, 1440 e 1920) e as 7 larguras localmente ou com `E2E_FULL_MATRIX=1`,
-projetos públicos em paralelo, fluxos encadeados por `dependencies`, `globalTimeout` de 25 minutos e o workflow
-sem `--workers=1`. O motivo é o CI do PR #6: o job `Frontend - E2E (Playwright)` falhou por tempo (242 testes
-passaram, 22 não rodaram, limite global de 900 s), sem falha funcional.
+Por que mudou: no PR #6 o job `Frontend - E2E (Playwright)` falhou por tempo (242 testes passaram, 22 não
+rodaram, limite global de 900 s), sem falha funcional. Com a matriz reduzida o CI roda 121 testes (187 com a
+matriz completa) e o job do PR #8 passou em 13,6 minutos, dentro do limite de 25. O gargalo é o servidor de dev
+(um processo só), então o ganho veio de navegar menos, não do paralelismo; rodar o E2E contra o build de produção
+daria folga maior e fica como melhoria futura.
 
 Redes que cobram o que ninguém lembra:
 
@@ -168,15 +172,16 @@ aqui sem cópia: `_standards/tooling.md` §10.1. Deste projeto:
 
 ## 7. O que não roda sem infraestrutura
 
-- A suíte `functional` precisa de Postgres e MinIO reais. O comando completo
-  (`pnpm test:e2e` no `backend/`) não foi rodado contra o MinIO do compose; o caminho do bucket foi
-  exercitado só contra um S3 emulado (moto), com 367 testes passando e 2 falhando só por limitação dele:
+- A suíte `functional` precisa de Postgres e MinIO reais. No CI ela roda em 3 shards, cada um com o próprio
+  Postgres e um MinIO em container (`main-check-backend.yml`), e passou nos PRs #6 e #8. Localmente, sem Docker, a
+  suíte foi exercitada contra um S3 emulado (moto) e 2 testes falham só por limitação dele:
   `refuses with 422 when what was uploaded does not have the declared size` e `a signed URL stops being valid
-  after it expires`. Rodar no CI ou local com `docker compose up -d` antes de dar a fase 2 por provada.
+  after it expires`. Com `docker compose up -d` o comando completo (`pnpm test:e2e` no `backend/`) usa o MinIO do
+  compose.
 - `pnpm di:check` exige banco.
 - O Playwright precisa do Chromium (`pnpm exec playwright install chromium` ou `E2E_CHROMIUM_PATH`).
 - O E2E do frontend depende da API no ar com `SITE_URL` igual à origem do app (`http://localhost:<E2E_PORT>`).
-- O job de E2E do CI nunca foi executado no GitHub.
+- O job de E2E do frontend no CI roda contra a API real (imagem do backend) e o MinIO em container; passou no PR #8.
 
 ## 8. Teste manual antes do release
 
