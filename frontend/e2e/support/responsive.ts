@@ -1,7 +1,8 @@
+import { expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
-/** The widths the resident app is held to, phone to wide monitor (height is the usual one). */
-export const VIEWPORTS = [
+/** Every width the resident app is held to, phone to wide monitor (height is the usual one). */
+const ALL_VIEWPORTS = [
   { name: 'phone-360', width: 360, height: 740 },
   { name: 'phone-412', width: 412, height: 915 },
   { name: 'phone-landscape', width: 740, height: 360 },
@@ -10,6 +11,22 @@ export const VIEWPORTS = [
   { name: 'desktop-1440', width: 1440, height: 900 },
   { name: 'desktop-1920', width: 1920, height: 1080 },
 ] as const
+
+/** The widths that cover each layout change: phone, tablet, desktop and wide monitor. */
+const CI_WIDTHS: ReadonlyArray<number> = [360, 768, 1440, 1920]
+
+/**
+ * The matrix a run uses. The full one locally and with `E2E_FULL_MATRIX=1`; in CI the
+ * four widths above. The dev server is one process and the matrix is about 150 visits,
+ * so the full matrix alone took longer than the job's cap; the other widths sit between
+ * two of these and are checked before a release, not on every push.
+ */
+function selectViewports(): ReadonlyArray<(typeof ALL_VIEWPORTS)[number]> {
+  if (!process.env.CI || process.env.E2E_FULL_MATRIX) return ALL_VIEWPORTS
+  return ALL_VIEWPORTS.filter((viewport) => CI_WIDTHS.includes(viewport.width))
+}
+
+export const VIEWPORTS = selectViewports()
 
 /** The public routes, plus the sign-in and a missing page (also part of the app a resident can reach). */
 export const PUBLIC_ROUTES = [
@@ -81,4 +98,20 @@ export function smallTouchTargets(page: Page): Promise<Array<string>> {
 
     return small
   })
+}
+
+/**
+ * The 44px target rule, asserted only when the project has touch. The branch lives here
+ * and not in the test body because the Playwright lint rejects a conditional inside a
+ * test, and one navigation serves both reads (two tests would visit every route twice).
+ *
+ * Polled, not read once: the images settle a moment after hydration.
+ */
+export async function expectTouchTargets(
+  page: Page,
+  touch: boolean,
+): Promise<void> {
+  if (touch) {
+    await expect.poll(() => smallTouchTargets(page)).toEqual([])
+  }
 }

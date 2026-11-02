@@ -240,7 +240,7 @@ jobs:
           E2E_OPERATOR_EMAIL: operador@mail.com
           E2E_OPERATOR_PASSWORD: Ci-Operador-1!
           E2E_API_URL: http://localhost:3333
-        run: pnpm --filter ./frontend --fail-if-no-match run test:e2e --workers=1 --add-reporter=github
+        run: pnpm --filter ./frontend --fail-if-no-match run test:e2e --add-reporter=github
 
       - name: Relatório do Playwright
         if: ${{ !cancelled() }}
