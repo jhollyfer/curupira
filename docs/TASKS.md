@@ -6,7 +6,7 @@
 > `.specs/features/<feature>/tasks.md`; aqui a linha aponta para lá.
 > Atualiza no mesmo commit em que a tarefa começa ou termina.
 
-**Resumo:** 25 tarefas · 23 feitas · 1 em andamento · 1 bloqueada (atualizado 2026-11-02)
+**Resumo:** 25 tarefas · 24 feitas · 1 bloqueada (atualizado 2026-11-02)
 
 Status: `A fazer` · `Em andamento` · `Feita` · `Bloqueada` (com motivo nas notas).
 Prioridade: `Alta` · `Média` · `Baixa`.
@@ -29,7 +29,7 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | # | Tarefa | Prioridade | Status | Notas |
 |---|---|---|---|---|
 | 2.1 | Domínio, models, repositórios e migrations | Alta | Feita | seis entidades, repositórios Lucid e em memória, 11 migrations |
-| 2.2 | Features `storefront` (bairros, cronograma, avisos, fotos, denúncia, protocolo, mapa) | Alta | Feita | e2e do backend: 367 passam e 2 falham só pelo emulador S3 (moto); contra o MinIO real ainda não rodado (`TEST-PLAN.md` §7) |
+| 2.2 | Features `storefront` (bairros, cronograma, avisos, fotos, denúncia, protocolo, mapa) | Alta | Feita | e2e do backend passam no CI, em 3 shards contra Postgres e MinIO reais (PRs #6 e #8; `TEST-PLAN.md` §7) |
 | 2.3 | Features `management` (ocorrências, cronograma, bairros, avisos, contas) | Alta | Feita | mais `authentication`, `account` e `storages` |
 | 2.4 | Segurança: throttles, EXIF, Origin, mimetype | Alta | Feita | `docs/SECURITY.md`; a auditoria do código é a 5.2 |
 | 2.5 | Seeders com bairros reais de Benjamin Constant | Média | Feita | 12 bairros e cronograma de exemplo; a prefeitura confere antes de abrir (`PRD.md` §8) |
@@ -54,14 +54,14 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | 4.3 | Cronograma e bairros | Média | Feita | |
 | 4.4 | Avisos e contas | Média | Feita | |
 
-## Fase 5 · Fechamento (3/5)
+## Fase 5 · Fechamento (4/4)
 
 | # | Tarefa | Prioridade | Status | Notas |
 |---|---|---|---|---|
-| 5.1 | E2E (fluxo de denúncia, protocolo, painel, offline) | Alta | Feita | 11 testes de Playwright contra a API real, com axe em cada tela; o MinIO real ainda não foi executado; o job de E2E do CI rodou no PR #6 e estourou o tempo (5.4) |
+| 5.1 | E2E (fluxo de denúncia, protocolo, painel, offline) | Alta | Feita | 11 testes de Playwright contra a API real, com axe em cada tela; o job de E2E do CI roda contra a API real e o MinIO real e passou no PR #8, em 13,6 min |
 | 5.2 | Auditoria de segurança do código | Alta | Feita | correções aplicadas; achados e residuais em `docs/SECURITY.md` §10 |
 | 5.3 | Revisão de acessibilidade e desempenho em rede lenta | Média | Feita | axe sem violações nas telas do morador (360x740 e 412x915) e do painel (1440x900 e 1024x768), nos temas claro e escuro; movimento reduzido por peça; o teste manual antes do release continua em `TEST-PLAN.md` §8 |
-| 5.4 | Responsividade do app e do painel, e revisão de acessibilidade e desempenho dela | Alta | Em andamento | layout feito e documentado (`DESIGN.md` §4); testes `responsive-*` (264 de E2E no total). Pendências: (a) o E2E estoura o tempo no CI (PR #6: 242 passaram, 22 não rodaram, limite de 900 s), a correção está em revisão no PR #8, ainda não mesclado; (b) 1 achado moderado de axe (`region`) nos menus abertos do shadcn; (c) links de bairro com 38 px de largura no tablet escuro; (d) desempenho do layout novo em rede lenta |
+| 5.4 | Responsividade do app e do painel, e revisão de acessibilidade e desempenho dela | Alta | Feita | layout feito e documentado (`DESIGN.md` §4); testes `responsive-*` no CI (121 de E2E no total, matriz pública de 4 larguras; 187 com a matriz completa). Resíduos, registrados em `MEMORY.md`: (a) 1 achado moderado de axe (`region`) nos menus abertos do shadcn; (b) links de bairro com 38 px de largura no tablet escuro; (c) desempenho do layout novo em rede lenta, ainda não medido |
 
 ## Fase N · Ideias (fora do escopo atual)
 
