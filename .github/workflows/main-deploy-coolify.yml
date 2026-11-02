@@ -23,8 +23,8 @@ permissions:
 
 # Só os endereços públicos do site, para o smoke test. O alvo do deploy não está aqui.
 env:
-  URL_API: https://api-curupira.maiyu.com.br
-  URL_APP: https://curupira.maiyu.com.br
+  APP_SERVER_URL: https://api-curupira.maiyu.com.br
+  APP_CLIENT_URL: https://curupira.maiyu.com.br
 
 jobs:
   deploy:
@@ -118,7 +118,7 @@ jobs:
           set -euo pipefail
 
           for tentativa in $(seq 1 8); do
-            if curl -fsS --max-time 10 "${URL_API}/health-check" > /dev/null; then
+            if curl -fsS --max-time 10 "${APP_SERVER_URL}/health-check" > /dev/null; then
               echo "API respondeu na tentativa ${tentativa}."
               break
             fi
@@ -131,7 +131,7 @@ jobs:
           done
 
           for tentativa in $(seq 1 8); do
-            corpo=$(curl -sS --max-time 10 "${URL_APP}/revision.txt" | tr -d '\000' || true)
+            corpo=$(curl -sS --max-time 10 "${APP_CLIENT_URL}/revision.txt" | tr -d '\000' || true)
             if printf '%s' "${corpo}" | grep -q "${GITHUB_SHA}"; then
               echo "App na revisão ${GITHUB_SHA} (tentativa ${tentativa})."
               exit 0
