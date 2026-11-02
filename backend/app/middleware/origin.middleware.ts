@@ -21,7 +21,7 @@ import { corsOrigins } from '#config/cors'
  * - Neither: refuse. A legitimate server-to-server client enters through its own
  *   signed route, not through an exception here.
  *
- * Holds in every environment, development included: `SITE_URL` in `.env`
+ * Holds in every environment, development included: `CORS_ORIGINS` in `.env`
  * lists the local frontend.
  */
 export default class OriginMiddleware {

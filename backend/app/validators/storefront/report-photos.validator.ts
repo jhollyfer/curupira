@@ -1,15 +1,14 @@
-import { REPORT_PHOTO_MIMETYPES } from '@curupira/shared'
+import { LIST_LIMITS, REPORT_PHOTO_MIMETYPES } from '@curupira/shared'
 
 import { vine } from '#core/validator'
 import type { Infer } from '#core/validator'
-import env from '#start/env'
 
 /**
- * The per-photo ceiling, in bytes, from the environment (no default): an anonymous route
- * must not inherit the panel library's gigabyte ceiling. Refused **before** any signature,
- * so a photo over the limit never gets a URL and never reaches the bucket.
+ * The per-photo ceiling, in bytes (`LIST_LIMITS.REPORT_PHOTO_SIZE` in `@curupira/shared`): an
+ * anonymous route must not inherit the panel library's gigabyte ceiling. Refused **before**
+ * any signature, so a photo over the limit never gets a URL and never reaches the bucket.
  */
-export const REPORT_PHOTO_MAX_SIZE = env.get('REPORT_PHOTO_MAX_SIZE')
+export const REPORT_PHOTO_MAX_SIZE = LIST_LIMITS.REPORT_PHOTO_SIZE
 
 /**
  * What `POST /storefront/report-photos` receives: metadata, never bytes. Mirror (path and

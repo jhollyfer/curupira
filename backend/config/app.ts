@@ -9,7 +9,7 @@ import { TrustedProxies } from '#core/trusted-proxies'
  * URLs to your application. For example, when sending emails, images should
  * use absolute URLs.
  */
-export const serverUrl = env.get('APP_URL')
+export const serverUrl = env.get('APP_SERVER_URL')
 
 /**
  * The configuration settings used by the HTTP server

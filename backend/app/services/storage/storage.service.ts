@@ -85,7 +85,7 @@ export default class StorageService extends StorageContract {
     return drive.use().getSignedUrl(path, { expiresIn: URL_TTL })
   }
 
-  /** The whole object. Only for bounded files (`REPORT_PHOTO_MAX_SIZE`), never the library ones. */
+  /** The whole object. Only for bounded files (`LIST_LIMITS.REPORT_PHOTO_SIZE`), never the library ones. */
   async read(path: string): Promise<Uint8Array> {
     return drive.use().getBytes(path)
   }
