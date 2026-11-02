@@ -47,7 +47,7 @@ flowchart LR
 | API para bucket | leitura e escrita | credencial `STORAGE_KEY` do usuário `app-rw`; bucket privado; leitura da gestão por URL assinada de 15 min (foto no detalhe) e download da biblioteca por URL de 5 min | `backend/infra/minio/minio-setup.sh`, `backend/config/drive.ts`, `backend/app/services/storage/storage.service.ts` |
 | navegador para CDN de tiles | mapa | CSP libera só `https://tile.openstreetmap.org` em `img-src` | `frontend/vite.config.ts` |
 | navegador para cache do aparelho | painel e entrada | service worker não guarda `/gestao` nem `/sign-in` (nem as versões `/en` e `/es`); Nitro responde `Cache-Control: no-store` nelas; o sign-out apaga o cache `pages` | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
-| CI para produção | GitHub e Coolify | `COOLIFY_TOKEN` em secret, uuid conferido, smoke test por revisão; build do app reprova sem `.env.production` ou sem `VITE_DATA_SOURCE=api` | `.github/workflows/main-deploy-coolify.yml`, `.github/workflows/main-build-frontend.yml` |
+| CI para produção | GitHub e Coolify | `COOLIFY_TOKEN` em secret, uuid conferido, smoke test por revisão; build do app reprova sem `https` em `VITE_API_URL` e `VITE_SITE_URL` | `.github/workflows/main-deploy-coolify.yml`, `.github/workflows/main-build-frontend.yml` |
 
 ### 2.3 Ativos
 
@@ -130,9 +130,9 @@ flowchart LR
 - Log de acesso do Traefik no Coolify: se ele grava o IP do morador junto com a rota `POST /storefront/reports`,
   a promessa "o servidor não guarda nada sobre quem enviou" fica mais fraca. Fora do repositório; não
   verificável daqui (residual, §10).
-- `VITE_STORAGE_URL`: ainda não definida (o endereço do bucket de produção é desconhecido). Sem ela a CSP de
-  produção bloqueia o `PUT` da foto; com valor largo demais, abre `connect-src`. O build do app só avisa
-  (`main-build-frontend.yml`); é obrigatória antes do primeiro deploy (`DECISIONS.md` #15).
+- `STORAGE_PUBLIC_URL`: ainda não definida em produção (o endereço do bucket é desconhecido). Lida por requisição em
+  `frontend/src/server.ts` (só a origem entra na CSP, sem caminho; valor que não é URL não abre nada). Sem ela a CSP
+  bloqueia o `PUT` da foto; é obrigatória antes do primeiro deploy (`DECISIONS.md` #27).
 - `TRUSTED_PROXIES`: ao mudar o valor, testar com o de produção (`loopback,uniquelocal`), não com o do
   `.env.example` (A-01, §10).
 - Intervalo de coordenadas aceito: o validator limita a latitude e longitude do mundo, e o frontend prende o
@@ -210,12 +210,15 @@ flowchart LR
 - Rotação: `APP_KEY` (invalida sessões e dados cifrados), `STORAGE_SECRET`, `COOLIFY_TOKEN` e
   `DOCKERHUB_TOKEN` pelo painel de cada provedor; quem rotaciona é o dono, a cada troca de pessoa com acesso
   ou suspeita de vazamento. Prazo regular de rotação: a definir.
-- A senha do dono nasce de `SEED_OWNER_PASSWORD`, sem default; o seeder para sem ela. O seeder só roda em
-  `development` e `test`: em produção o primeiro administrador sai de `node ace users:create-owner` (e-mail e
-  senha por argumento ou por `SEED_OWNER_EMAIL` e `SEED_OWNER_PASSWORD`; recusa senha fraca; não faz nada se
-  já existe administrador ativo), de preferência pela variável, porque argumento fica no histórico do shell.
-- Dado de exemplo do frontend usa o domínio `@exemplo.invalid`, e o build com `VITE_DATA_SOURCE=api` tira
-  `src/data/**` do bundle (`frontend/scripts/strip-example-data.ts`).
+- A senha do dono nasce de `SEED_OWNER_PASSWORD`, sem default; o seed do dono liga pela presença dela, em qualquer
+  ambiente (vazia, é pulado com uma linha de log), e com a senha sem o `SEED_OWNER_EMAIL` o seeder para. A senha das
+  contas de demonstração é `SEED_DEMO_PASSWORD`, também sem default: **vazia em produção**, porque preencher cria uma
+  conta por papel com e-mail previsível (`<papel>@example.com`) e senha comum. O primeiro administrador de produção
+  sai de `node ace users:create-owner` (e-mail e senha por argumento ou por `SEED_OWNER_EMAIL` e
+  `SEED_OWNER_PASSWORD`; recusa senha fraca; não faz nada se já existe administrador ativo), de preferência pela
+  variável, porque argumento fica no histórico do shell.
+- O frontend não carrega dado nem conta de exemplo: a demonstração é o seeder do backend, ligado por `SEED_DEMO_PASSWORD`
+  (vazia em produção) e com `<papel>@example.com` (`DECISIONS.md` #26).
 
 ## 7. Dependências
 
@@ -253,7 +256,7 @@ pelo protocolo.
 | Janela de até 3 minutos em que quem tem a URL de envio pode sobrescrever o objeto já higienizado | residual (A-09); a URL vale 3 minutos e não é divulgada |
 | Travar o login de uma conta por e-mail conhecido (20 tentativas por hora, bloqueio de 10 min) | aceito (A-10): o teto por conta protege contra preenchimento de credencial e custa essa troca |
 | `Domain=.maiyu.com.br` largo | residual (S-03); o prefixo evita a colisão de nome, e subdomínio de terceiros continua enxergando o cookie |
-| `VITE_STORAGE_URL` fora da CSP em produção | pendente: a foto não sobe até ser definida; o CI só avisa |
+| `STORAGE_PUBLIC_URL` fora da CSP em produção | pendente: a foto não sobe até ser definida |
 
 ## 9. Checklist de revisão
 
@@ -283,13 +286,13 @@ Demais achados, um a um (todos com correção e teste no mesmo ciclo):
 
 | Id | Achado | Status | Onde está |
 |---|---|---|---|
-| A-02 | o `.env.production` do frontend nunca foi versionado e o build do CI saía em modo de exemplo, com a API em `localhost` e a CSP fechada para ela: o morador acharia que enviou a denúncia | corrigido: arquivo versionado e `main-build-frontend.yml` reprova o build sem `VITE_DATA_SOURCE=api` | `frontend/.env.production`, `.github/workflows/main-build-frontend.yml` |
+| A-02 | o `.env.production` do frontend nunca foi versionado e o build do CI saía em modo de exemplo, com a API em `localhost` e a CSP fechada para ela: o morador acharia que enviou a denúncia | corrigido: não há mais modo de exemplo (`DECISIONS.md` #26) e `main-build-frontend.yml` reprova o build sem `https` nos `VITE_*` | `.github/workflows/main-build-frontend.yml` |
 | A-03 | o service worker guardava o HTML de `/gestao/*` e nada o limpava no sign-out | corrigido: sem `/gestao` e `/sign-in` no cache, `no-store`, `caches.delete` no sign-out | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
 | A-04 | o SSR de `/acompanhar` chamava a API sem o IP do visitante: todas as consultas caíam no mesmo balde de 30 por 10 minutos | corrigido: o SSR repassa `X-Forwarded-For` | `frontend/src/integrations/tanstack-query/http.server.ts` |
 | A-05 | o IP do denunciante ficava em texto claro na chave de `rate_limits` e o 429 o registrava em log | corrigido: HMAC do IP como chave; sem IP no log de 429 anônimo | `backend/start/limiter.ts`, `backend/app/exceptions/handler.ts` |
 | A-06 | foto enviada que nunca virou denúncia não era podada, e a foto pendente guarda o objeto cru | corrigido: `storages:prune` apaga também a `UPLOADED` de denúncia sem denúncia há mais de 24 h (exige cron) | `backend/commands/storages-prune.command.ts` |
 | A-07 | `sharp` 0.34 com três avisos HIGH no `pnpm audit --prod` | corrigido: `sharp` 0.35.5; `pnpm audit --prod --audit-level=high` sem HIGH | `backend/package.json` |
-| A-11 | dados de exemplo do painel com e-mails e telefones de aparência real no bundle | corrigido: domínio `@exemplo.invalid`, telefones fictícios, fora do bundle de produção | `frontend/src/data/management/*`, `frontend/scripts/strip-example-data.ts` |
+| A-11 | dados de exemplo do painel com e-mails e telefones de aparência real no bundle | corrigido: o dado de exemplo saiu do frontend e vive só no seeder de demonstração do backend (`DECISIONS.md` #26) | `backend/database/seeders/demo.seed.ts` |
 | A-12 | o dono não é semeado em produção e faltava caminho para criar o primeiro administrador | corrigido: `node ace users:create-owner` | `backend/commands/users-create-owner.command.ts` |
 | S-01 | `?redirect=` recusava só `//` e `/\`, e `/%09/evil.com` poderia sair do site | corrigido: validação por origem e sem caractere de controle | `frontend/src/lib/redirect-search.ts` |
 | S-02 | o `fetch` do SSR não manda `Origin` e o backend exige `Origin` em método não seguro: o refresh feito no servidor levaria 403 | corrigido: o SSR envia `Origin` igual a `VITE_SITE_URL` (não reproduzido ao vivo com token expirado) | `frontend/src/integrations/tanstack-query/http.server.ts` |
@@ -306,13 +309,13 @@ Resumo das correções por tema:
 | Foto de denúncia | URL `PUT` de 3 minutos (antes 15) | `backend/app/features/storefront/report-photos/create/create.use-case.ts` |
 | Foto de denúncia | `storages:prune` apaga também foto `UPLOADED` sem denúncia há mais de 24 h | `backend/commands/storages-prune.command.ts` |
 | Processamento de imagem | `sharp` 0.35.5, limite de 50 milhões de pixels e no máximo 2 conversões simultâneas | `backend/app/services/photo-sanitizer/photo-sanitizer.service.ts`, `backend/app/core/semaphore.ts` |
-| Primeiro administrador | `node ace users:create-owner`, porque o seeder só roda em `development` e `test` | `backend/commands/users-create-owner.command.ts` |
+| Primeiro administrador | `node ace users:create-owner` (ou o seed do dono, com `SEED_OWNER_PASSWORD` presente); `SEED_DEMO_PASSWORD` vazia em produção | `backend/commands/users-create-owner.command.ts` |
 | Cache do aparelho | service worker sem `/gestao` e `/sign-in`; `no-store`; sign-out apaga o cache `pages` | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
 | SSR para a API | repassa `X-Forwarded-For` e `Origin` | `frontend/src/integrations/tanstack-query/http.server.ts` |
 | Redirecionamento | `?redirect=` validado por origem e sem caractere de controle | `frontend/src/lib/redirect-search.ts` |
-| Dados de exemplo | saem do bundle com `VITE_DATA_SOURCE=api`; domínio `@exemplo.invalid` | `frontend/scripts/strip-example-data.ts` |
+| Dados de exemplo | só no seeder de demonstração, ligado por `SEED_DEMO_PASSWORD` | `backend/database/seeders/demo.seed.ts` |
 | Texto de privacidade | passa a dizer que o IP vira um hash guardado por cerca de 2 horas e que o ponto do mapa é aproximado | `frontend/messages/*.json` (`privacy_anonymous_text`, `privacy_data_text`) |
-| Esteira | `.env.production` versionado e conferido no build do app | `.github/workflows/main-build-frontend.yml` |
+| Esteira | `VITE_*` do build conferidos como `https` | `.github/workflows/main-build-frontend.yml` |
 
 ### 10.1 Residuais e o que falta
 
@@ -321,6 +324,6 @@ Resumo das correções por tema:
 | A-09, A-10, A-08 e `Domain` largo (S-03) | descritos acima e no §8.1 |
 | Retenção automática de denúncia, foto e contato | inexistente; a prefeitura define o prazo (`PRD.md` §8) |
 | IP no log do proxy (Traefik e Coolify) | não verificável pelo repositório |
-| `VITE_STORAGE_URL` | indefinida; o CI só avisa |
+| `STORAGE_PUBLIC_URL` | indefinida em produção |
 | Cron de `storages:prune` | não existe no repositório; sem ele as fotos abandonadas ficam (`ARCHITECTURE.md` §9.1) |
 | Suíte `functional` contra o MinIO real | roda no CI (3 shards com MinIO em container) e passou nos PRs #6 e #8; localmente, sem Docker, dois testes falham só no emulador S3 (moto), ver `TEST-PLAN.md` §7 |

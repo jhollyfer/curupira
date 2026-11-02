@@ -56,10 +56,11 @@ da árvore que o projeto usa:
 | `backend/app/services/protocol/` | sorteia o protocolo com `crypto.randomInt`, separado para o teste fixar o valor |
 | `backend/app/services/multipart/` e `storage/` | URL pré-assinada, leitura e sobrescrita do objeto no bucket |
 | `backend/commands/storages-prune.command.ts` | varre uploads `PENDING` abandonados e foto de denúncia `UPLOADED` sem denúncia há mais de 24 h; não há agendador na aplicação |
-| `backend/commands/users-create-owner.command.ts` | cria o primeiro administrador em produção, onde o seeder do dono não roda |
+| `backend/commands/users-create-owner.command.ts` | cria o primeiro administrador à mão, quando `SEED_OWNER_PASSWORD` fica vazia (produção) |
+| `backend/database/seeders/` | `user.seed.ts` (dono), `demo.seed.ts` (demonstração: uma conta por papel e conteúdo de exemplo) e `neighborhood.seed.ts` (referência); dono e demonstração ligam pela chave com valor (`SEED_OWNER_PASSWORD`, `SEED_DEMO_PASSWORD`), sem `NODE_ENV` |
 | `backend/app/core/trusted-proxies.ts`, `report-photo-key.ts` | lê `TRUSTED_PROXIES` como lista validada no boot; prefixo `report-photos/` da chave da foto |
 | `backend/infra/minio/` | imagem do MinIO de dev e teste, e o script que cria os buckets |
-| `frontend/src/data/` | dados de exemplo do modo `VITE_DATA_SOURCE=mock` (`DECISIONS.md` #10); o build com `api` os tira do bundle (`frontend/scripts/strip-example-data.ts`) |
+| `frontend/src/server.ts`, `lib/security-headers.ts` | entrada do servidor SSR; escreve a CSP e os cabeçalhos de segurança por requisição, lendo `STORAGE_PUBLIC_URL` (`DECISIONS.md` #27) |
 | `frontend/src/lib/` | regras puras: cronograma, `.ics`, fila offline, status, grade semanal, capacidades |
 
 ## 4. Módulos (features)
@@ -204,10 +205,10 @@ API:
 
 ### 8.2 Fonte de dados do frontend
 
-`VITE_DATA_SOURCE=mock` (padrão em dev) serve `frontend/src/data/*`; `api` fala com `VITE_API_URL`. O ponto de
-troca é `integrations/tanstack-query/source.ts` (`fromSource({ mock, api })`). A integração real foi provada
-de ponta a ponta pelos 11 testes de Playwright contra a API real (`TASKS.md` 3.6 e 5.1). O build de produção
-usa `api` (`frontend/.env.production`, conferido pelo CI) e tira `src/data/**` do bundle.
+O frontend fala só com a API (`VITE_API_URL`). Não há modo de dados de exemplo (`DECISIONS.md` #26): o dado de exemplo é o
+seeder de demonstração do backend (`SEED_DEMO_PASSWORD`). Cada `queryFn` e `mutationFn` de `integrations/tanstack-query/` chama
+`request()`/`send()` e converte o corpo pelo schema de `@curupira/shared`. A integração foi provada de ponta a ponta pelos
+testes de Playwright contra a API real (`TASKS.md` 3.6 e 5.1).
 
 Nas chamadas feitas pelo servidor do app (SSR), `integrations/tanstack-query/http.server.ts` repassa à API o
 `Cookie` recebido, o `X-Forwarded-For` (a cadeia recebida mais o IP do par, para os limites por IP verem o
@@ -231,8 +232,8 @@ API, para um app não reiniciar por causa do outro.
 | `ci.yml` | PR para `main` | `main-check-backend`, `main-check-frontend`, `pnpm audit --prod` (alta), Gitleaks, varredura de `pull_request_target` e de `github.event` em `run:` |
 | `commitlint.yml` | PR | Conventional Commits |
 | `main-check-backend.yml` | chamado | autor e trailers dos commits (só no PR), lint, typecheck, `pattern:check`, `authz:check`, `depcruise`, `openapi:check`, unitário, build; e2e em 3 shards com Postgres 18 e MinIO; `di:check` |
-| `main-check-frontend.yml` | chamado | i18n, lint, typecheck, Prettier, unitário, build, `routeTree.gen.ts` em dia, ciclos de chunk; Playwright contra a API real (imagem `curupira-api:e2e`, Postgres e MinIO), com `E2E_BASE_URL`, `E2E_API_URL` e `E2E_OWNER_*` |
-| `main-build-frontend.yml` | chamado | grava o sha em `frontend/public/revision.txt` antes do build, reprova se faltar `frontend/.env.production`, se `VITE_DATA_SOURCE` não for `api` ou se `VITE_API_URL` e `VITE_SITE_URL` não forem `https`, avisa se faltar `VITE_STORAGE_URL`, confere que o carimbo entrou no manifesto do Nitro, publica `.output` como artifact |
+| `main-check-frontend.yml` | chamado | i18n, lint, typecheck, Prettier, unitário, build, `routeTree.gen.ts` em dia, ciclos de chunk; Playwright contra a API real (imagem `curupira-api:e2e`, Postgres e MinIO), com `E2E_BASE_URL`, `E2E_API_URL`, `E2E_OWNER_*` e `E2E_DEMO_PASSWORD` (a API semeada com `SEED_OWNER_PASSWORD` e `SEED_DEMO_PASSWORD`) |
+| `main-build-frontend.yml` | chamado | grava o sha em `frontend/public/revision.txt` antes do build, reprova se `VITE_API_URL` ou `VITE_SITE_URL` do build não forem `https`, confere que o carimbo entrou no manifesto do Nitro, publica `.output` como artifact |
 | `main-docker-backend.yml`, `main-docker-frontend.yml` | chamados | imagens `curupira-api` e `curupira-app` (amd64 e arm64) no Docker Hub, tags `latest` e sha |
 | `main-deploy-coolify.yml` | chamado, depois das duas imagens | `POST` em `/api/v1/deploy` para cada aplicação, exige `deployment_uuid` na resposta; smoke test |
 | `main.yml` | push na `main` | encadeia os de cima |
@@ -251,9 +252,10 @@ porque o container antigo também responde 200.
 | `CORS_ORIGINS` e `APP_SERVER_URL` na API | painel | `CORS_ORIGINS` é a lista do CORS e da barreira de `Origin`; `APP_SERVER_URL` entra no OpenAPI |
 | Healthcheck das duas aplicações em `/health-check` | painel | o painel sobrepõe o `HEALTHCHECK` dos Dockerfiles |
 | CORS do bucket para `https://curupira.maiyu.com.br`, com `PUT` e `ETag` em `ExposeHeaders` | painel do provedor do bucket | o navegador envia a foto direto ao bucket |
-| `VITE_STORAGE_URL` no build do app | `frontend/.env.production` | a CSP do Nitro só libera `connect-src` para a origem do bucket se ela estiver aí; hoje não está (endereço do bucket de produção desconhecido) e o CI só avisa; obrigatória antes do primeiro deploy (`DECISIONS.md` #15) |
-| Bairros no primeiro deploy | comando manual | `node ace db:seed` (o seeder de bairros roda em `development` e `production`) |
-| Primeiro administrador | comando manual | `node ace users:create-owner` com `SEED_OWNER_EMAIL` e `SEED_OWNER_PASSWORD`; o seeder do dono só roda em `development` e `test` |
+| `STORAGE_PUBLIC_URL` no app, em execução | painel | `src/server.ts` lê por requisição e abre `img-src` e `connect-src` da CSP para a origem do bucket; sem ela a foto não sobe; o endereço do bucket de produção ainda é desconhecido (`DECISIONS.md` #27) |
+| `SITE_ENV=production` no app | painel | só `production` indexa; o resto responde `noindex` |
+| Bairros no primeiro deploy | comando manual | `node ace db:seed` (o seeder de bairros roda em `development` e `production`; dono e demonstração só com a senha da chave) |
+| Primeiro administrador | comando manual | `node ace users:create-owner` com `SEED_OWNER_EMAIL` e `SEED_OWNER_PASSWORD`, ou `db:seed` com a `SEED_OWNER_PASSWORD` presente; `SEED_DEMO_PASSWORD` fica vazia em produção |
 | `node ace storages:prune` em cron do host, por exemplo de hora em hora | agendador do ambiente | não há agendador na aplicação; sem ele, uploads `PENDING` e fotos sem denúncia ficam no bucket |
 | Secrets do GitHub: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `COOLIFY_TOKEN` | configurações do repositório | login no Docker Hub e chamada ao Coolify |
 

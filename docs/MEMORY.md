@@ -22,7 +22,7 @@
   Fala com a API de verdade (3.6 provada por E2E); 303 testes unitários em 53 arquivos.
 - Painel `/gestao`: visão geral, ocorrências, avisos, cronograma, bairros, contas e perfil, com capacidade por papel.
 - E2E de Playwright contra a API real, no CI: 11 testes de fluxo (6 do morador em celular, 5 do painel em desktop),
-  com axe, mais a matriz de responsividade (4 larguras no CI, 7 localmente ou com `E2E_FULL_MATRIX=1`). Total de
+  com axe, mais a matriz de responsividade (4 larguras no CI, 7 localmente). Total de
   121 testes no CI e 187 com a matriz completa; o job leva cerca de 13,6 min, com limite de 25.
 - Responsividade: app do morador com navegação superior em tablet e desktop, hero e grade em colunas a partir de
   `md` e `lg`; painel `/gestao` do celular ao monitor largo (gaveta, cartões, folha de filtros, abas, cronograma
@@ -33,6 +33,12 @@
 
 ## Parou em
 
+Padronização das chaves de ambiente no catálogo da régua (`chore/env-catalogo-padrao`, régua #276, jhollyfer/maiyu-pattern#16),
+feita e verificada fora do E2E: `sync --check` sai 0, lint, typecheck, unitários e `pattern:check` passam no backend e no
+frontend, e o build do app sobe com a CSP lida de `STORAGE_PUBLIC_URL` por requisição. Saiu a camada de dados de exemplo
+inteira do frontend (`DECISIONS.md` #26); a demonstração é o seeder do backend (`SEED_DEMO_PASSWORD`). **Não rodaram aqui**
+(sem Docker): o E2E de Playwright e a suíte `functional` do backend; rodam no CI do PR. Antes disso:
+
 Responsividade do app e do painel mesclada (PRs #6, #8 e #9). O PR #8 trocou a matriz de E2E do CI por uma de
 4 larguras, e o job `Frontend - E2E (Playwright)`, que tinha estourado o tempo no PR #6, passou em 13,6 min junto
 com os outros 9 checks (commitlint, auditoria de dependências, varredura de segredo, check do backend e do
@@ -42,15 +48,16 @@ O que falta de resto é só do dono, nada de código:
 1. Criar os secrets `COOLIFY_URL`, `COOLIFY_API_UUID` e `COOLIFY_APP_UUID` no GitHub e trocar no painel do Coolify
    `SITE_URL`, `APP_URL` e `REPORT_PHOTO_MAX_SIZE` por `CORS_ORIGINS` e `APP_SERVER_URL` (`ENV.md`, `ARCHITECTURE.md` §9.1).
    Régua sincronizada em 2026-11-02 (PR `chore/sync-regua`); pendências dela em `TASKS.md`, fase R.
-2. Criar o bucket de produção e definir `VITE_STORAGE_URL` em `frontend/.env.production`.
+2. Criar o bucket de produção e definir `STORAGE_PUBLIC_URL` no app, no painel do Coolify (mais `SITE_ENV=production`).
 3. Criar o cron de `node ace storages:prune` no servidor (por exemplo, de hora em hora).
-4. Criar o primeiro administrador com `node ace users:create-owner`.
+4. Criar o primeiro administrador com `node ace users:create-owner` (`SEED_DEMO_PASSWORD` fica vazia em produção).
 5. Conferir bairros e cronograma com a prefeitura, definir a retenção e revisar os textos de privacidade e termos.
 6. Fechar os PRs do Dependabot #2 e #3 (`node:26-alpine` contraria a régua, Node 24 por digest), avaliar #4 e #5 e apagar as branches já mergeadas no GitHub.
 
 ## Próximos passos
 
-1. Os seis itens de "Parou em", na ordem.
+1. Conferir o CI do PR da padronização (E2E e `functional` do backend), e os seis itens de "Parou em", na ordem.
+   No Coolify, definir `STORAGE_PUBLIC_URL` e `SITE_ENV` no app e conferir as chaves da API contra `ENV.md` §1.1.
 2. Conferir no painel do Coolify se o proxy grava o IP do morador no log de acesso (`SECURITY.md` §2.8).
 3. Propor ao `maiyu-pattern` as entradas de `_doc-lib` para Leaflet/react-leaflet, `vite-plugin-pwa`/workbox e `sharp`.
 4. Teste manual antes do release (`TEST-PLAN.md` §8).
@@ -60,13 +67,14 @@ O que falta de resto é só do dono, nada de código:
 - Bairros e cronograma do seed são de exemplo: a prefeitura confere antes de abrir.
 - Os textos de privacidade e termos (`/privacidade`, `/termos`) são rascunho: a prefeitura e a procuradoria revisam.
 - Os secrets `COOLIFY_*` ainda não existem no GitHub; o job de deploy reprova nomeando o que faltar.
-- `VITE_STORAGE_URL` não está definida porque o endereço do bucket de produção é desconhecido; o build do app só
-  avisa, e a foto não sobe em produção até a variável existir (`DECISIONS.md` #15).
+- `STORAGE_PUBLIC_URL` não está definida porque o endereço do bucket de produção é desconhecido; sem ela a CSP só
+  libera a API e a foto não sobe em produção (`DECISIONS.md` #27).
 - O MinIO real roda no CI (3 shards do backend e o E2E do frontend). Nesta máquina, sem Docker, a suíte usa um S3
   emulado (moto) e 2 testes do backend falham só por limitação dele: `refuses with 422 when what was uploaded does
   not have the declared size` e `a signed URL stops being valid after it expires`.
 - Sessões antigas caem no deploy: os cookies passaram a se chamar `curupira-access-token` e `curupira-refresh-token`.
-- O seeder do dono só roda em `development` e `test`; em produção o primeiro administrador sai de `users:create-owner`.
+- Dono e demonstração ligam pela chave com valor, em qualquer ambiente (`SEED_OWNER_PASSWORD`, `SEED_DEMO_PASSWORD`); em produção a
+  segunda fica vazia e o primeiro administrador sai de `users:create-owner` ou do seed do dono.
 - Commits de migração usam `HUSKY=0` enquanto `backend/` e `frontend/` não passam no `check`; depois disso o gate volta inteiro.
 - Branch de trabalho: `feat/curupira-plataforma` (a sessão sugeria um nome com prefixo de agente, proibido pela régua).
 - Toolchain local: Node 24 e pnpm 12 instalados num prefixo à parte, o sistema tem Node 22 e pnpm 10.
@@ -90,7 +98,7 @@ O que falta de resto é só do dono, nada de código:
 |---|---|---|
 | Leaflet/react-leaflet, `vite-plugin-pwa`/workbox e `sharp` sem entrada na `_doc-lib` | `docs/DECISIONS.md` #3 e #4, `docs/SECURITY.md` §7 | usar a página oficial; propor ao upstream |
 | As skills `high-end-visual-design` e `redesign-existing-projects` só o usuário invoca e não foram aplicadas ao polimento de design | `docs/DESIGN.md` | o dono invoca quando quiser a passada |
-| `VITE_STORAGE_URL` não definida: a CSP de produção bloqueia o `PUT` da foto ao bucket | `frontend/.env.production`, `docs/ENV.md` §1.2 | definir o valor antes do primeiro build de produção |
+| `STORAGE_PUBLIC_URL` não definida: a CSP de produção bloqueia o `PUT` da foto ao bucket | `frontend/src/server.ts`, `docs/ENV.md` §1.2 | definir o valor no app, no painel do Coolify, antes do primeiro deploy |
 | Sem cron de `storages:prune`: foto abandonada e upload `PENDING` ficam no bucket | `docs/ARCHITECTURE.md` §9.1 | criar o cron no servidor |
 | Sem retenção automática de denúncia, foto e contato | `docs/SECURITY.md` §8.1 | decisão da prefeitura (`PRD.md` §8) |
 | IP no log do proxy não verificável pelo repositório | `docs/SECURITY.md` §2.8 | conferir no painel do Coolify |
