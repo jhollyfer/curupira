@@ -144,6 +144,13 @@ useValidatorLocale(BASE_LOCALE)
 export const LIST_LIMITS = {
   /** Photos a single report carries: enough to show the place, light for slow networks. */
   REPORT_PHOTOS: 3,
+  /**
+   * Bytes per report photo: 10 MiB. A business limit, the same in every environment, so a
+   * constant and not an env key (`backend.md` §6: no domain-specific keys). It is far below
+   * the panel library's 1 GiB (`UPLOAD_MAX_SIZE`) on purpose: the route has no login, and the
+   * same ceiling would let anyone park a gigabyte in the bucket.
+   */
+  REPORT_PHOTO_SIZE: 10 * 1024 * 1024,
   /** The report description ceiling, the same in the form and in the column. */
   REPORT_DESCRIPTION: 1000,
   /** The ceiling of a text answer the management registers on a report. */

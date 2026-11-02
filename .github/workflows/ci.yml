@@ -12,12 +12,45 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # PR que só mexe em texto não roda a suíte (_standards/tooling.md §7): lista os arquivos do
+  # PR e só chama os checks de backend e frontend quando algum NÃO casa com `*.md`, `docs/`,
+  # `_standards/`, `_doc-lib/`, `.claude/` ou `_templates/`. É shell no próprio job, sem filtro
+  # de terceiro. O job pulado aparece como *skipped*, o que satisfaz o check obrigatório.
+  # Os jobs `audit`, `secrets` e `workflows` abaixo rodam sempre.
+  changes:
+    name: Quais arquivos mudaram
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Lista os arquivos do PR
+        id: diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          if git diff --name-only "${BASE_SHA}...${HEAD_SHA}" | grep -qvE '(\.md$|^docs/|^_standards/|^_doc-lib/|^\.claude/|^_templates/)'; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+          fi
+
   # As mesmas definições que o push em `main` usa, para o PR não passar por uma
   # régua diferente da do deploy (_standards/tooling.md §8.1).
   backend-check:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     uses: ./.github/workflows/main-check-backend.yml
 
   frontend-check:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     uses: ./.github/workflows/main-check-frontend.yml
 
   # Vulnerabilidade alta em dependência de produção reprova; dev tool fica fora

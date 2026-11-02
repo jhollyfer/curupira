@@ -3,7 +3,7 @@ import { expect, test as base } from '@playwright/test'
 import type { APIRequestContext, Page } from '@playwright/test'
 
 import { API_URL, SITE_ORIGIN, apiClient } from './api'
-import { ownerCredentials, operatorCredentials } from './credentials'
+import { generatedOperatorCredentials, ownerCredentials } from './credentials'
 
 type Role = 'anonymous' | 'owner' | 'operator'
 
@@ -73,8 +73,7 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
       })
 
       const operator = once(async () => {
-        const credentials = operatorCredentials()
-        if (!credentials) throw new Error('E2E_OPERATOR_* is not set')
+        const credentials = generatedOperatorCredentials()
 
         // The owner's session is already open: signing in again would spend one more of
         // the five attempts a minute the limiter gives the IP.
@@ -91,8 +90,7 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
             role: 'OPERATOR',
           },
         })
-        // 409: the account is already there from an earlier run.
-        if (!created.ok() && created.status() !== 409) {
+        if (!created.ok()) {
           throw new Error(`creating the operator answered ${created.status()}`)
         }
         await admin.dispose()

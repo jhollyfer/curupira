@@ -11,6 +11,7 @@
 
 import { Env } from '@adonisjs/core/env'
 
+import { CorsOrigins } from '#core/cors-origins'
 import { TrustedProxies } from '#core/trusted-proxies'
 
 /**
@@ -43,11 +44,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   // App
   APP_KEY: Env.schema.secret(),
   // This API's own public address (the OpenAPI `servers` entry).
-  APP_URL: Env.schema.string({ format: 'url', tld: false }),
-  // The frontend origin: the single entry of the CORS allowlist and of the origin
-  // barrier (`config/cors.ts`). One value, not a list - there is one frontend, and a
-  // list is how a stale origin survives a domain change.
-  SITE_URL: Env.schema.string({ format: 'url', tld: false }),
+  APP_SERVER_URL: Env.schema.string({ format: 'url', tld: false }),
+  // The browser origins allowed to call this API, comma separated: the CORS allowlist and
+  // the origin barrier at once (`config/cors.ts`). Required in every environment, development
+  // included (an open policy in development hides the day the real origin is wrong), and
+  // validated at boot (`app/core/cors-origins.ts`): no `*`, no path, no trailing slash.
+  CORS_ORIGINS: CorsOrigins.validate,
 
   /**
    * Whom Adonis treats as a trusted proxy, so `request.ip()` reads
@@ -113,13 +115,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   | which is better than starting and refusing files over an invisible limit.
   */
   UPLOAD_MAX_SIZE: Env.schema.number(),
-
-  /**
-   * The per-photo ceiling of the anonymous report upload, in bytes. Required and separate
-   * from `UPLOAD_MAX_SIZE`: that one is the panel library's (1 GiB), and handing the same
-   * ceiling to an unauthenticated route would let anyone park a gigabyte in the bucket.
-   */
-  REPORT_PHOTO_MAX_SIZE: Env.schema.number(),
 
   // Bucket credential and destination: required and with no default. Storage is a
   // base feature, and starting without it is starting with a broken upload.

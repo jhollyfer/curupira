@@ -21,7 +21,7 @@
 - Teste que está falhando: investiga, não apaga nem pula.
 - `docs/PRD.md` (escopo).
 - Variável de ambiente de produção, segredo, configuração de deploy.
-- Os uuids `UUID_API` e `UUID_APP` e qualquer outro valor de `.github/workflows/main-deploy-coolify.yml`; os
+- Os secrets de deploy (`COOLIFY_*`) e o `.github/workflows/main-deploy-coolify.yml`; os
   workflows em geral (`.github/workflows/`) e o `dependabot.yml`.
 - Contratos de `shared/` (enums, validators, responses): são o contrato dos dois apps e do `openapi.json`;
   mudar um enum ou campo mexe nos três pacotes, na documentação e nos dados em produção.

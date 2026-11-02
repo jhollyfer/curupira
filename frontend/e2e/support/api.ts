@@ -1,14 +1,16 @@
 import type { APIRequestContext, PlaywrightWorkerArgs } from '@playwright/test'
 
 import type { Credentials } from './credentials'
+import { apiUrl, baseUrl } from './env'
 
 /**
- * The real API the specs talk to (`E2E_DATA_SOURCE=api`). The `Origin` is the frontend's:
- * the backend refuses a write whose origin is not `SITE_URL`, in development too.
+ * The real API the specs talk to (`E2E_API_URL`). The `Origin` is the frontend's
+ * (`E2E_BASE_URL`): the backend refuses a write whose origin is not in `CORS_ORIGINS`, in
+ * development too.
  */
-export const API_URL = process.env.E2E_API_URL ?? 'http://localhost:3333'
+export const API_URL = apiUrl()
 
-export const SITE_ORIGIN = `http://localhost:${process.env.E2E_PORT ?? '3010'}`
+export const SITE_ORIGIN = new URL(baseUrl()).origin
 
 /**
  * An API client with its own cookie jar. Signing in here (and not through the screen)

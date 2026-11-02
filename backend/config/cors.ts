@@ -10,18 +10,18 @@ import env from '#start/env'
  */
 
 /**
- * The allowlist comes from `SITE_URL`, read once here and
+ * The allowlist comes from `CORS_ORIGINS`, read once here and
  * exported: the origin middleware reads the same list instead of parsing again.
  *
  * It must be explicit: with `credentials: true` below, the protocol refuses
  * `*` - the browser does not send a cookie to a wildcard origin. So either the
  * frontend origin is listed, or there is no session between the two.
  */
-export const corsOrigins: ReadonlyArray<string> = [env.get('SITE_URL')]
+export const corsOrigins: ReadonlyArray<string> = env.get('CORS_ORIGINS')
 
 /**
- * Only the site origin, in every environment, development included: an open policy in
- * development hides the day the real origin is wrong. `SITE_URL` is required, so the boot
+ * Only the listed origins, in every environment, development included: an open policy in
+ * development hides the day the real origin is wrong. `CORS_ORIGINS` is required, so the boot
  * stops without it instead of starting with no frontend allowed.
  */
 const origin: string[] = [...corsOrigins]

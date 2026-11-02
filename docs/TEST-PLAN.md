@@ -81,9 +81,9 @@ Cada fluxo de `USER-FLOWS.md` marcado aqui tem spec E2E de ponta a ponta.
 
 O E2E do frontend roda sempre contra a API real (`VITE_DATA_SOURCE=api`, fixado em `playwright.config.ts`),
 com o dono semeado (`E2E_OWNER_*`), a demonstração de `pnpm db:seed:demo` e o operador que o spec cria
-(`E2E_OPERATOR_*`). Isso fecha a 3.6 de `TASKS.md`: entrada, foto pré-assinada e protocolo foram exercitados do
+(operador criado pelo spec). Isso fecha a 3.6 de `TASKS.md`: entrada, foto pré-assinada e protocolo foram exercitados do
 navegador à API. O job do CI (`main-check-frontend.yml`) sobe a API (imagem `curupira-api:e2e`), Postgres e
-MinIO e passa `E2E_OWNER_*`, `E2E_OPERATOR_*` e `E2E_API_URL`. Rodou pela primeira vez no PR #6 e estourou o tempo (§1.1); os 22 testes de responsividade do painel e a matriz pública completa só foram rodados localmente em modo de exemplo, sem a API real.
+MinIO e passa `E2E_BASE_URL`, `E2E_API_URL` e `E2E_OWNER_*` (senha gerada a cada execução). Rodou pela primeira vez no PR #6 e estourou o tempo (§1.1); os 22 testes de responsividade do painel e a matriz pública completa só foram rodados localmente em modo de exemplo, sem a API real.
 
 ## 3. Matriz requisito × teste
 
@@ -180,7 +180,7 @@ aqui sem cópia: `_standards/tooling.md` §10.1. Deste projeto:
   compose.
 - `pnpm di:check` exige banco.
 - O Playwright precisa do Chromium (`pnpm exec playwright install chromium` ou `E2E_CHROMIUM_PATH`).
-- O E2E do frontend depende da API no ar com `SITE_URL` igual à origem do app (`http://localhost:<E2E_PORT>`).
+- O E2E do frontend depende da API no ar com `CORS_ORIGINS` listando a origem do app (`E2E_BASE_URL`).
 - O job de E2E do frontend no CI roda contra a API real (imagem do backend) e o MinIO em container; passou no PR #8.
 
 ## 8. Teste manual antes do release

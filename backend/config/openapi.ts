@@ -180,7 +180,7 @@ const openapi = {
       'field.',
   },
 
-  servers: [{ url: env.get('APP_URL'), description: 'Current server' }],
+  servers: [{ url: env.get('APP_SERVER_URL'), description: 'Current server' }],
 
   /** Paths that never enter the document: they are not API operations. */
   ignore: ['/documentation', '/openapi.json', '/health-check'],

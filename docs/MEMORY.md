@@ -39,8 +39,9 @@ com os outros 9 checks (commitlint, auditoria de dependências, varredura de seg
 frontend, 3 shards do backend contra MinIO real). Código, auditoria de segurança e polimento de design fechados.
 O que falta de resto é só do dono, nada de código:
 
-1. Preencher `UUID_API` e `UUID_APP` em `main-deploy-coolify.yml` e configurar o painel do Coolify
-   (`ARCHITECTURE.md` §9.1).
+1. Criar os secrets `COOLIFY_URL`, `COOLIFY_API_UUID` e `COOLIFY_APP_UUID` no GitHub e trocar no painel do Coolify
+   `SITE_URL`, `APP_URL` e `REPORT_PHOTO_MAX_SIZE` por `CORS_ORIGINS` e `APP_SERVER_URL` (`ENV.md`, `ARCHITECTURE.md` §9.1).
+   Régua sincronizada em 2026-11-02 (PR `chore/sync-regua`); pendências dela em `TASKS.md`, fase R.
 2. Criar o bucket de produção e definir `VITE_STORAGE_URL` em `frontend/.env.production`.
 3. Criar o cron de `node ace storages:prune` no servidor (por exemplo, de hora em hora).
 4. Criar o primeiro administrador com `node ace users:create-owner`.
@@ -58,8 +59,7 @@ O que falta de resto é só do dono, nada de código:
 
 - Bairros e cronograma do seed são de exemplo: a prefeitura confere antes de abrir.
 - Os textos de privacidade e termos (`/privacidade`, `/termos`) são rascunho: a prefeitura e a procuradoria revisam.
-- Os uuids das aplicações no Coolify (`UUID_API`, `UUID_APP`) ainda são `PREENCHER_*`; o job de deploy reprova de
-  propósito enquanto for assim.
+- Os secrets `COOLIFY_*` ainda não existem no GitHub; o job de deploy reprova nomeando o que faltar.
 - `VITE_STORAGE_URL` não está definida porque o endereço do bucket de produção é desconhecido; o build do app só
   avisa, e a foto não sobe em produção até a variável existir (`DECISIONS.md` #15).
 - O MinIO real roda no CI (3 shards do backend e o E2E do frontend). Nesta máquina, sem Docker, a suíte usa um S3

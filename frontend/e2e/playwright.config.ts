@@ -2,13 +2,16 @@ import { defineConfig, devices } from '@playwright/test'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 
+import { apiUrl, baseUrl } from './support/env'
+
 // `.env.e2e` is optional: in CI the variables come from the environment. It loads before
 // the rest of the config, because `webServer` and `baseURL` read `process.env`.
 const envFile = resolve(import.meta.dirname, '..', '.env.e2e')
 if (existsSync(envFile)) process.loadEnvFile(envFile)
 
-const port = process.env.E2E_PORT ?? '3010'
-const baseURL = `http://localhost:${port}`
+// No default: a missing key stops the run and says which one (`support/env.ts`).
+const baseURL = baseUrl()
+const port = new URL(baseURL).port
 
 /**
  * `E2E_WORKERS` wins; otherwise 4 in CI, where the runner is dedicated, and 2 on a
@@ -105,7 +108,7 @@ export default defineConfig({
     url: baseURL,
     env: {
       VITE_DATA_SOURCE: 'api',
-      VITE_API_URL: process.env.E2E_API_URL ?? 'http://localhost:3333',
+      VITE_API_URL: apiUrl(),
       VITE_SITE_URL: baseURL,
     },
     reuseExistingServer: !process.env.CI,
