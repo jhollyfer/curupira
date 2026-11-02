@@ -7,7 +7,7 @@
  * Why Chromium and not an image library: the project has no image dependency, and the
  * browser the e2e suite already needs renders the SVG exactly as users see it. The
  * binaries are versioned (they are served as static files and the build does not make
- * them). Set `CHROMIUM_PATH` when the browser is not where Playwright expects it.
+ * them). Set `E2E_CHROMIUM_PATH` when the browser is not where Playwright expects it.
  *
  * Outputs: favicon.ico (48, PNG inside), apple-touch-icon.png (180), icon-192.png,
  * icon-512.png, icon-maskable-512.png (mark in the 80% safe zone, solid background),
@@ -30,7 +30,7 @@ const mark = (size, padding = 0) =>
   `<div style="width:${size}px;height:${size}px;background:${padding ? GREEN : 'transparent'};display:grid;place-items:center"><div style="width:${size - padding * 2}px;height:${size - padding * 2}px">${svg.replace('<svg ', '<svg width="100%" height="100%" ')}</div></div>`
 
 const browser = await chromium.launch({
-  executablePath: process.env.CHROMIUM_PATH,
+  executablePath: process.env.E2E_CHROMIUM_PATH,
 })
 const page = await browser.newPage()
 

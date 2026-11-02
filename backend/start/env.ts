@@ -135,12 +135,17 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Seeding
   |----------------------------------------------------------------------------
   |
-  | Read by the seeders, and optional because the application starts without them - only whoever
-  | seeds needs them. Without the password the seeder stops instead of creating an account with a
-  | known credential: it used to be a literal in the file, and anyone who
-  | read it owned every environment already seeded.
+  | Each seed is switched on by its key having a value, in any environment
+  | (_standards/backend.md §6.2): empty skips that seed with one log line and the rest of
+  | `db:seed` runs. Optional because the application starts without them - only whoever
+  | seeds needs them. No password lives in the code: it used to be a literal in the file,
+  | and anyone who read it owned every environment already seeded.
   |
+  | `SEED_OWNER_*` is the first administrator (the pair goes together: a password with no
+  | e-mail stops the seeder). `SEED_DEMO_PASSWORD` is the demonstration: one account per role
+  | (`<role>@example.com`) sharing it, plus the sample content.
   */
   SEED_OWNER_EMAIL: Env.schema.string.optional(),
   SEED_OWNER_PASSWORD: Env.schema.string.optional(),
+  SEED_DEMO_PASSWORD: Env.schema.string.optional(),
 })

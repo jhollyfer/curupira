@@ -1,9 +1,10 @@
 import AxeBuilder from '@axe-core/playwright'
+import { USER_ROLE } from '@curupira/shared'
 import { expect, test as base } from '@playwright/test'
 import type { APIRequestContext, Page } from '@playwright/test'
 
 import { API_URL, SITE_ORIGIN, apiClient } from './api'
-import { generatedOperatorCredentials, ownerCredentials } from './credentials'
+import { demoCredentials, ownerCredentials } from './credentials'
 
 type Role = 'anonymous' | 'owner' | 'operator'
 
@@ -45,8 +46,7 @@ function once<T>(open: () => Promise<T>): () => Promise<T> {
  * sign-in spends one of the five attempts per minute the limiter gives the IP, and the
  * blocked IP stays blocked for ten minutes.
  *
- * The operator does not come from the seeder, so the owner creates it here (409 means a
- * previous run already did).
+ * The operator is the demonstration seeder's (`operator@example.com`, `E2E_DEMO_PASSWORD`).
  */
 export const test = base.extend<Fixtures, WorkerFixtures>({
   expectAccessible: async ({}, provide) => {
@@ -73,29 +73,10 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
       })
 
       const operator = once(async () => {
-        const credentials = generatedOperatorCredentials()
-
-        // The owner's session is already open: signing in again would spend one more of
-        // the five attempts a minute the limiter gives the IP.
-        const admin = await playwright.request.newContext({
-          storageState: await owner(),
-          baseURL: API_URL,
-          extraHTTPHeaders: { Origin: SITE_ORIGIN },
-        })
-        const created = await admin.post('/management/users', {
-          data: {
-            name: 'Operador E2E',
-            ...credentials,
-            passwordConfirmation: credentials.password,
-            role: 'OPERATOR',
-          },
-        })
-        if (!created.ok()) {
-          throw new Error(`creating the operator answered ${created.status()}`)
-        }
-        await admin.dispose()
-
-        const client = await apiClient(playwright, credentials)
+        const client = await apiClient(
+          playwright,
+          demoCredentials(USER_ROLE.OPERATOR),
+        )
         const state = await client.storageState()
         await client.dispose()
 

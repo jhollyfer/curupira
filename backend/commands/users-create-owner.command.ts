@@ -7,11 +7,11 @@ const OWNER_NAME = 'Gestão Curupira'
 /**
  * Creates the first administrator of a database that has none.
  *
- * Why a command and not the seeder: `database/seeders/user.seed.ts` only runs in
- * `development` and `test`, on purpose (a seeded credential is a known administrator in
- * every environment that ran it). No endpoint creates an account without a session, so a
- * fresh production database would have nobody who can sign in. This command is the
- * deliberate, by-hand path: it reads the credentials from the operator, never from the
+ * Why a command and not only the seeder: `database/seeders/user.seed.ts` is switched on
+ * by `SEED_OWNER_PASSWORD` having a value, and in production that key is normally left
+ * empty (a seeded credential lives in the environment of every deploy that ran it). No
+ * endpoint creates an account without a session, so a fresh production database would have
+ * nobody who can sign in. This command is the deliberate, by-hand path: it reads the credentials from the operator, never from the
  * code, and does nothing once an active administrator exists, so running it twice (or on
  * every deploy) cannot add a second owner or reset a password.
  *

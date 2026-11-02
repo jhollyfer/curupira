@@ -16,13 +16,13 @@ const ALL_VIEWPORTS = [
 const CI_WIDTHS: ReadonlyArray<number> = [360, 768, 1440, 1920]
 
 /**
- * The matrix a run uses. The full one locally and with `E2E_FULL_MATRIX=1`; in CI the
- * four widths above. The dev server is one process and the matrix is about 150 visits,
- * so the full matrix alone took longer than the job's cap; the other widths sit between
- * two of these and are checked before a release, not on every push.
+ * The matrix a run uses. The full one locally; in CI the four widths above (the run is
+ * the config's and the CI's, not a key). The dev server is one process and the matrix is
+ * about 150 visits, so the full matrix alone took longer than the job's cap; the other
+ * widths sit between two of these and are checked before a release, not on every push.
  */
 function selectViewports(): ReadonlyArray<(typeof ALL_VIEWPORTS)[number]> {
-  if (!process.env.CI || process.env.E2E_FULL_MATRIX) return ALL_VIEWPORTS
+  if (!process.env.CI) return ALL_VIEWPORTS
   return ALL_VIEWPORTS.filter((viewport) => CI_WIDTHS.includes(viewport.width))
 }
 

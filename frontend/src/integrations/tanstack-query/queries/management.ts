@@ -10,23 +10,8 @@ import {
   paginatedResponse,
   z,
 } from '@curupira/shared'
-import type { Paginated } from '@curupira/shared'
 import { queryOptions } from '@tanstack/react-query'
 
-import {
-  allNeighborhoods,
-  findNeighborhood,
-  listNeighborhoods,
-} from '#/data/management/neighborhoods'
-import { findNotice, listNotices } from '#/data/management/notices'
-import {
-  findReport,
-  listReports,
-  mapReports,
-  reportStats,
-} from '#/data/management/reports'
-import { listSchedules } from '#/data/management/schedules'
-import { findUser, listUsers } from '#/data/management/users'
 import { queryKeys } from '#/hooks/tanstack-query/_query-keys'
 import { queryString } from '#/lib/list-search'
 import type { StorefrontSearch } from '#/lib/list-search'
@@ -39,13 +24,12 @@ import type {
 } from '#/lib/management-search'
 
 import { request } from '../http'
-import { fromSource } from '../source'
 
 /**
  * The panel's reads (`/management/*`, behind the session). Same shape as the public
- * ones: each `queryFn` writes the example body and the real route behind `fromSource`,
- * and the screens only see the options. The `api` bodies follow `backend/openapi.json`:
- * the query parameters of each listing are the ones its validator in `shared/` accepts.
+ * ones: each `queryFn` calls the real route and the screens only see the options. The
+ * routes follow `backend/openapi.json`: the query parameters of each listing are the ones
+ * its validator in `shared/` accepts.
  *
  * Staleness is short on purpose: several people work the same queue, and the cost of
  * showing a report as "Recebida" after a colleague already moved it is a wasted click
@@ -64,62 +48,34 @@ export const managementReportsQueryOptions = (search: ReportsSearch) =>
   queryOptions({
     queryKey: queryKeys.management.reports.list(search),
     queryFn: ({ signal }) =>
-      fromSource<Paginated<ManagementReportListItemResponse>>({
-        mock: () =>
-          listReports({
+      request(
+        '/management/reports'.concat(
+          queryString({
             page: search.page,
             perPage: search.perPage,
             search: search.search,
-            sort: orderOf(search.sort),
+            sort: search.sort,
             direction: search.direction,
             ...reportQuery(reportsFilterOf(search)),
           }),
-        api: () =>
-          request(
-            '/management/reports'.concat(
-              queryString({
-                page: search.page,
-                perPage: search.perPage,
-                search: search.search,
-                sort: search.sort,
-                direction: search.direction,
-                ...reportQuery(reportsFilterOf(search)),
-              }),
-            ),
-            paginatedResponse(ManagementReportListItemResponse),
-            { signal },
-          ),
-      }),
+        ),
+        paginatedResponse(ManagementReportListItemResponse),
+        { signal },
+      ),
     staleTime: STALE,
     placeholderData: (previous) => previous,
   })
-
-type ReportSort = 'createdAt' | 'status' | 'kind'
-
-const REPORT_SORTS: Record<string, ReportSort | undefined> = {
-  createdAt: 'createdAt',
-  status: 'status',
-  kind: 'kind',
-}
-
-function orderOf(sort: string | undefined): ReportSort | undefined {
-  return REPORT_SORTS[String(sort)]
-}
 
 /** The pins: the same filter as the table, so the two always show the same cut. */
 export const managementReportsMapQueryOptions = (filter: ReportsFilter) =>
   queryOptions({
     queryKey: queryKeys.management.reports.map(filter),
     queryFn: ({ signal }) =>
-      fromSource<ReadonlyArray<ManagementReportListItemResponse>>({
-        mock: () => mapReports(reportQuery(filter)),
-        api: () =>
-          request(
-            '/management/reports/map'.concat(queryString(reportQuery(filter))),
-            z.array(ManagementReportListItemResponse),
-            { signal },
-          ),
-      }),
+      request(
+        '/management/reports/map'.concat(queryString(reportQuery(filter))),
+        z.array(ManagementReportListItemResponse),
+        { signal },
+      ),
     staleTime: STALE,
     placeholderData: (previous) => previous,
   })
@@ -128,12 +84,8 @@ export const managementReportStatsQueryOptions = () =>
   queryOptions({
     queryKey: queryKeys.management.reports.stats,
     queryFn: ({ signal }) =>
-      fromSource<ManagementReportStatsResponse>({
-        mock: reportStats,
-        api: () =>
-          request('/management/reports/stats', ManagementReportStatsResponse, {
-            signal,
-          }),
+      request('/management/reports/stats', ManagementReportStatsResponse, {
+        signal,
       }),
     staleTime: STALE,
   })
@@ -142,15 +94,11 @@ export const managementReportQueryOptions = (id: string) =>
   queryOptions({
     queryKey: queryKeys.management.reports.detail(id),
     queryFn: ({ signal }) =>
-      fromSource<ManagementReportShowResponse>({
-        mock: () => findReport(id),
-        api: () =>
-          request(
-            `/management/reports/${encodeURIComponent(id)}`,
-            ManagementReportShowResponse,
-            { signal },
-          ),
-      }),
+      request(
+        `/management/reports/${encodeURIComponent(id)}`,
+        ManagementReportShowResponse,
+        { signal },
+      ),
     staleTime: STALE,
     retry: false,
   })
@@ -159,52 +107,24 @@ export const managementNoticesQueryOptions = (search: NoticesSearch) =>
   queryOptions({
     queryKey: queryKeys.management.notices.list(search),
     queryFn: ({ signal }) =>
-      fromSource<Paginated<ManagementNoticeShowResponse>>({
-        mock: () =>
-          listNotices({
-            page: search.page,
-            perPage: search.perPage,
-            search: search.search,
-            status: search.status,
-            direction: search.direction,
-            sort: noticeOrderOf(search.sort),
-          }),
-        api: () =>
-          request(
-            '/management/notices'.concat(queryString(search)),
-            paginatedResponse(ManagementNoticeShowResponse),
-            { signal },
-          ),
-      }),
+      request(
+        '/management/notices'.concat(queryString(search)),
+        paginatedResponse(ManagementNoticeShowResponse),
+        { signal },
+      ),
     staleTime: STALE,
     placeholderData: (previous) => previous,
   })
-
-type NoticeSort = 'title' | 'startsAt' | 'createdAt'
-
-const NOTICE_SORTS: Record<string, NoticeSort | undefined> = {
-  title: 'title',
-  startsAt: 'startsAt',
-  createdAt: 'createdAt',
-}
-
-function noticeOrderOf(sort: string | undefined): NoticeSort | undefined {
-  return NOTICE_SORTS[String(sort)]
-}
 
 export const managementNoticeQueryOptions = (id: string) =>
   queryOptions({
     queryKey: queryKeys.management.notices.detail(id),
     queryFn: ({ signal }) =>
-      fromSource<ManagementNoticeShowResponse>({
-        mock: () => findNotice(id),
-        api: () =>
-          request(
-            `/management/notices/${encodeURIComponent(id)}`,
-            ManagementNoticeShowResponse,
-            { signal },
-          ),
-      }),
+      request(
+        `/management/notices/${encodeURIComponent(id)}`,
+        ManagementNoticeShowResponse,
+        { signal },
+      ),
     staleTime: STALE,
     retry: false,
   })
@@ -213,51 +133,28 @@ export const managementNeighborhoodsQueryOptions = (search: StorefrontSearch) =>
   queryOptions({
     queryKey: queryKeys.management.neighborhoods.list(search),
     queryFn: ({ signal }) =>
-      fromSource<Paginated<ManagementNeighborhoodShowResponse>>({
-        mock: () =>
-          listNeighborhoods({
-            page: search.page,
-            perPage: search.perPage,
-            search: search.search,
-            direction: search.direction,
-            sort: neighborhoodOrderOf(search.sort),
-          }),
-        api: () =>
-          request(
-            '/management/neighborhoods'.concat(queryString(search)),
-            paginatedResponse(ManagementNeighborhoodShowResponse),
-            { signal },
-          ),
-      }),
+      request(
+        '/management/neighborhoods'.concat(queryString(search)),
+        paginatedResponse(ManagementNeighborhoodShowResponse),
+        { signal },
+      ),
     staleTime: STALE,
     placeholderData: (previous) => previous,
   })
-
-function neighborhoodOrderOf(
-  sort: string | undefined,
-): 'name' | 'createdAt' | undefined {
-  if (sort === 'name' || sort === 'createdAt') return sort
-
-  return undefined
-}
 
 /** Every neighborhood, for the selects and filters: a list of options, not a table. */
 export const managementNeighborhoodOptionsQueryOptions = () =>
   queryOptions({
     queryKey: queryKeys.management.neighborhoods.options,
-    queryFn: ({ signal }) =>
-      fromSource<ReadonlyArray<ManagementNeighborhoodShowResponse>>({
-        mock: allNeighborhoods,
-        api: async () => {
-          const page = await request(
-            '/management/neighborhoods?perPage=100&sort=name&direction=asc',
-            paginatedResponse(ManagementNeighborhoodShowResponse),
-            { signal },
-          )
+    queryFn: async ({ signal }) => {
+      const page = await request(
+        '/management/neighborhoods?perPage=100&sort=name&direction=asc',
+        paginatedResponse(ManagementNeighborhoodShowResponse),
+        { signal },
+      )
 
-          return page.data
-        },
-      }),
+      return page.data
+    },
     staleTime: 5 * 60 * 1000,
   })
 
@@ -276,19 +173,15 @@ export type NeighborhoodChoice = Readonly<{ id: string; name: string }>
 export const managementNeighborhoodChoicesQueryOptions = () =>
   queryOptions({
     queryKey: queryKeys.management.neighborhoods.choices,
-    queryFn: ({ signal }) =>
-      fromSource<ReadonlyArray<NeighborhoodChoice>>({
-        mock: () => allNeighborhoods().map(({ id, name }) => ({ id, name })),
-        api: async () => {
-          const page = await request(
-            '/storefront/neighborhoods?perPage=100',
-            paginatedResponse(StorefrontNeighborhoodShowResponse),
-            { signal },
-          )
+    queryFn: async ({ signal }) => {
+      const page = await request(
+        '/storefront/neighborhoods?perPage=100',
+        paginatedResponse(StorefrontNeighborhoodShowResponse),
+        { signal },
+      )
 
-          return page.data.map(({ id, name }) => ({ id, name }))
-        },
-      }),
+      return page.data.map(({ id, name }) => ({ id, name }))
+    },
     staleTime: 5 * 60 * 1000,
   })
 
@@ -296,15 +189,11 @@ export const managementNeighborhoodQueryOptions = (id: string) =>
   queryOptions({
     queryKey: queryKeys.management.neighborhoods.detail(id),
     queryFn: ({ signal }) =>
-      fromSource<ManagementNeighborhoodShowResponse>({
-        mock: () => findNeighborhood(id),
-        api: () =>
-          request(
-            `/management/neighborhoods/${encodeURIComponent(id)}`,
-            ManagementNeighborhoodShowResponse,
-            { signal },
-          ),
-      }),
+      request(
+        `/management/neighborhoods/${encodeURIComponent(id)}`,
+        ManagementNeighborhoodShowResponse,
+        { signal },
+      ),
     staleTime: STALE,
     retry: false,
   })
@@ -319,21 +208,17 @@ export const managementSchedulesQueryOptions = (
 ) =>
   queryOptions({
     queryKey: queryKeys.management.schedules.byNeighborhood(neighborhoodId),
-    queryFn: ({ signal }) =>
-      fromSource<ReadonlyArray<ManagementScheduleShowResponse>>({
-        mock: () => listSchedules({ neighborhoodId, perPage: 100 }).data,
-        api: async () => {
-          const page = await request(
-            '/management/schedules'.concat(
-              queryString({ neighborhoodId, perPage: 100 }),
-            ),
-            paginatedResponse(ManagementScheduleShowResponse),
-            { signal },
-          )
+    queryFn: async ({ signal }) => {
+      const page = await request(
+        '/management/schedules'.concat(
+          queryString({ neighborhoodId, perPage: 100 }),
+        ),
+        paginatedResponse(ManagementScheduleShowResponse),
+        { signal },
+      )
 
-          return page.data
-        },
-      }),
+      return page.data
+    },
     enabled: Boolean(neighborhoodId),
     staleTime: STALE,
   })
@@ -342,49 +227,24 @@ export const managementUsersQueryOptions = (search: UsersSearch) =>
   queryOptions({
     queryKey: queryKeys.management.users.list(search),
     queryFn: ({ signal }) =>
-      fromSource<Paginated<ManagementUserShowResponse>>({
-        mock: () =>
-          listUsers({
-            page: search.page,
-            perPage: search.perPage,
-            search: search.search,
-            role: search.role,
-            status: search.status,
-            direction: search.direction,
-            sort: userOrderOf(search.sort),
-          }),
-        api: () =>
-          request(
-            '/management/users'.concat(queryString(search)),
-            paginatedResponse(ManagementUserShowResponse),
-            { signal },
-          ),
-      }),
+      request(
+        '/management/users'.concat(queryString(search)),
+        paginatedResponse(ManagementUserShowResponse),
+        { signal },
+      ),
     staleTime: STALE,
     placeholderData: (previous) => previous,
   })
-
-function userOrderOf(
-  sort: string | undefined,
-): 'name' | 'email' | 'createdAt' | undefined {
-  if (sort === 'name' || sort === 'email' || sort === 'createdAt') return sort
-
-  return undefined
-}
 
 export const managementUserQueryOptions = (id: string) =>
   queryOptions({
     queryKey: queryKeys.management.users.detail(id),
     queryFn: ({ signal }) =>
-      fromSource<ManagementUserShowResponse>({
-        mock: () => findUser(id),
-        api: () =>
-          request(
-            `/management/users/${encodeURIComponent(id)}`,
-            ManagementUserShowResponse,
-            { signal },
-          ),
-      }),
+      request(
+        `/management/users/${encodeURIComponent(id)}`,
+        ManagementUserShowResponse,
+        { signal },
+      ),
     staleTime: STALE,
     retry: false,
   })

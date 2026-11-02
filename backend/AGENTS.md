@@ -14,8 +14,10 @@ contexto do produto: `../AGENTS.md` e `../docs/`. O que cada operação faz, rec
   e MinIO do `docker-compose.yml` (`tooling.md` §8.4).
 - `pnpm di:check`: constrói service e policy pelo container (exige banco).
 - `pnpm openapi:generate`: reescreve o `openapi.json`.
-- `pnpm db:seed:demo`: a demonstração (cronograma, denúncias, avisos), só em `development`. Os
-  bairros vêm do `neighborhood.seed.ts`; o dono, do `user.seed.ts` com `SEED_OWNER_PASSWORD`.
+- `node ace db:seed`: cada seed liga pela chave com valor, em qualquer ambiente (`backend.md` §6.2). Dono
+  (`user.seed.ts`) com `SEED_OWNER_PASSWORD`; demonstração (`demo.seed.ts`: uma conta `<papel>@example.com` por papel,
+  cronograma, denúncias e avisos) com `SEED_DEMO_PASSWORD`; vazia, pula com uma linha de log. Os bairros
+  (`neighborhood.seed.ts`) são referência e rodam sempre (fora do `test`).
 
 ## Gerados e commitados
 

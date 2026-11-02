@@ -32,31 +32,46 @@ Mesma ordem de blocos do `backend/.env.example`.
 | `STORAGE_BUCKET` | sim | não | nome do bucket (privado) | `curupira` |
 | `STORAGE_ENDPOINT` | sim | não | endpoint S3-compatível | `http://localhost:9006` |
 | `STORAGE_FORCE_PATH_STYLE` | não | não | `true` para MinIO; remover em S3, R2 ou Spaces | `true` |
-| `SEED_OWNER_EMAIL` | só para semear | não | e-mail do `ADMINISTRATOR` criado por `node ace db:seed` (só em `development` e `test`) ou por `node ace users:create-owner` | `owner@mail.com` |
-| `SEED_OWNER_PASSWORD` | só para semear | **sim** | senha do dono; sem default, o seeder para sem ela; o `users:create-owner` recusa senha fraca | `<segredo>` |
+| `SEED_OWNER_EMAIL` | junto com a senha | não | e-mail do `ADMINISTRATOR` criado pelo seeder do dono (`node ace db:seed`) ou por `node ace users:create-owner`; senha sem e-mail para o seeder | `owner@example.com` |
+| `SEED_OWNER_PASSWORD` | não | **sim** | **liga** o seed do dono, em qualquer ambiente; vazia, o seed do dono é pulado com uma linha de log; o `users:create-owner` recusa senha fraca | `<segredo>` |
+| `SEED_DEMO_PASSWORD` | não | **sim** | **liga** a demonstração: senha comum de uma conta por papel (`administrator@example.com`, `operator@example.com`) e o conteúdo de exemplo (cronograma, denúncias, avisos); vazia, a demonstração é pulada e o resto do seed segue | `<segredo>` |
 
-Só no desenvolvimento, lidas pelo `docker-compose.yml` (blocos `compose-minio` e `compose-ports` do modelo): `MINIO_ROOT_USER`,
-`MINIO_ROOT_PASSWORD`, `DB_PORT`, `STORAGE_PORT`, `STORAGE_CONSOLE_PORT`.
+Chaves do `backend/.env.example` que o Curupira ainda não lê, e por isso ficam comentadas no lugar: `APP_CLIENT_URL` (web e API
+ficam em sites irmãos e o cookie é `lax`, `backend/config/cookie.ts`) e `DATABASE_SSL`; `COOKIE_DOMAIN` e `TRUSTED_PROXIES` seguem a
+tabela acima. O Curupira não tem e-mail, fila nem JWT, então os blocos `optional` `mail`, `queue` e `jwt` do modelo saem inteiros.
+
+**Seed ligado pela chave** (`_standards/backend.md` §6.2): nenhum seeder depende de `NODE_ENV` nem de flag à parte. Os bairros
+(dado de referência) rodam sempre em `development` e `production`; ficam fora do `test` porque a suíte cria os próprios e o nome
+é `unique`. O e-mail de cada conta de demonstração é `<papel em minúsculas>@example.com`, sem chave.
+
+Só do `docker-compose.yml`, nunca da aplicação: `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`, `DB_PORT`, `STORAGE_PORT`,
+`STORAGE_CONSOLE_PORT`. Estão no modelo de todo projeto.
 
 O teto da foto da denúncia (10 MiB) deixou de ser variável: é `LIST_LIMITS.REPORT_PHOTO_SIZE` em `@curupira/shared`, o mesmo
 em todo ambiente (`DECISIONS.md` #25).
 
-### 1.2 Frontend (`frontend/.env`, lido em `frontend/src/env.ts`)
+### 1.2 Frontend (`frontend/.env`, lido em `frontend/src/env.ts` e, em execução, no servidor)
+
+Mesma ordem de blocos do `frontend/.env.example`.
 
 | Variável | Quando | Obrigatória | O que é | Exemplo |
 |---|---|---|---|---|
-| `VITE_API_URL` | build | sim em produção (em dev cai em `http://localhost:3333`) | endereço da API visto pelo navegador; entra no bundle | `http://localhost:3333` |
+| `VITE_API_URL` | build | sim em produção (em dev cai em `http://localhost:3333`) | endereço da API visto pelo navegador; entra no bundle e na CSP | `http://localhost:3333` |
+| `SERVER_API_URL` | execução (servidor) | não | endereço interno da API para o SSR, sem sair pela internet; sem `VITE_`, não vai ao navegador; ausente usa `VITE_API_URL` | `http://curupira-api:3333` |
 | `VITE_SITE_URL` | build | sim em produção (em dev cai em `http://localhost:3000`) | endereço público do site (canonical, hreflang, sitemap); sem barra final | `http://localhost:3000` |
-| `VITE_DATA_SOURCE` | build | não em dev; `api` em produção (conferido pelo CI) | `mock` (padrão, dados de `src/data`) ou `api`; qualquer outro valor derruba o boot; com `api` o build tira `src/data/**` do bundle (`scripts/strip-example-data.ts`) | `mock` |
-| `VITE_STORAGE_URL` | build | em produção, para a foto subir; **ainda não definida** | origem do bucket; só entra na CSP de `connect-src` e `img-src` (`vite.config.ts`); está comentada no `.env.production` e fora dos `.env.example`; o CI só avisa quando falta (`main-build-frontend.yml`) | `https://<bucket>.exemplo.com` |
-| `SERVER_API_URL` | execução (servidor) | não | endereço interno da API para o SSR, sem sair pela internet; sem `VITE_`, não vai ao navegador | `http://curupira-api:3333` |
-| `SITE_ENV` | execução (servidor) | não | só `production` libera indexação; qualquer outro valor responde `noindex` e `Disallow: /` | `production` |
+| `SITE_ENV` | execução (servidor) | não | só `production` libera indexação; qualquer outro valor responde `noindex` e `Disallow: /`; ausente não é produção | `production` |
+| `STORAGE_PUBLIC_URL` | execução (servidor) | com envio de foto | origem do bucket (o `STORAGE_ENDPOINT` visto do navegador), lida **por requisição** em `src/server.ts` para abrir `img-src` e `connect-src` da CSP; nunca no build; ausente, a CSP só libera a API e a foto não sobe | `https://<bucket>.exemplo.com` |
+| `VITE_UPLOAD_MAX_SIZE` | build | não | espelho de `UPLOAD_MAX_SIZE`; **comentada no Curupira**: a foto da denúncia tem teto fixo (`LIST_LIMITS.REPORT_PHOTO_SIZE`) e não há biblioteca de arquivos | `1073741824` |
+
+O frontend só fala com a API: não há modo de dados de exemplo. O dado de exemplo vem do seeder de demonstração do backend
+(`SEED_DEMO_PASSWORD`).
 
 Variáveis dos testes de ponta a ponta (`frontend/.env.e2e.example`, lidas em `e2e/support/env.ts`, sem default: faltando uma, a
 suíte para e diz qual): `E2E_BASE_URL` (origem do app que a suíte sobe; o `CORS_ORIGINS` da API precisa listá-la), `E2E_API_URL`,
-`E2E_OWNER_EMAIL` e `E2E_OWNER_PASSWORD` (o administrador semeado; no CI a senha nasce a cada execução). O operador não é
-variável: cada execução cria o seu com a sessão do dono. `E2E_CHROMIUM_PATH` (binário do Chromium) é opcional. Os specs
-rodam sempre com `VITE_DATA_SOURCE=api`, fixado em `playwright.config.ts`.
+`E2E_OWNER_EMAIL` e `E2E_OWNER_PASSWORD` (o administrador semeado; no CI a senha nasce a cada execução) e `E2E_DEMO_PASSWORD`
+(a `SEED_DEMO_PASSWORD` do backend sob teste: o operador entra como `operator@example.com`, conta do seeder de demonstração).
+`E2E_SHOTS_DIR` (pasta das capturas) e `E2E_CHROMIUM_PATH` (binário do Chromium, também lido por `scripts/generate-icons.mjs`)
+são opcionais. Workers e matriz de larguras não são chave: são do `playwright.config.ts` e do CI.
 
 Regras (detalhe em `_standards/backend.md` §6):
 
@@ -67,44 +82,26 @@ Regras (detalhe em `_standards/backend.md` §6):
 
 ## 2. Exemplo
 
-`backend/.env.example` (versionado, só placeholder; os comentários completos estão no arquivo):
+Os dois `.env.example` são o modelo da régua (`_templates/{backend,frontend}/.env.example`): mesmas chaves, mesma ordem, mesmos
+blocos e comentários em inglês; só os valores abaixo são do Curupira. Não se repete o arquivo aqui: ele é a fonte, e o
+`sync-to-project.mjs --check` cobra a lista de chaves.
 
-```dotenv
-TZ=UTC
-PORT=3333
-HOST=localhost
-NODE_ENV=development
-LOG_LEVEL=info
-APP_KEY=
-APP_SERVER_URL=http://${HOST}:${PORT}
-TRUSTED_PROXIES=loopback
-CORS_ORIGINS=http://localhost:3000
-# COOKIE_DOMAIN=.maiyu.com.br
-DATABASE_URL=postgres://curupira:curupira@localhost:5436/curupira
-UPLOAD_MAX_SIZE=1073741824
-STORAGE_KEY=curupira
-STORAGE_SECRET=curupira-secret
-STORAGE_BUCKET=curupira
-STORAGE_ENDPOINT=http://localhost:9006
-STORAGE_FORCE_PATH_STYLE=true
-SEED_OWNER_EMAIL=owner@mail.com
-SEED_OWNER_PASSWORD=
-```
-
-`frontend/.env.example`:
-
-```dotenv
-VITE_API_URL=http://localhost:3333
-VITE_SITE_URL=http://localhost:3000
-VITE_DATA_SOURCE=mock
-```
+| Chave | Valor de exemplo do Curupira |
+|---|---|
+| `DATABASE_URL` | `postgres://curupira:curupira@localhost:5436/curupira` |
+| `STORAGE_KEY`, `STORAGE_BUCKET` | `curupira` |
+| `STORAGE_ENDPOINT` | `http://localhost:9006` |
+| `DB_PORT`, `STORAGE_PORT`, `STORAGE_CONSOLE_PORT` | `5436`, `9006`, `9007` |
+| `SEED_OWNER_EMAIL` | `owner@example.com` |
+| `STORAGE_PUBLIC_URL` (frontend) | `http://localhost:9006` |
+| `E2E_BASE_URL` | `http://localhost:3010` |
 
 ## 3. Segredo fora do Git
 
-`.env` e `.env.*` ficam fora do Git; `.env.example`, `.env.test` e `frontend/.env.production` são
-versionados. O `.env.test` do backend só tem o banco `curupira_test`, o bucket `curupira-test` e a
-senha de teste do dono. O `frontend/.env.production` só tem valores públicos (`VITE_*`) e o CI reprova o
-build do app se ele faltar ou se `VITE_DATA_SOURCE` não for `api` (`DECISIONS.md` #21).
+`.env` e `.env.*` ficam fora do Git; `.env.example`, `.env.test` e `.env.e2e.example` são versionados, e os dois últimos só usam
+chaves do catálogo. O `.env.test` do backend só tem o banco `curupira_test`, o bucket `curupira-test` e a senha de teste do dono.
+Não existe `frontend/.env.production`: os `VITE_*` do build chegam pelo passo de build do CI (`main-build-frontend.yml`, que
+reprova se `VITE_API_URL` ou `VITE_SITE_URL` não forem `https`), e o resto é de execução, no painel do Coolify.
 
 ## 4. Por ambiente
 
@@ -113,29 +110,30 @@ build do app se ele faltar ou se `VITE_DATA_SOURCE` não for `api` (`DECISIONS.m
 | Desenvolvimento | `backend/.env` copiado de `.env.example`; `frontend/.env` de `.env.example` | Postgres na porta 5436, MinIO na 9006 e console na 9007 (portas próprias para conviver com outros projetos na mesma máquina); app na 3000, API na 3333 |
 | Teste | `backend/.env.test` (versionado) | banco `curupira_test` (o runner se recusa a rodar em banco sem o sufixo `_test`), bucket `curupira-test`, `CORS_ORIGINS=http://localhost:5173` |
 | CI | `env:` dos workflows | valores de placeholder; o e2e do frontend cria um `api.env` temporário |
-| Produção | painel do Coolify para a API e o app; `frontend/.env.production` para o build | nunca em arquivo no servidor de build |
+| Produção | painel do Coolify para a API e o app; `VITE_*` no passo de build do CI | nunca em arquivo no servidor de build |
 
 Produção, API: `NODE_ENV=production`, `HOST=0.0.0.0`, `APP_SERVER_URL=https://api-curupira.maiyu.com.br`,
 `CORS_ORIGINS=https://curupira.maiyu.com.br`, `COOKIE_DOMAIN=.maiyu.com.br`,
 `TRUSTED_PROXIES=loopback,uniquelocal`, `UPLOAD_MAX_SIZE`, `STORAGE_*` do
 provedor (sem `STORAGE_FORCE_PATH_STYLE`), `DATABASE_URL` e `DATABASE_SSL` conforme o banco,
-`SEED_OWNER_*` só no momento de criar o primeiro administrador com `node ace users:create-owner` (o seeder
-não roda em produção). O `Dockerfile-production` do backend define `APP_SERVER_URL`, `CORS_ORIGINS` e `TRUSTED_PROXIES`
+`SEED_OWNER_*` só no momento de criar o primeiro administrador (com `SEED_OWNER_PASSWORD` presente o seeder o cria; ou
+`node ace users:create-owner`, que lê a mesma chave ou as flags); `SEED_DEMO_PASSWORD` fica vazia em produção, e a demonstração
+é pulada. O `Dockerfile-production` do backend define `APP_SERVER_URL`, `CORS_ORIGINS` e `TRUSTED_PROXIES`
 com valores de placeholder só no estágio de build, para o schema passar; a
 plataforma injeta os reais.
 
-Produção, app: `VITE_API_URL=https://api-curupira.maiyu.com.br`, `VITE_SITE_URL=https://curupira.maiyu.com.br`,
-`VITE_DATA_SOURCE=api` (já em `frontend/.env.production`), `VITE_STORAGE_URL` (a definir, antes do primeiro deploy), e no
-servidor `SITE_ENV=production` e, se houver rede interna, `SERVER_API_URL`.
+Produção, app: `VITE_API_URL=https://api-curupira.maiyu.com.br` e `VITE_SITE_URL=https://curupira.maiyu.com.br` no build (passo do
+CI), e no servidor `SITE_ENV=production`, `STORAGE_PUBLIC_URL` (origem do bucket de produção, a definir antes do primeiro deploy:
+sem ela a CSP bloqueia o envio da foto) e, se houver rede interna, `SERVER_API_URL`.
 
 ## 5. Primeira configuração
 
 - [ ] `cp backend/.env.example backend/.env` e `cp frontend/.env.example frontend/.env`.
 - [ ] Gerar `APP_KEY` (`node ace generate:key` no `backend/`).
-- [ ] Definir `SEED_OWNER_PASSWORD` (em desenvolvimento o seeder cria o dono; em produção, `node ace users:create-owner`).
+- [ ] Definir `SEED_OWNER_PASSWORD` (liga o seed do dono) e, se quiser a demonstração, `SEED_DEMO_PASSWORD`.
 - [ ] Subir os serviços locais: `docker compose up -d` em `backend/` (Postgres, MinIO e `minio-setup`).
 - [ ] Criar o banco de teste: `docker compose exec database createdb -U curupira curupira_test`.
-- [ ] `node ace migration:run` e `node ace db:seed` (bairros; o dono só em `development` e `test`); `pnpm db:seed:demo` para a demonstração.
+- [ ] `node ace migration:run` e `node ace db:seed` (bairros sempre; dono e demonstração só com a senha da chave).
 - [ ] `pnpm dev` na raiz. A API valida as variáveis no boot e para se faltar alguma.
 - [ ] Reiniciar a API depois de mudar o `.env`.
 

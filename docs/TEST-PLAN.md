@@ -28,10 +28,10 @@ deitado), 768 x 1024, 1024 x 768, 1440 x 900 e 1920 x 1080.
 | `responsive-panel.spec.ts` | `responsive` (Desktop Chrome) | painel nas 7 larguras: 12 telas sem rolagem horizontal e sem nenhuma violação de axe (qualquer impacto, não só sério e crítico); o detalhe da ocorrência cabe e o menu (gaveta no celular, barra lateral daí em diante) abre e navega; os filtros ficam na URL ao trocar a largura; o OPERADOR não chega a cronograma, bairros e contas, nem pelo menu nem digitando o endereço, em todas as larguras (22 testes) |
 
 Estado atual (PR #8, mesclado): a matriz pública do CI tem 4 larguras (360, 768, 1440 e 1920, 88 testes) e as
-7 larguras (154 testes) valem localmente ou com `E2E_FULL_MATRIX=1`. Os projetos públicos rodam em paralelo
+7 larguras (154 testes) valem localmente (sem `CI`). Os projetos públicos rodam em paralelo
 (`fullyParallel`) porque só leem páginas; os fluxos que gravam no banco e gastam o limite de 5 logins por minuto
 ficam encadeados por `dependencies` (`mobile`, depois `desktop`, depois `responsive` do painel). O número de
-workers vem de `E2E_WORKERS` (4 no CI, 2 local), o `globalTimeout` é de 25 minutos e o workflow não força mais
+workers é do `playwright.config.ts` (4 no CI, 2 local), sem chave de ambiente, o `globalTimeout` é de 25 minutos e o workflow não força mais
 `--workers=1`. A rolagem horizontal é medida contra a largura pedida, e não só contra `innerWidth`, porque no
 celular emulado o navegador alarga a viewport até caber o conteúdo e o teste passaria numa página mais larga que
 o aparelho.
@@ -55,8 +55,8 @@ Redes que cobram o que ninguém lembra:
 | vazamento de resposta | credencial em qualquer nível, contato em rota pública | `backend/app/core/response-leak.e2e.spec.ts` |
 | redação de log | senha e token no log | `backend/app/core/log-redaction.unit.spec.ts` |
 | `TRUSTED_PROXIES` | valor de produção (`loopback,uniquelocal`) que quebra a leitura do IP, ou que confia em todos (`true`, `*`) | `backend/app/core/trusted-proxies.unit.spec.ts` |
-| dados de exemplo fora do bundle | `src/data/**` no build com `VITE_DATA_SOURCE=api` | `frontend/scripts/strip-example-data.test.ts` |
-| `.env.production` do app | build sem o arquivo ou sem `VITE_DATA_SOURCE=api` | `.github/workflows/main-build-frontend.yml` |
+| CSP com o bucket em execução | origem do bucket ausente, inválida ou com caminho alargando `connect-src`/`img-src` | `frontend/src/lib/security-headers.test.ts` |
+| `VITE_*` do build do app | build sem `https` na API ou no site | `.github/workflows/main-build-frontend.yml` |
 | `i18n:check` | chave faltando em algum idioma | `frontend` (`inlang check`) |
 | ciclo de chunk | ciclo que quebra o SSR | `frontend/scripts/check-chunk-cycles.mjs` |
 | `routeTree.gen.ts` em dia | rota nova sem o arquivo gerado commitado | `main-check-frontend.yml` |
@@ -79,11 +79,10 @@ Cada fluxo de `USER-FLOWS.md` marcado aqui tem spec E2E de ponta a ponta.
 | Layout do morador e do painel do celular ao monitor largo | cada rota sem rolagem horizontal e com alvo de 44 px em toque; painel nas 7 larguras com menu, filtros na URL e axe sem violação | operador sem acesso às áreas de administrador em toda largura | `frontend/e2e/responsive-public.spec.ts`, `frontend/e2e/responsive-panel.spec.ts` (§1.1); unitários `active-filters.test.ts`, `table-grid.test.tsx` |
 | Calendário, mapa público, bairros, contas | | | sem E2E de navegador dedicado; cobertos por unitário de `lib/` e dos componentes (`schedule.test.ts`, `ics.test.ts`, `waste-calendar.test.tsx`, `report-map.test.tsx`) e pelo E2E da API (`storefront/*`, `management/*`) |
 
-O E2E do frontend roda sempre contra a API real (`VITE_DATA_SOURCE=api`, fixado em `playwright.config.ts`),
-com o dono semeado (`E2E_OWNER_*`), a demonstração de `pnpm db:seed:demo` e o operador que o spec cria
-(operador criado pelo spec). Isso fecha a 3.6 de `TASKS.md`: entrada, foto pré-assinada e protocolo foram exercitados do
+O E2E do frontend roda sempre contra a API real, com o dono semeado (`E2E_OWNER_*`) e a demonstração do seeder
+(`SEED_DEMO_PASSWORD`, igual a `E2E_DEMO_PASSWORD`): o operador é a conta `operator@example.com`. Isso fecha a 3.6 de `TASKS.md`: entrada, foto pré-assinada e protocolo foram exercitados do
 navegador à API. O job do CI (`main-check-frontend.yml`) sobe a API (imagem `curupira-api:e2e`), Postgres e
-MinIO e passa `E2E_BASE_URL`, `E2E_API_URL` e `E2E_OWNER_*` (senha gerada a cada execução). Rodou pela primeira vez no PR #6 e estourou o tempo (§1.1); os 22 testes de responsividade do painel e a matriz pública completa só foram rodados localmente em modo de exemplo, sem a API real.
+MinIO e passa `E2E_BASE_URL`, `E2E_API_URL`, `E2E_OWNER_*` e `E2E_DEMO_PASSWORD` (senhas geradas a cada execução). Rodou pela primeira vez no PR #6 e estourou o tempo (§1.1); os 22 testes de responsividade do painel e a matriz pública completa só foram rodados localmente em modo de exemplo, sem a API real.
 
 ## 3. Matriz requisito × teste
 
@@ -156,8 +155,8 @@ Rota nova entra aqui com os status dela; valor novo de enum, com a linha dele. A
   Os repositórios têm versões em memória (`*.memory.repository.ts`) e os serviços têm fakes
   (`*.fake.ts`), usados no unitário.
 - Factories em `backend/database/factories/` e fixtures em `backend/tests/`.
-- Frontend: Vitest com Testing Library (os dados de `frontend/src/data/` servem ao unitário e ao modo `mock` de
-  desenvolvimento); o E2E usa a API real, o dono semeado (`E2E_OWNER_*`) e a demonstração de `pnpm db:seed:demo`.
+- Frontend: Vitest com Testing Library; o E2E usa a API real, o dono semeado (`E2E_OWNER_*`) e a demonstração do
+  seeder (`E2E_DEMO_PASSWORD`).
 
 ## 6. Critério de pronto
 

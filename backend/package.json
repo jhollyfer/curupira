@@ -28,7 +28,6 @@
     "authz:check": "node --import @poppinss/ts-exec scripts/authz-check.ts",
     "depcruise": "depcruise app --config scripts/depcruise.config.ts",
     "di:check": "node ace di:check",
-    "db:seed:demo": "node ace db:seed --files database/seeders/dev/demo.ts",
     "validators:check": "pnpm pattern:check"
   },
   "imports": {

@@ -5,8 +5,6 @@ import type { MutationProps } from '#/hooks/tanstack-query/_mutation-props'
 
 import type { HTTPError } from '../http'
 import { send } from '../http'
-import { mockSignIn, mockSignOut } from '../mock-session'
-import { fromSource } from '../source'
 
 /**
  * Signs in (`authentication/sign-in`, the shared `AuthenticationSessionSignIn*`
@@ -22,13 +20,9 @@ export function useAuthenticationSignInMutation(
   return useMutation<void, HTTPError, AuthenticationSessionSignInPayload>({
     ...options,
     mutationFn: function (payload) {
-      return fromSource<void>({
-        mock: () => mockSignIn(payload.email, payload.password),
-        api: () =>
-          send('/authentication/sign-in', {
-            method: 'POST',
-            body: JSON.stringify(payload),
-          }),
+      return send('/authentication/sign-in', {
+        method: 'POST',
+        body: JSON.stringify(payload),
       })
     },
   })
@@ -41,10 +35,7 @@ export function useAuthenticationSignOutMutation(
   return useMutation<void, HTTPError, void>({
     ...options,
     mutationFn: function () {
-      return fromSource<void>({
-        mock: mockSignOut,
-        api: () => send('/authentication/sign-out', { method: 'POST' }),
-      })
+      return send('/authentication/sign-out', { method: 'POST' })
     },
   })
 }

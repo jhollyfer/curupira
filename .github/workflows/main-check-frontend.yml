@@ -152,7 +152,7 @@ jobs:
 
       - name: Setup MinIO e espera pelo bucket
         env:
-          MINIO_ENDPOINT: http://localhost:9006
+          STORAGE_ENDPOINT: http://localhost:9006
           MINIO_ROOT_USER: ci-minio-root
           MINIO_ROOT_PASSWORD: ci-minio-root-secret
           STORAGE_KEY: curupira
@@ -161,7 +161,7 @@ jobs:
         run: |
           for _ in $(seq 1 30); do
             if docker run --rm --network host \
-              -e MINIO_ENDPOINT -e MINIO_ROOT_USER -e MINIO_ROOT_PASSWORD \
+              -e STORAGE_ENDPOINT -e MINIO_ROOT_USER -e MINIO_ROOT_PASSWORD \
               -e STORAGE_KEY -e STORAGE_SECRET -e STORAGE_BUCKET \
               -v "$PWD/backend/infra/minio:/setup:ro" \
               --entrypoint /bin/sh curupira-minio-test:2025-10-15 \
@@ -173,24 +173,27 @@ jobs:
           echo "o bucket não ficou disponível" >&2
           exit 1
 
-      # Migrations, seed do dono e dos dados de demonstração (bairros, cronograma,
-      # denúncias),
-      # depois a API de pé. Valores só de teste; nenhum serve fora deste job.
+      # Migrations, seed do dono e da demonstração (bairros, cronograma, denúncias, uma conta
+      # por papel), depois a API de pé. Valores só de teste; nenhum serve fora deste job.
       # A imagem roda em `production`, como no deploy: em `development` o logger
       # do Adonis carrega o `pino-pretty`, que é dependência de dev e não está
-      # na imagem. Os seeders de demonstração só rodam em `development`, então
-      # vão pelo workspace, que tem as dependências de dev.
-      # A senha do dono nasce a cada execução (`backend.md` §6.2): não há credencial fixa no
-      # workflow. Vai para o ambiente dos passos seguintes, onde o seeder e o E2E a leem.
-      - name: Gera a senha do dono desta execução
+      # na imagem. Cada seed liga pela chave com valor (`backend.md` §6.2), sem depender
+      # do `NODE_ENV`, então o seed roda dentro da própria imagem.
+      # As senhas nascem a cada execução: não há credencial fixa no workflow. Vão para o
+      # ambiente dos passos seguintes, onde o seeder e o E2E as leem.
+      - name: Gera as senhas desta execução
         run: |
-          senha="Ow-$(openssl rand -hex 8)-Aa9!"
-          echo "::add-mask::${senha}"
-          echo "E2E_OWNER_PASSWORD=${senha}" >> "$GITHUB_ENV"
+          dono="Ow-$(openssl rand -hex 8)-Aa9!"
+          demo="De-$(openssl rand -hex 8)-Aa9!"
+          echo "::add-mask::${dono}"
+          echo "::add-mask::${demo}"
+          echo "E2E_OWNER_PASSWORD=${dono}" >> "$GITHUB_ENV"
+          echo "E2E_DEMO_PASSWORD=${demo}" >> "$GITHUB_ENV"
 
       - name: Sobe a API
         env:
           SEED_OWNER_PASSWORD: ${{ env.E2E_OWNER_PASSWORD }}
+          SEED_DEMO_PASSWORD: ${{ env.E2E_DEMO_PASSWORD }}
         run: |
           cat > "$RUNNER_TEMP/api.env" <<ENV
           NODE_ENV=production
@@ -208,19 +211,12 @@ jobs:
           STORAGE_BUCKET=curupira
           STORAGE_ENDPOINT=http://localhost:9006
           STORAGE_FORCE_PATH_STYLE=true
-          SEED_OWNER_EMAIL=owner@mail.com
+          SEED_OWNER_EMAIL=owner@example.com
           SEED_OWNER_PASSWORD=${SEED_OWNER_PASSWORD}
+          SEED_DEMO_PASSWORD=${SEED_DEMO_PASSWORD}
           ENV
           docker run --rm --network host --env-file "$RUNNER_TEMP/api.env" curupira-api:e2e node ace migration:run --force
-          (
-            cd backend
-            set -a
-            . "$RUNNER_TEMP/api.env"
-            set +a
-            export NODE_ENV=development
-            node ace db:seed
-            node ace db:seed --files database/seeders/dev/demo.ts
-          )
+          docker run --rm --network host --env-file "$RUNNER_TEMP/api.env" curupira-api:e2e node ace db:seed
           docker run -d --name api --network host --env-file "$RUNNER_TEMP/api.env" curupira-api:e2e
           for _ in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:3333/health-check; then
@@ -237,12 +233,11 @@ jobs:
         run: pnpm --filter ./frontend --fail-if-no-match exec playwright install --with-deps chromium
 
       # Credenciais só de teste, as mesmas do seed acima; nenhuma tem default no
-      # código (tooling.md §7). Os specs rodam contra a API real (o `playwright.config.ts`
-      # sobe o servidor com `VITE_DATA_SOURCE=api`); o operador é criado pelo próprio
-      # spec, com a sessão do dono.
+      # código (tooling.md §7). Os specs rodam contra a API real; o operador é a conta de
+      # demonstração (`operator@example.com`, `E2E_DEMO_PASSWORD`).
       - name: Test e2e
         env:
-          E2E_OWNER_EMAIL: owner@mail.com
+          E2E_OWNER_EMAIL: owner@example.com
           E2E_BASE_URL: http://localhost:3010
           E2E_API_URL: http://localhost:3333
         run: pnpm --filter ./frontend --fail-if-no-match run test:e2e --add-reporter=github

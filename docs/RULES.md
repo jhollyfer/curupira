@@ -37,10 +37,9 @@
 - Os throttles de `backend/start/limiter.ts` (limites, janelas, `blockFor`), `TRUSTED_PROXIES` (lista validada
   em `core/trusted-proxies.ts`), `COOKIE_DOMAIN`, o nome dos cookies de sessão, o middleware de `Origin`, o CORS e a cadeia `auth()`/`role()` das rotas. Rota que muda de
   papel regrava a linha de base do `authz:check` e pede aprovação.
-- A CSP, os cabeçalhos de segurança e a lista de rotas fora do cache do service worker em `frontend/vite.config.ts`.
-- A guarda de `import.meta.env.DEV` que limita as contas de exemplo do modo `mock`.
+- A CSP e os cabeçalhos de segurança em `frontend/src/server.ts` e `frontend/src/lib/security-headers.ts`, e a lista de rotas fora do cache do service worker em `frontend/vite.config.ts`.
 - Os seeds de bairros (`backend/database/seeders/neighborhood.seed.ts`) e o cronograma de exemplo
-  (`dev/demo.ts`): são de exemplo, a prefeitura confere; não trocar por dados "reais" sem fonte.
+  (`backend/database/seeders/demo.seed.ts`): são de exemplo, a prefeitura confere; não trocar por dados "reais" sem fonte.
 - Os textos de `/privacidade`, `/termos` e `/sobre` (rascunho a revisar pela prefeitura e pela procuradoria).
 - A cor fixa de cada tipo de coleta (`--waste-*`) e o uso exclusivo de laranja e vermelho.
 - Os arquivos gerados e commitados: `backend/openapi.json`, `backend/database/schema.ts`,
@@ -63,7 +62,7 @@
 | Toque | alvo de 44 px no app do morador | uso com uma mão, no sol, no barco |
 | Idiomas | pt-BR é a base; todo texto novo entra em pt-BR, es e en no mesmo commit | fronteira com Peru e Colômbia |
 | Mapa | Leaflet só em chunk lazy e só no cliente; nada de `import 'leaflet'` fora de `components/common/report-map` | peso e SSR |
-| Fonte de dados do frontend | `VITE_DATA_SOURCE=mock` por padrão em dev e `api` em produção (`frontend/.env.production`); o ponto de troca é `integrations/tanstack-query/source.ts`; dado de exemplo usa o domínio `@exemplo.invalid` | o app corre sem backend em dev (`DECISIONS.md` #10) |
+| Fonte de dados do frontend | só a API (`VITE_API_URL`); o dado de exemplo é o seeder de demonstração do backend, ligado por `SEED_DEMO_PASSWORD`; nenhuma chave de ambiente fora do catálogo da régua | os quatro projetos da casa têm as mesmas chaves (`DECISIONS.md` #26) |
 | Rotas do frontend | par `rota.tsx` + `rota.lazy.tsx`; nomes das rotas da gestão em inglês, da vitrine em português (`/coleta`, `/denunciar`) | convenção já consolidada |
 | Bucket | privado; nunca URL pública; leitura por URL assinada de 15 minutos, download da biblioteca de 5 e envio de foto de denúncia de 3 | `SECURITY.md` |
 | Variável de ambiente nova | testada com o valor de produção, não só com o do `.env.example` | `TRUSTED_PROXIES` com `loopback,uniquelocal` quebrou a API (A-01, `MEMORY.md`) |

@@ -45,13 +45,8 @@ const THEME_COLORS = [
   { media: '(prefers-color-scheme: dark)', content: '#0f1a14' },
 ] as const
 
-/**
- * The connection to the API opens together with the HTML (`frontend.md` §9.5); there is
- * none to open while the example data answers.
- */
+/** The connection to the API opens together with the HTML (`frontend.md` §9.5). */
 function apiPreconnect() {
-  if (env.VITE_DATA_SOURCE !== 'api') return []
-
   return [
     {
       rel: 'preconnect',

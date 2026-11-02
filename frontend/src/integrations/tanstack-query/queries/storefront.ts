@@ -10,23 +10,14 @@ import {
 } from '@curupira/shared'
 import { queryOptions } from '@tanstack/react-query'
 
-import { NEIGHBORHOODS } from '#/data/neighborhoods'
-import { exampleNotices } from '#/data/notices'
-import { exampleMapReports, findReportByProtocol } from '#/data/reports'
-import { schedulesOf } from '#/data/schedules'
 import { queryKeys } from '#/hooks/tanstack-query/_query-keys'
-import { townNow } from '#/lib/i18n'
-import { m } from '#/paraglide/messages'
 
-import { HTTPError, request } from '../http'
-import { fromSource } from '../source'
+import { request } from '../http'
 
 /**
- * The public app, without a session. Each `queryFn` has two bodies behind
- * `fromSource` (see `source.ts`): the example data, and the real route with the
- * response schema from `@curupira/shared`. The routes below follow the shared module
- * names (`storefront/<resource>`); they are the assumption to confirm against the
- * backend's OpenAPI when `VITE_DATA_SOURCE=api` is first turned on.
+ * The public app, without a session. Each `queryFn` calls the real route and parses the
+ * body with the response schema from `@curupira/shared`. The routes below follow the shared
+ * module names (`storefront/<resource>`) and the backend's OpenAPI.
  *
  * Neighborhoods and schedules change rarely and must work with no signal, so they
  * stay fresh for a long time here and the service worker keeps a copy
@@ -37,19 +28,15 @@ const HOUR = 60 * 60 * 1000
 export const storefrontNeighborhoodsQueryOptions = () =>
   queryOptions({
     queryKey: queryKeys.storefront.neighborhoods.all,
-    queryFn: ({ signal }) =>
-      fromSource<ReadonlyArray<StorefrontNeighborhoodShowResponse>>({
-        mock: () => NEIGHBORHOODS,
-        api: async () => {
-          const page = await request(
-            '/storefront/neighborhoods?perPage=100',
-            paginatedResponse(StorefrontNeighborhoodShowResponse),
-            { signal },
-          )
+    queryFn: async ({ signal }) => {
+      const page = await request(
+        '/storefront/neighborhoods?perPage=100',
+        paginatedResponse(StorefrontNeighborhoodShowResponse),
+        { signal },
+      )
 
-          return page.data
-        },
-      }),
+      return page.data
+    },
     staleTime: 6 * HOUR,
   })
 
@@ -58,44 +45,36 @@ export const storefrontSchedulesQueryOptions = (
 ) =>
   queryOptions({
     queryKey: queryKeys.storefront.schedules.byNeighborhood(neighborhoodId),
-    queryFn: ({ signal }) =>
-      fromSource<ReadonlyArray<StorefrontScheduleShowResponse>>({
-        mock: () => schedulesOf(neighborhoodId),
-        api: async () => {
-          // Paginated like every listing (`backend/openapi.json`); 100 is the cap and a
-          // neighborhood has at most 84 collections (4 types x 7 days x 3 shifts). With
-          // no neighborhood chosen the public calendar still shows the first 100.
-          const query = new URLSearchParams({ perPage: '100' })
-          if (neighborhoodId) query.set('neighborhoodId', neighborhoodId)
+    queryFn: async ({ signal }) => {
+      // Paginated like every listing (`backend/openapi.json`); 100 is the cap and a
+      // neighborhood has at most 84 collections (4 types x 7 days x 3 shifts). With
+      // no neighborhood chosen the public calendar still shows the first 100.
+      const query = new URLSearchParams({ perPage: '100' })
+      if (neighborhoodId) query.set('neighborhoodId', neighborhoodId)
 
-          const page = await request(
-            `/storefront/schedules?${query.toString()}`,
-            paginatedResponse(StorefrontScheduleShowResponse),
-            { signal },
-          )
+      const page = await request(
+        `/storefront/schedules?${query.toString()}`,
+        paginatedResponse(StorefrontScheduleShowResponse),
+        { signal },
+      )
 
-          return page.data
-        },
-      }),
+      return page.data
+    },
     staleTime: 6 * HOUR,
   })
 
 export const storefrontNoticesQueryOptions = () =>
   queryOptions({
     queryKey: queryKeys.storefront.notices.list({}),
-    queryFn: ({ signal }) =>
-      fromSource<ReadonlyArray<StorefrontNoticeShowResponse>>({
-        mock: () => exampleNotices(townNow()),
-        api: async () => {
-          const page = await request(
-            '/storefront/notices?perPage=20',
-            paginatedResponse(StorefrontNoticeShowResponse),
-            { signal },
-          )
+    queryFn: async ({ signal }) => {
+      const page = await request(
+        '/storefront/notices?perPage=20',
+        paginatedResponse(StorefrontNoticeShowResponse),
+        { signal },
+      )
 
-          return page.data
-        },
-      }),
+      return page.data
+    },
     staleTime: 10 * 60 * 1000,
   })
 
@@ -104,16 +83,8 @@ export const storefrontReportsMapQueryOptions = () =>
   queryOptions({
     queryKey: queryKeys.storefront.reports.map,
     queryFn: ({ signal }) =>
-      fromSource<ReadonlyArray<StorefrontReportMapResponse>>({
-        mock: () => exampleMapReports(townNow()),
-        api: () =>
-          request(
-            '/storefront/reports/map',
-            z.array(StorefrontReportMapResponse),
-            {
-              signal,
-            },
-          ),
+      request('/storefront/reports/map', z.array(StorefrontReportMapResponse), {
+        signal,
       }),
     staleTime: 5 * 60 * 1000,
   })
@@ -130,24 +101,11 @@ export const storefrontReportByProtocolQueryOptions = (protocol: string) => {
   return queryOptions({
     queryKey: queryKeys.storefront.reports.byProtocol(normalized),
     queryFn: ({ signal }) =>
-      fromSource<StorefrontReportShowByProtocolResponse>({
-        mock: () => {
-          const found = findReportByProtocol(normalized, townNow())
-          if (found) return found
-
-          throw new HTTPError({
-            message: m.track_not_found_title(),
-            status: 404,
-            code: 'REPORT_NOT_FOUND',
-          })
-        },
-        api: () =>
-          request(
-            `/storefront/reports/${encodeURIComponent(normalized)}`,
-            StorefrontReportShowByProtocolResponse,
-            { signal },
-          ),
-      }),
+      request(
+        `/storefront/reports/${encodeURIComponent(normalized)}`,
+        StorefrontReportShowByProtocolResponse,
+        { signal },
+      ),
     staleTime: 60 * 1000,
     // A wrong code does not become right on the second try.
     retry: false,

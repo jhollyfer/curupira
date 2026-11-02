@@ -3,12 +3,14 @@ import { randomUUID } from 'node:crypto'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import { DateTime } from 'luxon'
 import {
+  ACTIVE_STATUS,
   COLLECTION_SHIFT,
   REPORT_KIND,
   REPORT_STATUS,
   REPORT_STATUSES,
   UPLOAD_STATUS,
   USER_ROLE,
+  USER_ROLES,
   WASTE_TYPE,
   WEEKDAY,
   formatProtocol,
@@ -19,6 +21,7 @@ import {
   type Weekday,
 } from '@curupira/shared'
 import app from '@adonisjs/core/services/app'
+import logger from '@adonisjs/core/services/logger'
 
 import CollectionSchedule from '#models/collection-schedule'
 import Neighborhood from '#models/neighborhood'
@@ -28,6 +31,7 @@ import ReportPhoto from '#models/report-photo'
 import ReportStatusEvent from '#models/report-status-event'
 import Storage from '#models/storage'
 import User from '#models/user'
+import env from '#start/env'
 import NeighborhoodSeeder from '#database/seeders/neighborhood.seed'
 
 /**
@@ -40,8 +44,11 @@ import NeighborhoodSeeder from '#database/seeders/neighborhood.seed'
  * bucket**: their signed URLs lead nowhere, which is enough for every screen except
  * actually opening the image.
  *
- * Development only, and only runs by hand (`pnpm db:seed:demo`). Lives in `dev/`, without
- * the `.seed.ts` suffix, being a manual demonstration seed (_standards/backend.md §3).
+ * Switched on by `SEED_DEMO_PASSWORD` having a value, in any environment
+ * (_standards/backend.md §6.2, "Seed ligado pela chave"): empty skips it with one log line
+ * and the rest of `node ace db:seed` runs. It also creates one account per role
+ * (`<role>@example.com`, e.g. `administrator@example.com`) sharing that password, so every
+ * profile of the panel can be signed into; the e2e reads the same addresses.
  * Idempotent: the protocols are fixed, so running again reasserts instead of duplicating.
  */
 type Slot = readonly [Weekday, CollectionShift, WasteType]
@@ -228,9 +235,15 @@ const STEP_MESSAGES: Record<ReportStatus, string | null> = {
 }
 
 export default class extends BaseSeeder {
-  static override environment = ['development']
-
   override async run() {
+    const password = env.get('SEED_DEMO_PASSWORD')
+
+    if (!password) {
+      logger.info('SEED_DEMO_PASSWORD is empty: the demonstration seed was skipped.')
+      return
+    }
+
+    await this.accounts(password)
     // Through the container, not `new` (_standards/backend.md §2.1).
     const neighborhoods = await app.container.make(NeighborhoodSeeder, [this.client])
     await neighborhoods.run()
@@ -238,6 +251,24 @@ export default class extends BaseSeeder {
     await this.schedules()
     await this.notices()
     await this.reports()
+  }
+
+  /** One account per role, the same password, an address the seeder itself derives. */
+  private async accounts(password: string) {
+    for (const role of USER_ROLES) {
+      const email = `${role.toLowerCase()}@example.com`
+
+      await User.updateOrCreate(
+        { email },
+        {
+          name: `Demonstração ${role.toLowerCase()}`,
+          email,
+          password,
+          role,
+          status: ACTIVE_STATUS.ACTIVE,
+        },
+      )
+    }
   }
 
   private async schedules() {

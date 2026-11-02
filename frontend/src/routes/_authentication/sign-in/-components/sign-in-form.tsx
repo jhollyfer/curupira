@@ -16,7 +16,6 @@ import {
 import { useAuthenticationSignInMutation } from '#/integrations/tanstack-query/mutations/authentication'
 import { m } from '#/paraglide/messages'
 
-import { MockAccounts } from './mock-accounts'
 import {
   AuthShell,
   AuthShellContent,
@@ -83,8 +82,6 @@ export function SignInForm(): React.JSX.Element {
           <AuthShellHeader title={m.auth_sign_in_title()}>
             {m.auth_sign_in_description()}
           </AuthShellHeader>
-
-          <MockAccounts form={form} />
 
           <FieldGroup>
             <AppField

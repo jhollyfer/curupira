@@ -6,7 +6,7 @@
 > `.specs/features/<feature>/tasks.md`; aqui a linha aponta para lá.
 > Atualiza no mesmo commit em que a tarefa começa ou termina.
 
-**Resumo:** 25 tarefas · 24 feitas · 1 bloqueada · 8 pendências da régua (fase R) (atualizado 2026-11-02)
+**Resumo:** 25 tarefas · 24 feitas · 1 bloqueada · fase R: 4 de 9 feitas, 5 pendentes (atualizado 2026-11-02)
 
 Status: `A fazer` · `Em andamento` · `Feita` · `Bloqueada` (com motivo nas notas).
 Prioridade: `Alta` · `Média` · `Baixa`.
@@ -22,7 +22,7 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | 1.3 | `shared/` com enums, validators Zod e responses do domínio | Alta | Feita | |
 | 1.4 | `AGENTS.md`, `CLAUDE.md` e `docs/` | Alta | Feita | |
 | 1.5 | Remover as sobras do starter (backend e frontend) | Alta | Feita | backend e frontend reescritos a partir do molde do interclasse |
-| 1.6 | Deploy no Coolify: serviços, variáveis, healthcheck `/health-check` | Média | Bloqueada | domínios definidos (`api-curupira.maiyu.com.br`, `curupira.maiyu.com.br`); faltam os uuids das duas aplicações em `main-deploy-coolify.yml` (hoje `PREENCHER_*`, o job reprova de propósito) e o endereço do bucket de produção para `VITE_STORAGE_URL` (`DECISIONS.md` #15) |
+| 1.6 | Deploy no Coolify: serviços, variáveis, healthcheck `/health-check` | Média | Bloqueada | domínios definidos (`api-curupira.maiyu.com.br`, `curupira.maiyu.com.br`); faltam os uuids das duas aplicações em `main-deploy-coolify.yml` (hoje `PREENCHER_*`, o job reprova de propósito) e o endereço do bucket de produção para `STORAGE_PUBLIC_URL` (`DECISIONS.md` #27) |
 
 ## Fase 2 · Backend (5/5)
 
@@ -43,7 +43,7 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | 3.3 | Denúncia em 3 passos e fila offline | Alta | Feita | |
 | 3.4 | Acompanhar por protocolo | Alta | Feita | |
 | 3.5 | Mapa público | Média | Feita | |
-| 3.6 | Trocar os mocks de `src/data` pela API | Alta | Feita | provada por E2E de Playwright contra a API real (11 testes); entrada e saída usam `/authentication/sign-in` e `/sign-out`; build com `VITE_DATA_SOURCE=api` tira `src/data/**` do bundle; resta definir `VITE_STORAGE_URL` (1.6) |
+| 3.6 | Trocar os mocks de `src/data` pela API | Alta | Feita | provada por E2E de Playwright contra a API real (11 testes); entrada e saída usam `/authentication/sign-in` e `/sign-out`; a camada de dados de exemplo saiu depois (R.1); resta definir `VITE_STORAGE_URL` (1.6) |
 
 ## Fase 4 · Painel da gestão (4/4)
 
@@ -69,14 +69,15 @@ Achados do sync que mudam muito código ou dependem de decisão do dono; nenhum 
 
 | # | Tarefa | Prioridade | Status | Notas |
 |---|---|---|---|---|
-| R.1 | `VITE_DATA_SOURCE` fora do catálogo: remover a camada de dados de exemplo (`src/data`, `fromSource`, mock-session, `strip-example-data`) | Média | A fazer | refatoração grande; alternativa é levar a chave ao upstream |
-| R.2 | `VITE_STORAGE_URL` fora do catálogo: propor a chave ao `maiyu-pattern` (CSP do bucket) | Média | A fazer | `sync --check` aponta `env-diverge` até lá |
+| R.1 | `VITE_DATA_SOURCE` fora do catálogo: remover a camada de dados de exemplo (`src/data`, `fromSource`, mock-session, `strip-example-data`) | Média | Feita | decisão do dono: saiu a camada inteira (`src/data`, `fromSource`, mock-session, `strip-example-data`, contas de exemplo, `.env.production`); dado de exemplo vem do seeder de demonstração (`DECISIONS.md` #26) |
+| R.2 | `VITE_STORAGE_URL` fora do catálogo: virar `STORAGE_PUBLIC_URL` em runtime, com CSP em `src/server.ts` | Média | Feita | `src/server.ts` lê `STORAGE_PUBLIC_URL` por requisição e escreve a CSP (`DECISIONS.md` #27); falta só o endereço do bucket de produção (1.6) |
 | R.3 | Playwright em projetos `mobile` (360×740), `tablet` (768×1024) e `desktop` (1440×900) com os mesmos specs, mais `responsive.spec` e `touch-targets.spec`, e matriz no CI | Alta | A fazer | hoje: `mobile`, `desktop`, `responsive-*` |
 | R.4 | Alvo de toque de 44 px vir do kit `components/ui/` (`h-11 sm:h-7`), não da variante `touch` nem de `.panel-touch` | Média | A fazer | `frontend.md` |
 | R.5 | Tipografia fluida com `clamp` e teto no desktop nos tokens `--text-*` | Baixa | A fazer | |
 | R.6 | Auditoria das telas contra a tabela "cara de gerador" (`frontend.md`) | Média | A fazer | |
 | R.7 | Contadores com `=0` e `=1` antes do plural (`panel_table_total`, `map_list_title`) | Baixa | A fazer | `i18n.md` |
-| R.8 | `E2E_WORKERS`, `E2E_FULL_MATRIX` e `E2E_CHROMIUM_PATH` fora do catálogo de E2E | Baixa | A fazer | |
+| R.8 | `E2E_WORKERS`, `E2E_FULL_MATRIX` e `E2E_CHROMIUM_PATH` fora do catálogo de E2E | Baixa | Feita | `E2E_WORKERS` e `E2E_FULL_MATRIX` saíram; `CHROMIUM_PATH` virou `E2E_CHROMIUM_PATH` |
+| R.9 | Todas as chaves de ambiente no catálogo da régua (`backend.md` §6.2): `APP_CLIENT_URL`, `SEED_DEMO_PASSWORD`, `SITE_ENV`, `E2E_DEMO_PASSWORD`, secrets do deploy `COOLIFY_*` | Alta | Feita | `chore/env-catalogo-padrao`; régua #276, jhollyfer/maiyu-pattern#16; E2E de Playwright e suíte `functional` do backend não rodaram nesta sessão (sem Docker): rodam no CI do PR |
 
 ## Fase N · Ideias (fora do escopo atual)
 

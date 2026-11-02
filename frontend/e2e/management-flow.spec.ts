@@ -3,9 +3,8 @@ import { waitForHydration } from './support/hydration'
 import { expect, test } from './support/test'
 
 /**
- * The panel's flows, against the REAL API (`E2E_DATA_SOURCE` is gone: the specs only
- * run with `VITE_DATA_SOURCE=api`). The seed gives the ADMINISTRATOR; the OPERATOR is
- * created by the `sessions` fixture. Only the first test signs in through the screen:
+ * The panel's flows, against the REAL API. The owner seed gives the ADMINISTRATOR; the
+ * demonstration seed gives the OPERATOR (`operator@example.com`, `E2E_DEMO_PASSWORD`). Only the first test signs in through the screen:
  * the others reuse the API sessions, because five sign-ins a minute is all the limiter
  * gives one IP.
  */

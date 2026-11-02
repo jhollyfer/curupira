@@ -46,8 +46,20 @@ espera a prefeitura conferir bairros e cronograma.
   semana e diálogos de formulário como folha inferior.
 - Testes de Playwright de responsividade do app do morador e do painel, em sete larguras (360 a 1920 px).
 
+### Removido
+
+- O modo de dados de exemplo do frontend (`VITE_DATA_SOURCE=mock`) e as contas de exemplo na tela de entrada: o app e o
+  painel falam só com a API, e o dado de exemplo é a demonstração semeada pelo backend. As chaves `E2E_WORKERS` e
+  `E2E_FULL_MATRIX` e o `frontend/.env.production` também saíram.
+
 ### Alterado
 
+- Todas as chaves de ambiente seguem o catálogo da régua, as mesmas dos outros projetos da casa. API: `APP_CLIENT_URL` (comentada) e
+  `SEED_DEMO_PASSWORD` entram no `.env.example`; o seed do dono e o da demonstração ligam pela senha presente, em qualquer
+  ambiente, e a demonstração cria uma conta por papel (`administrator@example.com`, `operator@example.com`) com essa senha.
+  App: `VITE_STORAGE_URL` (de build) vira `STORAGE_PUBLIC_URL`, lida pelo servidor a cada requisição, e a CSP passa a ser
+  escrita em `src/server.ts`; `CHROMIUM_PATH` vira `E2E_CHROMIUM_PATH`; os E2E de outros papéis usam `E2E_DEMO_PASSWORD`.
+  Quem opera o Coolify define `STORAGE_PUBLIC_URL` no app (e `SITE_ENV=production`), em vez de `VITE_STORAGE_URL` no build.
 - Variáveis de ambiente da API renomeadas pelo catálogo da régua: `APP_URL` vira `APP_SERVER_URL`, `SITE_URL` vira
   `CORS_ORIGINS` (lista separada por vírgula) e `REPORT_PHOTO_MAX_SIZE` deixa de existir (o teto de 10 MiB da foto é
   fixo no código). Quem opera o Coolify precisa trocar as chaves antes do próximo deploy.
