@@ -5,9 +5,10 @@
 # a aplicação usa STORAGE_KEY/STORAGE_SECRET, nunca ele. Idempotente.
 set -eu
 
-: "${MINIO_ENDPOINT:=http://minio:9000}"
+# Dentro da rede do compose o endpoint é o do serviço; o CI aponta para o publicado no host.
+: "${STORAGE_ENDPOINT:=http://minio:9000}"
 
-mc alias set local "$MINIO_ENDPOINT" "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+mc alias set local "$STORAGE_ENDPOINT" "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
 
 resources=""
 for bucket in "$STORAGE_BUCKET" "$STORAGE_BUCKET-test"; do
