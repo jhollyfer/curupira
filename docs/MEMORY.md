@@ -7,7 +7,7 @@
 
 | Atualizado | Fase atual | Progresso | Status |
 |---|---|---|---|
-| 2026-11-01 | 1 · deploy (1.6, bloqueada); o resto está feito | 96% (23 de 24 tarefas) | Pronto para o deploy · falta o que é do dono · MVP v1.0 |
+| 2026-11-02 | 1 · deploy (1.6, bloqueada); 5.4 em andamento; o resto está feito | 96% (23 de 25 tarefas) | Responsividade no código e nos docs · E2E do CI estoura o tempo (PR #8) · MVP v1.0 |
 
 ## Já feito
 
@@ -19,17 +19,23 @@
   arquivos de teste unitário (290 testes) e 69 de e2e (367 passam, 2 falham só pelo emulador S3).
 - App do morador: home, cronograma e `.ics`, denúncia em 3 passos com fila offline, acompanhar por protocolo,
   mapa com ponto aproximado, avisos, sobre, privacidade e termos, PWA sem o painel no cache, três idiomas.
-  Fala com a API de verdade (3.6 provada por E2E); 295 testes unitários em 51 arquivos.
+  Fala com a API de verdade (3.6 provada por E2E); 303 testes unitários em 53 arquivos.
 - Painel `/gestao`: visão geral, ocorrências, avisos, cronograma, bairros, contas e perfil, com capacidade por papel.
-- E2E de Playwright contra a API real: 11 testes (6 do morador em celular, 5 do painel em desktop), com axe.
+- E2E de Playwright contra a API real: 11 testes de fluxo (6 do morador em celular, 5 do painel em desktop), com
+  axe, mais 253 de responsividade em sete larguras de 360 a 1920 px (231 do app do morador, 22 do painel), 264 no total.
+- Responsividade: app do morador com navegação superior em tablet e desktop, hero e grade em colunas a partir de
+  `md` e `lg`; painel `/gestao` do celular ao monitor largo (gaveta, cartões, folha de filtros, abas, cronograma
+  por dia, `.panel-touch` de 44 px). Descrito em `DESIGN.md` §4.
 - Auditoria de segurança feita, com as correções aplicadas (`SECURITY.md` §10); revisão de acessibilidade e
   movimento reduzido por peça.
 - Docs completos: PRD, fluxos, decisões (24), arquitetura, ambiente, segurança, plano de testes, design, regras, changelog.
 
 ## Parou em
 
-Código, auditoria de segurança e polimento de design fechados, docs em dia com o código final. O que falta é só
-do dono, nada de código:
+Responsividade do app e do painel no código (branch `docs/responsividade-e-copy`, PR #6) e documentada. O CI do
+PR #6 falhou só por tempo no job `Frontend - E2E (Playwright)` (242 passaram, 22 não rodaram, limite global de
+900 s); a correção está no PR #8 (`fix/e2e-responsividade-tempo`), ainda não mesclado. Fora isso, código,
+auditoria de segurança e polimento de design fechados. O que falta de resto é só do dono, nada de código:
 
 1. Preencher `UUID_API` e `UUID_APP` em `main-deploy-coolify.yml` e configurar o painel do Coolify
    (`ARCHITECTURE.md` §9.1).
@@ -41,6 +47,8 @@ do dono, nada de código:
 
 ## Próximos passos
 
+0. Mesclar o PR #8 (E2E com matriz reduzida no CI) e conferir o job `Frontend - E2E (Playwright)` verde; só então
+   o PR #6.
 1. Os seis itens de "Parou em", na ordem.
 2. Conferir no painel do Coolify se o proxy grava o IP do morador no log de acesso (`SECURITY.md` §2.8).
 3. Propor ao `maiyu-pattern` as entradas de `_doc-lib` para Leaflet/react-leaflet, `vite-plugin-pwa`/workbox e `sharp`.
@@ -87,7 +95,10 @@ do dono, nada de código:
 | Sem retenção automática de denúncia, foto e contato | `docs/SECURITY.md` §8.1 | decisão da prefeitura (`PRD.md` §8) |
 | IP no log do proxy não verificável pelo repositório | `docs/SECURITY.md` §2.8 | conferir no painel do Coolify |
 | Dois e2e do backend falham no emulador S3 (moto) e a suíte não rodou contra o MinIO real | `docs/TEST-PLAN.md` §7 | rodar no CI ou local com `docker compose up -d` |
-| Job de E2E do frontend no CI nunca executou | `.github/workflows/main-check-frontend.yml` | rodar o CI de verdade |
+| Job `Frontend - E2E (Playwright)` falhou por tempo no PR #6: 242 testes passaram, 22 não rodaram, limite global de 900 s; nenhuma falha funcional | `.github/workflows/main-check-frontend.yml`, `frontend/e2e/playwright.config.ts` | PR #8 (`fix/e2e-responsividade-tempo`, em revisão): matriz pública de 4 larguras no CI, projetos em paralelo, `globalTimeout` de 25 min, sem `--workers=1` |
+| E2E de responsividade só rodado em modo de exemplo, localmente; a matriz completa contra a API real ainda não passou no CI | `frontend/e2e/responsive-*.spec.ts` | fechar o PR #8 e ler o resultado do CI |
+| Menus abertos do shadcn (dropdown, select) com 1 achado moderado de axe, a regra `region` | painel, `frontend/e2e/responsive-panel.spec.ts` | revisão de acessibilidade (`TASKS.md` 5.4) |
+| Links de bairro com 38 px de largura no tablet, no tema escuro, abaixo dos 44 px | app do morador, `/coleta` e home | revisão de acessibilidade (`TASKS.md` 5.4) |
 
 ## Links úteis
 

@@ -8,7 +8,7 @@ TanStack Start + Nitro. A régua é `../_standards/` (`frontend.md`, `i18n.md`, 
 
 - `pnpm dev` sobe em `http://localhost:3000` (dados de exemplo, sem backend).
 - `pnpm check`: Paraglide, lint, typecheck e Prettier (`tooling.md` §7).
-- `pnpm test:unit`: Vitest. `pnpm test:e2e`: Playwright (esqueleto em `e2e/report-flow.spec.ts`).
+- `pnpm test:unit`: Vitest. `pnpm test:e2e`: Playwright (`e2e/*.spec.ts`; projetos `mobile`, `desktop` e `responsive-*` em `e2e/playwright.config.ts`).
 - `pnpm build`, depois `pnpm check-cycles`.
 - `pnpm format` reescreve com Prettier e `eslint --fix`.
 - `routeTree.gen.ts` é regerado pelo plugin do Router (`pnpm dev` ou `pnpm build`), nunca à mão.
@@ -22,6 +22,10 @@ TanStack Start + Nitro. A régua é `../_standards/` (`frontend.md`, `i18n.md`, 
 | Visão geral do painel                                       | `src/routes/_private/gestao/index.tsx` + `index.lazy.tsx`                                                                                                                                       |
 | Entrada                                                     | `src/routes/_authentication/` (`/sign-in`, `?redirect=` validado, guarda inversa)                                                                                                               |
 | Tokens (cores, `--waste-*`, status, raio, camadas)          | `src/styles.css`                                                                                                                                                                                |
+| Layout do morador (container, gutter, tipografia fluida)    | `page-container*` e `--page-gutter` em `src/styles.css`; `routes/_public/-components/{header,bottom-nav,menu,home-page}.tsx` (`NAV_ITEMS` alimenta barra inferior e cabeçalho)                  |
+| Alvo de 44px no painel                                      | classe `.panel-touch` em `src/styles.css` (celular ou ponteiro de toque); `lib/dialog-layout.ts` (`PHONE_SHEET_CLASSES`, diálogo como folha inferior no celular)                                |
+| Tabela no celular (lista de cartões)                        | `components/common/table/table-cards.tsx`, mesma definição de colunas da grade via `meta.card` (`table-meta.d.ts`)                                                                              |
+| Filtros de listagem (folha no celular)                      | `routes/_private/-components/filter-panel.tsx`; contagem em `lib/active-filters.ts`                                                                                                             |     |
 | Kit de painel já trazido do interclasse                     | `components/common/{page-shell,form-shell,empty-state,submit-button,input-password,not-found-page,theme-toggle,locale-switch}`; `components/ui/` (inclui `sidebar`, `table`, `sheet`, `dialog`) |
 | Peças do domínio, reutilizáveis                             | `components/common/{status-badge,status-timeline,notice-list,waste-calendar,neighborhood-picker,report-kind-picker,report-map,step-wizard,prose-page}`                                          |
 | Form                                                        | `integrations/react-hook-form/app-field.tsx`, `hooks/use-mutation-form.ts`, `lib/form-errors.ts`, `lib/form-a11y.ts`                                                                            |
@@ -65,7 +69,12 @@ Rotas em `src/routes/_private/gestao/`, em par `rota.tsx` + `rota.lazy.tsx`, nom
   "contas de exemplo" (administrador e operador, senha `Exemplo@2026`, em `data/management/session.ts`). A sessão é o
   cookie `curupira-mock-session`, lido também no SSR. Tudo passa por `import.meta.env.DEV`: o build de produção
   (mesmo com `mock`, que é o padrão) não tem contas e responde 401. Nunca remover essa guarda.
-- **E2E**: `e2e/management-flow.spec.ts` (projeto `desktop`); credenciais em `e2e/support/credentials.ts`
+- **Responsivo**: abaixo de 768 px (`useIsMobile`) a sidebar é gaveta, a tabela vira cartões, os filtros viram
+  `FilterPanel` e o cronograma vira lista por dia; abaixo de 1024 px a sidebar começa recolhida em trilho.
+  Controle novo no painel herda os 44 px por `.panel-touch`; listagem nova passa `meta.card` nas colunas.
+- **E2E**: `e2e/management-flow.spec.ts` (projeto `desktop`); `e2e/responsive-public.spec.ts` (projetos
+  `responsive-touch` e `responsive-pointer`) e `e2e/responsive-panel.spec.ts` (projeto `responsive`), com as
+  larguras em `e2e/support/responsive.ts`; credenciais em `e2e/support/credentials.ts`
   (`E2E_OWNER_*`, `E2E_OPERATOR_*`, ver `.env.e2e.example`).
 
 ## Dados de exemplo e a API

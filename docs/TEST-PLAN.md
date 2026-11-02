@@ -13,8 +13,30 @@
 | Unitário do backend | Japa, suíte `unit` (sem banco nem HTTP) | `backend/app/**/*.unit.spec.ts` e `scripts/`, `commands/`, `tests/`, `start/` | hook de commit, PR e `main` | 76 arquivos, 290 testes |
 | E2E do backend | Japa, suíte `functional` (app inteiro, Postgres e MinIO reais) | `backend/app/**/*.e2e.spec.ts` | PR e `main`, em 3 shards | 69 arquivos; 367 testes passam e 2 falham só pelo emulador S3 (§7) |
 | `shared/` | Vitest | `shared/src/**/*.test.ts` | hook de commit, PR e `main` | 5 arquivos, 21 testes |
-| Unitário do frontend | Vitest + Testing Library | `frontend/src/**/*.test.ts(x)` e `frontend/scripts/*.test.ts` | hook de commit, PR e `main` | 51 arquivos, 295 testes |
-| E2E do frontend | Playwright contra a API real (axe-core em cada tela) | `frontend/e2e/report-flow.spec.ts` (projeto `mobile`, Pixel 7) e `management-flow.spec.ts` (projeto `desktop`, 1440 x 900) | job `e2e` de `main-check-frontend.yml` (ainda não executado no GitHub) | 2 specs, 11 testes (6 e 5) |
+| Unitário do frontend | Vitest + Testing Library | `frontend/src/**/*.test.ts(x)` e `frontend/scripts/*.test.ts` | hook de commit, PR e `main` | 53 arquivos, 303 testes |
+| E2E do frontend | Playwright contra a API real (axe-core em cada tela) | `frontend/e2e/report-flow.spec.ts` (projeto `mobile`, Pixel 7), `management-flow.spec.ts` (projeto `desktop`, 1440 x 900), `responsive-public.spec.ts` (projetos `responsive-touch` e `responsive-pointer`) e `responsive-panel.spec.ts` (projeto `responsive`) | job `e2e` de `main-check-frontend.yml` | 4 specs, 264 testes (6, 5, 231 e 22); no PR #6 o job estourou o tempo (§1.1) |
+
+### 1.1 Responsividade
+
+A matriz tem sete larguras (`frontend/e2e/support/responsive.ts`): 360 x 740, 412 x 915, 740 x 360 (celular
+deitado), 768 x 1024, 1024 x 768, 1440 x 900 e 1920 x 1080.
+
+| Spec | Projeto | O que cobra |
+|---|---|---|
+| `responsive-public.spec.ts` | `responsive-touch` (Pixel 7) | as 11 rotas públicas (as 9 do app, a entrada e uma página inexistente) nas 7 larguras: sem rolagem horizontal da página e nenhum alvo de toque visível abaixo de 44 x 44 px (154 testes) |
+| `responsive-public.spec.ts` | `responsive-pointer` (Desktop Chrome) | o mesmo, só a rolagem horizontal, porque o alvo de 44 px é regra de toque (77 testes) |
+| `responsive-panel.spec.ts` | `responsive` (Desktop Chrome) | painel nas 7 larguras: 12 telas sem rolagem horizontal e sem nenhuma violação de axe (qualquer impacto, não só sério e crítico); o detalhe da ocorrência cabe e o menu (gaveta no celular, barra lateral daí em diante) abre e navega; os filtros ficam na URL ao trocar a largura; o OPERADOR não chega a cronograma, bairros e contas, nem pelo menu nem digitando o endereço, em todas as larguras (22 testes) |
+
+Estado do código desta branch: o Playwright roda com 1 worker (`workers: 1` em `playwright.config.ts` e
+`--workers=1` no workflow), `globalTimeout` de 15 minutos e as 7 larguras também no CI. A rolagem horizontal é
+medida contra a largura pedida, e não só contra `innerWidth`, porque no celular emulado o navegador alarga a
+viewport até caber o conteúdo e o teste passaria numa página mais larga que o aparelho.
+
+Em revisão no PR #8 (`fix/e2e-responsividade-tempo`, ainda não mesclado; nada disto vale até o merge): matriz
+pública de 4 larguras no CI (360, 768, 1440 e 1920) e as 7 larguras localmente ou com `E2E_FULL_MATRIX=1`,
+projetos públicos em paralelo, fluxos encadeados por `dependencies`, `globalTimeout` de 25 minutos e o workflow
+sem `--workers=1`. O motivo é o CI do PR #6: o job `Frontend - E2E (Playwright)` falhou por tempo (242 testes
+passaram, 22 não rodaram, limite global de 900 s), sem falha funcional.
 
 Redes que cobram o que ninguém lembra:
 
@@ -50,13 +72,14 @@ Cada fluxo de `USER-FLOWS.md` marcado aqui tem spec E2E de ponta a ponta.
 | Tratar ocorrência | abrir ocorrência recebida, avançar o status | não volta o status | `management-flow.spec.ts: handles an untreated report and cannot move it back` |
 | Avisos | publicar, ver na home e encerrar | | `management-flow.spec.ts: publishes a notice, sees it on the home and closes it` |
 | Manter cronograma | cadastrar um dia de coleta e o morador o vê no calendário | operador não abre cronograma, bairros nem contas | `management-flow.spec.ts: registers a collection day and the resident sees it on the calendar`, `reaches reports and notices but not schedules, neighborhoods or users` |
+| Layout do morador e do painel do celular ao monitor largo | cada rota sem rolagem horizontal e com alvo de 44 px em toque; painel nas 7 larguras com menu, filtros na URL e axe sem violação | operador sem acesso às áreas de administrador em toda largura | `frontend/e2e/responsive-public.spec.ts`, `frontend/e2e/responsive-panel.spec.ts` (§1.1); unitários `active-filters.test.ts`, `table-grid.test.tsx` |
 | Calendário, mapa público, bairros, contas | | | sem E2E de navegador dedicado; cobertos por unitário de `lib/` e dos componentes (`schedule.test.ts`, `ics.test.ts`, `waste-calendar.test.tsx`, `report-map.test.tsx`) e pelo E2E da API (`storefront/*`, `management/*`) |
 
 O E2E do frontend roda sempre contra a API real (`VITE_DATA_SOURCE=api`, fixado em `playwright.config.ts`),
 com o dono semeado (`E2E_OWNER_*`), a demonstração de `pnpm db:seed:demo` e o operador que o spec cria
 (`E2E_OPERATOR_*`). Isso fecha a 3.6 de `TASKS.md`: entrada, foto pré-assinada e protocolo foram exercitados do
 navegador à API. O job do CI (`main-check-frontend.yml`) sobe a API (imagem `curupira-api:e2e`), Postgres e
-MinIO e passa `E2E_OWNER_*`, `E2E_OPERATOR_*` e `E2E_API_URL`, mas ainda não foi executado no GitHub.
+MinIO e passa `E2E_OWNER_*`, `E2E_OPERATOR_*` e `E2E_API_URL`. Rodou pela primeira vez no PR #6 e estourou o tempo (§1.1); os 22 testes de responsividade do painel e a matriz pública completa só foram rodados localmente em modo de exemplo, sem a API real.
 
 ## 3. Matriz requisito × teste
 

@@ -6,7 +6,7 @@
 > `.specs/features/<feature>/tasks.md`; aqui a linha aponta para lá.
 > Atualiza no mesmo commit em que a tarefa começa ou termina.
 
-**Resumo:** 24 tarefas · 23 feitas · 1 bloqueada (atualizado 2026-11-01)
+**Resumo:** 25 tarefas · 23 feitas · 1 em andamento · 1 bloqueada (atualizado 2026-11-02)
 
 Status: `A fazer` · `Em andamento` · `Feita` · `Bloqueada` (com motivo nas notas).
 Prioridade: `Alta` · `Média` · `Baixa`.
@@ -54,13 +54,14 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | 4.3 | Cronograma e bairros | Média | Feita | |
 | 4.4 | Avisos e contas | Média | Feita | |
 
-## Fase 5 · Fechamento (3/3)
+## Fase 5 · Fechamento (3/5)
 
 | # | Tarefa | Prioridade | Status | Notas |
 |---|---|---|---|---|
-| 5.1 | E2E (fluxo de denúncia, protocolo, painel, offline) | Alta | Feita | 11 testes de Playwright contra a API real, com axe em cada tela; o MinIO real e o job de E2E do CI ainda não foram executados |
+| 5.1 | E2E (fluxo de denúncia, protocolo, painel, offline) | Alta | Feita | 11 testes de Playwright contra a API real, com axe em cada tela; o MinIO real ainda não foi executado; o job de E2E do CI rodou no PR #6 e estourou o tempo (5.4) |
 | 5.2 | Auditoria de segurança do código | Alta | Feita | correções aplicadas; achados e residuais em `docs/SECURITY.md` §10 |
 | 5.3 | Revisão de acessibilidade e desempenho em rede lenta | Média | Feita | axe sem violações nas telas do morador (360x740 e 412x915) e do painel (1440x900 e 1024x768), nos temas claro e escuro; movimento reduzido por peça; o teste manual antes do release continua em `TEST-PLAN.md` §8 |
+| 5.4 | Responsividade do app e do painel, e revisão de acessibilidade e desempenho dela | Alta | Em andamento | layout feito e documentado (`DESIGN.md` §4); testes `responsive-*` (264 de E2E no total). Pendências: (a) o E2E estoura o tempo no CI (PR #6: 242 passaram, 22 não rodaram, limite de 900 s), a correção está em revisão no PR #8, ainda não mesclado; (b) 1 achado moderado de axe (`region`) nos menus abertos do shadcn; (c) links de bairro com 38 px de largura no tablet escuro; (d) desempenho do layout novo em rede lenta |
 
 ## Fase N · Ideias (fora do escopo atual)
 

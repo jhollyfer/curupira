@@ -5,6 +5,10 @@
 > Um fluxo por funcionalidade do `PRD.md` §4. Tela nova ou fluxo novo entra aqui no mesmo
 > commit. O teste de ponta a ponta segue estes passos (`TEST-PLAN.md`).
 
+> **Telas pequenas.** Todos os fluxos valem do celular ao desktop. No painel, a navegação é a gaveta aberta
+> pelo botão do cabeçalho no celular, a tabela vira lista de cartões e os filtros viram a folha "Filtros (n)";
+> o resto do fluxo é o mesmo (`DESIGN.md` §4).
+
 ## Jornadas principais
 
 | Fluxo | Quem | Tela inicial | Resultado |
