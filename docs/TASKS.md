@@ -69,14 +69,15 @@ Achados do sync que mudam muito código ou dependem de decisão do dono; nenhum 
 
 | # | Tarefa | Prioridade | Status | Notas |
 |---|---|---|---|---|
-| R.1 | `VITE_DATA_SOURCE` fora do catálogo: remover a camada de dados de exemplo (`src/data`, `fromSource`, mock-session, `strip-example-data`) | Média | A fazer | refatoração grande; alternativa é levar a chave ao upstream |
-| R.2 | `VITE_STORAGE_URL` fora do catálogo: propor a chave ao `maiyu-pattern` (CSP do bucket) | Média | A fazer | `sync --check` aponta `env-diverge` até lá |
+| R.1 | `VITE_DATA_SOURCE` fora do catálogo: remover a camada de dados de exemplo (`src/data`, `fromSource`, mock-session, `strip-example-data`) | Média | Em andamento | decisão do dono: sai a camada inteira; dado de exemplo vem do seeder de demonstração (branch `chore/env-catalogo-padrao`) |
+| R.2 | `VITE_STORAGE_URL` fora do catálogo: virar `STORAGE_PUBLIC_URL` em runtime, com CSP em `src/server.ts` | Média | Em andamento | `DECISIONS.md` #276 |
 | R.3 | Playwright em projetos `mobile` (360×740), `tablet` (768×1024) e `desktop` (1440×900) com os mesmos specs, mais `responsive.spec` e `touch-targets.spec`, e matriz no CI | Alta | A fazer | hoje: `mobile`, `desktop`, `responsive-*` |
 | R.4 | Alvo de toque de 44 px vir do kit `components/ui/` (`h-11 sm:h-7`), não da variante `touch` nem de `.panel-touch` | Média | A fazer | `frontend.md` |
 | R.5 | Tipografia fluida com `clamp` e teto no desktop nos tokens `--text-*` | Baixa | A fazer | |
 | R.6 | Auditoria das telas contra a tabela "cara de gerador" (`frontend.md`) | Média | A fazer | |
 | R.7 | Contadores com `=0` e `=1` antes do plural (`panel_table_total`, `map_list_title`) | Baixa | A fazer | `i18n.md` |
-| R.8 | `E2E_WORKERS`, `E2E_FULL_MATRIX` e `E2E_CHROMIUM_PATH` fora do catálogo de E2E | Baixa | A fazer | |
+| R.8 | `E2E_WORKERS`, `E2E_FULL_MATRIX` e `E2E_CHROMIUM_PATH` fora do catálogo de E2E | Baixa | Em andamento | saem as duas primeiras; `CHROMIUM_PATH` vira `E2E_CHROMIUM_PATH` |
+| R.9 | Todas as chaves de ambiente no catálogo da régua (`backend.md` §6.2): `APP_CLIENT_URL`, `SEED_DEMO_PASSWORD`, `SITE_ENV`, `E2E_DEMO_PASSWORD`, secrets do deploy `COOLIFY_*` | Alta | Em andamento | `chore/env-catalogo-padrao`; `DECISIONS.md` #276, jhollyfer/maiyu-pattern#16 |
 
 ## Fase N · Ideias (fora do escopo atual)
 
