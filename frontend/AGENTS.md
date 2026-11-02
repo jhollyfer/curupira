@@ -75,7 +75,7 @@ Rotas em `src/routes/_private/gestao/`, em par `rota.tsx` + `rota.lazy.tsx`, nom
 - **E2E**: `e2e/management-flow.spec.ts` (projeto `desktop`); `e2e/responsive-public.spec.ts` (projetos
   `responsive-touch` e `responsive-pointer`) e `e2e/responsive-panel.spec.ts` (projeto `responsive`), com as
   larguras em `e2e/support/responsive.ts`; credenciais em `e2e/support/credentials.ts`
-  (`E2E_OWNER_*`, `E2E_OPERATOR_*`, ver `.env.e2e.example`).
+  (`E2E_BASE_URL`, `E2E_API_URL`, `E2E_OWNER_*`, ver `.env.e2e.example`).
 
 ## Dados de exemplo e a API
 

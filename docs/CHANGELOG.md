@@ -48,6 +48,10 @@ espera a prefeitura conferir bairros e cronograma.
 
 ### Alterado
 
+- Variáveis de ambiente da API renomeadas pelo catálogo da régua: `APP_URL` vira `APP_SERVER_URL`, `SITE_URL` vira
+  `CORS_ORIGINS` (lista separada por vírgula) e `REPORT_PHOTO_MAX_SIZE` deixa de existir (o teto de 10 MiB da foto é
+  fixo no código). Quem opera o Coolify precisa trocar as chaves antes do próximo deploy.
+- Deploy lê URL e uuids do Coolify de secrets do GitHub; o CI de um PR só de texto não roda a suíte.
 - Layout responsivo em todo o app: container com largura máxima e margem lateral fluida, tipografia fluida, home
   com o seletor de bairro ao lado da pergunta a partir de 768 px e com próximos 14 dias e avisos lado a lado a
   partir de 1024 px.

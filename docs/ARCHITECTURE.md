@@ -158,7 +158,7 @@ Há 47 operações no `backend/openapi.json`. `GET /health-check` fica fora do d
 
 | Serviço | Para quê | Contrato no código | Variáveis (`ENV.md`) |
 |---|---|---|---|
-| Bucket S3-compatível | foto da denúncia e biblioteca de arquivos da gestão | `StorageContract` e `MultipartContract` em `backend/app/services/` | `STORAGE_*`, `UPLOAD_MAX_SIZE`, `REPORT_PHOTO_MAX_SIZE` |
+| Bucket S3-compatível | foto da denúncia e biblioteca de arquivos da gestão | `StorageContract` e `MultipartContract` em `backend/app/services/` | `STORAGE_*`, `UPLOAD_MAX_SIZE` |
 | OpenStreetMap | tiles do mapa, direto do navegador | CSP em `frontend/vite.config.ts` | Não se aplica: sem chave |
 | Docker Hub e Coolify | imagem e deploy | `.github/workflows/` | secrets do GitHub (`ENV.md` §6) |
 
@@ -231,7 +231,7 @@ API, para um app não reiniciar por causa do outro.
 | `ci.yml` | PR para `main` | `main-check-backend`, `main-check-frontend`, `pnpm audit --prod` (alta), Gitleaks, varredura de `pull_request_target` e de `github.event` em `run:` |
 | `commitlint.yml` | PR | Conventional Commits |
 | `main-check-backend.yml` | chamado | autor e trailers dos commits (só no PR), lint, typecheck, `pattern:check`, `authz:check`, `depcruise`, `openapi:check`, unitário, build; e2e em 3 shards com Postgres 18 e MinIO; `di:check` |
-| `main-check-frontend.yml` | chamado | i18n, lint, typecheck, Prettier, unitário, build, `routeTree.gen.ts` em dia, ciclos de chunk; Playwright contra a API real (imagem `curupira-api:e2e`, Postgres e MinIO), com `E2E_OWNER_*`, `E2E_OPERATOR_*` e `E2E_API_URL` |
+| `main-check-frontend.yml` | chamado | i18n, lint, typecheck, Prettier, unitário, build, `routeTree.gen.ts` em dia, ciclos de chunk; Playwright contra a API real (imagem `curupira-api:e2e`, Postgres e MinIO), com `E2E_BASE_URL`, `E2E_API_URL` e `E2E_OWNER_*` |
 | `main-build-frontend.yml` | chamado | grava o sha em `frontend/public/revision.txt` antes do build, reprova se faltar `frontend/.env.production`, se `VITE_DATA_SOURCE` não for `api` ou se `VITE_API_URL` e `VITE_SITE_URL` não forem `https`, avisa se faltar `VITE_STORAGE_URL`, confere que o carimbo entrou no manifesto do Nitro, publica `.output` como artifact |
 | `main-docker-backend.yml`, `main-docker-frontend.yml` | chamados | imagens `curupira-api` e `curupira-app` (amd64 e arm64) no Docker Hub, tags `latest` e sha |
 | `main-deploy-coolify.yml` | chamado, depois das duas imagens | `POST` em `/api/v1/deploy` para cada aplicação, exige `deployment_uuid` na resposta; smoke test |
@@ -244,11 +244,11 @@ porque o container antigo também responde 200.
 
 | O quê | Onde se configura | Por quê |
 |---|---|---|
-| `UUID_API` e `UUID_APP` em `main-deploy-coolify.yml` | arquivo do workflow, com o uuid de cada aplicação no Coolify | hoje valem `PREENCHER_*` e o job reprova de propósito; uuid de outro projeto redeploya o projeto errado |
+| `COOLIFY_URL`, `COOLIFY_API_UUID` e `COOLIFY_APP_UUID` | secrets do GitHub | o job reprova nomeando o que faltar; uuid de outro projeto redeploya o projeto errado |
 | `node ace migration:run --force` como *Post-deployment command* da API | painel do Coolify | o `Dockerfile-production` do backend não tem `ENTRYPOINT` |
 | `COOKIE_DOMAIN=.maiyu.com.br` na API | painel | sem ela o cookie nasce host-only e o SSR do app nunca o recebe: todo F5 em rota privada desloga |
 | `TRUSTED_PROXIES=loopback,uniquelocal` na API | painel | lista separada por vírgula, validada no boot; sem ele `request.ip()` é o do Traefik e todo throttle por IP vira um balde só; vazio, `true` e `*` derrubam a partida |
-| `SITE_URL` e `APP_URL` na API | painel | `SITE_URL` é a lista do CORS e da barreira de `Origin`; `APP_URL` entra no OpenAPI |
+| `CORS_ORIGINS` e `APP_SERVER_URL` na API | painel | `CORS_ORIGINS` é a lista do CORS e da barreira de `Origin`; `APP_SERVER_URL` entra no OpenAPI |
 | Healthcheck das duas aplicações em `/health-check` | painel | o painel sobrepõe o `HEALTHCHECK` dos Dockerfiles |
 | CORS do bucket para `https://curupira.maiyu.com.br`, com `PUT` e `ETag` em `ExposeHeaders` | painel do provedor do bucket | o navegador envia a foto direto ao bucket |
 | `VITE_STORAGE_URL` no build do app | `frontend/.env.production` | a CSP do Nitro só libera `connect-src` para a origem do bucket se ela estiver aí; hoje não está (endereço do bucket de produção desconhecido) e o CI só avisa; obrigatória antes do primeiro deploy (`DECISIONS.md` #15) |

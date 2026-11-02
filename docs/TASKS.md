@@ -6,7 +6,7 @@
 > `.specs/features/<feature>/tasks.md`; aqui a linha aponta para lá.
 > Atualiza no mesmo commit em que a tarefa começa ou termina.
 
-**Resumo:** 25 tarefas · 24 feitas · 1 bloqueada (atualizado 2026-11-02)
+**Resumo:** 25 tarefas · 24 feitas · 1 bloqueada · 8 pendências da régua (fase R) (atualizado 2026-11-02)
 
 Status: `A fazer` · `Em andamento` · `Feita` · `Bloqueada` (com motivo nas notas).
 Prioridade: `Alta` · `Média` · `Baixa`.
@@ -62,6 +62,21 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | 5.2 | Auditoria de segurança do código | Alta | Feita | correções aplicadas; achados e residuais em `docs/SECURITY.md` §10 |
 | 5.3 | Revisão de acessibilidade e desempenho em rede lenta | Média | Feita | axe sem violações nas telas do morador (360x740 e 412x915) e do painel (1440x900 e 1024x768), nos temas claro e escuro; movimento reduzido por peça; o teste manual antes do release continua em `TEST-PLAN.md` §8 |
 | 5.4 | Responsividade do app e do painel, e revisão de acessibilidade e desempenho dela | Alta | Feita | layout feito e documentado (`DESIGN.md` §4); testes `responsive-*` no CI (121 de E2E no total, matriz pública de 4 larguras; 187 com a matriz completa). Resíduos, registrados em `MEMORY.md`: (a) 1 achado moderado de axe (`region`) nos menus abertos do shadcn; (b) links de bairro com 38 px de largura no tablet escuro; (c) desempenho do layout novo em rede lenta, ainda não medido |
+
+## Fase R · Pendências da régua sincronizada em 2026-11-02
+
+Achados do sync que mudam muito código ou dependem de decisão do dono; nenhum foi aplicado.
+
+| # | Tarefa | Prioridade | Status | Notas |
+|---|---|---|---|---|
+| R.1 | `VITE_DATA_SOURCE` fora do catálogo: remover a camada de dados de exemplo (`src/data`, `fromSource`, mock-session, `strip-example-data`) | Média | A fazer | refatoração grande; alternativa é levar a chave ao upstream |
+| R.2 | `VITE_STORAGE_URL` fora do catálogo: propor a chave ao `maiyu-pattern` (CSP do bucket) | Média | A fazer | `sync --check` aponta `env-diverge` até lá |
+| R.3 | Playwright em projetos `mobile` (360×740), `tablet` (768×1024) e `desktop` (1440×900) com os mesmos specs, mais `responsive.spec` e `touch-targets.spec`, e matriz no CI | Alta | A fazer | hoje: `mobile`, `desktop`, `responsive-*` |
+| R.4 | Alvo de toque de 44 px vir do kit `components/ui/` (`h-11 sm:h-7`), não da variante `touch` nem de `.panel-touch` | Média | A fazer | `frontend.md` |
+| R.5 | Tipografia fluida com `clamp` e teto no desktop nos tokens `--text-*` | Baixa | A fazer | |
+| R.6 | Auditoria das telas contra a tabela "cara de gerador" (`frontend.md`) | Média | A fazer | |
+| R.7 | Contadores com `=0` e `=1` antes do plural (`panel_table_total`, `map_list_title`) | Baixa | A fazer | `i18n.md` |
+| R.8 | `E2E_WORKERS`, `E2E_FULL_MATRIX` e `E2E_CHROMIUM_PATH` fora do catálogo de E2E | Baixa | A fazer | |
 
 ## Fase N · Ideias (fora do escopo atual)
 
