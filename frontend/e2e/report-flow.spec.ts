@@ -14,8 +14,8 @@ import { hasEmbeddedMetadata, photoWithGps } from './support/photo'
 import { expect, test } from './support/test'
 
 /**
- * The resident's flows, against the REAL API (`E2E_DATA_SOURCE=api`, backend on
- * `E2E_API_URL`, seeded with `db:seed:demo`).
+ * The resident's flows, against the REAL API (backend on
+ * `E2E_API_URL`, seeded with the demonstration seed).
  *
  * The specs file reports on purpose, so the limiter matters: ten reports per hour per IP,
  * blocked for ten minutes after that. Run `truncate rate_limits` on the backend database

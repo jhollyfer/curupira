@@ -13,16 +13,8 @@ if (existsSync(envFile)) process.loadEnvFile(envFile)
 const baseURL = baseUrl()
 const port = new URL(baseURL).port
 
-/**
- * `E2E_WORKERS` wins; otherwise 4 in CI, where the runner is dedicated, and 2 on a
- * developer machine, which is also running the app.
- */
-function workerCount(): number {
-  const fromEnv = Number(process.env.E2E_WORKERS)
-  if (Number.isInteger(fromEnv) && fromEnv > 0) return fromEnv
-  if (process.env.CI) return 4
-  return 2
-}
+let workerCount = 2
+if (process.env.CI) workerCount = 4
 
 // https://playwright.dev/docs/test-configuration
 export default defineConfig({
@@ -32,12 +24,13 @@ export default defineConfig({
   // Unconditional retry turns a broken test into a flaky one
   // (_doc-lib/playwright.md#docs/test-retries).
   retries: 0,
-  // Parallel only where it is safe. The flows (report, panel, panel matrix) write to the
+  // 4 workers in CI, where the runner is dedicated, and 2 on a developer machine, which is
+  // also running the app. Parallel only where it is safe. The flows (report, panel, panel matrix) write to the
   // database and spend the API's login and report limits, so they are chained with
   // `dependencies` and never overlap; the public matrix only reads pages and runs beside
   // them. Without this the matrix (about 150 navigations) ran alone in one worker and
   // alone took longer than the whole job's cap.
-  workers: workerCount(),
+  workers: workerCount,
   // Without a global cap, a job killed by the provider produces no report
   // (_doc-lib/playwright.md#docs/test-timeouts). Room for the slowest cold run, not a cure:
   // the suite is expected to finish well under it.
@@ -102,12 +95,11 @@ export default defineConfig({
   ],
   webServer: {
     // The specs run against the real API (backend on `E2E_API_URL`, seeded with
-    // `db:seed:demo`; its `SITE_URL` must be this server's origin).
+    // the demonstration seed; its `CORS_ORIGINS` must list this server's origin).
     command: `pnpm exec vite dev --port ${port} --strictPort`,
     cwd: '..',
     url: baseURL,
     env: {
-      VITE_DATA_SOURCE: 'api',
       VITE_API_URL: apiUrl(),
       VITE_SITE_URL: baseURL,
     },

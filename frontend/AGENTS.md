@@ -35,7 +35,7 @@ TanStack Start + Nitro. A régua é `../_standards/` (`frontend.md`, `i18n.md`, 
 | HTTP (cookie, refresh, `X-`/`Accept-Language`, erro tipado) | `integrations/tanstack-query/http.ts`                                                                                                                                                           |
 | Rótulos de enum e ícones de enum                            | `lib/labels.ts`, `lib/icons.ts`                                                                                                                                                                 |
 | Listagem na URL                                             | `lib/list-search.ts` (`ListSearch`, `withExtra`, `queryString`)                                                                                                                                 |
-| Dados de exemplo                                            | `src/data/{neighborhoods,schedules,notices,reports}.ts`                                                                                                                                         |
+| Cabeçalhos de segurança (CSP com o bucket)                  | `src/server.ts`, `lib/security-headers.ts`                                                                                                                                                      |
 
 Lixeira e upload de imagem do interclasse **não** foram trazidos (o painel não tem nenhum dos dois).
 
@@ -61,31 +61,29 @@ Rotas em `src/routes/_private/gestao/`, em par `rota.tsx` + `rota.lazy.tsx`, nom
   validados à mão. `reportsFilterOf` é o único lugar que separa filtro de página/ordem, e é o que garante mapa e tabela no mesmo recorte.
 - **Regras puras testadas em `lib/`**: `report-status.ts` (só avança), `schedule-grid.ts`, `report-stats.ts` (30 dias,
   zeros incluídos), `datetime-field.ts` (hora de Benjamin Constant no `datetime-local`), `capabilities.ts`, `breadcrumbs.ts`.
-- **Dados**: `integrations/tanstack-query/{queries,mutations}/management.ts`, com `fromSource({ mock, api })`. Mocks em
-  `src/data/management/` (um `store.ts` em memória, com os mesmos 409/422 da API). Invalidação por
-  `queryKeys.management.*` + `DEPENDENTS` (mudar status ou aviso na gestão invalida também o que o público lê).
-  No modo mock o público e o painel têm bases separadas: mudar um status no painel não altera o `/acompanhar` de exemplo.
-- **Entrar no painel sem backend**: com `VITE_DATA_SOURCE=mock` **e** `pnpm dev`, a tela de entrada mostra as
-  "contas de exemplo" (administrador e operador, senha `Exemplo@2026`, em `data/management/session.ts`). A sessão é o
-  cookie `curupira-mock-session`, lido também no SSR. Tudo passa por `import.meta.env.DEV`: o build de produção
-  (mesmo com `mock`, que é o padrão) não tem contas e responde 401. Nunca remover essa guarda.
+- **Dados**: `integrations/tanstack-query/{queries,mutations}/management.ts`, direto na API (`request()`/`send()`).
+  Invalidação por `queryKeys.management.*` + `DEPENDENTS` (mudar status ou aviso na gestão invalida também o que o
+  público lê).
+- **Entrar no painel**: a API precisa estar de pé e semeada (`SEED_OWNER_PASSWORD` e, para a demonstração,
+  `SEED_DEMO_PASSWORD`, no `backend/.env`); a demonstração dá `administrator@example.com` e `operator@example.com` com
+  a `SEED_DEMO_PASSWORD`. Não há conta de exemplo no frontend.
 - **Responsivo**: abaixo de 768 px (`useIsMobile`) a sidebar é gaveta, a tabela vira cartões, os filtros viram
   `FilterPanel` e o cronograma vira lista por dia; abaixo de 1024 px a sidebar começa recolhida em trilho.
   Controle novo no painel herda os 44 px por `.panel-touch`; listagem nova passa `meta.card` nas colunas.
 - **E2E**: `e2e/management-flow.spec.ts` (projeto `desktop`); `e2e/responsive-public.spec.ts` (projetos
   `responsive-touch` e `responsive-pointer`) e `e2e/responsive-panel.spec.ts` (projeto `responsive`), com as
   larguras em `e2e/support/responsive.ts`; credenciais em `e2e/support/credentials.ts`
-  (`E2E_BASE_URL`, `E2E_API_URL`, `E2E_OWNER_*`, ver `.env.e2e.example`).
+  (`E2E_BASE_URL`, `E2E_API_URL`, `E2E_OWNER_*`, `E2E_DEMO_PASSWORD`, ver `.env.e2e.example`).
 
-## Dados de exemplo e a API
+## Dados e a API
 
-`VITE_DATA_SOURCE=mock` (padrão) serve `src/data/*`; `api` fala com `VITE_API_URL`. O ponto de troca é
-**um só**: `integrations/tanstack-query/source.ts` (`fromSource({ mock, api })`). Cada `queryFn`/`mutationFn`
-do público escreve os dois corpos; as telas só veem `queryOptions`. Os caminhos do corpo `api`
+O frontend fala só com a API (`VITE_API_URL`); não há modo de dados de exemplo (`DECISIONS.md` #26). Cada
+`queryFn`/`mutationFn` chama `request()`/`send()` e as telas só veem `queryOptions`. Os caminhos
 (`/storefront/neighborhoods`, `/storefront/schedules`, `/storefront/notices`, `/storefront/reports/map`,
 `/storefront/reports/:protocol`, `POST /storefront/reports`, `POST /storefront/report-photos`,
-`/authentication/sessions`, `/account`) seguem os módulos do `@curupira/shared` e **precisam ser conferidos
-contra o OpenAPI do backend** na primeira troca. Listagens de bairros e avisos assumem o envelope paginado.
+`/authentication/sign-in`, `/account`) seguem os módulos do `@curupira/shared` e o OpenAPI do backend. O dado de
+exemplo é o seeder de demonstração do backend. Ambiente: só as chaves do catálogo da régua (`docs/ENV.md` §1.2); a CSP
+lê `STORAGE_PUBLIC_URL` por requisição em `src/server.ts`, nunca no build.
 
 ## Regras deste app
 
