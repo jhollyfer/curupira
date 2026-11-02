@@ -85,11 +85,10 @@ jobs:
           HOST: 0.0.0.0
           LOG_LEVEL: info
           APP_KEY: ci-placeholder-sem-uso-fora-deste-job
-          APP_URL: http://localhost:3333
+          APP_SERVER_URL: http://localhost:3333
           DATABASE_URL: postgres://ci:ci@localhost:5432/ci
           UPLOAD_MAX_SIZE: '1073741824'
-          REPORT_PHOTO_MAX_SIZE: '10485760'
-          SITE_URL: http://localhost:3001
+          CORS_ORIGINS: http://localhost:3001
           TRUSTED_PROXIES: loopback
           STORAGE_KEY: ci-placeholder
           STORAGE_SECRET: ci-placeholder
@@ -104,7 +103,7 @@ jobs:
           HOST: 0.0.0.0
           LOG_LEVEL: info
           APP_KEY: ci-placeholder-sem-uso-fora-deste-job
-          APP_URL: http://localhost:3333
+          APP_SERVER_URL: http://localhost:3333
         run: pnpm test:unit
 
       # Typecheck de dev e build de produção usam configs diferentes o bastante
@@ -117,11 +116,10 @@ jobs:
           HOST: 0.0.0.0
           LOG_LEVEL: info
           APP_KEY: ci-placeholder-sem-uso-fora-deste-job
-          APP_URL: http://localhost:3333
+          APP_SERVER_URL: http://localhost:3333
           DATABASE_URL: postgres://ci:ci@localhost:5432/ci
           UPLOAD_MAX_SIZE: '1073741824'
-          REPORT_PHOTO_MAX_SIZE: '10485760'
-          SITE_URL: http://localhost:3001
+          CORS_ORIGINS: http://localhost:3001
           TRUSTED_PROXIES: loopback
           STORAGE_KEY: ci-placeholder
           STORAGE_SECRET: ci-placeholder
@@ -242,7 +240,7 @@ jobs:
           HOST: 0.0.0.0
           LOG_LEVEL: info
           APP_KEY: ci-placeholder-sem-uso-fora-deste-job
-          APP_URL: http://localhost:3333
+          APP_SERVER_URL: http://localhost:3333
           SHARD: ${{ matrix.shard }}
         run: pnpm test:e2e --shard="${SHARD}"
 
@@ -258,5 +256,5 @@ jobs:
           HOST: 0.0.0.0
           LOG_LEVEL: info
           APP_KEY: ci-placeholder-sem-uso-fora-deste-job
-          APP_URL: http://localhost:3333
+          APP_SERVER_URL: http://localhost:3333
         run: pnpm di:check

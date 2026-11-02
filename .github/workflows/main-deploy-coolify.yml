@@ -2,22 +2,27 @@ name: Deploy to Coolify
 
 on:
   workflow_call:
+    # Endereço e alvo do deploy ficam em secret, nunca no workflow (`tooling.md` §8.3): URL ou
+    # uuid escrito aqui é desvio. O host do site no lugar do painel responde a rota com o HTML de
+    # 404 do app, e uuid de outro projeto não é recusado pelo Coolify: redeploya o projeto errado.
     secrets:
+      COOLIFY_URL:
+        description: Base do painel do Coolify, sem caminho
+        required: true
       COOLIFY_TOKEN:
+        required: true
+      COOLIFY_API_UUID:
+        description: UUID da aplicação da API (fim da URL da aplicação no painel)
+        required: true
+      COOLIFY_APP_UUID:
+        description: UUID da aplicação do frontend
         required: true
 
 permissions:
   contents: read
 
-# Os valores que mudam de projeto para projeto, num lugar só.
-#
-# Os uuids são das APLICAÇÕES no Coolify, e não da instância nem do projeto:
-# estão na URL do painel, em `/project/<projeto>/application/<UUID>`. Uuid de
-# outro projeto não é recusado pelo Coolify - redeploya o projeto errado.
+# Só os endereços públicos do site, para o smoke test. O alvo do deploy não está aqui.
 env:
-  COOLIFY_URL: https://coolify.maiyu.com.br
-  UUID_API: PREENCHER_UUID_DA_API
-  UUID_APP: PREENCHER_UUID_DO_APP
   URL_API: https://api-curupira.maiyu.com.br
   URL_APP: https://curupira.maiyu.com.br
 
@@ -26,48 +31,82 @@ jobs:
     name: Trigger Coolify Deploy
     runs-on: ubuntu-latest
     steps:
-      # O marcador é de propósito: um uuid herdado de outro projeto não é
-      # recusado pelo Coolify, redeploya o projeto errado. Enquanto os uuids
-      # reais das duas aplicações do Curupira não entram acima, o job para aqui.
-      - name: Confere que os uuids foram preenchidos
+      # Secret vazio reprova aqui, com o nome dele, antes de qualquer `curl`.
+      - name: Confere os secrets do deploy
+        env:
+          COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_API_UUID: ${{ secrets.COOLIFY_API_UUID }}
+          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
         run: |
-          if printf '%s %s' "${UUID_API}" "${UUID_APP}" | grep -q PREENCHER; then
-            echo "Preencha UUID_API e UUID_APP com os uuids das aplicações do Curupira no Coolify."
-            exit 1
-          fi
+          for nome in COOLIFY_URL COOLIFY_TOKEN COOLIFY_API_UUID COOLIFY_APP_UUID; do
+            if [ -z "${!nome}" ]; then
+              echo "O secret ${nome} está vazio: cadastre-o em Settings, Secrets and variables, Actions." >&2
+              exit 1
+            fi
+          done
 
-      # `-f` reprova quando o Coolify responde erro; sem ele o curl sai 0 em
-      # 401 ou 404. POST, e não GET: desde o Coolify v4.2 o GET responde 405.
+      # POST, e não GET: desde o Coolify v4.2 o GET responde 405. Sem `-f`: ele
+      # esconde o corpo e deixa um 404 sem causa; o status e o começo do corpo
+      # (a mensagem do Coolify ou o HTML de quem respondeu) vão para o log.
       #
       # E o código HTTP sozinho não basta: uuid que não casa com aplicação
       # visível ao token volta **200 com a lista vazia**. Por isso o corpo é
-      # lido e cobrado.
+      # lido e cobrado (`tooling.md` §8.3).
       - name: Dispara o deploy no Coolify
         env:
+          COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_API_UUID: ${{ secrets.COOLIFY_API_UUID }}
+          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
         run: |
           set -euo pipefail
+
+          # Secret colado com quebra de linha vira cabeçalho quebrado.
+          COOLIFY_URL=$(printf '%s' "${COOLIFY_URL}" | tr -d '[:space:]')
+          COOLIFY_TOKEN=$(printf '%s' "${COOLIFY_TOKEN}" | tr -d '[:space:]')
+          COOLIFY_API_UUID=$(printf '%s' "${COOLIFY_API_UUID}" | tr -d '[:space:]')
+          COOLIFY_APP_UUID=$(printf '%s' "${COOLIFY_APP_UUID}" | tr -d '[:space:]')
+
+          # A URL é a base do painel: com caminho (`/api`) o endpoint dobra.
+          case "${COOLIFY_URL#*://}" in
+            */*[!/]*)
+              echo "COOLIFY_URL deve ser só a base do painel, sem caminho." >&2
+              exit 1
+              ;;
+          esac
+
+          corpo="$(mktemp)"
 
           disparar() {
             rotulo="$1"
             uuid="$2"
 
-            resposta=$(curl -fsS -X POST \
-              "${COOLIFY_URL}/api/v1/deploy" \
+            status=$(curl -sS -X POST \
+              "${COOLIFY_URL%/}/api/v1/deploy" \
               -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
               -H "Content-Type: application/json" \
-              -d "{\"uuid\":\"${uuid}\",\"force\":false}")
+              -d "{\"uuid\":\"${uuid}\",\"force\":false}" \
+              -o "${corpo}" -w '%{http_code}')
 
-            echo "${rotulo}: ${resposta}"
+            echo "${rotulo}: HTTP ${status}"
 
-            if ! printf '%s' "${resposta}" | grep -q 'deployment_uuid'; then
-              echo "O Coolify aceitou o pedido de ${rotulo} e não enfileirou implantação nenhuma."
+            case "${status}" in
+              2*) ;;
+              *)
+                echo "O Coolify recusou o pedido de ${rotulo}: $(head -c 300 "${corpo}")" >&2
+                exit 1
+                ;;
+            esac
+
+            if ! grep -q 'deployment_uuid' "${corpo}"; then
+              echo "O Coolify aceitou o pedido de ${rotulo} e não enfileirou implantação nenhuma: $(head -c 300 "${corpo}")" >&2
               exit 1
             fi
           }
 
-          disparar "API" "${UUID_API}"
-          disparar "App" "${UUID_APP}"
+          disparar "API" "${COOLIFY_API_UUID}"
+          disparar "App" "${COOLIFY_APP_UUID}"
 
       # O disparo é assíncrono. A API é cobrada pela vitalidade (`/health-check`, o
       # mesmo do HEALTHCHECK); o App pela REVISÃO, porque o container antigo
@@ -78,20 +117,20 @@ jobs:
         run: |
           set -euo pipefail
 
-          for tentativa in $(seq 1 20); do
+          for tentativa in $(seq 1 8); do
             if curl -fsS --max-time 10 "${URL_API}/health-check" > /dev/null; then
               echo "API respondeu na tentativa ${tentativa}."
               break
             fi
-            if [ "${tentativa}" = 20 ]; then
-              echo "A API não respondeu em cinco minutos."
+            if [ "${tentativa}" = 8 ]; then
+              echo "A API não respondeu em dois minutos."
               exit 1
             fi
             echo "API ainda subindo (tentativa ${tentativa})..."
             sleep 15
           done
 
-          for tentativa in $(seq 1 20); do
+          for tentativa in $(seq 1 8); do
             corpo=$(curl -sS --max-time 10 "${URL_APP}/revision.txt" | tr -d '\000' || true)
             if printf '%s' "${corpo}" | grep -q "${GITHUB_SHA}"; then
               echo "App na revisão ${GITHUB_SHA} (tentativa ${tentativa})."
@@ -101,5 +140,5 @@ jobs:
             sleep 15
           done
 
-          echo "O App não chegou na revisão ${GITHUB_SHA} em cinco minutos."
+          echo "O App não chegou na revisão ${GITHUB_SHA} em dois minutos."
           exit 1

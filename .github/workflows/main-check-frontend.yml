@@ -180,9 +180,17 @@ jobs:
       # do Adonis carrega o `pino-pretty`, que é dependência de dev e não está
       # na imagem. Os seeders de demonstração só rodam em `development`, então
       # vão pelo workspace, que tem as dependências de dev.
+      # A senha do dono nasce a cada execução (`backend.md` §6.2): não há credencial fixa no
+      # workflow. Vai para o ambiente dos passos seguintes, onde o seeder e o E2E a leem.
+      - name: Gera a senha do dono desta execução
+        run: |
+          senha="Ow-$(openssl rand -hex 8)-Aa9!"
+          echo "::add-mask::${senha}"
+          echo "E2E_OWNER_PASSWORD=${senha}" >> "$GITHUB_ENV"
+
       - name: Sobe a API
         env:
-          SEED_OWNER_PASSWORD: Ci-Owner-1!
+          SEED_OWNER_PASSWORD: ${{ env.E2E_OWNER_PASSWORD }}
         run: |
           cat > "$RUNNER_TEMP/api.env" <<ENV
           NODE_ENV=production
@@ -190,12 +198,11 @@ jobs:
           HOST=0.0.0.0
           LOG_LEVEL=info
           APP_KEY=ci-placeholder-sem-uso-fora-deste-job
-          APP_URL=http://localhost:3333
-          SITE_URL=http://localhost:3010
+          APP_SERVER_URL=http://localhost:3333
+          CORS_ORIGINS=http://localhost:3010
           TRUSTED_PROXIES=loopback
           DATABASE_URL=postgres://curupira:curupira@localhost:5436/curupira
           UPLOAD_MAX_SIZE=1073741824
-          REPORT_PHOTO_MAX_SIZE=10485760
           STORAGE_KEY=curupira
           STORAGE_SECRET=curupira-secret
           STORAGE_BUCKET=curupira
@@ -236,9 +243,7 @@ jobs:
       - name: Test e2e
         env:
           E2E_OWNER_EMAIL: owner@mail.com
-          E2E_OWNER_PASSWORD: Ci-Owner-1!
-          E2E_OPERATOR_EMAIL: operador@mail.com
-          E2E_OPERATOR_PASSWORD: Ci-Operador-1!
+          E2E_BASE_URL: http://localhost:3010
           E2E_API_URL: http://localhost:3333
         run: pnpm --filter ./frontend --fail-if-no-match run test:e2e --add-reporter=github
 
