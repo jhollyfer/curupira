@@ -81,12 +81,44 @@ número em coluna com `tabular-nums`.
 
 ## 4. Layout
 
-- Celular primeiro: base sem prefixo, camadas em `md:`/`lg:`. Barra de navegação inferior no celular
-  (`BottomNav`) e cabeçalho com os mesmos destinos no desktop; os dois leem `NAV_ITEMS`.
-- Painel: `Sidebar` e `SidebarInset` do shadcn; abaixo do breakpoint de tablet, a barra lateral vira `Sheet`.
+- Celular primeiro: base sem prefixo, camadas em `md:` (768 px) e `lg:` (1024 px). O app do morador e o painel
+  são conferidos de 360 a 1920 px, inclusive o celular deitado (740 x 360).
+- Container do app do morador: `page-container` (80 rem), `page-container-md` (64 rem, formulários) e
+  `page-container-sm` (44 rem, confirmações), com margem lateral fluida `--page-gutter` (`clamp`, 16 px a
+  360 px e 40 px a partir de cerca de 1000 px). Cabeçalho, rodapé e páginas partilham a mesma borda esquerda.
+- Tipografia fluida em `clamp` no `styles.css` (títulos de página e de seção); o corpo fica em 16 px.
+
+### App do morador, por largura
+
+| Largura | Navegação | Home |
+|---|---|---|
+| Celular (abaixo de `md`) | barra inferior (`BottomNav`), cinco destinos de `NAV_ITEMS` | uma coluna: pergunta, seletor de bairro, próximos 14 dias, avisos |
+| Tablet e desktop (`md:` em diante) | cabeçalho com os mesmos destinos (`NAV_ITEMS` mais `EXTRA_ITEMS`), barra inferior oculta | hero em duas colunas: a pergunta e o seletor de bairro lado a lado |
+| `lg:` em diante | idem | com bairro escolhido, grade de dois blocos: próximos 14 dias e avisos |
+
+A barra inferior respeita a área segura do aparelho (`env(safe-area-inset-bottom)`). No celular deitado o
+cabeçalho fixo deixa de ser fixo (variante `short`, altura até 30 rem), para não tomar um quinto da tela.
+
+### Painel `/gestao`, por largura
+
+| Largura | Menu | Listagens e telas |
+|---|---|---|
+| Celular (abaixo de 768 px) | a barra lateral é uma gaveta (`Sheet`) aberta pelo botão do cabeçalho; idioma e tema ficam no menu da conta | tabela vira lista de cartões (`common/table/table-cards.tsx`); filtros viram folha inferior com "Filtros (n)" (`_private/-components/filter-panel.tsx`); ocorrências com mapa e lista em abas; detalhe em coluna única; cronograma em lista por dia da semana; diálogos de formulário como folha inferior (`lib/dialog-layout.ts`); gráfico da visão geral compacto, com a tabela de números como alternativa |
+| Tablet (768 a 1023 px) | trilho de ícones (barra lateral recolhida, com dica no hover) | tabela, filtros em linha e grade semanal como no desktop |
+| Desktop (1024 px em diante) | barra lateral aberta | idioma e tema no cabeçalho |
+
+- A mesma definição de colunas serve à tabela e aos cartões: cada coluna diz onde cai no cartão por
+  `meta.card` (`title`, `actions`, `hidden`, ou uma linha "rótulo: valor"); a ordenação vira chips.
+- Filtros ficam na URL: trocar a largura não os perde. `lib/active-filters.ts` conta só os filtros em vigor
+  (página, ordem e direção não contam).
+- Alvo de toque no painel: classe `.panel-touch` (`styles.css`). Botões, campos, `select`, `summary` e os
+  controles da barra lateral sobem para 44 px quando a tela é de celular (abaixo de 48 rem) ou o ponteiro é
+  de toque (`pointer: coarse`, o tablet em qualquer largura); o mouse no desktop mantém o tamanho denso.
+  Rádio e caixa de seleção ficam de fora, porque o `label` é o alvo. Os botões de zoom do Leaflet também
+  sobem a 44 px com ponteiro de toque. Quem monta um diálogo ou folha do painel usa a classe.
 - `--space-section`: `clamp(3rem, 7vw, 6rem)`, espaço entre seções da página pública (único `clamp`).
 - Grades nomeadas em `@utility` (`grid-cols-main-aside`, `grid-cols-agenda`...), sem valor solto em classe.
-- Sem rolagem horizontal da página a 320 px; uso a 200% de zoom.
+- Sem rolagem horizontal da página a 320 px; uso a 200% de zoom. As sete larguras de 360 a 1920 px têm teste (`TEST-PLAN.md` §1).
 
 ## 5. Elevação e camadas
 

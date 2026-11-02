@@ -40,9 +40,21 @@ espera a prefeitura conferir bairros e cronograma.
   um cron no servidor).
 - Esteira de entrega: verificações em todo PR, imagens `curupira-api` e `curupira-app` e implantação no
   Coolify (aguardando os identificadores das aplicações).
+- Navegação do app do morador também em tablet e desktop: cabeçalho com os mesmos destinos da barra inferior.
+- Painel `/gestao` no celular: menu em gaveta, listagens em cartões com ordenação em botões, filtros em folha
+  inferior com a contagem dos ativos, ocorrências em abas de lista e mapa, cronograma em lista por dia da
+  semana e diálogos de formulário como folha inferior.
+- Testes de Playwright de responsividade do app do morador e do painel, em sete larguras (360 a 1920 px).
 
 ### Alterado
 
+- Layout responsivo em todo o app: container com largura máxima e margem lateral fluida, tipografia fluida, home
+  com o seletor de bairro ao lado da pergunta a partir de 768 px e com próximos 14 dias e avisos lado a lado a
+  partir de 1024 px.
+- Painel `/gestao` responsivo do celular ao monitor largo: gaveta no celular (idioma e tema vão para o menu da
+  conta), trilho de ícones no tablet e barra lateral aberta no desktop; gráfico da visão geral compacto no
+  celular, com a tabela de números como alternativa.
+- Controles do painel com 44 px em celular ou com ponteiro de toque.
 - Movimento reduzido (`prefers-reduced-motion`): deixou de ser uma regra global e passou a valer por peça, o
   mapa incluído.
 - Acessibilidade: o mapa tem nome acessível, os marcadores têm título e os alvos de toque têm 44 px.

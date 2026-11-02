@@ -58,7 +58,7 @@ Muitos moradores não sabem em que dia a coleta passa no seu bairro, e o lixo va
 | Desempenho | home usável em rede lenta; mapa e Leaflet carregam só quando a tela precisa |
 | Disponibilidade | cronograma do bairro escolhido e envio de denúncia funcionam sem sinal (PWA) |
 | Acessibilidade | WCAG 2.1 AA; toque grande; linguagem simples |
-| Dispositivos | celular primeiro; painel pensado para desktop |
+| Dispositivos | celular primeiro no app do morador; painel responsivo do celular ao monitor largo (`DESIGN.md` §4) |
 | Idiomas | pt-BR (base), es e en, pela fronteira com Peru e Colômbia |
 | Dados pessoais | denúncia anônima por padrão; contato só se o morador deixar, visível só ao painel; foto sem EXIF; detalhe em `SECURITY.md` |
 
