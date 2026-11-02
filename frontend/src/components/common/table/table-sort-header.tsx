@@ -47,7 +47,7 @@ export function SortHeader<TRow extends RowData>({
       to={to}
       search={{ ...search, ...next, page: undefined }}
       className={cn(
-        '-mx-2 inline-flex min-h-8 items-center gap-1.5 rounded-md px-2 font-medium hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none',
+        '-mx-2 inline-flex min-h-8 pointer-coarse:min-h-11 items-center gap-1.5 rounded-md px-2 font-medium hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none',
         className,
       )}
     >

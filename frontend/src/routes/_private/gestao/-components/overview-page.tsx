@@ -165,7 +165,7 @@ export function OverviewPage(): React.JSX.Element {
 
         <section
           aria-labelledby="by-kind-title"
-          className="flex flex-col gap-4"
+          className="flex min-w-0 flex-col gap-4"
         >
           <h2 id="by-kind-title" className="text-lg font-semibold">
             {m.panel_overview_by_kind()}
@@ -191,7 +191,7 @@ export function OverviewPage(): React.JSX.Element {
                   </span>
                   <span
                     aria-hidden="true"
-                    className="flex h-2 flex-1 items-center"
+                    className="flex h-2 min-w-0 flex-1 items-center"
                   >
                     <span
                       className="h-2 rounded-full bg-primary"

@@ -724,3 +724,17 @@
     line-height: 2.75rem;
   }
 }
+
+/* The tablet rail: icon-only buttons need a 44px square, and the 3rem rail the provider
+   sets inline only leaves 32px. `!important` because the inline custom property would
+   otherwise win. A mouse keeps the 3rem rail. */
+@media (pointer: coarse) {
+  .panel-touch[data-slot='sidebar-wrapper'] {
+    --sidebar-width-icon: 4rem !important;
+  }
+
+  .panel-touch [data-sidebar='sidebar'] :is(a, button) {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+}

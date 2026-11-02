@@ -77,7 +77,7 @@ export function HomePage(): React.JSX.Element {
             <p className="max-w-prose text-lg text-pretty text-stage-muted lg:text-xl">
               {m.home_subtitle()}
             </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button
                 size="touch-lg"
                 variant="secondary"

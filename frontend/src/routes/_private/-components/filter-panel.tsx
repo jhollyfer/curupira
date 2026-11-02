@@ -91,7 +91,7 @@ export function FilterPanel({
           aria-labelledby={titleId}
           className="panel-touch max-h-[88svh] overflow-y-auto rounded-t-xl pb-[max(1rem,env(safe-area-inset-bottom))]"
         >
-          <SheetHeader>
+          <SheetHeader className="px-4 pt-4 pb-2">
             <SheetTitle id={titleId}>{m.panel_filters_title()}</SheetTitle>
             <SheetDescription>{m.panel_filters_description()}</SheetDescription>
           </SheetHeader>

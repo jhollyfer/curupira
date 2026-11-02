@@ -69,7 +69,7 @@ function NavigationItem({
         render={<Link to={to} />}
         // The drawer is a phone surface: rows are 44px there, the dense 32px is the
         // desktop rail's.
-        className="max-md:h-11 max-md:text-base"
+        className="max-md:h-11 max-md:text-base pointer-coarse:group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:[&>span]:sr-only"
         onClick={() => setOpenMobile(false)}
       >
         <Icon aria-hidden="true" />
@@ -124,7 +124,12 @@ export function Sidebar(): React.JSX.Element {
       <SidebarContent>
         {menu.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            {/* Hidden outright in the icon rail: the primitive only fades it (`opacity-0`) and
+                pulls it up with `-mt-8`, which parks the invisible label over the previous
+                group's last item and swallows its clicks (Avisos, Contas). */}
+            <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+              {group.label}
+            </SidebarGroupLabel>
             <SidebarMenu>
               {group.items.map((item) => (
                 <NavigationItem
@@ -149,7 +154,7 @@ export function Sidebar(): React.JSX.Element {
               render={
                 <SidebarMenuButton
                   tooltip={m.panel_sign_out()}
-                  className="max-md:h-11 max-md:text-base"
+                  className="max-md:h-11 max-md:text-base pointer-coarse:group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:[&>span]:sr-only"
                 >
                   <SignOutIcon aria-hidden="true" />
                   <span>{m.panel_sign_out()}</span>
