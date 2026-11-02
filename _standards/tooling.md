@@ -863,9 +863,11 @@ push): o merge entra com o E2E já provado, e repeti-lo atrasa o deploy em uns d
 
 ### 8.3 Deploy e prova de revisão
 
-- Disparo do Coolify por `curl -fsS -X POST .../api/v1/deploy` (`-f` reprova 4xx/5xx; `GET`
-  responde 405) e a resposta **precisa** conter `deployment_uuid`: sem ele o pedido foi aceito e
-  nada foi enfileirado (uuid errado ou sem alcance pelo token).
+- Disparo do Coolify por `curl -sS -X POST .../api/v1/deploy -o <arquivo> -w '%{http_code}'`
+  (`GET` responde 405): status fora de 2xx reprova **imprimindo o status e os primeiros 300
+  caracteres do corpo** (a mensagem do Coolify ou o HTML de quem respondeu), nunca `-f` sozinho, que
+  esconde o corpo e deixa um 404 sem causa. A resposta **precisa** conter `deployment_uuid`: sem
+  ele o pedido foi aceito e nada foi enfileirado (uuid errado ou sem alcance pelo token).
 - **Endereço e alvo do deploy em secret, nunca no workflow.** O repositório tem estes secrets
   no GitHub Actions, com estes nomes:
 
@@ -879,8 +881,9 @@ push): o merge entra com o E2E já provado, e repeti-lo atrasa o deploy em uns d
   | `COOLIFY_APP_UUID` | UUID da aplicação do frontend |
 
   O `main.yml` repassa cada um ao workflow reutilizável, que os declara `required`. O passo de
-  deploy reprova com o nome do secret vazio antes do `curl` e monta o endpoint como
-  `${COOLIFY_URL%/}/api/v1/deploy`. URL ou UUID escrito no YAML é desvio: o host do site no lugar
+  deploy tira espaço e quebra de linha de cada valor (`tr -d '[:space:]'`: secret colado com `\n`
+  vira header quebrado), reprova com o nome do secret vazio e com `COOLIFY_URL` que traga caminho
+  (`/api`), antes do `curl`, e monta o endpoint como `${COOLIFY_URL%/}/api/v1/deploy`. URL ou UUID escrito no YAML é desvio: o host do site no lugar
   do painel responde a rota com o HTML de 404 do app, e o deploy nunca chega ao Coolify.
 - O disparo é assíncrono, então o job termina num **smoke test**: a API responde `200` em
   `/health-check`, e o app serve `/revision.txt` com corpo **igual a `GITHUB_SHA`**. Conferência pelo
