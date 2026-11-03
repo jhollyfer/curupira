@@ -83,6 +83,8 @@ async function managementReport(api: APIRequestContext, protocol: string) {
   return await detail.json()
 }
 
+const MAP_LIST_TITLE = /^(Nenhuma ocorrência|1 ocorrência|\d+ ocorrências)$/
+
 test.describe('resident', () => {
   test('picks the neighborhood and sees the next collection from the real schedule', async ({
     page,
@@ -161,7 +163,7 @@ test.describe('resident', () => {
     await page.goto('/mapa')
     await waitForHydration(page)
     const before = await page
-      .getByRole('heading', { name: /^Ocorrências \(\d+\)$/ })
+      .getByRole('heading', { name: MAP_LIST_TITLE })
       .innerText()
 
     // Follow it: received.
@@ -204,7 +206,7 @@ test.describe('resident', () => {
     await page.goto('/mapa')
     await waitForHydration(page)
     await expect(
-      page.getByRole('heading', { name: /^Ocorrências \(\d+\)$/ }),
+      page.getByRole('heading', { name: MAP_LIST_TITLE }),
     ).not.toHaveText(before)
     void context
   })
@@ -289,6 +291,27 @@ test.describe('resident', () => {
     await expect(
       page.getByRole('heading', { name: 'Protocolo não encontrado' }),
     ).toBeVisible()
+  })
+
+  test('an unknown address answers a real 404, in every language, with the app shell', async ({
+    page,
+  }) => {
+    const cases = [
+      { path: '/nao-existe', title: 'Página não encontrada' },
+      { path: '/es/no-existe', title: 'Página no encontrada' },
+      { path: '/en/does-not-exist', title: 'Page not found' },
+    ]
+
+    for (const { path, title } of cases) {
+      const response = await page.goto(path)
+      expect(response?.status(), path).toBe(404)
+      await expect(page.getByRole('heading', { name: title })).toBeVisible()
+      await expect(page.getByRole('banner')).toBeVisible()
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+        'content',
+        /noindex/,
+      )
+    }
   })
 
   test('the eleventh report of the hour from the same IP is refused, in plain words', async ({
