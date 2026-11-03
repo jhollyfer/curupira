@@ -285,6 +285,31 @@ test.describe('resident', () => {
     expect(stored.photos).toHaveLength(1)
   })
 
+  test('refuses a file that is not a photo, in plain words', async ({
+    page,
+  }) => {
+    await page.goto('/denunciar')
+    await waitForHydration(page)
+    await page.getByText('Queimada', { exact: true }).click()
+    await page.getByRole('button', { name: /Continuar/ }).click()
+
+    const files = [
+      { name: 'nota.txt', mimeType: 'text/plain', buffer: Buffer.from('oi') },
+      {
+        name: 'falsa.jpg',
+        mimeType: 'image/jpeg',
+        buffer: Buffer.from('nao sou uma imagem'),
+      },
+    ]
+    for (const file of files) {
+      await page.locator('input[type=file]').last().setInputFiles(file)
+      await expect(page.getByRole('alert')).toHaveText(
+        'Use fotos em JPEG, PNG ou WebP.',
+      )
+      await expect(page.getByText('0 de 3 fotos')).toBeVisible()
+    }
+  })
+
   test('says the protocol does not exist', async ({ page }) => {
     await page.goto('/acompanhar?protocol=CUR-0000-0000')
 

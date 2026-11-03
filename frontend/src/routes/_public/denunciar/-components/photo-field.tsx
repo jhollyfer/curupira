@@ -6,7 +6,7 @@ import { Picture } from '#/components/common/picture'
 import { Button, buttonVariants } from '#/components/ui/button'
 import { Spinner } from '#/components/ui/spinner'
 import { cn } from '#/lib/cn'
-import { downscaleImage } from '#/lib/image'
+import { downscaleImage, isPhoto } from '#/lib/image'
 import { m } from '#/paraglide/messages'
 
 type PhotoFieldProps = Readonly<{
@@ -89,6 +89,7 @@ export function PhotoField({
   describedBy,
 }: PhotoFieldProps): React.JSX.Element {
   const [processing, setProcessing] = React.useState(false)
+  const [refused, setRefused] = React.useState(false)
   const full = value.length >= LIST_LIMITS.REPORT_PHOTOS
 
   async function add(
@@ -100,7 +101,10 @@ export function PhotoField({
     if (files.length === 0) return
 
     setProcessing(true)
-    const shrunk = await Promise.all(files.map(downscaleImage))
+    const verdicts = await Promise.all(files.map(isPhoto))
+    const photos = files.filter((_, index) => verdicts[index])
+    setRefused(photos.length < files.length)
+    const shrunk = await Promise.all(photos.map(downscaleImage))
     setProcessing(false)
 
     onChange([...value, ...shrunk].slice(0, LIST_LIMITS.REPORT_PHOTOS))
@@ -154,6 +158,12 @@ export function PhotoField({
             max: LIST_LIMITS.REPORT_PHOTOS,
           })}
       </p>
+
+      {refused && (
+        <p role="alert" className="text-sm font-medium text-destructive">
+          {m.report_error_photo_type()}
+        </p>
+      )}
 
       {value.length > 0 && (
         <ul className="grid grid-cols-3 gap-2">

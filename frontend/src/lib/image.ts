@@ -44,3 +44,29 @@ export async function downscaleImage(file: Blob): Promise<Blob> {
     return file
   }
 }
+
+/** What the API accepts for a report photo (`POST /storefront/report-photos`). */
+const PHOTO_TYPES: ReadonlySet<string> = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+])
+
+/**
+ * Whether the file is a photo the report takes: a JPEG, PNG or WebP that the browser
+ * can actually decode. The declared type alone is not enough (a text file renamed to
+ * `.jpg` still says `image/jpeg`), and the API only refuses it at send time, after the
+ * resident filled the whole report; this is the early, plain refusal.
+ */
+export async function isPhoto(file: Blob): Promise<boolean> {
+  if (!PHOTO_TYPES.has(file.type)) return false
+
+  try {
+    const bitmap = await createImageBitmap(file)
+    bitmap.close()
+
+    return true
+  } catch {
+    return false
+  }
+}
