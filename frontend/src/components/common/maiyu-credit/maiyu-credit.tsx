@@ -34,7 +34,7 @@ export function MaiyuCredit({
         href={MAIYU_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex min-h-11 items-center font-semibold underline underline-offset-4 outline-none hover:no-underline focus-visible:ring-4 focus-visible:ring-current/50"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center font-semibold underline underline-offset-4 outline-none hover:no-underline focus-visible:ring-4 focus-visible:ring-current/50"
       >
         {part.value}
       </a>,
