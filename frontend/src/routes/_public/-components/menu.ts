@@ -19,7 +19,7 @@ export type NavItem = Readonly<{
 
 /**
  * The resident's destinations, in the order of a visit: see the schedule, report,
- * follow. The bottom bar (phone) and the header (desktop) read the same list, so a
+ * follow. The menu sheet (phone) and the header (desktop) read the same list, so a
  * destination is never in one and missing from the other.
  */
 export const NAV_ITEMS = [
@@ -30,7 +30,7 @@ export const NAV_ITEMS = [
   { to: '/mapa', label: () => m.nav_map(), icon: MapTrifoldIcon },
 ] as const satisfies ReadonlyArray<NavItem>
 
-/** Reached from the home and the footer, not worth a slot in the bottom bar. */
+/** Reached from the home and the footer, a destination of the menu and the header, but not of the main sequence. */
 export const EXTRA_ITEMS = [
   { to: '/avisos', label: () => m.nav_notices(), icon: MegaphoneIcon },
 ] as const satisfies ReadonlyArray<NavItem>

@@ -11,7 +11,7 @@ import { m } from '#/paraglide/messages'
  */
 export function Footer(): React.JSX.Element {
   return (
-    <footer className="stage-band pb-28 md:pb-0">
+    <footer className="stage-band">
       <div className="page-container grid gap-8 py-10 md:grid-cols-2 lg:py-14">
         <div className="flex flex-col gap-3">
           <BrandMark className="text-stage-foreground" />

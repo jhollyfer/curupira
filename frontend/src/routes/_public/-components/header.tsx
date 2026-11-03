@@ -7,11 +7,12 @@ import { ThemeToggle } from '#/components/common/theme-toggle'
 import { m } from '#/paraglide/messages'
 
 import { EXTRA_ITEMS, NAV_ITEMS } from './menu'
+import { MenuSheet } from './menu-sheet'
 
 /**
- * The top bar. On a phone it is only brand, language and theme (navigation lives in
- * the bottom bar, under the thumb); from `md` it also carries the destinations, all
- * visible, so a tablet and a desktop never hide a link behind a menu.
+ * The top bar of the site, the same on every width: brand, language, theme and the
+ * navigation. From `md` the destinations are all visible, so a tablet and a desktop never
+ * hide a link behind a menu; below it they open from the menu button (`MenuSheet`).
  *
  * `short:static`: on a landscape phone (under 480px tall) a sticky 64px bar is a fifth of
  * the screen, so it scrolls away there.
@@ -39,6 +40,7 @@ export function Header(): React.JSX.Element {
         <div className="flex items-center gap-1.5">
           <LocaleSwitch />
           <ThemeToggle />
+          <MenuSheet />
         </div>
       </div>
     </header>

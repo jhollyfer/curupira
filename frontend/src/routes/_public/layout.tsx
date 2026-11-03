@@ -3,7 +3,6 @@ import type * as React from 'react'
 
 import { m } from '#/paraglide/messages'
 
-import { BottomNav } from './-components/bottom-nav'
 import { ConnectionStatus } from './-components/connection-status'
 import { Footer } from './-components/footer'
 import { Header } from './-components/header'
@@ -13,8 +12,7 @@ import { ReportQueueSync } from './-components/report-queue-sync'
 const MAIN_ID = 'conteudo'
 
 /**
- * The shell of every public screen: header, connection strip, content, footer and, on a
- * phone, the bottom navigation.
+ * The shell of every public screen: header, connection strip, content and footer.
  *
  * **No `beforeLoad`, and it is a decision.** The resident never signs in: the public app
  * is anonymous by design, and a guard here would turn the audience into a redirect.
@@ -47,7 +45,6 @@ function RouteComponent(): React.JSX.Element {
       </main>
 
       <Footer />
-      <BottomNav />
       <ReportQueueSync />
     </div>
   )

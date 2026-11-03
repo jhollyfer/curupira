@@ -48,7 +48,27 @@ async function openMenu(page: Page): Promise<void> {
   }
 }
 
+/** Below `md` the site navigation is behind the menu button; from `md` it is in the header. */
+async function openSiteMenu(page: Page): Promise<void> {
+  const width = page.viewportSize()?.width ?? 0
+  if (width < DRAWER_BELOW) {
+    await page.getByRole('button', { name: 'Abrir o menu' }).click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+  }
+}
+
 test.describe('visitor', () => {
+  test('the site menu reaches a destination and closes by itself', async ({
+    page,
+  }) => {
+    await visit(page, '/')
+    await openSiteMenu(page)
+    await page.getByRole('link', { name: 'Coleta' }).first().click()
+
+    await expect(page).toHaveURL(/\/coleta$/)
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+  })
+
   for (const route of PUBLIC_ROUTES) {
     test(`${route} fits the viewport and is accessible`, async ({ page }) => {
       await visit(page, route)
