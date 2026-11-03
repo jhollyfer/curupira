@@ -2,7 +2,8 @@ import { LIST_LIMITS } from '@curupira/shared'
 import { CameraIcon, ImagesIcon, XIcon } from '@phosphor-icons/react'
 import * as React from 'react'
 
-import { buttonVariants } from '#/components/ui/button'
+import { Picture } from '#/components/common/picture'
+import { Button, buttonVariants } from '#/components/ui/button'
 import { Spinner } from '#/components/ui/spinner'
 import { cn } from '#/lib/cn'
 import { downscaleImage } from '#/lib/image'
@@ -47,22 +48,24 @@ function PhotoPreview({
   return (
     <li className="relative aspect-square overflow-hidden rounded-xl bg-muted">
       {url && (
-        <img
+        <Picture
           src={url}
           alt={m.report_photo_alt({ number })}
           width={240}
           height={240}
+          placement="fold"
           className="size-full object-cover"
         />
       )}
-      <button
+      <Button
         type="button"
+        size="icon-touch"
         aria-label={m.report_photo_remove({ number })}
         onClick={onRemove}
-        className="absolute top-1 right-1 grid size-11 place-items-center rounded-full bg-foreground/80 text-background outline-none focus-visible:ring-4 focus-visible:ring-ring"
+        className="absolute top-1 right-1 rounded-full bg-foreground/80 text-background hover:bg-foreground"
       >
-        <XIcon aria-hidden="true" weight="bold" className="size-5" />
-      </button>
+        <XIcon aria-hidden="true" weight="bold" />
+      </Button>
     </li>
   )
 }

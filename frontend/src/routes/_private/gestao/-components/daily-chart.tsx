@@ -1,5 +1,19 @@
 import type * as React from 'react'
 
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '#/components/ui/collapsible'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '#/components/ui/table'
 import { useIsMobile } from '#/hooks/use-mobile'
 import { formatNumber, townDay } from '#/lib/i18n'
 import { axisCeiling, seriesPeak } from '#/lib/report-stats'
@@ -144,36 +158,43 @@ export function DailyChart({ series }: DailyChartProps): React.JSX.Element {
         {summary}
       </figcaption>
 
-      <details className="text-sm">
-        <summary className="inline-flex min-h-11 cursor-pointer sm:min-h-8 items-center rounded-md px-1 font-medium text-foreground underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+      <Collapsible className="text-sm">
+        <CollapsibleTrigger className="inline-flex min-h-11 cursor-pointer items-center rounded-md px-1 font-medium text-foreground underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 sm:min-h-8">
           {m.panel_overview_chart_table()}
-        </summary>
-        <table className="mt-2 w-full max-w-md border-collapse text-left tabular-nums">
-          <caption className="sr-only">
-            {m.panel_overview_chart_title()}
-          </caption>
-          <thead>
-            <tr className="border-b">
-              <th scope="col" className="py-1.5 pr-4 font-medium">
-                {m.panel_overview_chart_day()}
-              </th>
-              <th scope="col" className="py-1.5 text-right font-medium">
-                {m.panel_overview_chart_reports()}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {series.map((point) => (
-              <tr key={point.day} className="border-b border-border/60">
-                <th scope="row" className="py-1 pr-4 font-normal">
-                  {dayLabel(point.day)}
-                </th>
-                <td className="py-1 text-right">{point.total}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </details>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <Table className="mt-2 max-w-md text-left text-sm tabular-nums">
+            <TableCaption className="sr-only">
+              {m.panel_overview_chart_title()}
+            </TableCaption>
+            <TableHeader>
+              <TableRow className="border-b">
+                <TableHead scope="col" className="py-1.5 pr-4 font-medium">
+                  {m.panel_overview_chart_day()}
+                </TableHead>
+                <TableHead
+                  scope="col"
+                  className="py-1.5 text-right font-medium"
+                >
+                  {m.panel_overview_chart_reports()}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {series.map((point) => (
+                <TableRow key={point.day} className="border-b border-border/60">
+                  <TableHead scope="row" className="py-1 pr-4 font-normal">
+                    {dayLabel(point.day)}
+                  </TableHead>
+                  <TableCell className="py-1 text-right">
+                    {point.total}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CollapsibleContent>
+      </Collapsible>
     </figure>
   )
 }

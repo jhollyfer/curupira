@@ -6,6 +6,16 @@ import type {
 import { PlusIcon } from '@phosphor-icons/react'
 import type * as React from 'react'
 
+import { Button } from '#/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '#/components/ui/table'
 import { useIsMobile } from '#/hooks/use-mobile'
 import { WASTE_TYPE_ICONS } from '#/lib/icons'
 import {
@@ -62,7 +72,8 @@ function GridCell({
   return (
     <div className="flex flex-wrap items-start gap-1.5 md:flex-col">
       {entries.map((entry) => (
-        <button
+        <Button
+          variant="ghost"
           key={entry.id}
           type="button"
           title={entry.note ?? undefined}
@@ -76,9 +87,10 @@ function GridCell({
               day: weekdayLabel(day),
             })}
           </span>
-        </button>
+        </Button>
       ))}
-      <button
+      <Button
+        variant="ghost"
         type="button"
         aria-label={m.panel_schedules_add({
           type: WASTE_TYPE_LABELS[type](),
@@ -95,7 +107,7 @@ function GridCell({
         className="grid size-11 place-items-center rounded-md border border-dashed text-muted-foreground outline-none hover:border-foreground hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 md:size-9"
       >
         <PlusIcon aria-hidden="true" className="size-4" />
-      </button>
+      </Button>
     </div>
   )
 }
@@ -180,42 +192,48 @@ export function WeeklyGrid({
     )
 
   return (
-    <div className="overflow-x-auto rounded-md border bg-card">
-      <table className="w-full min-w-[56rem] border-collapse text-sm">
-        <caption className="sr-only">
+    <div className="rounded-md border bg-card">
+      <Table className="min-w-[56rem] text-sm">
+        <TableCaption className="sr-only">
           {m.panel_schedules_grid_caption()}
-        </caption>
-        <thead>
-          <tr className="border-b bg-muted/40">
-            <th scope="col" className="w-40 px-3 py-2 text-left font-medium">
+        </TableCaption>
+        <TableHeader>
+          <TableRow className="border-b bg-muted/40">
+            <TableHead
+              scope="col"
+              className="w-40 px-3 py-2 text-left font-medium"
+            >
               {m.panel_schedules_grid_type()}
-            </th>
+            </TableHead>
             {GRID_WEEKDAYS.map((day) => (
-              <th
+              <TableHead
                 key={day}
                 scope="col"
                 className="px-2 py-2 text-left font-medium"
               >
                 <span aria-hidden="true">{weekdayLabel(day, 'short')}</span>
                 <span className="sr-only">{weekdayLabel(day)}</span>
-              </th>
+              </TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {GRID_WASTE_TYPES.map((type) => {
             const Icon = WASTE_TYPE_ICONS[type]
 
             return (
-              <tr key={type} className="border-b last:border-b-0">
-                <th scope="row" className="px-3 py-3 text-left font-medium">
+              <TableRow key={type} className="border-b last:border-b-0">
+                <TableHead
+                  scope="row"
+                  className="px-3 py-3 text-left font-medium"
+                >
                   <span className="inline-flex items-center gap-2">
                     <Icon aria-hidden="true" weight="fill" className="size-4" />
                     {WASTE_TYPE_LABELS[type]()}
                   </span>
-                </th>
+                </TableHead>
                 {GRID_WEEKDAYS.map((day) => (
-                  <td key={day} className="px-2 py-2 align-top">
+                  <TableCell key={day} className="px-2 py-2 align-top">
                     <GridCell
                       neighborhoodId={neighborhoodId}
                       type={type}
@@ -223,13 +241,13 @@ export function WeeklyGrid({
                       entries={grid[type][day]}
                       dialog={dialog}
                     />
-                  </td>
+                  </TableCell>
                 ))}
-              </tr>
+              </TableRow>
             )
           })}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   )
 }

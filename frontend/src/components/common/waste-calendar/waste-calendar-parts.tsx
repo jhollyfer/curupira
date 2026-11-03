@@ -4,6 +4,15 @@ import { DateTime, Info } from 'luxon'
 import * as React from 'react'
 
 import { Button } from '#/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '#/components/ui/table'
 import { cn } from '#/lib/cn'
 import { TOWN_TIME_ZONE, townDay } from '#/lib/i18n'
 import { WASTE_TYPE_ICONS } from '#/lib/icons'
@@ -217,12 +226,12 @@ export function WasteCalendarMonth({
       </div>
       {/* 2px between columns, not 4: at 360px the day buttons came out 42px wide, under the
           44px touch target; vertical spacing keeps the 4px rhythm. */}
-      <table className="w-full table-fixed border-separate border-spacing-x-0.5 border-spacing-y-1 lg:border-spacing-x-1.5 lg:border-spacing-y-1.5">
-        <caption className="sr-only">{m.calendar_caption()}</caption>
-        <thead>
-          <tr>
+      <Table className="table-fixed border-separate border-spacing-x-0.5 border-spacing-y-1 lg:border-spacing-x-1.5 lg:border-spacing-y-1.5">
+        <TableCaption className="sr-only">{m.calendar_caption()}</TableCaption>
+        <TableHeader>
+          <TableRow>
             {weekdayHeads().map((head) => (
-              <th
+              <TableHead
                 key={head.long}
                 scope="col"
                 className="pb-1 text-xs font-bold text-muted-foreground uppercase"
@@ -230,37 +239,38 @@ export function WasteCalendarMonth({
                 <abbr title={head.long} className="no-underline">
                   {head.short}
                 </abbr>
-              </th>
+              </TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {weeks.map((week) => (
-            <tr key={week[0]?.date}>
+            <TableRow key={week[0]?.date}>
               {week.map((cell) => {
                 const date = townDay(cell.date)
 
                 return (
-                  <td key={cell.date} className="p-0">
-                    <button
+                  <TableCell key={cell.date} className="p-0">
+                    <Button
                       type="button"
+                      variant="outline"
                       aria-pressed={selected === cell.date}
                       aria-label={describeDay(date, cell.passes)}
                       data-outside={!cell.inMonth}
                       data-today={cell.date === today}
                       onClick={() => select(cell.date)}
-                      className="flex min-h-14 w-full flex-col items-center justify-start gap-1 rounded-lg border bg-card px-0.5 py-1.5 text-base font-bold lg:min-h-20 lg:py-2.5 lg:text-lg tabular-nums transition-colors outline-none hover:bg-accent focus-visible:ring-4 focus-visible:ring-ring/60 aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground data-[outside=true]:opacity-40 data-[today=true]:shadow-[0_0_0_2px_var(--primary)] motion-reduce:transition-none"
+                      className="h-auto min-h-14 w-full flex-col items-center justify-start gap-1 rounded-lg border bg-card px-0.5 py-1.5 text-base font-bold lg:min-h-20 lg:py-2.5 lg:text-lg tabular-nums transition-colors outline-none hover:bg-accent focus-visible:ring-4 focus-visible:ring-ring/60 aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground data-[outside=true]:opacity-40 data-[today=true]:shadow-[0_0_0_2px_var(--primary)] motion-reduce:transition-none"
                     >
                       <span aria-hidden="true">{date.day}</span>
                       <DayDots day={cell} />
-                    </button>
-                  </td>
+                    </Button>
+                  </TableCell>
                 )
               })}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   )
 }

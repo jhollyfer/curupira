@@ -10,6 +10,7 @@ import {
   PageHeaderDescription,
   PageHeaderTitle,
 } from '#/components/common/page-shell'
+import { Picture } from '#/components/common/picture'
 import {
   ReportMap,
   ReportMapSelectablePins,
@@ -145,12 +146,12 @@ export function ReportDetail(): React.JSX.Element {
                     rel="noreferrer"
                     className="block overflow-hidden rounded-md border focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
                   >
-                    <img
+                    <Picture
                       src={photo.url}
                       alt={m.panel_report_photo_alt({ number: index + 1 })}
                       width={480}
                       height={320}
-                      loading="lazy"
+                      placement="fold"
                       className="aspect-3/2 w-full object-cover"
                     />
                     <span className="sr-only">
