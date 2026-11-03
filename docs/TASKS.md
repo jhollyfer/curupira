@@ -72,10 +72,10 @@ Achados do sync que mudam muito código ou dependem de decisão do dono; nenhum 
 | R.1 | `VITE_DATA_SOURCE` fora do catálogo: remover a camada de dados de exemplo (`src/data`, `fromSource`, mock-session, `strip-example-data`) | Média | Feita | decisão do dono: saiu a camada inteira (`src/data`, `fromSource`, mock-session, `strip-example-data`, contas de exemplo, `.env.production`); dado de exemplo vem do seeder de demonstração (`DECISIONS.md` #26) |
 | R.2 | `VITE_STORAGE_URL` fora do catálogo: virar `STORAGE_PUBLIC_URL` em runtime, com CSP em `src/server.ts` | Média | Feita | `src/server.ts` lê `STORAGE_PUBLIC_URL` por requisição e escreve a CSP (`DECISIONS.md` #27); falta só o endereço do bucket de produção (1.6) |
 | R.3 | Playwright em projetos `mobile` (360×740), `tablet` (768×1024) e `desktop` (1440×900) com os mesmos specs, mais `responsive.spec` e `touch-targets.spec`, e matriz no CI | Alta | A fazer | hoje: `mobile`, `desktop`, `responsive-*` |
-| R.4 | Alvo de toque de 44 px vir do kit `components/ui/` (`h-11 sm:h-7`), não da variante `touch` nem de `.panel-touch` | Média | A fazer | `frontend.md` |
-| R.5 | Tipografia fluida com `clamp` e teto no desktop nos tokens `--text-*` | Baixa | A fazer | |
-| R.6 | Auditoria das telas contra a tabela "cara de gerador" (`frontend.md`) | Média | A fazer | |
-| R.7 | Contadores com `=0` e `=1` antes do plural (`panel_table_total`, `map_list_title`) | Baixa | A fazer | `i18n.md` |
+| R.4 | Alvo de toque de 44 px vir do kit `components/ui/` (`h-11 sm:h-7`), não da variante `touch` nem de `.panel-touch` | Média | Feita | kit com `h-11 sm:h-7`; `.panel-touch` sobrou só no trilho da barra lateral; as variantes `touch` ficam como tamanho de leitura do app do morador; `touch-targets.spec` não rodou (sem Docker) |
+| R.5 | Tipografia fluida com `clamp` e teto no desktop nos tokens `--text-*` | Baixa | Feita | `--text-display`, `--text-title`, `--text-section`, `--text-numeral` no `@theme`; `cn` conhece os nomes |
+| R.6 | Auditoria das telas contra a tabela "cara de gerador" (`frontend.md`) | Média | Feita | sem halo, gradiente, hover só de `scale`, texto justificado, entrada escalonada nem copy genérica; `uppercase` só no dia da semana e no código de protocolo |
+| R.7 | Contadores com `=0` e `=1` antes do plural (`panel_table_total`, `map_list_title`) | Baixa | Feita | nos três idiomas, com teste em `i18n.test.ts` |
 | R.8 | `E2E_WORKERS`, `E2E_FULL_MATRIX` e `E2E_CHROMIUM_PATH` fora do catálogo de E2E | Baixa | Feita | `E2E_WORKERS` e `E2E_FULL_MATRIX` saíram; `CHROMIUM_PATH` virou `E2E_CHROMIUM_PATH` |
 | R.9 | Todas as chaves de ambiente no catálogo da régua (`backend.md` §6.2): `APP_CLIENT_URL`, `SEED_DEMO_PASSWORD`, `SITE_ENV`, `E2E_DEMO_PASSWORD`, secrets do deploy `COOLIFY_*` | Alta | Feita | `chore/env-catalogo-padrao`; régua #276, jhollyfer/maiyu-pattern#16; E2E de Playwright e suíte `functional` do backend não rodaram nesta sessão (sem Docker): rodam no CI do PR |
 

@@ -9,6 +9,12 @@ espera a prefeitura conferir bairros e cronograma.
 
 ## [Não lançado]
 
+### Alterado
+
+- Botões, campos, menus, paginação e abas têm 44 px de altura no celular, em todas as telas, e voltam ao tamanho denso a partir de `sm`.
+- Contadores de registros e ocorrências dizem "Nenhum registro" e "1 registro" em vez de "0 registros", nos três idiomas.
+- Títulos e o número da próxima coleta crescem de forma contínua com a largura da tela.
+
 ### Adicionado
 
 - App do morador, em português, espanhol e inglês, instalável como aplicativo (PWA):

@@ -127,7 +127,7 @@ export function ReportPage(): React.JSX.Element {
 
   return (
     <div className="page-container-md flex flex-col gap-6 py-8 md:py-12">
-      <h1 className="text-fluid-title font-extrabold tracking-tight text-balance">
+      <h1 className="text-title font-extrabold tracking-tight text-balance">
         {m.report_title()}
       </h1>
 

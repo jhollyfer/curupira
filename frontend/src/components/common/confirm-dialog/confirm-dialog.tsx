@@ -87,8 +87,6 @@ export function ConfirmDialog<TPayload = undefined>({
             )}
             <AlertDialogContent
               data-slot="confirm-dialog"
-              // 44px buttons on a phone, for the one dialog every delete goes through.
-              className="panel-touch"
               finalFocus={finalFocus}
             >
               <ConfirmDialogProvider value={value}>

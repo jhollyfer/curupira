@@ -71,7 +71,7 @@ export function HomePage(): React.JSX.Element {
             two lines on a wide monitor instead of a thin column. */}
         <div className="page-container grid gap-8 py-10 md:grid-cols-2 md:items-center md:gap-10 md:py-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-16 lg:py-20">
           <div className="flex flex-col gap-5">
-            <h1 className="text-fluid-display font-extrabold tracking-tight text-balance">
+            <h1 className="text-display font-extrabold tracking-tight text-balance">
               {m.home_title()}
             </h1>
             <p className="max-w-prose text-lg text-pretty text-stage-muted lg:text-xl">
@@ -144,7 +144,7 @@ export function HomePage(): React.JSX.Element {
       >
         {hasSchedule && (
           <section className="flex flex-col gap-3 lg:gap-5">
-            <h2 className="text-fluid-section font-extrabold tracking-tight">
+            <h2 className="text-section font-extrabold tracking-tight">
               {m.home_next_days()}
             </h2>
             <WasteCalendar passes={passes} now={now}>
@@ -154,7 +154,7 @@ export function HomePage(): React.JSX.Element {
         )}
 
         <section className="flex flex-col gap-4 lg:gap-5">
-          <h2 className="text-fluid-section font-extrabold tracking-tight">
+          <h2 className="text-section font-extrabold tracking-tight">
             {m.home_notices()}
           </h2>
           <NoticeList notices={notices}>
@@ -178,7 +178,7 @@ export function HomePage(): React.JSX.Element {
       <section className="page-container pt-10 lg:pt-14">
         <div className="stage-band flex flex-col gap-4 rounded-2xl p-6 md:flex-row md:items-center md:justify-between md:gap-10 md:p-8 lg:p-12">
           <div className="flex max-w-xl flex-col gap-2">
-            <h2 className="text-fluid-section font-extrabold tracking-tight text-balance">
+            <h2 className="text-section font-extrabold tracking-tight text-balance">
               {m.home_report_title()}
             </h2>
             <p className="text-lg text-stage-muted lg:text-xl">
@@ -201,7 +201,7 @@ export function HomePage(): React.JSX.Element {
           sits beside them: on a wide screen the left column carries the one thing that
           cannot wait (193), the right one the routine. No icon tiles, no cards. */}
       <section className="page-container grid grid-cols-[minmax(0,1fr)] gap-x-16 gap-y-6 py-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-y-8 lg:py-16">
-        <h2 className="text-fluid-section font-extrabold tracking-tight lg:col-start-1 lg:row-start-1">
+        <h2 className="text-section font-extrabold tracking-tight lg:col-start-1 lg:row-start-1">
           {m.home_how_title()}
         </h2>
         <ol className="flex flex-col lg:col-start-2 lg:row-span-2 lg:row-start-1">

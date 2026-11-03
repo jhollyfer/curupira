@@ -14,7 +14,18 @@ const twMerge = extendTailwindMerge({
       z: [
         { z: ['sticky', 'overlay', 'modal', 'dropdown', 'toast', 'tooltip'] },
       ],
-      'font-size': [{ text: ['error-code', 'error-code-lg'] }],
+      'font-size': [
+        {
+          text: [
+            'display',
+            'title',
+            'section',
+            'numeral',
+            'error-code',
+            'error-code-lg',
+          ],
+        },
+      ],
       leading: [{ leading: ['display'] }],
     },
   },

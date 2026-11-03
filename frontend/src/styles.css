@@ -177,6 +177,17 @@
      metric-adjusted fallback so the swap does not move the page. */
   --font-sans: 'Figtree Variable', 'Figtree Fallback', system-ui, sans-serif;
   --font-display: 'Figtree Variable', 'Figtree Fallback', system-ui, sans-serif;
+  /* Fluid type scale: each token is the desktop size as a ceiling of a `clamp`, so a 320px
+     title does not break and a monitor does not grow past the design. Body and support
+     text stay at 16px and do not shrink. */
+  --text-display: clamp(2.25rem, 1.35rem + 3.6vw, 4.5rem);
+  --text-display--line-height: 1.04;
+  --text-title: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+  --text-title--line-height: 1.1;
+  --text-section: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+  --text-section--line-height: 1.2;
+  --text-numeral: clamp(3rem, 2rem + 4vw, 3.75rem);
+  --text-numeral--line-height: 1;
   --text-error-code: 7rem;
   --text-error-code-lg: 9rem;
   --leading-display: 1.05;
@@ -664,23 +675,6 @@
   padding-inline: var(--page-gutter);
 }
 
-/* Fluid type: the size follows the viewport between two bounds, so a 360px phone and
-   a 1920px monitor each get a title in proportion without a breakpoint step. */
-@utility text-fluid-display {
-  font-size: clamp(2.25rem, 1.35rem + 3.6vw, 4.5rem);
-  line-height: 1.04;
-}
-
-@utility text-fluid-title {
-  font-size: clamp(2rem, 1.5rem + 2vw, 3.25rem);
-  line-height: 1.1;
-}
-
-@utility text-fluid-section {
-  font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
-  line-height: 1.2;
-}
-
 /* The public map fills what is left under the sticky header (4rem) and the title block,
    with a floor so a short landscape phone still gets a usable map. */
 @utility h-map-fill {
@@ -690,29 +684,6 @@
 /* On a landscape phone the sticky header would take a fifth of the screen: it scrolls
    away there instead. */
 @custom-variant short (@media (max-height: 30rem));
-
-/* The panel's 44px touch targets, in one place. The shadcn primitives in `components/ui/`
-   are sized for a mouse (h-7 buttons, h-9 inputs) and are not edited by hand, so every
-   control inside `.panel-touch` is raised to the finger's size when the screen is a phone
-   or the pointer is coarse (a tablet at any width). A desktop mouse keeps the dense
-   sizes. Radios and checkboxes are left alone: their `label` is the 44px target. */
-@media (pointer: coarse), (max-width: 47.99rem) {
-  .panel-touch
-    :is(
-      button,
-      select,
-      summary,
-      [role='button'],
-      input:not([type='radio'], [type='checkbox'], [type='hidden'])
-    ) {
-    min-height: 2.75rem;
-  }
-
-  .panel-touch :is(a, button)[class*='group/button'] {
-    min-width: 2.75rem;
-    min-height: 2.75rem;
-  }
-}
 
 /* Leaflet's zoom buttons are 30px: under the 44px touch target. Only on a coarse pointer,
    where a thumb taps them; with a mouse the compact size stays. The `html` prefix wins
@@ -725,7 +696,7 @@
   }
 }
 
-/* The tablet rail: icon-only buttons need a 44px square, and the 3rem rail the provider
+/* The tablet rail (`.panel-touch` is only the hook of the sidebar wrapper): icon-only buttons need a 44px square, and the 3rem rail the provider
    sets inline only leaves 32px. `!important` because the inline custom property would
    otherwise win. A mouse keeps the 3rem rail. */
 @media (pointer: coarse) {

@@ -172,7 +172,7 @@ function AccountMenu(): React.JSX.Element {
           />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="panel-touch w-60" align="end">
+        <DropdownMenuContent className="w-60" align="end">
           {/* The group is required by Base UI's `GroupLabel`; without it opening the menu
               throws and the layout's boundary shows the error page. */}
           <DropdownMenuGroup>

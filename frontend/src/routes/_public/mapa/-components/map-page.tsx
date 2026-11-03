@@ -24,7 +24,7 @@ export function MapPage(): React.JSX.Element {
   return (
     <div className="page-container flex flex-col gap-6 py-8 md:py-10">
       <header className="flex max-w-3xl flex-col gap-2">
-        <h1 className="text-fluid-title font-extrabold tracking-tight text-balance">
+        <h1 className="text-title font-extrabold tracking-tight text-balance">
           {m.map_title()}
         </h1>
         <p className="max-w-prose text-lg text-muted-foreground">
@@ -89,7 +89,7 @@ export function MapPage(): React.JSX.Element {
         >
           <h2
             id="map-list"
-            className="text-fluid-section font-extrabold tracking-tight"
+            className="text-section font-extrabold tracking-tight"
           >
             {m.map_list_title({ count: reports.length })}
           </h2>

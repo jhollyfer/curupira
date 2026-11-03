@@ -71,9 +71,9 @@ Família única: **Figtree Variable** (`@fontsource-variable/figtree`, peso vari
 `Figtree Fallback` (Arial com `size-adjust` e `ascent-override`) para a troca de fonte não mover a página.
 `--font-sans` e `--font-display` apontam para a mesma família. `font-synthesis: none`.
 
-O projeto não declara uma escala de tokens de texto; o tamanho vem das classes de texto do Tailwind e do
-componente. Tokens de texto próprios: `--text-error-code` (7rem) e `--text-error-code-lg` (9rem), para a
-página de erro, e `--leading-display` (1.05). `--heading-tight` (-0.02em) e `--heading-tighter`
+Escala fluida em tokens `--text-*` do `@theme` (teto de desktop dentro de um `clamp`): `--text-display`,
+`--text-title`, `--text-section` e `--text-numeral` (o número grande da próxima coleta); fora da escala fluida,
+`--text-error-code` (7rem) e `--text-error-code-lg` (9rem), para a página de erro, e `--leading-display` (1.05). `--heading-tight` (-0.02em) e `--heading-tighter`
 (-0.03em) são os espaçamentos de título.
 
 Corpo nunca abaixo de 16 px; prosa (`ProsePage`, `/sobre`, `/privacidade`, `/termos`) com medida limitada;
@@ -86,7 +86,7 @@ número em coluna com `tabular-nums`.
 - Container do app do morador: `page-container` (80 rem), `page-container-md` (64 rem, formulários) e
   `page-container-sm` (44 rem, confirmações), com margem lateral fluida `--page-gutter` (`clamp`, 16 px a
   360 px e 40 px a partir de cerca de 1000 px). Cabeçalho, rodapé e páginas partilham a mesma borda esquerda.
-- Tipografia fluida em `clamp` no `styles.css` (títulos de página e de seção); o corpo fica em 16 px.
+- Tipografia fluida em `clamp` nos tokens `--text-*` do `styles.css` (títulos de página e de seção); o corpo fica em 16 px.
 
 ### App do morador, por largura
 
@@ -111,11 +111,12 @@ cabeçalho fixo deixa de ser fixo (variante `short`, altura até 30 rem), para n
   `meta.card` (`title`, `actions`, `hidden`, ou uma linha "rótulo: valor"); a ordenação vira chips.
 - Filtros ficam na URL: trocar a largura não os perde. `lib/active-filters.ts` conta só os filtros em vigor
   (página, ordem e direção não contam).
-- Alvo de toque no painel: classe `.panel-touch` (`styles.css`). Botões, campos, `select`, `summary` e os
-  controles da barra lateral sobem para 44 px quando a tela é de celular (abaixo de 48 rem) ou o ponteiro é
-  de toque (`pointer: coarse`, o tablet em qualquer largura); o mouse no desktop mantém o tamanho denso.
-  Rádio e caixa de seleção ficam de fora, porque o `label` é o alvo. Os botões de zoom do Leaflet também
-  sobem a 44 px com ponteiro de toque. Quem monta um diálogo ou folha do painel usa a classe.
+- Alvo de toque de 44 px vem do kit `components/ui/`: botão, campo, `select`, itens de menu, paginação e abas
+  têm `h-11 sm:h-7` (ou equivalente), então crescem abaixo de `sm` (celular) e voltam ao tamanho denso de `sm`
+  para cima; a tela não ajusta altura de controle. Rádio e caixa de seleção ficam de fora, porque o `label` é o
+  alvo. Os botões de zoom do Leaflet sobem a 44 px com ponteiro de toque, e a classe `.panel-touch` sobrou só
+  como gancho do trilho da barra lateral no tablet (`styles.css`). As variantes `touch`, `touch-lg` e
+  `icon-touch` do botão são tamanhos de leitura (rótulo de 16 px, cantos grandes) do app do morador.
 - `--space-section`: `clamp(3rem, 7vw, 6rem)`, espaço entre seções da página pública (único `clamp`).
 - Grades nomeadas em `@utility` (`grid-cols-main-aside`, `grid-cols-agenda`...), sem valor solto em classe.
 - Sem rolagem horizontal da página a 320 px; uso a 200% de zoom. As sete larguras de 360 a 1920 px têm teste (`TEST-PLAN.md` §1).

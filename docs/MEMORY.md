@@ -26,12 +26,18 @@
   121 testes no CI e 187 com a matriz completa; o job leva cerca de 13,6 min, com limite de 25.
 - Responsividade: app do morador com navegação superior em tablet e desktop, hero e grade em colunas a partir de
   `md` e `lg`; painel `/gestao` do celular ao monitor largo (gaveta, cartões, folha de filtros, abas, cronograma
-  por dia, `.panel-touch` de 44 px). Descrito em `DESIGN.md` §4.
+  por dia, alvos de 44 px). Descrito em `DESIGN.md` §4.
 - Auditoria de segurança feita, com as correções aplicadas (`SECURITY.md` §10); revisão de acessibilidade e
   movimento reduzido por peça.
 - Docs completos: PRD, fluxos, decisões (24), arquitetura, ambiente, segurança, plano de testes, design, regras, changelog.
 
 ## Parou em
+
+Alinhamento do frontend à régua (`chore/sync-regua`, branch de trabalho): sync espelho refeito, R.4 (44 px no kit `h-11 sm:h-7`),
+R.5 (tokens `--text-*` fluidos), R.6 (auditoria de "cara de gerador", sem desvio) e R.7 (contadores `=0`/`=1`) feitos; lint,
+typecheck, unitários e `pattern:check` passam. Não rodaram (sem Docker): E2E e `touch-targets.spec`. **R.3 segue pendente**
+(projetos `mobile`/`tablet`/`desktop` do Playwright com os mesmos specs, `responsive.spec`, `touch-targets.spec`, matriz do CI).
+Antes disso:
 
 Padronização das chaves de ambiente no catálogo da régua (`chore/env-catalogo-padrao`, régua #276, jhollyfer/maiyu-pattern#16),
 feita e verificada fora do E2E: `sync --check` sai 0, lint, typecheck, unitários e `pattern:check` passam no backend e no
@@ -56,6 +62,7 @@ O que falta de resto é só do dono, nada de código:
 
 ## Próximos passos
 
+0. R.3: migrar os projetos do Playwright para `mobile`/`tablet`/`desktop` e rodar a suíte no CI (e `touch-targets.spec` após o kit de 44 px).
 1. Conferir o CI do PR da padronização (E2E e `functional` do backend), e os seis itens de "Parou em", na ordem.
    No Coolify, definir `STORAGE_PUBLIC_URL` e `SITE_ENV` no app e conferir as chaves da API contra `ENV.md` §1.1.
 2. Conferir no painel do Coolify se o proxy grava o IP do morador no log de acesso (`SECURITY.md` §2.8).

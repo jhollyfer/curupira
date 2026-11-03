@@ -22,15 +22,17 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {
+        // casa: 44px below `sm` (phone), dense from `sm` up (`frontend.md` §10.2).
         default:
-          "h-7 gap-1 px-2 text-xs/relaxed has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        xs: "h-5 gap-1 rounded-sm px-2 text-[0.625rem] has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-2.5",
-        sm: "h-6 gap-1 px-2 text-xs/relaxed has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        lg: "h-8 gap-1 px-2.5 text-xs/relaxed has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
-        icon: "size-7 [&_svg:not([class*='size-'])]:size-3.5",
-        'icon-xs': "size-5 rounded-sm [&_svg:not([class*='size-'])]:size-2.5",
-        'icon-sm': "size-6 [&_svg:not([class*='size-'])]:size-3",
-        'icon-lg': "size-8 [&_svg:not([class*='size-'])]:size-4",
+          "h-11 sm:h-7 gap-1 px-2 text-xs/relaxed has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+        xs: "h-11 sm:h-5 gap-1 rounded-sm px-2 text-[0.625rem] has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-2.5",
+        sm: "h-11 sm:h-6 gap-1 px-2 text-xs/relaxed has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        lg: "h-11 sm:h-8 gap-1 px-2.5 text-xs/relaxed has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
+        icon: "size-11 sm:size-7 [&_svg:not([class*='size-'])]:size-3.5",
+        'icon-xs':
+          "size-11 sm:size-5 rounded-sm [&_svg:not([class*='size-'])]:size-2.5",
+        'icon-sm': "size-11 sm:size-6 [&_svg:not([class*='size-'])]:size-3",
+        'icon-lg': "size-11 sm:size-8 [&_svg:not([class*='size-'])]:size-4",
         // casa: the public app is used on a phone, standing, with one thumb. The
         // default sizes above are dashboard-dense (28px); these keep the 44px
         // minimum target (WCAG 2.5.5 AAA, the house minimum) and a 16px label.

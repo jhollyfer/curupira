@@ -15,7 +15,7 @@ export function NoticesPage(): React.JSX.Element {
   return (
     <div className="page-container flex flex-col gap-6 py-8 md:py-12">
       <header className="flex max-w-3xl flex-col gap-2">
-        <h1 className="text-fluid-title font-extrabold tracking-tight text-balance">
+        <h1 className="text-title font-extrabold tracking-tight text-balance">
           {m.notices_title()}
         </h1>
         <p className="text-lg text-muted-foreground">{m.notices_intro()}</p>

@@ -32,7 +32,7 @@ export function ProsePage({
       )}
     >
       <header className="flex flex-col gap-3 lg:sticky lg:top-28 lg:self-start">
-        <h1 className="text-fluid-title font-extrabold tracking-tight text-balance">
+        <h1 className="text-title font-extrabold tracking-tight text-balance">
           {title}
         </h1>
         {intro && (

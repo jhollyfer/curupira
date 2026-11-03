@@ -25,7 +25,7 @@ export function TrackPage(): React.JSX.Element {
     <div className="page-container-md grid grid-cols-[minmax(0,1fr)] gap-8 py-8 md:py-12 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:items-start lg:gap-14">
       <div className="flex flex-col gap-6">
         <header className="flex flex-col gap-2">
-          <h1 className="text-fluid-title font-extrabold tracking-tight text-balance">
+          <h1 className="text-title font-extrabold tracking-tight text-balance">
             {m.track_title()}
           </h1>
           <p className="text-lg text-muted-foreground">{m.track_intro()}</p>
