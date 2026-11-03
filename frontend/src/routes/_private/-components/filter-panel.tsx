@@ -62,7 +62,7 @@ export function FilterPanel({
           type="button"
           variant="ghost"
           onClick={onClear}
-          className="h-9 max-md:justify-start"
+          className="h-11 max-md:justify-start sm:h-9"
         >
           <XIcon aria-hidden="true" data-icon="inline-start" />
           {m.panel_filters_clear()}

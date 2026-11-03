@@ -48,7 +48,10 @@ export function OptionSelectControl({
       disabled={disabled}
       onBlur={onBlur}
       onChange={(event) => onValueChange(event.target.value || undefined)}
-      className={cn('w-full [&_select]:h-9 [&_select]:text-sm', className)}
+      className={cn(
+        'w-full [&_select]:h-11 [&_select]:text-sm sm:[&_select]:h-9',
+        className,
+      )}
       {...aria}
     >
       {allLabel !== undefined && (

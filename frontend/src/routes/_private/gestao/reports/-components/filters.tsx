@@ -104,7 +104,7 @@ export function ReportsFilters(): React.JSX.Element {
           value={search.from ?? ''}
           max={search.to}
           onChange={(event) => apply({ from: event.target.value || undefined })}
-          className="h-9 w-full text-sm md:w-40"
+          className="h-11 w-full text-sm sm:h-9 md:w-40"
         />
       </Field>
       <Field className="w-auto gap-1.5">
@@ -117,7 +117,7 @@ export function ReportsFilters(): React.JSX.Element {
           value={search.to ?? ''}
           min={search.from}
           onChange={(event) => apply({ to: event.target.value || undefined })}
-          className="h-9 w-full text-sm md:w-40"
+          className="h-11 w-full text-sm sm:h-9 md:w-40"
         />
       </Field>
 

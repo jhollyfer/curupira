@@ -47,7 +47,7 @@ export function SearchFilter({
           onKeyDown={(event) => {
             if (event.key === 'Enter') event.currentTarget.blur()
           }}
-          className="h-9 pl-8 text-sm"
+          className="h-11 pl-8 text-sm sm:h-9"
         />
       </div>
     </Field>

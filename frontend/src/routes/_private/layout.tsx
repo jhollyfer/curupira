@@ -100,10 +100,7 @@ function RouteComponent(): React.JSX.Element {
     >
       {/* `sr-only` with `focus:not-sr-only`, not `display: none`: truly hidden it would
           not take focus and would stop existing for whoever it serves. */}
-      <a
-        href={'#'.concat(MAIN_ID)}
-        className="sr-only rounded-md bg-background px-4 py-2 font-medium text-foreground no-underline focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-tooltip"
-      >
+      <a href={'#'.concat(MAIN_ID)} className="skip-link">
         {m.common_skip_to_content()}
       </a>
 

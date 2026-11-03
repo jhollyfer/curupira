@@ -46,7 +46,7 @@ export function NoticeFormFields({
             {...field}
             {...control}
             maxLength={120}
-            className="h-10 text-sm"
+            className="h-11 text-sm sm:h-10"
           />
         )}
       </AppField>
@@ -95,7 +95,7 @@ export function NoticeFormFields({
                 onChange={(event) =>
                   field.onChange(localInputToInstant(event.target.value) ?? '')
                 }
-                className="h-10 text-sm"
+                className="h-11 text-sm sm:h-10"
               />
               <FieldDescription>
                 {m.panel_notices_field_starts_hint()}
@@ -124,7 +124,7 @@ export function NoticeFormFields({
                     localInputToInstant(event.target.value) ?? null,
                   )
                 }
-                className="h-10 text-sm"
+                className="h-11 text-sm sm:h-10"
               />
               <FieldDescription>
                 {m.panel_notices_field_ends_hint()}

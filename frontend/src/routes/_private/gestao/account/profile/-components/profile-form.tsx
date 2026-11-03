@@ -102,7 +102,7 @@ export function ProfileForm(): React.JSX.Element {
                     value={field.value ?? ''}
                     autoComplete="name"
                     maxLength={120}
-                    className="h-10 text-sm"
+                    className="h-11 text-sm sm:h-10"
                   />
                 )}
               </AppField>
@@ -119,7 +119,7 @@ export function ProfileForm(): React.JSX.Element {
                     value={field.value ?? ''}
                     type="email"
                     autoComplete="email"
-                    className="h-10 text-sm"
+                    className="h-11 text-sm sm:h-10"
                   />
                 )}
               </AppField>
@@ -146,7 +146,7 @@ export function ProfileForm(): React.JSX.Element {
                         field.onChange(event.target.value || undefined)
                       }
                       autoComplete="new-password"
-                      className="h-10 text-sm"
+                      className="h-11 text-sm sm:h-10"
                     />
                   )}
                 </AppField>
@@ -165,7 +165,7 @@ export function ProfileForm(): React.JSX.Element {
                         field.onChange(event.target.value || undefined)
                       }
                       autoComplete="new-password"
-                      className="h-10 text-sm"
+                      className="h-11 text-sm sm:h-10"
                     />
                   )}
                 </AppField>
@@ -184,7 +184,7 @@ export function ProfileForm(): React.JSX.Element {
                         field.onChange(event.target.value || undefined)
                       }
                       autoComplete="current-password"
-                      className="h-10 text-sm"
+                      className="h-11 text-sm sm:h-10"
                     />
                   )}
                 </AppField>

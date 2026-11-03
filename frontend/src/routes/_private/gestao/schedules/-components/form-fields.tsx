@@ -126,7 +126,7 @@ export function ScheduleFormFields({
             onChange={(event) => field.onChange(event.target.value || null)}
             maxLength={200}
             placeholder={m.panel_schedules_field_note_placeholder()}
-            className="h-10 text-sm"
+            className="h-11 text-sm sm:h-10"
           />
         )}
       </AppField>

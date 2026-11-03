@@ -69,7 +69,7 @@ export function NeighborhoodFormFields({
             {...field}
             {...control}
             maxLength={80}
-            className="h-10 text-sm"
+            className="h-11 text-sm sm:h-10"
           />
         )}
       </AppField>
@@ -94,7 +94,7 @@ export function NeighborhoodFormFields({
               onChange={(event) =>
                 field.onChange(numberOrNull(event.target.value))
               }
-              className="h-10 text-sm tabular-nums"
+              className="h-11 text-sm tabular-nums sm:h-10"
             />
           )}
         </AppField>
@@ -117,7 +117,7 @@ export function NeighborhoodFormFields({
               onChange={(event) =>
                 field.onChange(numberOrNull(event.target.value))
               }
-              className="h-10 text-sm tabular-nums"
+              className="h-11 text-sm tabular-nums sm:h-10"
             />
           )}
         </AppField>

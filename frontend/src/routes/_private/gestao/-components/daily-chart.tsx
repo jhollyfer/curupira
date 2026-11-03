@@ -145,7 +145,7 @@ export function DailyChart({ series }: DailyChartProps): React.JSX.Element {
       </figcaption>
 
       <details className="text-sm">
-        <summary className="inline-flex min-h-8 cursor-pointer items-center rounded-md px-1 font-medium text-foreground underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+        <summary className="inline-flex min-h-11 cursor-pointer sm:min-h-8 items-center rounded-md px-1 font-medium text-foreground underline-offset-4 hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
           {m.panel_overview_chart_table()}
         </summary>
         <table className="mt-2 w-full max-w-md border-collapse text-left tabular-nums">

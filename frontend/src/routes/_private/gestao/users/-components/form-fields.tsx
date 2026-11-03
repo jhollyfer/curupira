@@ -57,7 +57,7 @@ export function UserFormFields({
             value={field.value ?? ''}
             autoComplete="name"
             maxLength={120}
-            className="h-10 text-sm"
+            className="h-11 text-sm sm:h-10"
           />
         )}
       </AppField>
@@ -75,7 +75,7 @@ export function UserFormFields({
             value={field.value ?? ''}
             type="email"
             autoComplete="off"
-            className="h-10 text-sm"
+            className="h-11 text-sm sm:h-10"
           />
         )}
       </AppField>
@@ -98,7 +98,7 @@ export function UserFormFields({
                 field.onChange(event.target.value || undefined)
               }
               autoComplete="new-password"
-              className="h-10 text-sm"
+              className="h-11 text-sm sm:h-10"
             />
             <FieldDescription>
               {m.panel_users_field_password_hint()}
