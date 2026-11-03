@@ -221,7 +221,21 @@
   "map_filter_label": "Filtrar por tipo",
   "map_filter_all": "Todas",
   "map_privacy": "El mapa no muestra quién hizo la denuncia, ni foto, ni descripción.",
-  "map_list_title": "Ocurrencias ({count})",
+  "map_list_title": [
+    {
+      "declarations": [
+        "input count",
+        "local countExact = count",
+        "local countPlural = count: plural"
+      ],
+      "selectors": ["countExact", "countPlural"],
+      "match": {
+        "countExact=0, countPlural=*": "Ninguna ocurrencia",
+        "countExact=*, countPlural=one": "1 ocurrencia",
+        "countExact=*, countPlural=*": "{count} ocurrencias"
+      }
+    }
+  ],
   "map_empty": "Ninguna ocurrencia para este filtro.",
   "about_title": "Sobre Curupira",
   "about_intro": "Un servicio público para que el vecino de Benjamin Constant sepa cuándo pasa la recogida y ayude a cuidar el ambiente.",
@@ -305,7 +319,22 @@
   "panel_table_sort_by": "Ordenar por esta columna",
   "panel_table_pagination": "Paginación",
   "panel_table_per_page": "Por página",
-  "panel_table_total": "{total} registros",
+  "panel_table_total": [
+    {
+      "declarations": [
+        "input total",
+        "local totalFmt = total: number",
+        "local totalExact = total",
+        "local totalPlural = total: plural"
+      ],
+      "selectors": ["totalExact", "totalPlural"],
+      "match": {
+        "totalExact=0, totalPlural=*": "Ningún registro",
+        "totalExact=*, totalPlural=one": "{totalFmt} registro",
+        "totalExact=*, totalPlural=*": "{totalFmt} registros"
+      }
+    }
+  ],
   "panel_table_page": "Página {current} de {last}",
   "panel_table_previous": "Página anterior",
   "panel_table_next": "Página siguiente",

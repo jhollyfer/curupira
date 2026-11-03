@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 
+import { m } from '#/paraglide/messages'
 import { overwriteGetLocale } from '#/paraglide/runtime'
 
 import {
@@ -53,5 +54,28 @@ describe('town clock', () => {
 
   it('reads a bare day on the town clock', () => {
     expect(townDay('2026-12-31').offset).toBe(-240)
+  })
+})
+
+describe('counter messages', () => {
+  it('uses the exact phrase for 0 and 1, and the plural otherwise', () => {
+    expect(m.panel_table_total({ total: 0 }, { locale: 'pt-BR' })).toBe(
+      'Nenhum registro',
+    )
+    expect(m.panel_table_total({ total: 1 }, { locale: 'pt-BR' })).toBe(
+      '1 registro',
+    )
+    expect(m.panel_table_total({ total: 1000 }, { locale: 'pt-BR' })).toBe(
+      '1.000 registros',
+    )
+    expect(m.map_list_title({ count: 0 }, { locale: 'en' })).toBe(
+      'No occurrences',
+    )
+    expect(m.map_list_title({ count: 1 }, { locale: 'es' })).toBe(
+      '1 ocurrencia',
+    )
+    expect(m.map_list_title({ count: 12 }, { locale: 'en' })).toBe(
+      '12 occurrences',
+    )
   })
 })

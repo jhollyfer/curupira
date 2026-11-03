@@ -221,7 +221,21 @@
   "map_filter_label": "Filter by type",
   "map_filter_all": "All",
   "map_privacy": "The map does not show who made the report, nor photo, nor description.",
-  "map_list_title": "Occurrences ({count})",
+  "map_list_title": [
+    {
+      "declarations": [
+        "input count",
+        "local countExact = count",
+        "local countPlural = count: plural"
+      ],
+      "selectors": ["countExact", "countPlural"],
+      "match": {
+        "countExact=0, countPlural=*": "No occurrences",
+        "countExact=*, countPlural=one": "1 occurrence",
+        "countExact=*, countPlural=*": "{count} occurrences"
+      }
+    }
+  ],
   "map_empty": "No occurrences for this filter.",
   "about_title": "About Curupira",
   "about_intro": "A public service for residents of Benjamin Constant to know when the pickup passes and to help look after the environment.",
@@ -305,7 +319,22 @@
   "panel_table_sort_by": "Sort by this column",
   "panel_table_pagination": "Pagination",
   "panel_table_per_page": "Per page",
-  "panel_table_total": "{total} records",
+  "panel_table_total": [
+    {
+      "declarations": [
+        "input total",
+        "local totalFmt = total: number",
+        "local totalExact = total",
+        "local totalPlural = total: plural"
+      ],
+      "selectors": ["totalExact", "totalPlural"],
+      "match": {
+        "totalExact=0, totalPlural=*": "No records",
+        "totalExact=*, totalPlural=one": "{totalFmt} record",
+        "totalExact=*, totalPlural=*": "{totalFmt} records"
+      }
+    }
+  ],
   "panel_table_page": "Page {current} of {last}",
   "panel_table_previous": "Previous page",
   "panel_table_next": "Next page",

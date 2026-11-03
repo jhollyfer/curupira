@@ -7,7 +7,6 @@ import { PageShellFooter } from '#/components/common/page-shell'
 import { Button } from '#/components/ui/button'
 import { Field, FieldLabel } from '#/components/ui/field'
 import { NativeSelect, NativeSelectOption } from '#/components/ui/native-select'
-import { formatNumber } from '#/lib/i18n'
 import { m } from '#/paraglide/messages'
 
 import { useTableContext } from './table-context'
@@ -67,7 +66,7 @@ export function TablePagination({
             </NativeSelect>
           </Field>
           <p className="text-sm text-muted-foreground tabular-nums">
-            {m.panel_table_total({ total: formatNumber(total) })}
+            {m.panel_table_total({ total })}
           </p>
         </div>
 
