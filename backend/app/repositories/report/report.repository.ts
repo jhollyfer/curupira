@@ -41,10 +41,19 @@ export type ReportRead = Omit<ManagementReportShowResponse, 'photos'> & {
 
 /** Raw counts for the dashboard; the zero-filled shape is the use case's job. */
 export type ReportStatistics = {
-  readonly byKind: ReadonlyArray<{ readonly key: ReportKind; readonly total: number }>
-  readonly byStatus: ReadonlyArray<{ readonly key: ReportStatus; readonly total: number }>
+  readonly byKind: ReadonlyArray<{
+    readonly key: ReportKind
+    readonly total: number
+  }>
+  readonly byStatus: ReadonlyArray<{
+    readonly key: ReportStatus
+    readonly total: number
+  }>
   /** Reports created per calendar day (UTC) since `since`, only the days that have any. */
-  readonly byDay: ReadonlyArray<{ readonly day: string; readonly total: number }>
+  readonly byDay: ReadonlyArray<{
+    readonly day: string
+    readonly total: number
+  }>
 }
 
 /**
@@ -75,13 +84,17 @@ export abstract class ReportRepository {
     criteria: ReportListCriteria,
   ): Promise<Paginated<ManagementReportListItemResponse>>
   /** Every report matching the cuts, as pins: no page, the map draws them all. */
-  abstract pins(criteria: ReportFilterCriteria): Promise<ManagementReportListItemResponse[]>
+  abstract pins(
+    criteria: ReportFilterCriteria,
+  ): Promise<ManagementReportListItemResponse[]>
   abstract statistics(since: Date): Promise<ReportStatistics>
   /**
    * The public status page: protocol, type, status, date and timeline. Never the contact,
    * the description, the photos, the coordinates or who answered.
    */
-  abstract showByProtocol(protocol: string): Promise<StorefrontReportShowByProtocolResponse | null>
+  abstract showByProtocol(
+    protocol: string,
+  ): Promise<StorefrontReportShowByProtocolResponse | null>
   /**
    * The public map: only the public statuses, the day without the hour, no text, no contact.
    * At most `limit` pins, the newest first: the route is anonymous, and a map that grows

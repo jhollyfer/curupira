@@ -3,7 +3,11 @@ import { DateTime } from 'luxon'
 import { left, right } from '@curupira/shared'
 import type { Either, Paginated } from '@curupira/shared'
 
-import { UserRepository, type UserListCriteria, type UserRead } from './user.repository.ts'
+import {
+  UserRepository,
+  type UserListCriteria,
+  type UserRead,
+} from './user.repository.ts'
 
 import UserModel from '#models/user'
 import { PostgresError } from '#core/postgres-error'
@@ -58,7 +62,8 @@ export class UserLucidRepository extends UserRepository {
 
       return right(undefined)
     } catch (error) {
-      if (PostgresError.isUniqueViolation(error)) return left({ code: 'USER_ALREADY_EXISTS' })
+      if (PostgresError.isUniqueViolation(error))
+        return left({ code: 'USER_ALREADY_EXISTS' })
 
       throw error
     }

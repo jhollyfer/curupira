@@ -15,12 +15,17 @@ export default class ManagementNeighborhoodPaginateController {
       '`?sort` accepts name, createdAt and `?direction` accepts asc or desc. Default: page 1, 20 per page, ordered by name ascending.',
   })
 
-  constructor(private readonly useCase: ManagementNeighborhoodPaginateUseCase) {}
+  constructor(
+    private readonly useCase: ManagementNeighborhoodPaginateUseCase,
+  ) {}
 
   async handle(context: HttpContext) {
-    const payload = await context.request.validateUsing(ManagementNeighborhoodPaginateValidator, {
-      data: context.request.qs(),
-    })
+    const payload = await context.request.validateUsing(
+      ManagementNeighborhoodPaginateValidator,
+      {
+        data: context.request.qs(),
+      },
+    )
     const result = await this.useCase.execute(payload)
     if (result.isLeft()) throw result.value
     return context.response.ok(result.value)

@@ -64,10 +64,16 @@ router
 router
   .group(() => {
     router
-      .get('neighborhoods', [controllers.storefront.neighborhoods.paginate.Paginate])
+      .get('neighborhoods', [
+        controllers.storefront.neighborhoods.paginate.Paginate,
+      ])
       .as('neighborhoods')
-    router.get('schedules', [controllers.storefront.schedules.paginate.Paginate]).as('schedules')
-    router.get('notices', [controllers.storefront.notices.paginate.Paginate]).as('notices')
+    router
+      .get('schedules', [controllers.storefront.schedules.paginate.Paginate])
+      .as('schedules')
+    router
+      .get('notices', [controllers.storefront.notices.paginate.Paginate])
+      .as('notices')
 
     router
       .group(() => {
@@ -75,7 +81,9 @@ router
           .post('/', [controllers.storefront.reportPhotos.create.Create])
           .use(reportPhotoThrottle)
         router
-          .post(':id/complete', [controllers.storefront.reportPhotos.complete.Complete])
+          .post(':id/complete', [
+            controllers.storefront.reportPhotos.complete.Complete,
+          ])
           .as('complete')
           .use(reportPhotoThrottle)
       })
@@ -84,11 +92,18 @@ router
 
     router
       .group(() => {
-        router.post('/', [controllers.storefront.reports.create.Create]).use(reportCreateThrottle)
-        // Before `:protocol`: otherwise `map` would be read as a protocol.
-        router.get('map', [controllers.storefront.reports.map.Map]).as('map').use(reportMapThrottle)
         router
-          .get(':protocol', [controllers.storefront.reports.showByProtocol.ShowByProtocol])
+          .post('/', [controllers.storefront.reports.create.Create])
+          .use(reportCreateThrottle)
+        // Before `:protocol`: otherwise `map` would be read as a protocol.
+        router
+          .get('map', [controllers.storefront.reports.map.Map])
+          .as('map')
+          .use(reportMapThrottle)
+        router
+          .get(':protocol', [
+            controllers.storefront.reports.showByProtocol.ShowByProtocol,
+          ])
           .as('showByProtocol')
           .use(reportLookupThrottle)
       })
@@ -134,7 +149,9 @@ router
 router
   .group(() => {
     router.get('/', [controllers.account.profile.show.Show])
-    router.put('/', [controllers.account.profile.update.Update]).use(accountUpdateThrottle)
+    router
+      .put('/', [controllers.account.profile.update.Update])
+      .use(accountUpdateThrottle)
   })
   .prefix('account')
   .as('profile')
@@ -161,7 +178,9 @@ router
 router
   .group(() => {
     router.get('/', [controllers.storages.files.paginate.Paginate])
-    router.post('/', [controllers.storages.files.create.Create]).use(uploadThrottle)
+    router
+      .post('/', [controllers.storages.files.create.Create])
+      .use(uploadThrottle)
     router
       .post(':id/complete', [controllers.storages.files.complete.Complete])
       .as('complete')
@@ -183,7 +202,9 @@ router
     // back door itself, issuing a signed URL for any uuid without a
     // session. The save-file `<a>` keeps working: same-site
     // navigation sends the cookie.
-    router.get(':id/download', [controllers.storages.files.download.Download]).as('download')
+    router
+      .get(':id/download', [controllers.storages.files.download.Download])
+      .as('download')
   })
   .prefix('storages')
   .as('storages')
@@ -213,11 +234,17 @@ router
           .group(() => {
             router.get('/', [controllers.management.reports.paginate.Paginate])
             // Before `:id`: otherwise `map` and `stats` would be read as report ids.
-            router.get('map', [controllers.management.reports.map.Map]).as('map')
-            router.get('stats', [controllers.management.reports.stats.Stats]).as('stats')
+            router
+              .get('map', [controllers.management.reports.map.Map])
+              .as('map')
+            router
+              .get('stats', [controllers.management.reports.stats.Stats])
+              .as('stats')
             router.get(':id', [controllers.management.reports.show.Show])
             router
-              .patch(':id/status', [controllers.management.reports.updateStatus.UpdateStatus])
+              .patch(':id/status', [
+                controllers.management.reports.updateStatus.UpdateStatus,
+              ])
               .as('updateStatus')
             router.delete(':id', [controllers.management.reports.delete.Delete])
           })
@@ -230,7 +257,9 @@ router
             router.post('/', [controllers.management.notices.create.Create])
             router.get(':id', [controllers.management.notices.show.Show])
             router.put(':id', [controllers.management.notices.update.Update])
-            router.patch(':id/close', [controllers.management.notices.close.Close]).as('close')
+            router
+              .patch(':id/close', [controllers.management.notices.close.Close])
+              .as('close')
             router.delete(':id', [controllers.management.notices.delete.Delete])
           })
           .prefix('notices')
@@ -245,22 +274,34 @@ router
       .group(() => {
         router
           .group(() => {
-            router.get('/', [controllers.management.schedules.paginate.Paginate])
+            router.get('/', [
+              controllers.management.schedules.paginate.Paginate,
+            ])
             router.post('/', [controllers.management.schedules.create.Create])
             router.get(':id', [controllers.management.schedules.show.Show])
             router.put(':id', [controllers.management.schedules.update.Update])
-            router.delete(':id', [controllers.management.schedules.delete.Delete])
+            router.delete(':id', [
+              controllers.management.schedules.delete.Delete,
+            ])
           })
           .prefix('schedules')
           .as('schedules')
 
         router
           .group(() => {
-            router.get('/', [controllers.management.neighborhoods.paginate.Paginate])
-            router.post('/', [controllers.management.neighborhoods.create.Create])
+            router.get('/', [
+              controllers.management.neighborhoods.paginate.Paginate,
+            ])
+            router.post('/', [
+              controllers.management.neighborhoods.create.Create,
+            ])
             router.get(':id', [controllers.management.neighborhoods.show.Show])
-            router.put(':id', [controllers.management.neighborhoods.update.Update])
-            router.delete(':id', [controllers.management.neighborhoods.delete.Delete])
+            router.put(':id', [
+              controllers.management.neighborhoods.update.Update,
+            ])
+            router.delete(':id', [
+              controllers.management.neighborhoods.delete.Delete,
+            ])
           })
           .prefix('neighborhoods')
           .as('neighborhoods')

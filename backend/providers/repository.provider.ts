@@ -27,19 +27,27 @@ export default class RepositoryProvider {
   constructor(protected app: ApplicationService) {}
 
   register() {
-    this.app.container.bind(UnitOfWork, () => this.app.container.make(UnitOfWorkLucid))
+    this.app.container.bind(UnitOfWork, () =>
+      this.app.container.make(UnitOfWorkLucid),
+    )
     this.app.container.bind(NeighborhoodRepository, () =>
       this.app.container.make(NeighborhoodLucidRepository),
     )
     this.app.container.bind(CollectionScheduleRepository, () =>
       this.app.container.make(CollectionScheduleLucidRepository),
     )
-    this.app.container.bind(ReportRepository, () => this.app.container.make(ReportLucidRepository))
-    this.app.container.bind(NoticeRepository, () => this.app.container.make(NoticeLucidRepository))
+    this.app.container.bind(ReportRepository, () =>
+      this.app.container.make(ReportLucidRepository),
+    )
+    this.app.container.bind(NoticeRepository, () =>
+      this.app.container.make(NoticeLucidRepository),
+    )
     this.app.container.bind(StorageRepository, () =>
       this.app.container.make(StorageLucidRepository),
     )
-    this.app.container.bind(UserRepository, () => this.app.container.make(UserLucidRepository))
+    this.app.container.bind(UserRepository, () =>
+      this.app.container.make(UserLucidRepository),
+    )
     this.app.container.bind(SessionRepository, () =>
       this.app.container.make(SessionLucidRepository),
     )

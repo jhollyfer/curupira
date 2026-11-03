@@ -6,4 +6,6 @@ export const StorefrontSchedulePaginateValidator = vine.create({
   neighborhoodId: vine.string().uuid().optional(),
 })
 
-export type StorefrontSchedulePaginatePayload = Infer<typeof StorefrontSchedulePaginateValidator>
+export type StorefrontSchedulePaginatePayload = Infer<
+  typeof StorefrontSchedulePaginateValidator
+>

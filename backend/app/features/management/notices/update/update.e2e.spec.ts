@@ -1,7 +1,11 @@
 import { test } from '@japa/runner'
 
 import { NoticeFactory } from '#database/factories/notice.factory'
-import { authenticateAsOperator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsOperator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('management/notices > update', (group) => {
@@ -22,7 +26,10 @@ test.group('management/notices > update', (group) => {
     assert.equal(stored.body, notice.body)
   })
 
-  test('an end before the existing start responds 422', async ({ client, assert }) => {
+  test('an end before the existing start responds 422', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsOperator(client)
     const notice = await NoticeFactory.create()
 

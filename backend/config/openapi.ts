@@ -93,7 +93,9 @@ const tags: TagRule[] = [
   {
     prefix: '/management/notices',
     name: 'Management · Notices',
-    description: 'The notices the home shows between two dates. ' + 'Operators and administrators.',
+    description:
+      'The notices the home shows between two dates. ' +
+      'Operators and administrators.',
     singular: 'notice',
     plural: 'notices',
   },
@@ -127,14 +129,16 @@ const tags: TagRule[] = [
   {
     prefix: '/storefront/neighborhoods',
     name: 'Site · Neighborhoods',
-    description: 'The neighborhood list the resident picks from. **Unauthenticated**.',
+    description:
+      'The neighborhood list the resident picks from. **Unauthenticated**.',
     singular: 'neighborhood',
     plural: 'neighborhoods',
   },
   {
     prefix: '/storefront/schedules',
     name: 'Site · Collection schedule',
-    description: 'The week of collection, per neighborhood. **Unauthenticated**.',
+    description:
+      'The week of collection, per neighborhood. **Unauthenticated**.',
     singular: 'collection slot',
     plural: 'collection slots',
   },
@@ -205,9 +209,9 @@ const openapi = {
 export const ACTION_OVERRIDES: Record<string, string> = {
   'update-status': 'Move report forward',
   'show-by-protocol': 'Follow report by protocol',
-  'map': 'Report map',
-  'stats': 'Dashboard numbers',
-  'close': 'Close notice',
+  map: 'Report map',
+  stats: 'Dashboard numbers',
+  close: 'Close notice',
 }
 
 export default openapi

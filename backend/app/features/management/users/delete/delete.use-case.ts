@@ -29,7 +29,12 @@ export default class ManagementUserDeleteUseCase {
     try {
       const user = await this.users.findById(id)
       if (!user)
-        return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
+        return left(
+          HTTPException.NotFound(
+            this.i18n.t('users.not_found'),
+            'USER_NOT_FOUND',
+          ),
+        )
 
       await this.users.delete(user)
 

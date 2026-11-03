@@ -13,10 +13,17 @@ import { Stored } from '#tests/stored-fixtures'
 test.group('management/users > update', (group) => {
   group.each.setup(() => resetDatabase())
 
-  test('changes the role and the target session stops working', async ({ client, assert }) => {
+  test('changes the role and the target session stops working', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
     const target = await UserFactory.create()
-    const targetSession = await authenticate(client, target.email, FACTORY_PASSWORD)
+    const targetSession = await authenticate(
+      client,
+      target.email,
+      FACTORY_PASSWORD,
+    )
 
     const response = await client
       .put(`/management/users/${target.id}`)

@@ -32,7 +32,8 @@ export default class UsersCreateOwner extends BaseCommand {
   declare email: string
 
   @flags.string({
-    description: 'The owner password (default: SEED_OWNER_PASSWORD; prefer the environment)',
+    description:
+      'The owner password (default: SEED_OWNER_PASSWORD; prefer the environment)',
   })
   declare password: string
 
@@ -40,7 +41,8 @@ export default class UsersCreateOwner extends BaseCommand {
     const { default: User } = await import('#models/user')
     const { default: env } = await import('#start/env')
     const { vineErrors } = await import('#core/validator')
-    const { ManagementUserCreateValidator } = await import('#validators/management/users.validator')
+    const { ManagementUserCreateValidator } =
+      await import('#validators/management/users.validator')
     const { ACTIVE_STATUS, USER_ROLE } = await import('@curupira/shared')
 
     const existing = await User.query()
@@ -49,7 +51,9 @@ export default class UsersCreateOwner extends BaseCommand {
       .first()
 
     if (existing) {
-      this.logger.info('An active administrator already exists. Nothing was created.')
+      this.logger.info(
+        'An active administrator already exists. Nothing was created.',
+      )
       return
     }
 

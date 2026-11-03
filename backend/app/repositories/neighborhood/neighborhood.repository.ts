@@ -24,7 +24,11 @@ export type NeighborhoodListCriteria = {
 export abstract class NeighborhoodRepository {
   abstract findById(id: string): Promise<Neighborhood | null>
   /** Another neighborhood, other than `exceptId`, already uses the name or the slug. */
-  abstract existsByNameOrSlug(name: string, slug: string, exceptId?: string): Promise<boolean>
+  abstract existsByNameOrSlug(
+    name: string,
+    slug: string,
+    exceptId?: string,
+  ): Promise<boolean>
   /** Has collection slots: deleting would erase the schedule residents read. */
   abstract hasSchedules(id: string): Promise<boolean>
   /**
@@ -37,7 +41,9 @@ export abstract class NeighborhoodRepository {
     readonly longitude: number
   }): Promise<string | null>
   /** Saves the neighborhood; the name or slug of another (the race on the `unique`) comes back as a fact. */
-  abstract save(neighborhood: Neighborhood): Promise<Either<NeighborhoodError, void>>
+  abstract save(
+    neighborhood: Neighborhood,
+  ): Promise<Either<NeighborhoodError, void>>
   abstract delete(neighborhood: Neighborhood): Promise<void>
   /** Lightweight read: the response shape straight from the query, without hydrating an entity. */
   abstract paginate(

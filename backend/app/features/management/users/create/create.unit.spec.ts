@@ -23,26 +23,39 @@ const NEW = {
 } as const
 
 test.group('management/users > create (unit)', () => {
-  test('creates an active account, without the password in the response', async ({ assert }) => {
+  test('creates an active account, without the password in the response', async ({
+    assert,
+  }) => {
     const { useCase } = await setup()
 
     const result = await useCase.execute(NEW)
 
     assert.isTrue(result.isRight())
-    assert.deepInclude(result.value, { email: 'beto@mail.com', role: 'OPERATOR', status: 'ACTIVE' })
+    assert.deepInclude(result.value, {
+      email: 'beto@mail.com',
+      role: 'OPERATOR',
+      status: 'ACTIVE',
+    })
     assert.notProperty(result.value, 'password')
   })
 
-  test('the e-mail of another account is 409 USER_ALREADY_EXISTS', async ({ assert }) => {
+  test('the e-mail of another account is 409 USER_ALREADY_EXISTS', async ({
+    assert,
+  }) => {
     const { users, useCase } = await setup()
     await seedUser(users, { email: 'beto@mail.com' })
 
     const result = await useCase.execute(NEW)
 
-    assert.deepInclude(result.value, { status: 409, code: 'USER_ALREADY_EXISTS' })
+    assert.deepInclude(result.value, {
+      status: 409,
+      code: 'USER_ALREADY_EXISTS',
+    })
   })
 
-  test('repository failure is 500 MANAGEMENT_USER_CREATE_ERROR', async ({ assert }) => {
+  test('repository failure is 500 MANAGEMENT_USER_CREATE_ERROR', async ({
+    assert,
+  }) => {
     const { users, useCase } = await setup()
     users.existsByEmail = async () => {
       throw new Error('database down')
@@ -50,6 +63,9 @@ test.group('management/users > create (unit)', () => {
 
     const result = await useCase.execute(NEW)
 
-    assert.deepInclude(result.value, { status: 500, code: 'MANAGEMENT_USER_CREATE_ERROR' })
+    assert.deepInclude(result.value, {
+      status: 500,
+      code: 'MANAGEMENT_USER_CREATE_ERROR',
+    })
   })
 })

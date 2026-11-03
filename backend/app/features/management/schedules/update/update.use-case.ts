@@ -35,7 +35,10 @@ export default class ManagementScheduleUpdateUseCase {
       const schedule = await this.schedules.findById(id)
       if (!schedule) return left(ScheduleRefusal.notFound(this.i18n))
 
-      if (changes.neighborhoodId && !(await this.neighborhoods.findById(changes.neighborhoodId)))
+      if (
+        changes.neighborhoodId &&
+        !(await this.neighborhoods.findById(changes.neighborhoodId))
+      )
         return left(NeighborhoodRefusal.unknown('neighborhoodId', this.i18n))
 
       const current = schedule.snapshot()
@@ -46,11 +49,14 @@ export default class ManagementScheduleUpdateUseCase {
         shift: changes.shift ?? current.shift,
       }
       if (await this.schedules.existsSlot(slot, id))
-        return left(ScheduleRefusal.http({ code: 'SCHEDULE_ALREADY_EXISTS' }, this.i18n))
+        return left(
+          ScheduleRefusal.http({ code: 'SCHEDULE_ALREADY_EXISTS' }, this.i18n),
+        )
 
       schedule.update(changes, new Date())
       const saved = await this.schedules.save(schedule)
-      if (saved.isLeft()) return left(ScheduleRefusal.http(saved.value, this.i18n))
+      if (saved.isLeft())
+        return left(ScheduleRefusal.http(saved.value, this.i18n))
 
       const detail = await this.schedules.detail(id)
       if (!detail) return left(ScheduleRefusal.notFound(this.i18n))

@@ -22,16 +22,28 @@ async function setup() {
   return { schedules, useCase, neighborhoodId }
 }
 
-const SLOT = { wasteType: 'ORGANIC', weekday: 'MONDAY', shift: 'MORNING' } as const
+const SLOT = {
+  wasteType: 'ORGANIC',
+  weekday: 'MONDAY',
+  shift: 'MORNING',
+} as const
 
 test.group('management/schedules > create (unit)', () => {
   test('registers the slot with the neighborhood name', async ({ assert }) => {
     const { useCase, neighborhoodId } = await setup()
 
-    const result = await useCase.execute({ neighborhoodId, ...SLOT, note: 'Até as 9h' })
+    const result = await useCase.execute({
+      neighborhoodId,
+      ...SLOT,
+      note: 'Até as 9h',
+    })
 
     assert.isTrue(result.isRight())
-    assert.deepInclude(result.value, { neighborhoodName: 'Centro', note: 'Até as 9h', ...SLOT })
+    assert.deepInclude(result.value, {
+      neighborhoodName: 'Centro',
+      note: 'Até as 9h',
+      ...SLOT,
+    })
   })
 
   test('an unknown neighborhood is 422 NEIGHBORHOOD_NOT_FOUND pointing at the field', async ({
@@ -44,7 +56,10 @@ test.group('management/schedules > create (unit)', () => {
       ...SLOT,
     })
 
-    assert.deepInclude(result.value, { status: 422, code: 'NEIGHBORHOOD_NOT_FOUND' })
+    assert.deepInclude(result.value, {
+      status: 422,
+      code: 'NEIGHBORHOOD_NOT_FOUND',
+    })
     assert.property(leftOf(result).errors ?? {}, 'neighborhoodId')
   })
 
@@ -56,14 +71,23 @@ test.group('management/schedules > create (unit)', () => {
 
     const result = await useCase.execute({ neighborhoodId, ...SLOT })
 
-    assert.deepInclude(result.value, { status: 409, code: 'SCHEDULE_ALREADY_EXISTS' })
+    assert.deepInclude(result.value, {
+      status: 409,
+      code: 'SCHEDULE_ALREADY_EXISTS',
+    })
   })
 
-  test('another shift of the same type and day is a different slot', async ({ assert }) => {
+  test('another shift of the same type and day is a different slot', async ({
+    assert,
+  }) => {
     const { useCase, neighborhoodId } = await setup()
     await useCase.execute({ neighborhoodId, ...SLOT })
 
-    const result = await useCase.execute({ neighborhoodId, ...SLOT, shift: 'NIGHT' })
+    const result = await useCase.execute({
+      neighborhoodId,
+      ...SLOT,
+      shift: 'NIGHT',
+    })
 
     assert.isTrue(result.isRight())
   })

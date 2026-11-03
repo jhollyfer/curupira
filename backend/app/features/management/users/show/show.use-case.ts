@@ -1,7 +1,12 @@
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementUserShowResponse } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementUserShowResponse,
+} from '@curupira/shared'
 
 import HTTPException from '#exceptions/http.exception'
 import { UserRepository } from '#repositories/user/user.repository'
@@ -21,7 +26,12 @@ export default class ManagementUserShowUseCase {
     try {
       const user = await this.users.detail(id)
       if (!user)
-        return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
+        return left(
+          HTTPException.NotFound(
+            this.i18n.t('users.not_found'),
+            'USER_NOT_FOUND',
+          ),
+        )
 
       return right(user)
     } catch (error) {

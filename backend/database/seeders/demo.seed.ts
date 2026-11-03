@@ -229,7 +229,8 @@ const REPORTS: ReadonlyArray<SeedReport> = [
 /** What the team wrote to the resident at each step; `null` for the first (the resident's own). */
 const STEP_MESSAGES: Record<ReportStatus, string | null> = {
   [REPORT_STATUS.RECEIVED]: null,
-  [REPORT_STATUS.IN_REVIEW]: 'Recebemos a denúncia e a equipe está analisando o local.',
+  [REPORT_STATUS.IN_REVIEW]:
+    'Recebemos a denúncia e a equipe está analisando o local.',
   [REPORT_STATUS.FORWARDED]: 'Encaminhamos o caso ao órgão responsável.',
   [REPORT_STATUS.RESOLVED]: 'Problema resolvido. Obrigado por avisar.',
 }
@@ -239,13 +240,17 @@ export default class extends BaseSeeder {
     const password = env.get('SEED_DEMO_PASSWORD')
 
     if (!password) {
-      logger.info('SEED_DEMO_PASSWORD is empty: the demonstration seed was skipped.')
+      logger.info(
+        'SEED_DEMO_PASSWORD is empty: the demonstration seed was skipped.',
+      )
       return
     }
 
     await this.accounts(password)
     // Through the container, not `new` (_standards/backend.md §2.1).
-    const neighborhoods = await app.container.make(NeighborhoodSeeder, [this.client])
+    const neighborhoods = await app.container.make(NeighborhoodSeeder, [
+      this.client,
+    ])
     await neighborhoods.run()
 
     await this.schedules()
@@ -311,13 +316,17 @@ export default class extends BaseSeeder {
   }
 
   private async reports() {
-    const author = await User.query().where('role', USER_ROLE.ADMINISTRATOR).first()
+    const author = await User.query()
+      .where('role', USER_ROLE.ADMINISTRATOR)
+      .first()
     const everyone = await Neighborhood.all()
     const centers = new Map(everyone.map((each) => [each.name, each]))
 
     for (const [index, seed] of REPORTS.entries()) {
       const center = centers.get(seed.neighborhood)
-      const protocol = formatProtocol(`SEED${String(index + 1).padStart(4, '0')}`)
+      const protocol = formatProtocol(
+        `SEED${String(index + 1).padStart(4, '0')}`,
+      )
       const createdAt = DateTime.now().minus({ days: seed.daysAgo })
 
       const report = await Report.updateOrCreate(
@@ -347,7 +356,10 @@ export default class extends BaseSeeder {
     createdAt: DateTime,
     authorId: string | null,
   ) {
-    const reached = REPORT_STATUSES.slice(0, REPORT_STATUSES.indexOf(status) + 1)
+    const reached = REPORT_STATUSES.slice(
+      0,
+      REPORT_STATUSES.indexOf(status) + 1,
+    )
     await ReportStatusEvent.query().where('reportId', report.id).delete()
 
     for (const [step, each] of reached.entries()) {
@@ -379,6 +391,10 @@ export default class extends BaseSeeder {
       path: filename,
       status: UPLOAD_STATUS.UPLOADED,
     })
-    await ReportPhoto.create({ reportId: report.id, storageId: storage.id, position: 0 })
+    await ReportPhoto.create({
+      reportId: report.id,
+      storageId: storage.id,
+      position: 0,
+    })
   }
 }

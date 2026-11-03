@@ -13,7 +13,9 @@ export default class StorefrontNeighborhoodPaginateController {
       'Every neighborhood, by name, in the pagination envelope but on a single page: the resident picks theirs from a short list. Public.',
   })
 
-  constructor(private readonly useCase: StorefrontNeighborhoodPaginateUseCase) {}
+  constructor(
+    private readonly useCase: StorefrontNeighborhoodPaginateUseCase,
+  ) {}
 
   async handle(context: HttpContext) {
     const result = await this.useCase.execute()

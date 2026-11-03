@@ -11,27 +11,38 @@ test.group('CorsOrigins', () => {
     assert.deepEqual(CorsOrigins.parse('https://curupira.maiyu.com.br'), [
       'https://curupira.maiyu.com.br',
     ])
-    assert.deepEqual(CorsOrigins.parse('http://localhost:3000, http://localhost:3010'), [
-      'http://localhost:3000',
-      'http://localhost:3010',
-    ])
+    assert.deepEqual(
+      CorsOrigins.parse('http://localhost:3000, http://localhost:3010'),
+      ['http://localhost:3000', 'http://localhost:3010'],
+    )
   })
 
-  test('refuses an empty value, or one that is only separators', ({ assert }) => {
+  test('refuses an empty value, or one that is only separators', ({
+    assert,
+  }) => {
     assert.throws(() => CorsOrigins.parse(''), /CORS_ORIGINS/)
     assert.throws(() => CorsOrigins.parse(' , '), /CORS_ORIGINS/)
   })
 
   test('refuses the wildcard: the API uses cookies', ({ assert }) => {
     assert.throws(() => CorsOrigins.parse('*'), /must not be \*/)
-    assert.throws(() => CorsOrigins.parse('https://a.example,*'), /must not be \*/)
+    assert.throws(
+      () => CorsOrigins.parse('https://a.example,*'),
+      /must not be \*/,
+    )
   })
 
   test('refuses a trailing slash and a path: the Origin header never carries them', ({
     assert,
   }) => {
-    assert.throws(() => CorsOrigins.parse('https://a.example/'), /no path or trailing slash/)
-    assert.throws(() => CorsOrigins.parse('https://a.example/app'), /no path or trailing slash/)
+    assert.throws(
+      () => CorsOrigins.parse('https://a.example/'),
+      /no path or trailing slash/,
+    )
+    assert.throws(
+      () => CorsOrigins.parse('https://a.example/app'),
+      /no path or trailing slash/,
+    )
   })
 
   test('refuses what is not an http or https URL', ({ assert }) => {
@@ -39,10 +50,16 @@ test.group('CorsOrigins', () => {
     assert.throws(() => CorsOrigins.parse('ftp://a.example'), /http or https/)
   })
 
-  test('the env validator fails without the key and returns the list otherwise', ({ assert }) => {
-    assert.throws(() => CorsOrigins.validate('CORS_ORIGINS', undefined), /is required/)
-    assert.deepEqual(CorsOrigins.validate('CORS_ORIGINS', 'http://localhost:3000'), [
-      'http://localhost:3000',
-    ])
+  test('the env validator fails without the key and returns the list otherwise', ({
+    assert,
+  }) => {
+    assert.throws(
+      () => CorsOrigins.validate('CORS_ORIGINS', undefined),
+      /is required/,
+    )
+    assert.deepEqual(
+      CorsOrigins.validate('CORS_ORIGINS', 'http://localhost:3000'),
+      ['http://localhost:3000'],
+    )
   })
 })

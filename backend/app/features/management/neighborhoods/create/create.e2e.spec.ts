@@ -14,10 +14,16 @@ const payload = { name: 'Porto Cajuí', latitude: -4.37, longitude: -70.04 }
 test.group('management/neighborhoods > create', (group) => {
   group.each.setup(() => resetDatabase())
 
-  test('creates the neighborhood with the slug taken from the name', async ({ client, assert }) => {
+  test('creates the neighborhood with the slug taken from the name', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
 
-    const response = await client.post('/management/neighborhoods').cookies(session).json(payload)
+    const response = await client
+      .post('/management/neighborhoods')
+      .cookies(session)
+      .json(payload)
 
     response.assertStatus(201)
     assert.equal(body(response).slug, 'porto-cajui')
@@ -25,7 +31,10 @@ test.group('management/neighborhoods > create', (group) => {
     assert.isNotNull(await Stored.neighborhood(body(response).id))
   })
 
-  test('repeated name responds 409 pointing at the field', async ({ client, assert }) => {
+  test('repeated name responds 409 pointing at the field', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
     const existing = await NeighborhoodFactory.create()
 
@@ -52,7 +61,10 @@ test.group('management/neighborhoods > create', (group) => {
     assert.isNull(await Stored.neighborhoodByName('Bairro'))
   })
 
-  test('a coordinate out of range or an empty name responds 422', async ({ client, assert }) => {
+  test('a coordinate out of range or an empty name responds 422', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
 
     const response = await client
@@ -69,9 +81,14 @@ test.group('management/neighborhoods > create', (group) => {
     client,
     assert,
   }) => {
-    const anonymous = await client.post('/management/neighborhoods').json(payload)
+    const anonymous = await client
+      .post('/management/neighborhoods')
+      .json(payload)
     const operator = await authenticateAsOperator(client)
-    const forbidden = await client.post('/management/neighborhoods').cookies(operator).json(payload)
+    const forbidden = await client
+      .post('/management/neighborhoods')
+      .cookies(operator)
+      .json(payload)
 
     anonymous.assertStatus(401)
     forbidden.assertStatus(403)

@@ -44,7 +44,9 @@ export class CollectionScheduleLucidRepository extends CollectionScheduleReposit
     return Boolean(await query.first())
   }
 
-  async save(schedule: CollectionSchedule): Promise<Either<CollectionScheduleError, void>> {
+  async save(
+    schedule: CollectionSchedule,
+  ): Promise<Either<CollectionScheduleError, void>> {
     const { id, createdAt, updatedAt, ...columns } = schedule.snapshot()
 
     try {
@@ -60,7 +62,8 @@ export class CollectionScheduleLucidRepository extends CollectionScheduleReposit
 
       return right(undefined)
     } catch (error) {
-      if (PostgresError.isUniqueViolation(error)) return left({ code: 'SCHEDULE_ALREADY_EXISTS' })
+      if (PostgresError.isUniqueViolation(error))
+        return left({ code: 'SCHEDULE_ALREADY_EXISTS' })
 
       throw error
     }
@@ -82,7 +85,10 @@ export class CollectionScheduleLucidRepository extends CollectionScheduleReposit
   ): Promise<Paginated<ManagementScheduleShowResponse>> {
     const query = this.joined()
     if (criteria.neighborhoodId)
-      query.where('collection_schedules.neighborhood_id', criteria.neighborhoodId)
+      query.where(
+        'collection_schedules.neighborhood_id',
+        criteria.neighborhoodId,
+      )
 
     const page = await query
       .orderBy('neighborhoods.name', 'asc')
@@ -95,7 +101,9 @@ export class CollectionScheduleLucidRepository extends CollectionScheduleReposit
     }
   }
 
-  async listWeek(neighborhoodId?: string): Promise<StorefrontScheduleShowResponse[]> {
+  async listWeek(
+    neighborhoodId?: string,
+  ): Promise<StorefrontScheduleShowResponse[]> {
     const query = this.query()
     if (neighborhoodId) query.where('neighborhoodId', neighborhoodId)
 
@@ -124,7 +132,11 @@ export class CollectionScheduleLucidRepository extends CollectionScheduleReposit
 
   private joined() {
     return this.query()
-      .join('neighborhoods', 'neighborhoods.id', 'collection_schedules.neighborhood_id')
+      .join(
+        'neighborhoods',
+        'neighborhoods.id',
+        'collection_schedules.neighborhood_id',
+      )
       .select('collection_schedules.*')
       .select('neighborhoods.name as neighborhood_name')
   }

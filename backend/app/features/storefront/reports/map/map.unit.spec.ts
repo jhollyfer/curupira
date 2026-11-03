@@ -13,7 +13,9 @@ test.group('storefront/reports > map (unit)', () => {
     assert,
   }) => {
     const reports = MemoryRepositories.reports()
-    const useCase = await makeWithMemory(StorefrontReportMapUseCase, [[ReportRepository, reports]])
+    const useCase = await makeWithMemory(StorefrontReportMapUseCase, [
+      [ReportRepository, reports],
+    ])
     await seedReport(reports, { protocol: 'CUR-2AAA-0001' })
     const reviewed = await seedReport(reports, {
       protocol: 'CUR-2AAA-0002',
@@ -21,7 +23,10 @@ test.group('storefront/reports > map (unit)', () => {
       description: 'texto privado',
       now: new Date('2026-10-29T23:30:00-04:00'),
     })
-    reviewed.advance({ eventId: 'e2', status: 'IN_REVIEW', authorId: 'u1' }, new Date())
+    reviewed.advance(
+      { eventId: 'e2', status: 'IN_REVIEW', authorId: 'u1' },
+      new Date(),
+    )
     await reports.save(reviewed)
 
     const result = await useCase.execute()
@@ -39,11 +44,21 @@ test.group('storefront/reports > map (unit)', () => {
     assert.equal(pins[0]?.day, '2026-10-29')
   })
 
-  test('the coordinates leave rounded to 3 decimals (about 110 m)', async ({ assert }) => {
+  test('the coordinates leave rounded to 3 decimals (about 110 m)', async ({
+    assert,
+  }) => {
     const reports = MemoryRepositories.reports()
-    const useCase = await makeWithMemory(StorefrontReportMapUseCase, [[ReportRepository, reports]])
-    const report = await seedReport(reports, { latitude: -4.376941, longitude: -70.031467 })
-    report.advance({ eventId: 'e2', status: 'IN_REVIEW', authorId: 'u1' }, new Date())
+    const useCase = await makeWithMemory(StorefrontReportMapUseCase, [
+      [ReportRepository, reports],
+    ])
+    const report = await seedReport(reports, {
+      latitude: -4.376941,
+      longitude: -70.031467,
+    })
+    report.advance(
+      { eventId: 'e2', status: 'IN_REVIEW', authorId: 'u1' },
+      new Date(),
+    )
     await reports.save(report)
 
     const pins = rightOf(await useCase.execute())

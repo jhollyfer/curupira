@@ -6,7 +6,10 @@ import { Stored } from '#tests/stored-fixtures'
 test.group('storefront/report-photos > create', (group) => {
   group.each.setup(() => resetDatabase())
 
-  test('anyone opens a PENDING upload and gets the signed PUT', async ({ client, assert }) => {
+  test('anyone opens a PENDING upload and gets the signed PUT', async ({
+    client,
+    assert,
+  }) => {
     const response = await client
       .post('/storefront/report-photos')
       .json({ mimetype: 'image/jpeg', size: 4096 })
@@ -23,7 +26,12 @@ test.group('storefront/report-photos > create', (group) => {
     client,
     assert,
   }) => {
-    for (const mimetype of ['application/pdf', 'image/gif', 'image/svg+xml', 'text/html']) {
+    for (const mimetype of [
+      'application/pdf',
+      'image/gif',
+      'image/svg+xml',
+      'text/html',
+    ]) {
       const response = await client
         .post('/storefront/report-photos')
         .json(invalidPayload({ mimetype, size: 1024 }))

@@ -68,11 +68,15 @@ export class StorageLucidRepository extends StorageRepository {
   }
 
   async areAttachable(ids: ReadonlyArray<string>): Promise<boolean> {
-    return this.allUploaded(ids, (query) => query.where('path', 'not like', REPORT_PHOTO_LIKE))
+    return this.allUploaded(ids, (query) =>
+      query.where('path', 'not like', REPORT_PHOTO_LIKE),
+    )
   }
 
   async areReportPhotos(ids: ReadonlyArray<string>): Promise<boolean> {
-    return this.allUploaded(ids, (query) => query.whereLike('path', REPORT_PHOTO_LIKE))
+    return this.allUploaded(ids, (query) =>
+      query.whereLike('path', REPORT_PHOTO_LIKE),
+    )
   }
 
   async unclaimedReportPhotos(cutoff: Date): Promise<Storage[]> {
@@ -82,7 +86,9 @@ export class StorageLucidRepository extends StorageRepository {
       .where('createdAt', '<', DateTime.fromJSDate(cutoff).toSQL() ?? '')
       .withScopes((scopes) => scopes.notDeleted())
       .whereNotExists((builder) => {
-        builder.from('report_photos').whereColumn('report_photos.storage_id', 'storages.id')
+        builder
+          .from('report_photos')
+          .whereColumn('report_photos.storage_id', 'storages.id')
       })
       .orderBy('createdAt', 'asc')
 
@@ -107,7 +113,8 @@ export class StorageLucidRepository extends StorageRepository {
   }
 
   async save(storage: Storage): Promise<void> {
-    const { id, createdAt, updatedAt, deletedAt, ...columns } = storage.snapshot()
+    const { id, createdAt, updatedAt, deletedAt, ...columns } =
+      storage.snapshot()
 
     await StorageModel.updateOrCreate(
       { id },
@@ -122,13 +129,17 @@ export class StorageLucidRepository extends StorageRepository {
   }
 
   async delete(storage: Storage): Promise<void> {
-    await StorageModel.query({ client: this.transaction.client() }).where('id', storage.id).delete()
+    await StorageModel.query({ client: this.transaction.client() })
+      .where('id', storage.id)
+      .delete()
   }
 
-  async paginate(criteria: StorageListCriteria): Promise<Paginated<StorageFileRead>> {
-    const query = StorageModel.query({ client: this.transaction.client() }).withScopes((scopes) =>
-      scopes.notDeleted(),
-    )
+  async paginate(
+    criteria: StorageListCriteria,
+  ): Promise<Paginated<StorageFileRead>> {
+    const query = StorageModel.query({
+      client: this.transaction.client(),
+    }).withScopes((scopes) => scopes.notDeleted())
 
     if (criteria.status) query.where('status', criteria.status)
     if (criteria.mimetype) query.where('mimetype', criteria.mimetype)

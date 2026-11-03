@@ -1,7 +1,12 @@
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementScheduleShowResponse } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementScheduleShowResponse,
+} from '@curupira/shared'
 
 import { ScheduleRefusal } from '../_shared.schedule-refusal.ts'
 

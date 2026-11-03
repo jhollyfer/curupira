@@ -43,19 +43,25 @@ test.group('services > SDK boundary (unit)', () => {
     const offenders = productionFiles()
       .filter((file) => !SERVICE.test(file))
       .filter((file) =>
-        importsOf(file).some((specifier) => VENDORS.some((vendor) => specifier.startsWith(vendor))),
+        importsOf(file).some((specifier) =>
+          VENDORS.some((vendor) => specifier.startsWith(vendor)),
+        ),
       )
 
     assert.deepEqual(offenders, [])
   })
 
-  test('the scan sees the adapter: without a target, the guard would not guard', ({ assert }) => {
+  test('the scan sees the adapter: without a target, the guard would not guard', ({
+    assert,
+  }) => {
     const adapters = productionFiles().filter((file) => SERVICE.test(file))
 
     assert.isAbove(adapters.length, 0)
     assert.isTrue(
       adapters.some((file) =>
-        importsOf(file).some((specifier) => VENDORS.some((vendor) => specifier.startsWith(vendor))),
+        importsOf(file).some((specifier) =>
+          VENDORS.some((vendor) => specifier.startsWith(vendor)),
+        ),
       ),
     )
   })

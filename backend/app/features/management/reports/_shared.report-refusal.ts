@@ -14,11 +14,18 @@ export class ReportRefusal extends RefusalBase {
         { status: i18n.t('reports.status_regression_field') },
       ),
     REPORT_PROTOCOL_TAKEN: (_fact, i18n) =>
-      HTTPException.Conflict(i18n.t('reports.protocol_taken'), 'REPORT_PROTOCOL_TAKEN'),
+      HTTPException.Conflict(
+        i18n.t('reports.protocol_taken'),
+        'REPORT_PROTOCOL_TAKEN',
+      ),
     REPORT_PHOTO_TAKEN: (_fact, i18n) =>
-      HTTPException.UnprocessableEntity(i18n.t('reports.photo_taken'), 'REPORT_PHOTO_TAKEN', {
-        photoIds: i18n.t('reports.photo_taken'),
-      }),
+      HTTPException.UnprocessableEntity(
+        i18n.t('reports.photo_taken'),
+        'REPORT_PHOTO_TAKEN',
+        {
+          photoIds: i18n.t('reports.photo_taken'),
+        },
+      ),
   } satisfies RefusalTable<ReportError>
 
   static http(error: ReportError, i18n: I18n): HTTPException {
@@ -26,6 +33,9 @@ export class ReportRefusal extends RefusalBase {
   }
 
   static notFound(i18n: I18n): HTTPException {
-    return HTTPException.NotFound(i18n.t('reports.not_found'), 'REPORT_NOT_FOUND')
+    return HTTPException.NotFound(
+      i18n.t('reports.not_found'),
+      'REPORT_NOT_FOUND',
+    )
   }
 }

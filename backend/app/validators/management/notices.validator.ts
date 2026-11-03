@@ -1,6 +1,12 @@
 import { NOTICE_SORT_COLUMNS, NOTICE_STATUSES } from '@curupira/shared'
 
-import { vine, notNull, isoInstant, paginationFields, sortFields } from '#core/validator'
+import {
+  vine,
+  notNull,
+  isoInstant,
+  paginationFields,
+  sortFields,
+} from '#core/validator'
 import type { Infer } from '#core/validator'
 
 /**
@@ -19,8 +25,20 @@ export const ManagementNoticeCreateValidator = vine.create({
 })
 
 export const ManagementNoticeUpdateValidator = vine.create({
-  title: vine.string().trim().minLength(1).maxLength(120).optional().use(notNull()),
-  body: vine.string().trim().minLength(1).maxLength(600).optional().use(notNull()),
+  title: vine
+    .string()
+    .trim()
+    .minLength(1)
+    .maxLength(120)
+    .optional()
+    .use(notNull()),
+  body: vine
+    .string()
+    .trim()
+    .minLength(1)
+    .maxLength(600)
+    .optional()
+    .use(notNull()),
   startsAt: isoInstant().optional().use(notNull()),
   endsAt: isoInstant().nullable().optional(),
 })
@@ -31,8 +49,14 @@ export const ManagementNoticePaginateValidator = vine.create({
   ...sortFields(NOTICE_SORT_COLUMNS),
 })
 
-export type ManagementNoticeCreatePayload = Infer<typeof ManagementNoticeCreateValidator>
+export type ManagementNoticeCreatePayload = Infer<
+  typeof ManagementNoticeCreateValidator
+>
 
-export type ManagementNoticeUpdatePayload = Infer<typeof ManagementNoticeUpdateValidator>
+export type ManagementNoticeUpdatePayload = Infer<
+  typeof ManagementNoticeUpdateValidator
+>
 
-export type ManagementNoticePaginatePayload = Infer<typeof ManagementNoticePaginateValidator>
+export type ManagementNoticePaginatePayload = Infer<
+  typeof ManagementNoticePaginateValidator
+>

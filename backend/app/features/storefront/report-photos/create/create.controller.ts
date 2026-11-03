@@ -18,7 +18,9 @@ export default class StorefrontReportPhotoCreateController {
   constructor(private readonly useCase: StorefrontReportPhotoCreateUseCase) {}
 
   async handle(context: HttpContext) {
-    const payload = await context.request.validateUsing(StorefrontReportPhotoCreateValidator)
+    const payload = await context.request.validateUsing(
+      StorefrontReportPhotoCreateValidator,
+    )
     const result = await this.useCase.execute(payload)
     if (result.isLeft()) throw result.value
     return context.response.created(result.value)

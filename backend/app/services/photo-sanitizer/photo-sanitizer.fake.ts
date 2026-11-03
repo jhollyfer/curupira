@@ -7,7 +7,10 @@ import { PhotoSanitizerContract } from '#services/photo-sanitizer/photo-sanitize
  */
 export class PhotoSanitizerFake extends PhotoSanitizerContract {
   static readonly MARKER = new TextEncoder().encode('STRIPPED:')
-  readonly received: Array<{ readonly mimetype: string; readonly bytes: Uint8Array }> = []
+  readonly received: Array<{
+    readonly mimetype: string
+    readonly bytes: Uint8Array
+  }> = []
   private refusing = false
 
   refuse(): this {

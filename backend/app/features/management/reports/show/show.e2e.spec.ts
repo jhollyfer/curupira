@@ -2,7 +2,11 @@ import { test } from '@japa/runner'
 
 import { ReportFactory } from '#database/factories/report.factory'
 import { StorageFactory } from '#database/factories/storage.factory'
-import { authenticateAsOperator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsOperator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('management/reports > show', (group) => {
@@ -17,7 +21,9 @@ test.group('management/reports > show', (group) => {
     const photo = await StorageFactory.create()
     await Stored.attachPhoto(report.id, photo.id)
 
-    const response = await client.get(`/management/reports/${report.id}`).cookies(session)
+    const response = await client
+      .get(`/management/reports/${report.id}`)
+      .cookies(session)
 
     response.assertStatus(200)
     assert.equal(body(response).contact, report.contact)
@@ -28,13 +34,18 @@ test.group('management/reports > show', (group) => {
     assert.include(body(response).photos[0].url, photo.path)
   })
 
-  test('nonexistent responds 404 and no session responds 401', async ({ client, assert }) => {
+  test('nonexistent responds 404 and no session responds 401', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsOperator(client)
 
     const missing = await client
       .get('/management/reports/00000000-0000-4000-8000-000000000000')
       .cookies(session)
-    const anonymous = await client.get('/management/reports/00000000-0000-4000-8000-000000000000')
+    const anonymous = await client.get(
+      '/management/reports/00000000-0000-4000-8000-000000000000',
+    )
 
     missing.assertStatus(404)
     assert.equal(body(missing).code, 'REPORT_NOT_FOUND')

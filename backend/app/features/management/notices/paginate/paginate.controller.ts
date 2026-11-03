@@ -18,9 +18,12 @@ export default class ManagementNoticePaginateController {
   constructor(private readonly useCase: ManagementNoticePaginateUseCase) {}
 
   async handle(context: HttpContext) {
-    const payload = await context.request.validateUsing(ManagementNoticePaginateValidator, {
-      data: context.request.qs(),
-    })
+    const payload = await context.request.validateUsing(
+      ManagementNoticePaginateValidator,
+      {
+        data: context.request.qs(),
+      },
+    )
     const result = await this.useCase.execute(payload)
     if (result.isLeft()) throw result.value
     return context.response.ok(result.value)

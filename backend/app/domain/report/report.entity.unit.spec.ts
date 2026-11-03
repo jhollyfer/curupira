@@ -20,7 +20,10 @@ function report(contact?: string): Report {
   })
 }
 
-const step = (status: 'IN_REVIEW' | 'FORWARDED' | 'RESOLVED' | 'RECEIVED', eventId = 'e2') => ({
+const step = (
+  status: 'IN_REVIEW' | 'FORWARDED' | 'RESOLVED' | 'RECEIVED',
+  eventId = 'e2',
+) => ({
   eventId,
   status,
   message: 'Em análise',
@@ -28,7 +31,9 @@ const step = (status: 'IN_REVIEW' | 'FORWARDED' | 'RESOLVED' | 'RECEIVED', event
 })
 
 test.group('Report', () => {
-  test('is born RECEIVED with its first timeline event, written by nobody', ({ assert }) => {
+  test('is born RECEIVED with its first timeline event, written by nobody', ({
+    assert,
+  }) => {
     const snapshot = report().snapshot()
 
     assert.equal(snapshot.status, 'RECEIVED')
@@ -67,7 +72,9 @@ test.group('Report', () => {
     assert.isTrue(entity.advance(step('FORWARDED'), LATER).isRight())
   })
 
-  test('going back or repeating is REPORT_STATUS_REGRESSION and writes nothing', ({ assert }) => {
+  test('going back or repeating is REPORT_STATUS_REGRESSION and writes nothing', ({
+    assert,
+  }) => {
     const entity = report()
     entity.advance(step('FORWARDED'), LATER)
 

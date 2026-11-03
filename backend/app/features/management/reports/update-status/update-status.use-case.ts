@@ -47,16 +47,20 @@ export default class ManagementReportUpdateStatusUseCase {
         { eventId: randomUUID(), status, message, authorId: actor.id },
         new Date(),
       )
-      if (advanced.isLeft()) return left(ReportRefusal.http(advanced.value, this.i18n))
+      if (advanced.isLeft())
+        return left(ReportRefusal.http(advanced.value, this.i18n))
 
       // The report row and its new event land together: apart, a failure would leave the
       // status moved with no line in the timeline the resident reads.
-      const written = await this.unitOfWork.run(async (): Promise<Either<HTTPException, null>> => {
-        const saved = await this.reports.save(report)
-        if (saved.isLeft()) return left(ReportRefusal.http(saved.value, this.i18n))
+      const written = await this.unitOfWork.run(
+        async (): Promise<Either<HTTPException, null>> => {
+          const saved = await this.reports.save(report)
+          if (saved.isLeft())
+            return left(ReportRefusal.http(saved.value, this.i18n))
 
-        return right(null)
-      })
+          return right(null)
+        },
+      )
       if (written.isLeft()) return left(written.value)
 
       const read = await this.reports.detail(id)
@@ -64,7 +68,10 @@ export default class ManagementReportUpdateStatusUseCase {
 
       return right(await ReportPresenter.show(read, this.bucket))
     } catch (error) {
-      logger.error({ err: error }, '[management/reports > update-status][error]')
+      logger.error(
+        { err: error },
+        '[management/reports > update-status][error]',
+      )
 
       return left(
         HTTPException.InternalServerError(

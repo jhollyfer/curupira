@@ -8,7 +8,10 @@ import type {
   StorefrontNeighborhoodShowResponse,
 } from '@curupira/shared'
 
-import { NeighborhoodRepository, type NeighborhoodListCriteria } from './neighborhood.repository.ts'
+import {
+  NeighborhoodRepository,
+  type NeighborhoodListCriteria,
+} from './neighborhood.repository.ts'
 
 import NeighborhoodModel from '#models/neighborhood'
 import { PostgresError } from '#core/postgres-error'
@@ -30,7 +33,11 @@ export class NeighborhoodLucidRepository extends NeighborhoodRepository {
     return this.toEntity(row)
   }
 
-  async existsByNameOrSlug(name: string, slug: string, exceptId?: string): Promise<boolean> {
+  async existsByNameOrSlug(
+    name: string,
+    slug: string,
+    exceptId?: string,
+  ): Promise<boolean> {
     const query = this.query().where((builder) => {
       builder.where('name', name).orWhere('slug', slug)
     })
@@ -53,19 +60,25 @@ export class NeighborhoodLucidRepository extends NeighborhoodRepository {
     readonly latitude: number
     readonly longitude: number
   }): Promise<string | null> {
-    const rows = await this.query().whereNotNull('latitude').whereNotNull('longitude')
+    const rows = await this.query()
+      .whereNotNull('latitude')
+      .whereNotNull('longitude')
 
     return NearestNeighborhood.of(
       point,
       rows.flatMap((row) => {
         if (row.latitude === null || row.longitude === null) return []
 
-        return [{ id: row.id, latitude: row.latitude, longitude: row.longitude }]
+        return [
+          { id: row.id, latitude: row.latitude, longitude: row.longitude },
+        ]
       }),
     )
   }
 
-  async save(neighborhood: Neighborhood): Promise<Either<NeighborhoodError, void>> {
+  async save(
+    neighborhood: Neighborhood,
+  ): Promise<Either<NeighborhoodError, void>> {
     const { id, createdAt, updatedAt, ...columns } = neighborhood.snapshot()
 
     try {
@@ -136,7 +149,9 @@ export class NeighborhoodLucidRepository extends NeighborhoodRepository {
     })
   }
 
-  private toResponse(row: NeighborhoodModel): ManagementNeighborhoodShowResponse {
+  private toResponse(
+    row: NeighborhoodModel,
+  ): ManagementNeighborhoodShowResponse {
     return {
       id: row.id,
       name: row.name,

@@ -6,7 +6,10 @@ export default class extends BaseSchema {
 
   override async up(): Promise<void> {
     this.schema.createTable(this.tableName, (table) => {
-      table.uuid('id').primary().defaultTo(this.db.knexRawQuery('uuid_generate_v4()'))
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(this.db.knexRawQuery('uuid_generate_v4()'))
       // `RESTRICT`: deleting a neighborhood must not silently erase the schedule
       // residents read; the use case refuses first, and this is the net under it.
       table

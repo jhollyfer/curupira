@@ -17,7 +17,10 @@ import { recentFirst } from '#features/_shared.sort'
 import type { ManagementReportPaginatePayload } from '#validators/management/reports.validator'
 
 type Payload = ManagementReportPaginatePayload
-type Response = Either<HTTPException, Paginated<ManagementReportListItemResponse>>
+type Response = Either<
+  HTTPException,
+  Paginated<ManagementReportListItemResponse>
+>
 
 @inject()
 export default class ManagementReportPaginateUseCase {

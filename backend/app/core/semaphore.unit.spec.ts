@@ -3,7 +3,9 @@ import { test } from '@japa/runner'
 import { Semaphore } from '#core/semaphore'
 
 test.group('Semaphore', () => {
-  test('never runs more tasks at once than its limit, and runs them all', async ({ assert }) => {
+  test('never runs more tasks at once than its limit, and runs them all', async ({
+    assert,
+  }) => {
     const semaphore = new Semaphore(2)
     let active = 0
     let peak = 0
@@ -17,7 +19,9 @@ test.group('Semaphore', () => {
       return value
     }
 
-    const results = await Promise.all([1, 2, 3, 4, 5, 6].map((n) => semaphore.run(() => task(n))))
+    const results = await Promise.all(
+      [1, 2, 3, 4, 5, 6].map((n) => semaphore.run(() => task(n))),
+    )
 
     assert.deepEqual(results, [1, 2, 3, 4, 5, 6])
     assert.equal(peak, 2)

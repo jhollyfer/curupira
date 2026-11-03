@@ -23,7 +23,9 @@ test.group('NearestNeighborhood', () => {
     assert.equal(NearestNeighborhood.of(near, [CENTRO, COHAB]), 'cohab')
   })
 
-  test('no center within the limit is null, and so is an empty list', ({ assert }) => {
+  test('no center within the limit is null, and so is an empty list', ({
+    assert,
+  }) => {
     const farAway = { latitude: -3.1, longitude: -60 }
 
     assert.isNull(NearestNeighborhood.of(farAway, [CENTRO, COHAB]))

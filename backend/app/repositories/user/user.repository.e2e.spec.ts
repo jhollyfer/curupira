@@ -49,9 +49,14 @@ for (const [name, make] of Object.entries(IMPLEMENTATIONS)) {
       await users.save(ana)
       const found = await users.findById(ana.id)
 
-      assert.deepEqual({ ...found?.snapshot(), password: '' }, { ...ana.snapshot(), password: '' })
+      assert.deepEqual(
+        { ...found?.snapshot(), password: '' },
+        { ...ana.snapshot(), password: '' },
+      )
       assert.notEqual(found?.snapshot().password, 'Senha@123')
-      assert.isTrue(await hash.verify(found?.snapshot().password ?? '', 'Senha@123'))
+      assert.isTrue(
+        await hash.verify(found?.snapshot().password ?? '', 'Senha@123'),
+      )
       assert.isNull(await users.findById(BIA))
     })
 
@@ -95,7 +100,9 @@ for (const [name, make] of Object.entries(IMPLEMENTATIONS)) {
       assert.isTrue(await hash.verify(stored, 'Nova@12345'))
     })
 
-    test('findByEmail and existsByEmail see the account', async ({ assert }) => {
+    test('findByEmail and existsByEmail see the account', async ({
+      assert,
+    }) => {
       const { users } = await make()
       await users.save(account(ANA, 'Ana', 'ana@t.dev'))
 
@@ -105,7 +112,9 @@ for (const [name, make] of Object.entries(IMPLEMENTATIONS)) {
       assert.isNull(await users.findByEmail('outra@t.dev'))
     })
 
-    test('detail brings the account without the password; unknown is null', async ({ assert }) => {
+    test('detail brings the account without the password; unknown is null', async ({
+      assert,
+    }) => {
       const { users } = await make()
       await users.save(account(ANA, 'Ana', 'ana@t.dev'))
 
@@ -116,7 +125,9 @@ for (const [name, make] of Object.entries(IMPLEMENTATIONS)) {
       assert.isNull(await users.detail(BIA))
     })
 
-    test('paginate searches by name and e-mail and filters by role', async ({ assert }) => {
+    test('paginate searches by name and e-mail and filters by role', async ({
+      assert,
+    }) => {
       const { users } = await make()
       await users.save(account(ANA, 'Ana', 'ana@t.dev'))
       await users.save(account(BIA, 'Bia', 'zeta@t.dev', 'ADMINISTRATOR'))

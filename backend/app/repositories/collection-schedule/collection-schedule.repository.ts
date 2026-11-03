@@ -34,7 +34,9 @@ export abstract class CollectionScheduleRepository {
   /** Another slot, other than `exceptId`, is the same neighborhood + type + weekday + shift. */
   abstract existsSlot(slot: ScheduleSlot, exceptId?: string): Promise<boolean>
   /** Saves the slot; the repeated slot (the race on the `unique`) comes back as a fact. */
-  abstract save(schedule: CollectionSchedule): Promise<Either<CollectionScheduleError, void>>
+  abstract save(
+    schedule: CollectionSchedule,
+  ): Promise<Either<CollectionScheduleError, void>>
   abstract delete(schedule: CollectionSchedule): Promise<void>
   /** Lightweight read of one slot, with the neighborhood name the panel shows. */
   abstract detail(id: string): Promise<ManagementScheduleShowResponse | null>
@@ -42,5 +44,7 @@ export abstract class CollectionScheduleRepository {
     criteria: ScheduleListCriteria,
   ): Promise<Paginated<ManagementScheduleShowResponse>>
   /** The whole week, with no page: a resident reads it on one screen. In week order. */
-  abstract listWeek(neighborhoodId?: string): Promise<StorefrontScheduleShowResponse[]>
+  abstract listWeek(
+    neighborhoodId?: string,
+  ): Promise<StorefrontScheduleShowResponse[]>
 }

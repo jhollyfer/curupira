@@ -2,7 +2,11 @@ import { test } from '@japa/runner'
 
 import { CollectionScheduleFactory } from '#database/factories/collection-schedule.factory'
 import { NeighborhoodFactory } from '#database/factories/neighborhood.factory'
-import { authenticateAsAdministrator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsAdministrator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 
 test.group('management/schedules > paginate', (group) => {
   group.each.setup(() => resetDatabase())
@@ -15,8 +19,13 @@ test.group('management/schedules > paginate', (group) => {
     const first = await NeighborhoodFactory.create()
     const second = await NeighborhoodFactory.create()
     await CollectionScheduleFactory.merge({ neighborhoodId: first.id }).create()
-    await CollectionScheduleFactory.merge({ neighborhoodId: second.id }).create()
-    await CollectionScheduleFactory.merge({ neighborhoodId: second.id, weekday: 'FRIDAY' }).create()
+    await CollectionScheduleFactory.merge({
+      neighborhoodId: second.id,
+    }).create()
+    await CollectionScheduleFactory.merge({
+      neighborhoodId: second.id,
+      weekday: 'FRIDAY',
+    }).create()
 
     const all = await client.get('/management/schedules').cookies(session)
     const one = await client

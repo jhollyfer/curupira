@@ -29,19 +29,31 @@ test.group('management/neighborhoods > show (unit)', () => {
   test('nonexistent is 404 NEIGHBORHOOD_NOT_FOUND', async ({ assert }) => {
     const { useCase } = await setup()
 
-    const result = await useCase.execute({ id: '00000000-0000-4000-8000-000000000000' })
+    const result = await useCase.execute({
+      id: '00000000-0000-4000-8000-000000000000',
+    })
 
-    assert.deepInclude(result.value, { status: 404, code: 'NEIGHBORHOOD_NOT_FOUND' })
+    assert.deepInclude(result.value, {
+      status: 404,
+      code: 'NEIGHBORHOOD_NOT_FOUND',
+    })
   })
 
-  test('repository failure is 500 MANAGEMENT_NEIGHBORHOOD_SHOW_ERROR', async ({ assert }) => {
+  test('repository failure is 500 MANAGEMENT_NEIGHBORHOOD_SHOW_ERROR', async ({
+    assert,
+  }) => {
     const { neighborhoods, useCase } = await setup()
     neighborhoods.findById = async () => {
       throw new Error('database down')
     }
 
-    const result = await useCase.execute({ id: '00000000-0000-4000-8000-000000000000' })
+    const result = await useCase.execute({
+      id: '00000000-0000-4000-8000-000000000000',
+    })
 
-    assert.deepInclude(result.value, { status: 500, code: 'MANAGEMENT_NEIGHBORHOOD_SHOW_ERROR' })
+    assert.deepInclude(result.value, {
+      status: 500,
+      code: 'MANAGEMENT_NEIGHBORHOOD_SHOW_ERROR',
+    })
   })
 })

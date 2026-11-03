@@ -14,10 +14,16 @@ import { MemoryRepositories } from '#tests/memory-fixtures'
 
 const KEY = `${REPORT_PHOTO_KEY_PREFIX}foto.jpg`
 const ID = '8a7b6c5d-4e3f-4a2b-9c1d-0e9f8a7b6c5d'
-const JPEG_HEAD = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0, 0, 0, 0, 0])
+const JPEG_HEAD = new Uint8Array([
+  0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0, 0, 0, 0, 0,
+])
 const ORIGINAL = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4])
 
-function pending(mimetype = 'image/jpeg', size = ORIGINAL.length, key = KEY): Storage {
+function pending(
+  mimetype = 'image/jpeg',
+  size = ORIGINAL.length,
+  key = KEY,
+): Storage {
   return Storage.open({
     id: ID,
     key,
@@ -72,7 +78,10 @@ test.group('storefront/report-photos > complete (unit)', () => {
 
     const result = await useCase.execute({ id: ID })
 
-    assert.deepInclude(result.value, { status: 422, code: 'REPORT_PHOTO_INVALID' })
+    assert.deepInclude(result.value, {
+      status: 422,
+      code: 'REPORT_PHOTO_INVALID',
+    })
     assert.deepEqual(bucket.discarded, [KEY])
     assert.isNull(await storages.findById(ID))
     assert.isFalse(await storages.areAttachable([ID]))
@@ -81,11 +90,16 @@ test.group('storefront/report-photos > complete (unit)', () => {
   test('a size different from the declared one is 422 STORAGE_SIZE_MISMATCH and discarded', async ({
     assert,
   }) => {
-    const { storages, bucket, useCase } = await setup(pending('image/jpeg', 999))
+    const { storages, bucket, useCase } = await setup(
+      pending('image/jpeg', 999),
+    )
 
     const result = await useCase.execute({ id: ID })
 
-    assert.deepInclude(result.value, { status: 422, code: 'STORAGE_SIZE_MISMATCH' })
+    assert.deepInclude(result.value, {
+      status: 422,
+      code: 'STORAGE_SIZE_MISMATCH',
+    })
     assert.deepEqual(bucket.discarded, [KEY])
     assert.isNull(await storages.findById(ID))
   })
@@ -108,14 +122,20 @@ test.group('storefront/report-photos > complete (unit)', () => {
 
     const result = await useCase.execute({ id: ID })
 
-    assert.deepInclude(result.value, { status: 422, code: 'STORAGE_CONTENT_MISMATCH' })
+    assert.deepInclude(result.value, {
+      status: 422,
+      code: 'STORAGE_CONTENT_MISMATCH',
+    })
   })
 
   test('an already confirmed file is left exactly as it is (idempotent, no re-encoding)', async ({
     assert,
   }) => {
     const done = pending()
-    done.complete({ contentLength: ORIGINAL.length, head: JPEG_HEAD }, new Date())
+    done.complete(
+      { contentLength: ORIGINAL.length, head: JPEG_HEAD },
+      new Date(),
+    )
     const { bucket, sanitizer, useCase } = await setup(done)
 
     const result = await useCase.execute({ id: ID })
@@ -128,11 +148,16 @@ test.group('storefront/report-photos > complete (unit)', () => {
   test('a pending file that is not a report photo type answers 404 and is not touched', async ({
     assert,
   }) => {
-    const { storages, sanitizer, useCase } = await setup(pending('application/pdf'))
+    const { storages, sanitizer, useCase } = await setup(
+      pending('application/pdf'),
+    )
 
     const result = await useCase.execute({ id: ID })
 
-    assert.deepInclude(result.value, { status: 404, code: 'REPORT_PHOTO_NOT_FOUND' })
+    assert.deepInclude(result.value, {
+      status: 404,
+      code: 'REPORT_PHOTO_NOT_FOUND',
+    })
     assert.lengthOf(sanitizer.received, 0)
     assert.isNotNull(await storages.findById(ID))
   })
@@ -147,7 +172,10 @@ test.group('storefront/report-photos > complete (unit)', () => {
 
     const result = await useCase.execute({ id: ID })
 
-    assert.deepInclude(result.value, { status: 404, code: 'REPORT_PHOTO_NOT_FOUND' })
+    assert.deepInclude(result.value, {
+      status: 404,
+      code: 'REPORT_PHOTO_NOT_FOUND',
+    })
     assert.lengthOf(sanitizer.received, 0)
     assert.equal(bucket.overwritten.size, 0)
     const kept = await storages.findById(ID)
@@ -157,8 +185,13 @@ test.group('storefront/report-photos > complete (unit)', () => {
   test('an unknown id is 404 REPORT_PHOTO_NOT_FOUND', async ({ assert }) => {
     const { useCase } = await setup()
 
-    const result = await useCase.execute({ id: '00000000-0000-4000-8000-000000000000' })
+    const result = await useCase.execute({
+      id: '00000000-0000-4000-8000-000000000000',
+    })
 
-    assert.deepInclude(result.value, { status: 404, code: 'REPORT_PHOTO_NOT_FOUND' })
+    assert.deepInclude(result.value, {
+      status: 404,
+      code: 'REPORT_PHOTO_NOT_FOUND',
+    })
   })
 })

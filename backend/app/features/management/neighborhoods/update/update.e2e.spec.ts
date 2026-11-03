@@ -1,7 +1,11 @@
 import { test } from '@japa/runner'
 
 import { NeighborhoodFactory } from '#database/factories/neighborhood.factory'
-import { authenticateAsAdministrator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsAdministrator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('management/neighborhoods > update', (group) => {
@@ -22,7 +26,10 @@ test.group('management/neighborhoods > update', (group) => {
     assert.equal(stored.name, 'São Francisco')
   })
 
-  test('null on both coordinates erases the center', async ({ client, assert }) => {
+  test('null on both coordinates erases the center', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
     const neighborhood = await NeighborhoodFactory.apply('centered').create()
 
@@ -37,7 +44,10 @@ test.group('management/neighborhoods > update', (group) => {
     assert.isNull(stored.longitude)
   })
 
-  test('the name of another neighborhood responds 409', async ({ client, assert }) => {
+  test('the name of another neighborhood responds 409', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
     const other = await NeighborhoodFactory.create()
     const neighborhood = await NeighborhoodFactory.create()
@@ -51,7 +61,10 @@ test.group('management/neighborhoods > update', (group) => {
     assert.equal(body(response).code, 'NEIGHBORHOOD_ALREADY_EXISTS')
   })
 
-  test('nonexistent responds 404 and a malformed id responds 422', async ({ client, assert }) => {
+  test('nonexistent responds 404 and a malformed id responds 422', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
 
     const missing = await client

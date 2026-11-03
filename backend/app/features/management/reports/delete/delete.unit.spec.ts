@@ -27,7 +27,9 @@ async function setup() {
 }
 
 test.group('management/reports > delete (unit)', () => {
-  test('deletes the report and then the photo, binary and row', async ({ assert }) => {
+  test('deletes the report and then the photo, binary and row', async ({
+    assert,
+  }) => {
     const { reports, storages, bucket, useCase } = await setup()
     await storages.save(
       Storage.open({
@@ -55,7 +57,9 @@ test.group('management/reports > delete (unit)', () => {
   test('nonexistent is 404 REPORT_NOT_FOUND', async ({ assert }) => {
     const { useCase } = await setup()
 
-    const result = await useCase.execute({ id: '00000000-0000-4000-8000-000000000000' })
+    const result = await useCase.execute({
+      id: '00000000-0000-4000-8000-000000000000',
+    })
 
     assert.deepInclude(result.value, { status: 404, code: 'REPORT_NOT_FOUND' })
   })

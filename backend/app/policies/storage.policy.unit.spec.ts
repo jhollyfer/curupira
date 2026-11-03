@@ -12,8 +12,12 @@ function actorOf(role: UserRole, avatarId: string | null = null): Actor {
   return { id: USER_ID, role, avatarId }
 }
 
-function denied(response: unknown): { status: number | undefined; code: string | undefined } {
-  if (!(response instanceof AuthorizationResponse)) return { status: undefined, code: undefined }
+function denied(response: unknown): {
+  status: number | undefined
+  code: string | undefined
+} {
+  if (!(response instanceof AuthorizationResponse))
+    return { status: undefined, code: undefined }
 
   return { status: response.status, code: response.translation?.identifier }
 }
@@ -35,7 +39,10 @@ test.group('policies > storage (unit)', () => {
     test(`${role}: nonexistent file answers 404`, async ({ assert }) => {
       const policy = await makeWithMemory(StoragePolicy, [])
 
-      assert.deepEqual(denied(policy.download(actorOf(role, FILE_ID), null)), NOT_FOUND)
+      assert.deepEqual(
+        denied(policy.download(actorOf(role, FILE_ID), null)),
+        NOT_FOUND,
+      )
     })
   }
 })

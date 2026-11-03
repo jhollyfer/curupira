@@ -1,4 +1,10 @@
-import { NOTICE_STATUS, left, right, type Either, type NoticeStatus } from '@curupira/shared'
+import {
+  NOTICE_STATUS,
+  left,
+  right,
+  type Either,
+  type NoticeStatus,
+} from '@curupira/shared'
 
 import type { NoticeError } from './notice.errors.ts'
 
@@ -37,7 +43,8 @@ export class Notice {
     readonly now: Date
   }): Either<NoticeError, Notice> {
     const endsAt = input.endsAt ?? null
-    if (endsAt !== null && endsAt <= input.startsAt) return left({ code: 'NOTICE_INVALID_PERIOD' })
+    if (endsAt !== null && endsAt <= input.startsAt)
+      return left({ code: 'NOTICE_INVALID_PERIOD' })
 
     return right(
       new Notice({
@@ -60,7 +67,8 @@ export class Notice {
   update(changes: NoticeChanges, now: Date): Either<NoticeError, Notice> {
     const startsAt = changes.startsAt ?? this.props.startsAt
     const endsAt = Notice.keep(changes.endsAt, this.props.endsAt)
-    if (endsAt !== null && endsAt <= startsAt) return left({ code: 'NOTICE_INVALID_PERIOD' })
+    if (endsAt !== null && endsAt <= startsAt)
+      return left({ code: 'NOTICE_INVALID_PERIOD' })
 
     if (changes.title !== undefined) this.props.title = changes.title
     if (changes.body !== undefined) this.props.body = changes.body
@@ -73,7 +81,8 @@ export class Notice {
 
   /** Ends the showing now, by hand. Closing twice is a conflict: the first time already did it. */
   close(now: Date): Either<NoticeError, Notice> {
-    if (this.props.closedAt !== null) return left({ code: 'NOTICE_ALREADY_CLOSED' })
+    if (this.props.closedAt !== null)
+      return left({ code: 'NOTICE_ALREADY_CLOSED' })
 
     this.props.closedAt = now
     this.props.updatedAt = now
@@ -82,7 +91,10 @@ export class Notice {
   }
 
   /** An absent change keeps the current value; `null` is a change (erase). */
-  private static keep(change: Date | null | undefined, current: Date | null): Date | null {
+  private static keep(
+    change: Date | null | undefined,
+    current: Date | null,
+  ): Date | null {
     if (change === undefined) return current
 
     return change
@@ -98,7 +110,8 @@ export class Notice {
     at: Date,
   ): NoticeStatus {
     if (notice.closedAt !== null) return NOTICE_STATUS.CLOSED
-    if (notice.endsAt !== null && notice.endsAt <= at) return NOTICE_STATUS.CLOSED
+    if (notice.endsAt !== null && notice.endsAt <= at)
+      return NOTICE_STATUS.CLOSED
     if (notice.startsAt > at) return NOTICE_STATUS.SCHEDULED
 
     return NOTICE_STATUS.ACTIVE

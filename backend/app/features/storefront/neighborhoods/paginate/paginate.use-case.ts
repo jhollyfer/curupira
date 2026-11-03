@@ -13,7 +13,10 @@ import { MemoryPagination } from '#core/memory-pagination'
 import HTTPException from '#exceptions/http.exception'
 import { NeighborhoodRepository } from '#repositories/neighborhood/neighborhood.repository'
 
-type Response = Either<HTTPException, Paginated<StorefrontNeighborhoodShowResponse>>
+type Response = Either<
+  HTTPException,
+  Paginated<StorefrontNeighborhoodShowResponse>
+>
 
 @inject()
 export default class StorefrontNeighborhoodPaginateUseCase {
@@ -30,7 +33,10 @@ export default class StorefrontNeighborhoodPaginateUseCase {
       // `perPage` is never zero (a lone empty city would otherwise divide by it).
       return right(MemoryPagination.slice(all, 1, Math.max(all.length, 1)))
     } catch (error) {
-      logger.error({ err: error }, '[storefront/neighborhoods > paginate][error]')
+      logger.error(
+        { err: error },
+        '[storefront/neighborhoods > paginate][error]',
+      )
 
       return left(
         HTTPException.InternalServerError(

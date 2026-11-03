@@ -1,7 +1,12 @@
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementNeighborhoodShowResponse } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementNeighborhoodShowResponse,
+} from '@curupira/shared'
 
 import { NeighborhoodPresenter } from '../neighborhoods.presenter.ts'
 import { NeighborhoodRefusal } from '../_shared.neighborhood-refusal.ts'

@@ -11,7 +11,9 @@ test.group('management/notices > delete', (group) => {
     const session = await authenticateAsOperator(client)
     const notice = await NoticeFactory.create()
 
-    const response = await client.delete(`/management/notices/${notice.id}`).cookies(session)
+    const response = await client
+      .delete(`/management/notices/${notice.id}`)
+      .cookies(session)
 
     response.assertStatus(204)
     assert.isNull(await Stored.notice(notice.id))

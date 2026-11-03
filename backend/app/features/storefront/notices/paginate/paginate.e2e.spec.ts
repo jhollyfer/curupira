@@ -6,7 +6,10 @@ import { body, resetDatabase } from '#tests/http-fixtures'
 test.group('storefront/notices > paginate', (group) => {
   group.each.setup(() => resetDatabase())
 
-  test('shows only the active notices, without a session', async ({ client, assert }) => {
+  test('shows only the active notices, without a session', async ({
+    client,
+    assert,
+  }) => {
     const active = await NoticeFactory.create()
     await NoticeFactory.apply('scheduled').create()
     await NoticeFactory.apply('expired').create()

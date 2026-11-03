@@ -6,12 +6,25 @@ export default class extends BaseSchema {
 
   override async up(): Promise<void> {
     this.schema.createTable(this.tableName, (table) => {
-      table.uuid('id').primary().defaultTo(this.db.knexRawQuery('uuid_generate_v4()'))
-      table.uuid('report_id').notNullable().references('id').inTable('reports').onDelete('CASCADE')
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(this.db.knexRawQuery('uuid_generate_v4()'))
+      table
+        .uuid('report_id')
+        .notNullable()
+        .references('id')
+        .inTable('reports')
+        .onDelete('CASCADE')
       table.enum('status', REPORT_STATUSES).notNullable()
       table.string('message', 500).nullable()
       // `SET NULL`: the account leaving the team does not erase the history it wrote.
-      table.uuid('author_id').nullable().references('id').inTable('users').onDelete('SET NULL')
+      table
+        .uuid('author_id')
+        .nullable()
+        .references('id')
+        .inTable('users')
+        .onDelete('SET NULL')
       table.timestamp('at').notNullable()
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()

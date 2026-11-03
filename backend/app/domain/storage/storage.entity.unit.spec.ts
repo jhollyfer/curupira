@@ -6,7 +6,9 @@ import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
 
 const NOW = new Date('2026-10-29T12:00:00Z')
 
-const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0])
+const PNG = new Uint8Array([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0,
+])
 
 function pending(): Storage {
   return Storage.open({
@@ -34,7 +36,9 @@ test.group('Storage', () => {
     assert.isTrue(file.isPending())
   })
 
-  test('is a report photo only when its key sits under the report-photo prefix', ({ assert }) => {
+  test('is a report photo only when its key sits under the report-photo prefix', ({
+    assert,
+  }) => {
     const photo = Storage.open({
       id: 'id',
       key: `${REPORT_PHOTO_KEY_PREFIX}abc.jpg`,
@@ -80,15 +84,25 @@ test.group('Storage', () => {
     assert,
   }) => {
     const file = pending()
-    const svg = new TextEncoder().encode('<svg xmlns="http://www.w3.org/2000/svg"/>')
+    const svg = new TextEncoder().encode(
+      '<svg xmlns="http://www.w3.org/2000/svg"/>',
+    )
 
-    const result = file.complete({ contentLength: 1024, head: svg.subarray(0, 12) }, NOW)
+    const result = file.complete(
+      { contentLength: 1024, head: svg.subarray(0, 12) },
+      NOW,
+    )
 
-    assert.deepEqual(result.value, { code: 'STORAGE_CONTENT_MISMATCH', mimetype: 'image/png' })
+    assert.deepEqual(result.value, {
+      code: 'STORAGE_CONTENT_MISMATCH',
+      mimetype: 'image/png',
+    })
     assert.isTrue(file.isPending())
   })
 
-  test('confirming again is idempotent, even with another size', ({ assert }) => {
+  test('confirming again is idempotent, even with another size', ({
+    assert,
+  }) => {
     const file = pending()
     file.complete({ contentLength: 1024, head: PNG }, NOW)
 

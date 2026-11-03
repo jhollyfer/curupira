@@ -17,7 +17,11 @@ export default class StorefrontReportPhotoCompleteController {
     responses: { 204: 'no-content' },
     errors: {
       404: 'REPORT_PHOTO_NOT_FOUND',
-      422: ['STORAGE_SIZE_MISMATCH', 'STORAGE_CONTENT_MISMATCH', 'REPORT_PHOTO_INVALID'],
+      422: [
+        'STORAGE_SIZE_MISMATCH',
+        'STORAGE_CONTENT_MISMATCH',
+        'REPORT_PHOTO_INVALID',
+      ],
     },
   })
 

@@ -3,7 +3,12 @@ import { randomUUID } from 'node:crypto'
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementNeighborhoodShowResponse } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementNeighborhoodShowResponse,
+} from '@curupira/shared'
 
 import { NeighborhoodPresenter } from '../neighborhoods.presenter.ts'
 import { NeighborhoodRefusal } from '../_shared.neighborhood-refusal.ts'
@@ -26,15 +31,31 @@ export default class ManagementNeighborhoodCreateUseCase {
 
   async execute(payload: Payload): Promise<Response> {
     try {
-      const created = Neighborhood.create({ id: randomUUID(), ...payload, now: new Date() })
-      if (created.isLeft()) return left(NeighborhoodRefusal.http(created.value, this.i18n))
+      const created = Neighborhood.create({
+        id: randomUUID(),
+        ...payload,
+        now: new Date(),
+      })
+      if (created.isLeft())
+        return left(NeighborhoodRefusal.http(created.value, this.i18n))
 
       const neighborhood = created.value
-      if (await this.neighborhoods.existsByNameOrSlug(payload.name, neighborhood.snapshot().slug))
-        return left(NeighborhoodRefusal.http({ code: 'NEIGHBORHOOD_ALREADY_EXISTS' }, this.i18n))
+      if (
+        await this.neighborhoods.existsByNameOrSlug(
+          payload.name,
+          neighborhood.snapshot().slug,
+        )
+      )
+        return left(
+          NeighborhoodRefusal.http(
+            { code: 'NEIGHBORHOOD_ALREADY_EXISTS' },
+            this.i18n,
+          ),
+        )
 
       const saved = await this.neighborhoods.save(neighborhood)
-      if (saved.isLeft()) return left(NeighborhoodRefusal.http(saved.value, this.i18n))
+      if (saved.isLeft())
+        return left(NeighborhoodRefusal.http(saved.value, this.i18n))
 
       return right(NeighborhoodPresenter.show(neighborhood))
     } catch (error) {

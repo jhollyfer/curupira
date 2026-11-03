@@ -8,7 +8,16 @@ import type { Notice } from '#domain/notice/notice.entity'
  */
 export class NoticePresenter {
   static show(notice: Notice, at: Date): ManagementNoticeShowResponse {
-    const { id, title, body, startsAt, endsAt, closedAt, createdAt, updatedAt } = notice.snapshot()
+    const {
+      id,
+      title,
+      body,
+      startsAt,
+      endsAt,
+      closedAt,
+      createdAt,
+      updatedAt,
+    } = notice.snapshot()
 
     return {
       id,

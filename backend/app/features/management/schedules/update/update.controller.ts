@@ -22,7 +22,9 @@ export default class ManagementScheduleUpdateController {
     // Body and params validated separately and merged: the `:id` comes from the URL and
     // not from the payload, and a single schema would accept an `id` in the body able to
     // point at another row.
-    const body = await context.request.validateUsing(ManagementScheduleUpdateValidator)
+    const body = await context.request.validateUsing(
+      ManagementScheduleUpdateValidator,
+    )
     const params = await context.request.validateUsing(IdentifierValidator, {
       data: context.params,
     })

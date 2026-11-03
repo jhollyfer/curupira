@@ -23,7 +23,9 @@ const FORBIDDEN_KEYS =
 /** Every forbidden-key path in a JSON tree. */
 function forbiddenPaths(value: unknown, path = '$'): string[] {
   if (Array.isArray(value))
-    return value.flatMap((item, index) => forbiddenPaths(item, `${path}[${index}]`))
+    return value.flatMap((item, index) =>
+      forbiddenPaths(item, `${path}[${index}]`),
+    )
   if (typeof value !== 'object' || value === null) return []
 
   return Object.entries(value).flatMap(([key, child]) => {
@@ -58,13 +60,21 @@ test.group('responses > leak (e2e)', (group) => {
       const response = await client.get(path).cookies(session)
       response.assertStatus(200)
 
-      assert.deepEqual(forbiddenPaths(body(response)), [], `${path}: forbidden key in the response`)
+      assert.deepEqual(
+        forbiddenPaths(body(response)),
+        [],
+        `${path}: forbidden key in the response`,
+      )
       assert.notInclude(
         response.text(),
         FACTORY_PASSWORD,
         `${path}: password value in the response`,
       )
-      assert.notInclude(response.text(), ADMINISTRATOR.password, `${path}: administrator password`)
+      assert.notInclude(
+        response.text(),
+        ADMINISTRATOR.password,
+        `${path}: administrator password`,
+      )
     }
   })
 
@@ -74,13 +84,16 @@ test.group('responses > leak (e2e)', (group) => {
   }) => {
     const session = await authenticateAsAdministrator(client)
 
-    const created = await client.post('/management/users').cookies(session).json({
-      name: 'Nova Conta',
-      email: 'nova@mail.com',
-      role: USER_ROLE.OPERATOR,
-      password: 'Senha1234!',
-      passwordConfirmation: 'Senha1234!',
-    })
+    const created = await client
+      .post('/management/users')
+      .cookies(session)
+      .json({
+        name: 'Nova Conta',
+        email: 'nova@mail.com',
+        role: USER_ROLE.OPERATOR,
+        password: 'Senha1234!',
+        passwordConfirmation: 'Senha1234!',
+      })
     created.assertStatus(201)
     const updated = await client
       .put(`/management/users/${body(created).id}`)
@@ -98,20 +111,36 @@ test.group('responses > leak (e2e)', (group) => {
     client,
     assert,
   }) => {
-    const report = await ReportFactory.apply('identified').merge({ status: 'IN_REVIEW' }).create()
+    const report = await ReportFactory.apply('identified')
+      .merge({ status: 'IN_REVIEW' })
+      .create()
 
-    for (const path of [`/storefront/reports/${report.protocol}`, '/storefront/reports/map']) {
+    for (const path of [
+      `/storefront/reports/${report.protocol}`,
+      '/storefront/reports/map',
+    ]) {
       const response = await client.get(path)
       response.assertStatus(200)
 
-      assert.notInclude(response.text(), report.contact ?? 'no-contact', `${path}: contact`)
-      assert.notInclude(response.text(), report.description ?? 'no-description', `${path}: text`)
+      assert.notInclude(
+        response.text(),
+        report.contact ?? 'no-contact',
+        `${path}: contact`,
+      )
+      assert.notInclude(
+        response.text(),
+        report.description ?? 'no-description',
+        `${path}: text`,
+      )
       assert.notProperty(body(response), 'contact')
     }
   })
 
   test('the scan sees a forbidden key at any level', ({ assert }) => {
-    const leaked = forbiddenPaths({ data: [{ operator: { password: 'x' } }], token: 'y' })
+    const leaked = forbiddenPaths({
+      data: [{ operator: { password: 'x' } }],
+      token: 'y',
+    })
 
     assert.deepEqual(leaked, ['$.data[0].operator.password', '$.token'])
   })

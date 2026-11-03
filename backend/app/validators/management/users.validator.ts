@@ -35,7 +35,13 @@ export const ManagementUserCreateValidator = vine.create({
  * means "leave alone", not "erase".
  */
 export const ManagementUserUpdateValidator = vine.create({
-  name: vine.string().trim().minLength(1).maxLength(120).optional().use(notNull()),
+  name: vine
+    .string()
+    .trim()
+    .minLength(1)
+    .maxLength(120)
+    .optional()
+    .use(notNull()),
   email: email().optional().use(notNull()),
   password: password().optional().use(notNull()),
   role: vine.enum(USER_ROLES).optional().use(notNull()),
@@ -49,8 +55,14 @@ export const ManagementUserPaginateValidator = vine.create({
   status: activeStatus().optional(),
 })
 
-export type ManagementUserCreatePayload = Infer<typeof ManagementUserCreateValidator>
+export type ManagementUserCreatePayload = Infer<
+  typeof ManagementUserCreateValidator
+>
 
-export type ManagementUserUpdatePayload = Infer<typeof ManagementUserUpdateValidator>
+export type ManagementUserUpdatePayload = Infer<
+  typeof ManagementUserUpdateValidator
+>
 
-export type ManagementUserPaginatePayload = Infer<typeof ManagementUserPaginateValidator>
+export type ManagementUserPaginatePayload = Infer<
+  typeof ManagementUserPaginateValidator
+>

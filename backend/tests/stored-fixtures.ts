@@ -35,7 +35,10 @@ export class Stored {
   }
 
   static schedulesOfNeighborhood(neighborhoodId: string) {
-    return CollectionScheduleModel.query().where('neighborhoodId', neighborhoodId)
+    return CollectionScheduleModel.query().where(
+      'neighborhoodId',
+      neighborhoodId,
+    )
   }
 
   static notice(id: string) {
@@ -63,7 +66,9 @@ export class Stored {
   }
 
   static eventsOfReport(reportId: string) {
-    return ReportStatusEventModel.query().where('reportId', reportId).orderBy('at', 'asc')
+    return ReportStatusEventModel.query()
+      .where('reportId', reportId)
+      .orderBy('at', 'asc')
   }
 
   /** Links an uploaded file to a report, as saving the report does. */

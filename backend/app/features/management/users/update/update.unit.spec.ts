@@ -6,7 +6,12 @@ import { SessionRepository } from '#repositories/session/session.repository'
 import { UnitOfWork } from '#repositories/unit-of-work/unit-of-work'
 import { UserRepository } from '#repositories/user/user.repository'
 import { makeWithMemory } from '#tests/container-fixtures'
-import { identityDoubles, OTHER_ID, seedUser, USER_ID } from '#tests/identity-unit-fixtures'
+import {
+  identityDoubles,
+  OTHER_ID,
+  seedUser,
+  USER_ID,
+} from '#tests/identity-unit-fixtures'
 
 async function setup() {
   const doubles = identityDoubles()
@@ -20,7 +25,9 @@ async function setup() {
 }
 
 test.group('management/users > update (unit)', () => {
-  test('changes the name and does not drop the sessions', async ({ assert }) => {
+  test('changes the name and does not drop the sessions', async ({
+    assert,
+  }) => {
     const { users, sessions, useCase } = await setup()
     await seedUser(users)
 
@@ -30,7 +37,9 @@ test.group('management/users > update (unit)', () => {
     assert.deepEqual(sessions.revokedAll, [])
   })
 
-  test('changing the role or deactivating drops the target sessions', async ({ assert }) => {
+  test('changing the role or deactivating drops the target sessions', async ({
+    assert,
+  }) => {
     const { users, sessions, useCase } = await setup()
     await seedUser(users)
 
@@ -49,7 +58,10 @@ test.group('management/users > update (unit)', () => {
 
     const result = await useCase.execute({ id: USER_ID, email: 'bia@mail.com' })
 
-    assert.deepInclude(result.value, { status: 409, code: 'USER_ALREADY_EXISTS' })
+    assert.deepInclude(result.value, {
+      status: 409,
+      code: 'USER_ALREADY_EXISTS',
+    })
     const stored = await users.findById(USER_ID)
     assert.equal(stored?.snapshot().email, 'ana@mail.com')
   })

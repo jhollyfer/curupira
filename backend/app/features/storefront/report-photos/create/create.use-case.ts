@@ -14,7 +14,10 @@ import {
 import { Storage } from '#domain/storage/storage.entity'
 import HTTPException from '#exceptions/http.exception'
 import { StorageRepository } from '#repositories/storage/storage.repository'
-import { MultipartContract, PART_SIZE } from '#services/multipart/multipart.contract'
+import {
+  MultipartContract,
+  PART_SIZE,
+} from '#services/multipart/multipart.contract'
 import { StorageContract } from '#services/storage/storage.contract'
 import type { StorefrontReportPhotoCreatePayload } from '#validators/storefront/report-photos.validator'
 

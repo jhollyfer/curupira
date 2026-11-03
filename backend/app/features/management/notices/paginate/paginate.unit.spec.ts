@@ -15,8 +15,14 @@ test.group('management/notices > paginate (unit)', () => {
       [NoticeRepository, notices],
     ])
     const long = 365 * 24 * 60 * 60 * 1000
-    await seedNotice(notices, { title: 'Ativo', startsAt: new Date(Date.now() - long) })
-    await seedNotice(notices, { title: 'Futuro', startsAt: new Date(Date.now() + long) })
+    await seedNotice(notices, {
+      title: 'Ativo',
+      startsAt: new Date(Date.now() - long),
+    })
+    await seedNotice(notices, {
+      title: 'Futuro',
+      startsAt: new Date(Date.now() + long),
+    })
     await seedNotice(notices, {
       title: 'Passado',
       startsAt: new Date(Date.now() - 2 * long),

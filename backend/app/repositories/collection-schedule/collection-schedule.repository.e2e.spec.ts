@@ -73,7 +73,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
 
     test('save and findById return the same slot', async ({ assert }) => {
       const { repository, neighborhood } = await build()
-      const entity = slot(ONE, await neighborhood('Centro'), { note: 'Até as 9h' })
+      const entity = slot(ONE, await neighborhood('Centro'), {
+        note: 'Até as 9h',
+      })
 
       await repository.save(entity)
       const found = await repository.findById(ONE)
@@ -90,7 +92,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       await repository.save(slot(ONE, centro))
 
       const repeated = await repository.save(slot(TWO, centro))
-      const otherShift = await repository.save(slot(THREE, centro, { shift: 'NIGHT' }))
+      const otherShift = await repository.save(
+        slot(THREE, centro, { shift: 'NIGHT' }),
+      )
 
       assert.deepEqual(repeated.value, { code: 'SCHEDULE_ALREADY_EXISTS' })
       assert.isTrue(otherShift.isRight())
@@ -109,7 +113,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
 
       assert.isTrue(await repository.existsSlot(same))
       assert.isFalse(await repository.existsSlot(same, ONE))
-      assert.isFalse(await repository.existsSlot({ ...same, weekday: 'TUESDAY' }))
+      assert.isFalse(
+        await repository.existsSlot({ ...same, weekday: 'TUESDAY' }),
+      )
     })
 
     test('detail and paginate carry the neighborhood name and cut by neighborhood', async ({
@@ -122,7 +128,11 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       await repository.save(slot(TWO, cohab))
 
       const detail = await repository.detail(ONE)
-      const page = await repository.paginate({ page: 1, perPage: 10, neighborhoodId: cohab })
+      const page = await repository.paginate({
+        page: 1,
+        perPage: 10,
+        neighborhoodId: cohab,
+      })
 
       assert.equal(detail?.neighborhoodName, 'Centro')
       assert.deepEqual(
@@ -139,8 +149,12 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       const centro = await neighborhood('Centro')
       const cohab = await neighborhood('Cohab')
       await repository.save(slot(ONE, centro, { weekday: 'FRIDAY' }))
-      await repository.save(slot(TWO, centro, { weekday: 'MONDAY', shift: 'NIGHT' }))
-      await repository.save(slot(THREE, centro, { weekday: 'MONDAY', shift: 'MORNING' }))
+      await repository.save(
+        slot(TWO, centro, { weekday: 'MONDAY', shift: 'NIGHT' }),
+      )
+      await repository.save(
+        slot(THREE, centro, { weekday: 'MONDAY', shift: 'MORNING' }),
+      )
       await repository.save(slot('7e9c5f4b-6c5d-4fbb-8d4e-3c9a5bafbd24', cohab))
 
       const week = await repository.listWeek(centro)

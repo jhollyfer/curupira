@@ -14,7 +14,8 @@ import { resetDatabase } from '#tests/http-fixtures'
  * against a lying double.
  */
 const IMPLEMENTATIONS = {
-  lucid: async (): Promise<NoticeRepository> => app.container.make(NoticeLucidRepository),
+  lucid: async (): Promise<NoticeRepository> =>
+    app.container.make(NoticeLucidRepository),
   memory: async (): Promise<NoticeRepository> => new NoticeMemoryRepository(),
 } satisfies Record<string, () => Promise<NoticeRepository>>
 
@@ -28,8 +29,20 @@ const IDS = [
   '7e9c5f4b-6c5d-4fbb-8d4e-3c9a5bafbd24',
 ] as const
 
-function notice(id: string, title: string, startsAt: Date, endsAt: Date | null = null): Notice {
-  const created = Notice.create({ id, title, body: 'Texto', startsAt, endsAt, now: NOW })
+function notice(
+  id: string,
+  title: string,
+  startsAt: Date,
+  endsAt: Date | null = null,
+): Notice {
+  const created = Notice.create({
+    id,
+    title,
+    body: 'Texto',
+    startsAt,
+    endsAt,
+    now: NOW,
+  })
   if (created.isLeft()) throw new Error('invalid arrangement')
 
   return created.value
@@ -62,7 +75,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       assert.deepEqual(found?.snapshot().closedAt, NOW)
     })
 
-    test('paginate cuts by the derived status at the given instant', async ({ assert }) => {
+    test('paginate cuts by the derived status at the given instant', async ({
+      assert,
+    }) => {
       const repository = await build()
       await repository.save(notice(IDS[0], 'Ativo', at(-1)))
       await repository.save(notice(IDS[1], 'Futuro', at(2)))
@@ -70,7 +85,13 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       const closed = notice(IDS[3], 'Fechado', at(-1))
       closed.close(NOW)
       await repository.save(closed)
-      const base = { page: 1, perPage: 10, now: NOW, sort: 'title', direction: 'asc' } as const
+      const base = {
+        page: 1,
+        perPage: 10,
+        now: NOW,
+        sort: 'title',
+        direction: 'asc',
+      } as const
       const titles = async (status?: 'ACTIVE' | 'SCHEDULED' | 'CLOSED') => {
         const page = await repository.paginate({ ...base, status })
 
@@ -89,7 +110,13 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       const repository = await build()
       await repository.save(notice(IDS[0], 'Coleta no feriado', at(-1)))
       await repository.save(notice(IDS[1], 'Mutirão', at(-1)))
-      const base = { page: 1, perPage: 10, now: NOW, sort: 'title', direction: 'asc' } as const
+      const base = {
+        page: 1,
+        perPage: 10,
+        now: NOW,
+        sort: 'title',
+        direction: 'asc',
+      } as const
 
       const page = await repository.paginate({ ...base, search: 'feriado' })
 
@@ -99,7 +126,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       )
     })
 
-    test('listActive is only the active ones, the most recent start first', async ({ assert }) => {
+    test('listActive is only the active ones, the most recent start first', async ({
+      assert,
+    }) => {
       const repository = await build()
       await repository.save(notice(IDS[0], 'Antigo', at(-3)))
       await repository.save(notice(IDS[1], 'Recente', at(-1)))

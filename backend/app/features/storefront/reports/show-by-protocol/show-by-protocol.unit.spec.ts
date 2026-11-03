@@ -18,7 +18,9 @@ async function setup() {
 }
 
 test.group('storefront/reports > show-by-protocol (unit)', () => {
-  test('returns only protocol, kind, status, date and the timeline', async ({ assert }) => {
+  test('returns only protocol, kind, status, date and the timeline', async ({
+    assert,
+  }) => {
     const { reports, useCase } = await setup()
     await seedReport(reports, {
       contact: '(97) 99999-0000',
@@ -45,7 +47,9 @@ test.group('storefront/reports > show-by-protocol (unit)', () => {
     assert.notInclude(JSON.stringify(result.value), 'privado')
   })
 
-  test('an unknown protocol and a malformed one answer the same 404', async ({ assert }) => {
+  test('an unknown protocol and a malformed one answer the same 404', async ({
+    assert,
+  }) => {
     const { useCase } = await setup()
 
     const unknown = await useCase.execute({ protocol: 'CUR-ZZZZ-ZZZZ' })

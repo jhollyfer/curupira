@@ -44,7 +44,8 @@ export default class ManagementNoticeUpdateUseCase {
         },
         now,
       )
-      if (updated.isLeft()) return left(NoticeRefusal.http(updated.value, this.i18n))
+      if (updated.isLeft())
+        return left(NoticeRefusal.http(updated.value, this.i18n))
 
       await this.notices.save(notice)
 

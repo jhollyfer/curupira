@@ -56,7 +56,9 @@ const SORT_COLUMNS = {
 } as const
 
 /** The base query of the list, the map and the detail (see `listing`). */
-type ListingQuery = ReturnType<ReturnType<QueryClientContract['from']>['leftJoin']>
+type ListingQuery = ReturnType<
+  ReturnType<QueryClientContract['from']>['leftJoin']
+>
 
 const PROTOCOL_CONSTRAINT = 'reports_protocol_unique'
 
@@ -72,8 +74,14 @@ export class ReportLucidRepository extends ReportRepository {
     if (!row) return null
 
     const [photos, events] = await Promise.all([
-      client.from('report_photos').where('report_id', id).orderBy('position', 'asc'),
-      client.from('report_status_events').where('report_id', id).orderBy('at', 'asc'),
+      client
+        .from('report_photos')
+        .where('report_id', id)
+        .orderBy('position', 'asc'),
+      client
+        .from('report_status_events')
+        .where('report_id', id)
+        .orderBy('at', 'asc'),
     ])
 
     return Report.restore({
@@ -109,7 +117,8 @@ export class ReportLucidRepository extends ReportRepository {
   }
 
   async save(report: Report): Promise<Either<ReportError, void>> {
-    const { id, events, photoIds, createdAt, updatedAt, ...columns } = report.snapshot()
+    const { id, events, photoIds, createdAt, updatedAt, ...columns } =
+      report.snapshot()
     const client = this.transaction.client()
 
     try {
@@ -125,7 +134,10 @@ export class ReportLucidRepository extends ReportRepository {
 
       // The timeline is append-only: only the events the table does not have yet are
       // inserted, so saving after `advance` writes one row and never rewrites history.
-      const known = await client.from('report_status_events').where('report_id', id).select('id')
+      const known = await client
+        .from('report_status_events')
+        .where('report_id', id)
+        .select('id')
       const knownIds = new Set(known.map((event: { id: string }) => event.id))
       const fresh = events.filter((event) => !knownIds.has(event.id))
       if (fresh.length > 0)
@@ -142,7 +154,10 @@ export class ReportLucidRepository extends ReportRepository {
         )
 
       // Photos are attached once, at birth: a report does not change its evidence.
-      const attached = await client.from('report_photos').where('report_id', id).first()
+      const attached = await client
+        .from('report_photos')
+        .where('report_id', id)
+        .first()
       if (!attached && photoIds.length > 0)
         await client.table('report_photos').multiInsert(
           photoIds.map((storageId, position) => ({
@@ -158,14 +173,17 @@ export class ReportLucidRepository extends ReportRepository {
     } catch (error) {
       if (PostgresError.violatedConstraint(error) === PROTOCOL_CONSTRAINT)
         return left({ code: 'REPORT_PROTOCOL_TAKEN' })
-      if (PostgresError.isUniqueViolation(error)) return left({ code: 'REPORT_PHOTO_TAKEN' })
+      if (PostgresError.isUniqueViolation(error))
+        return left({ code: 'REPORT_PHOTO_TAKEN' })
 
       throw error
     }
   }
 
   async delete(report: Report): Promise<void> {
-    await ReportModel.query({ client: this.transaction.client() }).where('id', report.id).delete()
+    await ReportModel.query({ client: this.transaction.client() })
+      .where('id', report.id)
+      .delete()
   }
 
   async photoStorageIds(reportId: string): Promise<string[]> {
@@ -247,13 +265,18 @@ export class ReportLucidRepository extends ReportRepository {
   async paginate(
     criteria: ReportListCriteria,
   ): Promise<Paginated<ManagementReportListItemResponse>> {
-    const query = this.filtered(this.listing(this.transaction.client()), criteria)
+    const query = this.filtered(
+      this.listing(this.transaction.client()),
+      criteria,
+    )
     if (criteria.search) {
       const search = `%${criteria.search}%`
 
       // The `OR` goes inside a subquery: loose, it would escape the filters' `AND`.
       query.where((builder) => {
-        builder.whereILike('reports.protocol', search).orWhereILike('reports.description', search)
+        builder
+          .whereILike('reports.protocol', search)
+          .orWhereILike('reports.description', search)
       })
     }
 
@@ -269,7 +292,9 @@ export class ReportLucidRepository extends ReportRepository {
     }
   }
 
-  async pins(criteria: ReportFilterCriteria): Promise<ManagementReportListItemResponse[]> {
+  async pins(
+    criteria: ReportFilterCriteria,
+  ): Promise<ManagementReportListItemResponse[]> {
     const rows: ListRow[] = await this.filtered(
       this.listing(this.transaction.client()),
       criteria,
@@ -281,16 +306,28 @@ export class ReportLucidRepository extends ReportRepository {
   async statistics(since: Date): Promise<ReportStatistics> {
     const client = this.transaction.client()
     const [byKind, byStatus, byDay] = await Promise.all([
-      client.from('reports').groupBy('kind').select('kind as key').count('* as total'),
-      client.from('reports').groupBy('status').select('status as key').count('* as total'),
+      client
+        .from('reports')
+        .groupBy('kind')
+        .select('kind as key')
+        .count('* as total'),
+      client
+        .from('reports')
+        .groupBy('status')
+        .select('status as key')
+        .count('* as total'),
       client
         .from('reports')
         .where('created_at', '>=', since)
         .select(
-          client.raw(`to_char(created_at at time zone '${LOCAL_TIME_ZONE}', 'YYYY-MM-DD') as day`),
+          client.raw(
+            `to_char(created_at at time zone '${LOCAL_TIME_ZONE}', 'YYYY-MM-DD') as day`,
+          ),
         )
         .count('* as total')
-        .groupByRaw(`to_char(created_at at time zone '${LOCAL_TIME_ZONE}', 'YYYY-MM-DD')`),
+        .groupByRaw(
+          `to_char(created_at at time zone '${LOCAL_TIME_ZONE}', 'YYYY-MM-DD')`,
+        ),
     ])
 
     return {
@@ -301,7 +338,9 @@ export class ReportLucidRepository extends ReportRepository {
           total: Number(row.total),
         })),
       byStatus: byStatus
-        .filter((row: { key: ReportStatus }) => REPORT_STATUSES.includes(row.key))
+        .filter((row: { key: ReportStatus }) =>
+          REPORT_STATUSES.includes(row.key),
+        )
         .map((row: { key: ReportStatus; total: string | number }) => ({
           key: row.key,
           total: Number(row.total),
@@ -313,7 +352,9 @@ export class ReportLucidRepository extends ReportRepository {
     }
   }
 
-  async showByProtocol(protocol: string): Promise<StorefrontReportShowByProtocolResponse | null> {
+  async showByProtocol(
+    protocol: string,
+  ): Promise<StorefrontReportShowByProtocolResponse | null> {
     const client = this.transaction.client()
     // The column list is the whole public surface of this read: nothing else is selected.
     const row: {
@@ -329,7 +370,11 @@ export class ReportLucidRepository extends ReportRepository {
       .first()
     if (!row) return null
 
-    const events: Array<{ status: ReportStatus; message: string | null; at: Date }> = await client
+    const events: Array<{
+      status: ReportStatus
+      message: string | null
+      at: Date
+    }> = await client
       .from('report_status_events')
       .where('report_id', row.id)
       .orderBy('at', 'asc')
@@ -389,15 +434,24 @@ export class ReportLucidRepository extends ReportRepository {
     criteria: ReportFilterCriteria,
   ): TQuery {
     return query
-      .if(criteria.kind, (builder) => builder.where('reports.kind', String(criteria.kind)))
-      .if(criteria.status, (builder) => builder.where('reports.status', String(criteria.status)))
+      .if(criteria.kind, (builder) =>
+        builder.where('reports.kind', String(criteria.kind)),
+      )
+      .if(criteria.status, (builder) =>
+        builder.where('reports.status', String(criteria.status)),
+      )
       .if(criteria.neighborhoodId, (builder) =>
-        builder.where('reports.neighborhood_id', String(criteria.neighborhoodId)),
+        builder.where(
+          'reports.neighborhood_id',
+          String(criteria.neighborhoodId),
+        ),
       )
       .if(criteria.from, (builder) =>
         builder.where('reports.created_at', '>=', criteria.from ?? ''),
       )
-      .if(criteria.to, (builder) => builder.where('reports.created_at', '<=', criteria.to ?? ''))
+      .if(criteria.to, (builder) =>
+        builder.where('reports.created_at', '<=', criteria.to ?? ''),
+      )
   }
 
   private toListItem(row: ListRow): ManagementReportListItemResponse {

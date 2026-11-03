@@ -3,9 +3,17 @@ import { test } from '@japa/runner'
 import { LimiterKey } from '#start/limiter'
 
 test.group('start/limiter > LimiterKey (unit)', () => {
-  test('the account e-mail is normalized: trim and lower case', ({ assert }) => {
-    assert.equal(LimiterKey.account('  Ana@Escola.COM '), 'signin:ana@escola.com')
-    assert.equal(LimiterKey.account('ana@escola.com'), LimiterKey.account('ANA@ESCOLA.COM'))
+  test('the account e-mail is normalized: trim and lower case', ({
+    assert,
+  }) => {
+    assert.equal(
+      LimiterKey.account('  Ana@Escola.COM '),
+      'signin:ana@escola.com',
+    )
+    assert.equal(
+      LimiterKey.account('ana@escola.com'),
+      LimiterKey.account('ANA@ESCOLA.COM'),
+    )
   })
 
   test('without a usable e-mail there is no account key', ({ assert }) => {
@@ -26,7 +34,9 @@ test.group('start/limiter > LimiterKey (unit)', () => {
     assert.isNull(LimiterKey.user('upload', undefined))
   })
 
-  test('the anonymous key hides the IP and keeps one bucket per IP', ({ assert }) => {
+  test('the anonymous key hides the IP and keeps one bucket per IP', ({
+    assert,
+  }) => {
     const key = LimiterKey.anonymous('203.0.113.9', 'secret-a')
 
     assert.notInclude(key, '203.0.113.9')
@@ -43,7 +53,9 @@ test.group('start/limiter > LimiterKey (unit)', () => {
     )
   })
 
-  test('the secret is derived from APP_KEY, never the key itself', ({ assert }) => {
+  test('the secret is derived from APP_KEY, never the key itself', ({
+    assert,
+  }) => {
     const derived = LimiterKey.secretFrom('app-key-value')
 
     assert.notInclude(derived, 'app-key-value')

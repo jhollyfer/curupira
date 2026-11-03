@@ -9,7 +9,10 @@ import type {
   StorefrontNoticeShowResponse,
 } from '@curupira/shared'
 
-import { NoticeRepository, type NoticeListCriteria } from './notice.repository.ts'
+import {
+  NoticeRepository,
+  type NoticeListCriteria,
+} from './notice.repository.ts'
 
 import NoticeModel from '#models/notice'
 import { TransactionContext } from '#core/transaction-context'
@@ -31,7 +34,8 @@ export class NoticeLucidRepository extends NoticeRepository {
   }
 
   async save(notice: Notice): Promise<void> {
-    const { id, startsAt, endsAt, closedAt, createdAt, updatedAt, ...columns } = notice.snapshot()
+    const { id, startsAt, endsAt, closedAt, createdAt, updatedAt, ...columns } =
+      notice.snapshot()
 
     await NoticeModel.updateOrCreate(
       { id },
@@ -51,7 +55,9 @@ export class NoticeLucidRepository extends NoticeRepository {
     await this.query().where('id', notice.id).delete()
   }
 
-  async paginate(criteria: NoticeListCriteria): Promise<Paginated<ManagementNoticeShowResponse>> {
+  async paginate(
+    criteria: NoticeListCriteria,
+  ): Promise<Paginated<ManagementNoticeShowResponse>> {
     const searched = this.query().if(criteria.search, (builder) =>
       builder.whereILike('title', `%${criteria.search}%`),
     )
@@ -68,10 +74,11 @@ export class NoticeLucidRepository extends NoticeRepository {
   }
 
   async listActive(now: Date): Promise<StorefrontNoticeShowResponse[]> {
-    const rows = await this.byStatus(this.query(), NOTICE_STATUS.ACTIVE, now).orderBy(
-      'startsAt',
-      'desc',
-    )
+    const rows = await this.byStatus(
+      this.query(),
+      NOTICE_STATUS.ACTIVE,
+      now,
+    ).orderBy('startsAt', 'desc')
 
     return rows.map((row) => ({
       id: row.id,
@@ -83,26 +90,39 @@ export class NoticeLucidRepository extends NoticeRepository {
   }
 
   /** No status asked means no cut. */
-  private cutByStatus(query: NoticeQuery, status: NoticeStatus | undefined, at: Date): NoticeQuery {
+  private cutByStatus(
+    query: NoticeQuery,
+    status: NoticeStatus | undefined,
+    at: Date,
+  ): NoticeQuery {
     if (!status) return query
 
     return this.byStatus(query, status, at)
   }
 
   /** The same three-way rule as `Notice.statusOf`, expressed as SQL. */
-  private byStatus(query: NoticeQuery, status: NoticeStatus, at: Date): NoticeQuery {
+  private byStatus(
+    query: NoticeQuery,
+    status: NoticeStatus,
+    at: Date,
+  ): NoticeQuery {
     const cuts = {
-      [NOTICE_STATUS.SCHEDULED]: () => query.whereNull('closedAt').where('startsAt', '>', at),
+      [NOTICE_STATUS.SCHEDULED]: () =>
+        query.whereNull('closedAt').where('startsAt', '>', at),
       [NOTICE_STATUS.ACTIVE]: () =>
         query
           .whereNull('closedAt')
           .where('startsAt', '<=', at)
-          .where((builder) => builder.whereNull('endsAt').orWhere('endsAt', '>', at)),
+          .where((builder) =>
+            builder.whereNull('endsAt').orWhere('endsAt', '>', at),
+          ),
       [NOTICE_STATUS.CLOSED]: () =>
         query.where((builder) =>
           builder
             .whereNotNull('closedAt')
-            .orWhere((ended) => ended.whereNotNull('endsAt').where('endsAt', '<=', at)),
+            .orWhere((ended) =>
+              ended.whereNotNull('endsAt').where('endsAt', '<=', at),
+            ),
         ),
     } satisfies Record<NoticeStatus, () => NoticeQuery>
 
@@ -126,7 +146,10 @@ export class NoticeLucidRepository extends NoticeRepository {
     })
   }
 
-  private toResponse(row: NoticeModel, now: Date): ManagementNoticeShowResponse {
+  private toResponse(
+    row: NoticeModel,
+    now: Date,
+  ): ManagementNoticeShowResponse {
     return {
       id: row.id,
       title: row.title,

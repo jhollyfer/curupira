@@ -27,7 +27,9 @@ async function setup() {
 }
 
 test.group('management/reports > update-status (unit)', () => {
-  test('advances, records who did it and what they said', async ({ assert }) => {
+  test('advances, records who did it and what they said', async ({
+    assert,
+  }) => {
     const { reports, useCase } = await setup()
     const seeded = await seedReport(reports)
     const { id } = seeded.snapshot()
@@ -51,15 +53,24 @@ test.group('management/reports > update-status (unit)', () => {
     assert.equal(stored?.snapshot().status, 'IN_REVIEW')
   })
 
-  test('going back is 422 REPORT_STATUS_REGRESSION and writes nothing', async ({ assert }) => {
+  test('going back is 422 REPORT_STATUS_REGRESSION and writes nothing', async ({
+    assert,
+  }) => {
     const { reports, useCase } = await setup()
     const seeded = await seedReport(reports)
     const { id } = seeded.snapshot()
     await useCase.execute({ id, status: 'FORWARDED', actor: ACTOR })
 
-    const result = await useCase.execute({ id, status: 'IN_REVIEW', actor: ACTOR })
+    const result = await useCase.execute({
+      id,
+      status: 'IN_REVIEW',
+      actor: ACTOR,
+    })
 
-    assert.deepInclude(result.value, { status: 422, code: 'REPORT_STATUS_REGRESSION' })
+    assert.deepInclude(result.value, {
+      status: 422,
+      code: 'REPORT_STATUS_REGRESSION',
+    })
     const stored = await reports.findById(id)
     assert.lengthOf(stored?.snapshot().events ?? [], 2)
   })

@@ -99,7 +99,8 @@ export class User {
     now: Date,
   ): Either<UserError, UserUpdateEffects> {
     if (changes.password) {
-      if (!proof.currentConfirmed) return left({ code: 'CURRENT_PASSWORD_INVALID' })
+      if (!proof.currentConfirmed)
+        return left({ code: 'CURRENT_PASSWORD_INVALID' })
       if (proof.sameAsCurrent) return left({ code: 'PASSWORD_SAME_AS_CURRENT' })
     }
 
@@ -125,8 +126,10 @@ export class User {
    * token would survive the access change.
    */
   private apply(changes: UserChanges, now: Date): UserUpdateEffects {
-    const emailChanged = changes.email !== undefined && changes.email !== this.props.email
-    const roleChanged = changes.role !== undefined && changes.role !== this.props.role
+    const emailChanged =
+      changes.email !== undefined && changes.email !== this.props.email
+    const roleChanged =
+      changes.role !== undefined && changes.role !== this.props.role
     const deactivated = changes.status === ACTIVE_STATUS.INACTIVE
 
     if (changes.name !== undefined) this.props.name = changes.name
@@ -138,7 +141,8 @@ export class User {
     this.props.updatedAt = now
 
     return {
-      revokesSessions: emailChanged || Boolean(changes.password) || roleChanged || deactivated,
+      revokesSessions:
+        emailChanged || Boolean(changes.password) || roleChanged || deactivated,
     }
   }
 }

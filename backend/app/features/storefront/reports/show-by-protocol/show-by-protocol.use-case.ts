@@ -32,14 +32,18 @@ export default class StorefrontReportShowByProtocolUseCase {
     try {
       // The validator brought the protocol to the canonical shape; one that still does not fit
       // can match no report, and answers like an unknown one so nothing is learned from the shape.
-      if (!PROTOCOL_PATTERN.test(payload.protocol)) return left(ReportRefusal.notFound(this.i18n))
+      if (!PROTOCOL_PATTERN.test(payload.protocol))
+        return left(ReportRefusal.notFound(this.i18n))
 
       const report = await this.reports.showByProtocol(payload.protocol)
       if (!report) return left(ReportRefusal.notFound(this.i18n))
 
       return right(report)
     } catch (error) {
-      logger.error({ err: error }, '[storefront/reports > show-by-protocol][error]')
+      logger.error(
+        { err: error },
+        '[storefront/reports > show-by-protocol][error]',
+      )
 
       return left(
         HTTPException.InternalServerError(

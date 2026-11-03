@@ -1,7 +1,12 @@
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementReportStatsResponse } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementReportStatsResponse,
+} from '@curupira/shared'
 
 import { ReportPresenter, STATS_DAYS } from '../reports.presenter.ts'
 
@@ -21,9 +26,13 @@ export default class ManagementReportStatsUseCase {
     try {
       const now = new Date()
       // One day more than the series shows, so the earliest local day is never cut at midnight UTC.
-      const since = new Date(now.getTime() - (STATS_DAYS + 1) * 24 * 60 * 60 * 1000)
+      const since = new Date(
+        now.getTime() - (STATS_DAYS + 1) * 24 * 60 * 60 * 1000,
+      )
 
-      return right(ReportPresenter.stats(await this.reports.statistics(since), now))
+      return right(
+        ReportPresenter.stats(await this.reports.statistics(since), now),
+      )
     } catch (error) {
       logger.error({ err: error }, '[management/reports > stats][error]')
 

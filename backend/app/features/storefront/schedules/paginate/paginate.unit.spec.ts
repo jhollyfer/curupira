@@ -9,7 +9,9 @@ import { seedSchedule } from '#tests/domain-unit-fixtures'
 import { rightOf } from '#tests/result-unit-fixtures'
 
 test.group('storefront/schedules > paginate (unit)', () => {
-  test('returns the whole week in week order (Sunday first), then by shift', async ({ assert }) => {
+  test('returns the whole week in week order (Sunday first), then by shift', async ({
+    assert,
+  }) => {
     const schedules = MemoryRepositories.schedules()
     const useCase = await makeWithMemory(StorefrontSchedulePaginateUseCase, [
       [CollectionScheduleRepository, schedules],
@@ -27,7 +29,9 @@ test.group('storefront/schedules > paginate (unit)', () => {
     )
   })
 
-  test('cuts to one neighborhood and never carries the management fields', async ({ assert }) => {
+  test('cuts to one neighborhood and never carries the management fields', async ({
+    assert,
+  }) => {
     const schedules = MemoryRepositories.schedules()
     const useCase = await makeWithMemory(StorefrontSchedulePaginateUseCase, [
       [CollectionScheduleRepository, schedules],

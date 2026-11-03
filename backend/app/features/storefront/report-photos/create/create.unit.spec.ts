@@ -24,7 +24,9 @@ async function setup() {
 }
 
 test.group('storefront/report-photos > create (unit)', () => {
-  test('opens a PENDING single-part upload and returns the signed PUT', async ({ assert }) => {
+  test('opens a PENDING single-part upload and returns the signed PUT', async ({
+    assert,
+  }) => {
     const { storages, useCase } = await setup()
 
     const result = await useCase.execute({ mimetype: 'image/jpeg', size: 2048 })
@@ -46,7 +48,9 @@ test.group('storefront/report-photos > create (unit)', () => {
   }) => {
     const { storages, useCase } = await setup()
 
-    const { id } = rightOf(await useCase.execute({ mimetype: 'image/png', size: 10 }))
+    const { id } = rightOf(
+      await useCase.execute({ mimetype: 'image/png', size: 10 }),
+    )
 
     const stored = await storages.findById(id)
     assert.isTrue(stored?.isReportPhoto())
@@ -60,7 +64,9 @@ test.group('storefront/report-photos > create (unit)', () => {
     assert.deepEqual(multipart.singleExpiries, [180])
   })
 
-  test('the stored label is generated, never a sender-chosen name', async ({ assert }) => {
+  test('the stored label is generated, never a sender-chosen name', async ({
+    assert,
+  }) => {
     const { storages, useCase } = await setup()
 
     const result = await useCase.execute({ mimetype: 'image/png', size: 10 })
@@ -70,7 +76,9 @@ test.group('storefront/report-photos > create (unit)', () => {
     assert.equal(stored?.snapshot().originalName, 'report-photo.png')
   })
 
-  test('storage failure is 500 STOREFRONT_REPORT_PHOTO_CREATE_ERROR', async ({ assert }) => {
+  test('storage failure is 500 STOREFRONT_REPORT_PHOTO_CREATE_ERROR', async ({
+    assert,
+  }) => {
     const { storages, useCase } = await setup()
     storages.save = async () => {
       throw new Error('database down')
@@ -78,6 +86,9 @@ test.group('storefront/report-photos > create (unit)', () => {
 
     const result = await useCase.execute({ mimetype: 'image/webp', size: 10 })
 
-    assert.deepInclude(result.value, { status: 500, code: 'STOREFRONT_REPORT_PHOTO_CREATE_ERROR' })
+    assert.deepInclude(result.value, {
+      status: 500,
+      code: 'STOREFRONT_REPORT_PHOTO_CREATE_ERROR',
+    })
   })
 })

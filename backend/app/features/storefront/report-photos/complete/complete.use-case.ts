@@ -1,7 +1,12 @@
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { REPORT_PHOTO_MIMETYPES, left, right, type Either } from '@curupira/shared'
+import {
+  REPORT_PHOTO_MIMETYPES,
+  left,
+  right,
+  type Either,
+} from '@curupira/shared'
 
 import { ReportPhotoRefusal } from '../_shared.report-photo-refusal.ts'
 
@@ -35,7 +40,10 @@ export default class StorefrontReportPhotoCompleteUseCase {
       await this.bucket.discard(storage.snapshot().path)
       await this.storages.delete(storage)
     } catch (error) {
-      logger.error({ err: error }, '[storefront/report-photos > complete][discard][error]')
+      logger.error(
+        { err: error },
+        '[storefront/report-photos > complete][discard][error]',
+      )
     }
   }
 
@@ -48,9 +56,12 @@ export default class StorefrontReportPhotoCompleteUseCase {
       // Only a pending image of this flow is touched. An already confirmed file is left exactly
       // as it is: re-encoding someone else's file because its uuid was sent here would be an
       // anonymous write over it. Confirmed means the answer to a retry is simply "done".
-      if (!storage.isReportPhoto()) return left(ReportPhotoRefusal.notFound(this.i18n))
+      if (!storage.isReportPhoto())
+        return left(ReportPhotoRefusal.notFound(this.i18n))
       if (storage.isUploaded()) return right(null)
-      if (!REPORT_PHOTO_MIMETYPES.some((mimetype) => mimetype === file.mimetype))
+      if (
+        !REPORT_PHOTO_MIMETYPES.some((mimetype) => mimetype === file.mimetype)
+      )
         return left(ReportPhotoRefusal.notFound(this.i18n))
 
       const metadata = await this.bucket.metadata(file.path)
@@ -81,7 +92,10 @@ export default class StorefrontReportPhotoCompleteUseCase {
 
       return right(null)
     } catch (error) {
-      logger.error({ err: error }, '[storefront/report-photos > complete][error]')
+      logger.error(
+        { err: error },
+        '[storefront/report-photos > complete][error]',
+      )
 
       return left(
         HTTPException.InternalServerError(

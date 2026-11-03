@@ -47,7 +47,9 @@ export class LimiterKey {
   private static derivedSecret: string | undefined
 
   private static ipSecret(): string {
-    LimiterKey.derivedSecret ??= LimiterKey.secretFrom(env.get('APP_KEY').release())
+    LimiterKey.derivedSecret ??= LimiterKey.secretFrom(
+      env.get('APP_KEY').release(),
+    )
 
     return LimiterKey.derivedSecret
   }
@@ -57,7 +59,9 @@ export class LimiterKey {
    * the HMAC key itself, so rotating it rotates the buckets and nothing else leaks from it.
    */
   static secretFrom(appKey: string): string {
-    return createHmac('sha256', appKey).update('curupira:rate-limit:ip').digest('hex')
+    return createHmac('sha256', appKey)
+      .update('curupira:rate-limit:ip')
+      .digest('hex')
   }
 
   /**
@@ -65,7 +69,10 @@ export class LimiterKey {
    * ceiling only exists after `auth()`, and inventing a key would put
    * all anonymous users in a single bucket.
    */
-  static user(scope: string, user: { readonly id: string } | undefined): string | null {
+  static user(
+    scope: string,
+    user: { readonly id: string } | undefined,
+  ): string | null {
     if (!user) return null
 
     return `${scope}:${user.id}`
@@ -108,16 +115,23 @@ export const signInThrottle = limiter.define('signIn', function () {
  * who forgot their own password runs into, and locking them out by mistake is the abuse
  * it could cause itself.
  */
-export const signInAccountThrottle = limiter.define('signInAccount', function (context) {
-  // Normalized before the validator, because the limit runs before it.
-  const key = LimiterKey.account(context.request.input('email'))
+export const signInAccountThrottle = limiter.define(
+  'signInAccount',
+  function (context) {
+    // Normalized before the validator, because the limit runs before it.
+    const key = LimiterKey.account(context.request.input('email'))
 
-  // Inventing a key for the malformed body would put every invalid request in a
-  // single bucket, and twenty of them would lock out the login of someone who did nothing.
-  if (!key) return null
+    // Inventing a key for the malformed body would put every invalid request in a
+    // single bucket, and twenty of them would lock out the login of someone who did nothing.
+    if (!key) return null
 
-  return limiter.allowRequests(20).every('1 hour').blockFor('10 mins').usingKey(key)
-})
+    return limiter
+      .allowRequests(20)
+      .every('1 hour')
+      .blockFor('10 mins')
+      .usingKey(key)
+  },
+)
 
 /**
  * Session renewal, by IP. It stays outside `auth()` and writes a cookie: the refresh
@@ -147,13 +161,20 @@ export const uploadThrottle = limiter.define('upload', function (context) {
  * E-mail and password change (`PUT /account`), per user: it requires the current
  * password, and without a ceiling the route serves as a password oracle for whoever stole a session.
  */
-export const accountUpdateThrottle = limiter.define('accountUpdate', function (context) {
-  const key = LimiterKey.user('account-update', context.auth.user)
+export const accountUpdateThrottle = limiter.define(
+  'accountUpdate',
+  function (context) {
+    const key = LimiterKey.user('account-update', context.auth.user)
 
-  if (!key) return null
+    if (!key) return null
 
-  return limiter.allowRequests(10).every('1 hour').blockFor('10 mins').usingKey(key)
-})
+    return limiter
+      .allowRequests(10)
+      .every('1 hour')
+      .blockFor('10 mins')
+      .usingKey(key)
+  },
+)
 
 /**
  * The anonymous report routes, **by IP**: there is no account to count, and the IP is all
@@ -163,49 +184,61 @@ export const accountUpdateThrottle = limiter.define('accountUpdate', function (c
  * hundreds would bury the team's queue, and `blockFor` turns blowing the ceiling into a
  * cost instead of a one-minute pause.
  */
-export const reportCreateThrottle = limiter.define('reportCreate', function (context) {
-  return limiter
-    .allowRequests(10)
-    .every('1 hour')
-    .blockFor('10 mins')
-    .usingKey(LimiterKey.byIp(context.request.ip()))
-})
+export const reportCreateThrottle = limiter.define(
+  'reportCreate',
+  function (context) {
+    return limiter
+      .allowRequests(10)
+      .every('1 hour')
+      .blockFor('10 mins')
+      .usingKey(LimiterKey.byIp(context.request.ip()))
+  },
+)
 
 /**
  * The photo upload (open and confirm), by IP. Each report carries up to 3 photos and each
  * photo is two requests, plus retries on a bad connection - hence higher than the report
  * ceiling. It also bounds the `PENDING` rows an anonymous caller can create.
  */
-export const reportPhotoThrottle = limiter.define('reportPhoto', function (context) {
-  return limiter
-    .allowRequests(60)
-    .every('1 hour')
-    .blockFor('10 mins')
-    .usingKey(LimiterKey.byIp(context.request.ip()))
-})
+export const reportPhotoThrottle = limiter.define(
+  'reportPhoto',
+  function (context) {
+    return limiter
+      .allowRequests(60)
+      .every('1 hour')
+      .blockFor('10 mins')
+      .usingKey(LimiterKey.byIp(context.request.ip()))
+  },
+)
 
 /**
  * The protocol lookup, by IP. The protocol is the only key to the status page: 2^40
  * combinations make a walk hopeless on their own, and the ceiling makes it also expensive.
  * Generous enough for a resident who reloads the page to see if the status moved.
  */
-export const reportLookupThrottle = limiter.define('reportLookup', function (context) {
-  return limiter
-    .allowRequests(30)
-    .every('10 mins')
-    .blockFor('10 mins')
-    .usingKey(LimiterKey.byIp(context.request.ip()))
-})
+export const reportLookupThrottle = limiter.define(
+  'reportLookup',
+  function (context) {
+    return limiter
+      .allowRequests(30)
+      .every('10 mins')
+      .blockFor('10 mins')
+      .usingKey(LimiterKey.byIp(context.request.ip()))
+  },
+)
 
 /**
  * The public map, by IP. It is a cheap read, but anonymous and the biggest response of the
  * public block, so a script polling it is a free way to burn the database and the
  * bandwidth. One load per page view and a refresh every ten seconds fit comfortably.
  */
-export const reportMapThrottle = limiter.define('reportMap', function (context) {
-  return limiter
-    .allowRequests(60)
-    .every('10 mins')
-    .blockFor('10 mins')
-    .usingKey(LimiterKey.byIp(context.request.ip()))
-})
+export const reportMapThrottle = limiter.define(
+  'reportMap',
+  function (context) {
+    return limiter
+      .allowRequests(60)
+      .every('10 mins')
+      .blockFor('10 mins')
+      .usingKey(LimiterKey.byIp(context.request.ip()))
+  },
+)

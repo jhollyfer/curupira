@@ -1,7 +1,11 @@
 import { test } from '@japa/runner'
 
 import { NeighborhoodFactory } from '#database/factories/neighborhood.factory'
-import { authenticateAsAdministrator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsAdministrator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 
 test.group('management/neighborhoods > show', (group) => {
   group.each.setup(() => resetDatabase())
@@ -15,7 +19,10 @@ test.group('management/neighborhoods > show', (group) => {
       .cookies(session)
 
     response.assertStatus(200)
-    assert.deepInclude(body(response), { id: neighborhood.id, name: neighborhood.name })
+    assert.deepInclude(body(response), {
+      id: neighborhood.id,
+      name: neighborhood.name,
+    })
     assert.isNumber(body(response).latitude)
   })
 

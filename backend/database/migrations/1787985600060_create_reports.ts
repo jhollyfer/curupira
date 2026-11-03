@@ -6,7 +6,10 @@ export default class extends BaseSchema {
 
   override async up(): Promise<void> {
     this.schema.createTable(this.tableName, (table) => {
-      table.uuid('id').primary().defaultTo(this.db.knexRawQuery('uuid_generate_v4()'))
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(this.db.knexRawQuery('uuid_generate_v4()'))
       // The only key to the public status page, so it is drawn, not sequenced.
       table.string('protocol', 20).notNullable().unique()
       table.enum('kind', REPORT_KINDS).notNullable()

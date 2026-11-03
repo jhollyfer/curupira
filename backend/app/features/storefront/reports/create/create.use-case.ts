@@ -3,7 +3,12 @@ import { randomUUID } from 'node:crypto'
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type StorefrontReportCreateResponse } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type StorefrontReportCreateResponse,
+} from '@curupira/shared'
 
 import { ReportRefusal } from '#features/management/reports/_shared.report-refusal'
 import { FileRefusal } from '#features/storages/files/_shared.file-refusal'
@@ -44,7 +49,9 @@ export default class StorefrontReportCreateUseCase {
       if (!(await this.storages.areReportPhotos(payload.photoIds)))
         return left(FileRefusal.attachmentNotFound('photoIds', this.i18n))
       if (await this.reports.anyPhotoTaken(payload.photoIds))
-        return left(ReportRefusal.http({ code: 'REPORT_PHOTO_TAKEN' }, this.i18n))
+        return left(
+          ReportRefusal.http({ code: 'REPORT_PHOTO_TAKEN' }, this.i18n),
+        )
 
       const neighborhoodId = await this.neighborhoods.nearestTo(payload)
       const now = new Date()
@@ -68,14 +75,20 @@ export default class StorefrontReportCreateUseCase {
           now,
         })
 
-        const written = await this.unitOfWork.run(() => this.reports.save(report))
-        if (written.isRight()) return right({ protocol: report.snapshot().protocol })
+        const written = await this.unitOfWork.run(() =>
+          this.reports.save(report),
+        )
+        if (written.isRight())
+          return right({ protocol: report.snapshot().protocol })
 
         refusal = ReportRefusal.http(written.value, this.i18n)
         if (written.value.code !== 'REPORT_PROTOCOL_TAKEN') break
       }
 
-      return left(refusal ?? ReportRefusal.http({ code: 'REPORT_PROTOCOL_TAKEN' }, this.i18n))
+      return left(
+        refusal ??
+          ReportRefusal.http({ code: 'REPORT_PROTOCOL_TAKEN' }, this.i18n),
+      )
     } catch (error) {
       logger.error({ err: error }, '[storefront/reports > create][error]')
 

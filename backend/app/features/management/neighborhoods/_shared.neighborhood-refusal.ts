@@ -24,16 +24,27 @@ export class NeighborhoodRefusal extends RefusalBase {
         { latitude: i18n.t('neighborhoods.center_incomplete_field') },
       ),
     NEIGHBORHOOD_IN_USE: (_fact, i18n) =>
-      HTTPException.Conflict(i18n.t('neighborhoods.in_use'), 'NEIGHBORHOOD_IN_USE'),
+      HTTPException.Conflict(
+        i18n.t('neighborhoods.in_use'),
+        'NEIGHBORHOOD_IN_USE',
+      ),
   } satisfies RefusalTable<NeighborhoodError>
 
   static http(error: NeighborhoodError, i18n: I18n): HTTPException {
-    return NeighborhoodRefusal.translate(NeighborhoodRefusal.TABLE, error.code, error, i18n)
+    return NeighborhoodRefusal.translate(
+      NeighborhoodRefusal.TABLE,
+      error.code,
+      error,
+      i18n,
+    )
   }
 
   /** A neighborhood id that does not exist, wherever it arrives (path or payload). */
   static notFound(i18n: I18n): HTTPException {
-    return HTTPException.NotFound(i18n.t('neighborhoods.not_found'), 'NEIGHBORHOOD_NOT_FOUND')
+    return HTTPException.NotFound(
+      i18n.t('neighborhoods.not_found'),
+      'NEIGHBORHOOD_NOT_FOUND',
+    )
   }
 
   /** The same fact when it came in a payload: a 422 pointing at the field, never a 404. */

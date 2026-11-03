@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto'
 
-import { REPORT_KIND, WASTE_TYPE, WEEKDAY, COLLECTION_SHIFT } from '@curupira/shared'
+import {
+  REPORT_KIND,
+  WASTE_TYPE,
+  WEEKDAY,
+  COLLECTION_SHIFT,
+} from '@curupira/shared'
 
 import { CollectionSchedule } from '#domain/collection-schedule/collection-schedule.entity'
 import { Neighborhood } from '#domain/neighborhood/neighborhood.entity'
@@ -20,7 +25,12 @@ export async function seedNeighborhood(
   name = 'Centro',
   center?: { readonly latitude: number; readonly longitude: number },
 ): Promise<string> {
-  const created = Neighborhood.create({ id: randomUUID(), name, ...center, now: NOW })
+  const created = Neighborhood.create({
+    id: randomUUID(),
+    name,
+    ...center,
+    now: NOW,
+  })
   if (created.isLeft()) throw new Error('invalid arrangement')
   await neighborhoods.save(created.value)
 

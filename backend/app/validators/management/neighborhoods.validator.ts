@@ -25,7 +25,13 @@ export const ManagementNeighborhoodCreateValidator = vine.create({
 })
 
 export const ManagementNeighborhoodUpdateValidator = vine.create({
-  name: vine.string().trim().minLength(1).maxLength(80).optional().use(notNull()),
+  name: vine
+    .string()
+    .trim()
+    .minLength(1)
+    .maxLength(80)
+    .optional()
+    .use(notNull()),
   latitude: latitude().nullable().optional(),
   longitude: longitude().nullable().optional(),
 })

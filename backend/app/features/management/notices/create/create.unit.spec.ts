@@ -9,7 +9,9 @@ import { leftOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const notices = MemoryRepositories.notices()
-  const useCase = await makeWithMemory(ManagementNoticeCreateUseCase, [[NoticeRepository, notices]])
+  const useCase = await makeWithMemory(ManagementNoticeCreateUseCase, [
+    [NoticeRepository, notices],
+  ])
 
   return { notices, useCase }
 }
@@ -20,16 +22,26 @@ test.group('management/notices > create (unit)', () => {
   test('publishes an active notice with no end', async ({ assert }) => {
     const { useCase } = await setup()
 
-    const result = await useCase.execute({ ...BASE, startsAt: '2020-01-01T00:00:00-04:00' })
+    const result = await useCase.execute({
+      ...BASE,
+      startsAt: '2020-01-01T00:00:00-04:00',
+    })
 
     assert.isTrue(result.isRight())
-    assert.deepInclude(result.value, { title: BASE.title, status: 'ACTIVE', endsAt: null })
+    assert.deepInclude(result.value, {
+      title: BASE.title,
+      status: 'ACTIVE',
+      endsAt: null,
+    })
   })
 
   test('a start in the future is SCHEDULED', async ({ assert }) => {
     const { useCase } = await setup()
 
-    const result = await useCase.execute({ ...BASE, startsAt: '2999-01-01T00:00:00Z' })
+    const result = await useCase.execute({
+      ...BASE,
+      startsAt: '2999-01-01T00:00:00Z',
+    })
 
     assert.deepInclude(result.value, { status: 'SCHEDULED' })
   })
@@ -45,7 +57,10 @@ test.group('management/notices > create (unit)', () => {
       endsAt: '2030-01-01T00:00:00Z',
     })
 
-    assert.deepInclude(result.value, { status: 422, code: 'NOTICE_INVALID_PERIOD' })
+    assert.deepInclude(result.value, {
+      status: 422,
+      code: 'NOTICE_INVALID_PERIOD',
+    })
     assert.property(leftOf(result).errors ?? {}, 'endsAt')
   })
 })

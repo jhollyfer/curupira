@@ -1,7 +1,11 @@
 import { randomUUID } from 'node:crypto'
 
 import drive from '@adonisjs/drive/services/main'
-import { STORAGE_EXTENSIONS, STORAGE_SIGNATURE_BYTES, type StorageMimetype } from '@curupira/shared'
+import {
+  STORAGE_EXTENSIONS,
+  STORAGE_SIGNATURE_BYTES,
+  type StorageMimetype,
+} from '@curupira/shared'
 
 import { REPORT_PHOTO_KEY_PREFIX } from '#core/report-photo-key'
 import {
@@ -91,7 +95,11 @@ export default class StorageService extends StorageContract {
   }
 
   /** Replaces the object under the same key, with the declared type. */
-  async overwrite(path: string, bytes: Uint8Array, mimetype: string): Promise<void> {
+  async overwrite(
+    path: string,
+    bytes: Uint8Array,
+    mimetype: string,
+  ): Promise<void> {
     await drive.use().put(path, bytes, { contentType: mimetype })
   }
 

@@ -5,8 +5,16 @@ export default class extends BaseSchema {
 
   override async up(): Promise<void> {
     this.schema.createTable(this.tableName, (table) => {
-      table.uuid('id').primary().defaultTo(this.db.knexRawQuery('uuid_generate_v4()'))
-      table.uuid('report_id').notNullable().references('id').inTable('reports').onDelete('CASCADE')
+      table
+        .uuid('id')
+        .primary()
+        .defaultTo(this.db.knexRawQuery('uuid_generate_v4()'))
+      table
+        .uuid('report_id')
+        .notNullable()
+        .references('id')
+        .inTable('reports')
+        .onDelete('CASCADE')
       // `unique`: one upload serves one report, so a photo id leaked or guessed cannot be
       // attached to a second report. `RESTRICT` keeps the file from being deleted from
       // the library while a report still shows it (the in-use check reads this table).

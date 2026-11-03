@@ -56,7 +56,8 @@ export default class StoragesPrune extends BaseCommand {
     const { default: Storage } = await import('#models/storage')
     const { default: StoragesFileDeleteUseCase } =
       await import('#features/storages/files/delete/delete.use-case')
-    const { StorageRepository } = await import('#repositories/storage/storage.repository')
+    const { StorageRepository } =
+      await import('#repositories/storage/storage.repository')
     const { UPLOAD_STATUS } = await import('@curupira/shared')
 
     const hours = this.hours ?? DEFAULT_HOURS
@@ -84,7 +85,11 @@ export default class StoragesPrune extends BaseCommand {
       ...unclaimed.map((storage) => {
         const { id, originalName, createdAt } = storage.snapshot()
 
-        return { id, originalName, createdAt: DateTime.fromJSDate(createdAt ?? new Date(0)) }
+        return {
+          id,
+          originalName,
+          createdAt: DateTime.fromJSDate(createdAt ?? new Date(0)),
+        }
       }),
     ]
 
@@ -95,10 +100,14 @@ export default class StoragesPrune extends BaseCommand {
 
     if (this.dryRun) {
       for (const storage of abandoned) {
-        this.logger.info(`${storage.id} ${storage.originalName} (${storage.createdAt?.toISO()})`)
+        this.logger.info(
+          `${storage.id} ${storage.originalName} (${storage.createdAt?.toISO()})`,
+        )
       }
 
-      this.logger.info(`${abandoned.length} upload(s) would be deleted. Nothing was touched.`)
+      this.logger.info(
+        `${abandoned.length} upload(s) would be deleted. Nothing was touched.`,
+      )
       return
     }
 

@@ -12,16 +12,28 @@ import type { CollectionScheduleError } from '#domain/collection-schedule/collec
 export class ScheduleRefusal extends RefusalBase {
   private static readonly TABLE = {
     SCHEDULE_ALREADY_EXISTS: (_fact, i18n) =>
-      HTTPException.Conflict(i18n.t('schedules.already_exists'), 'SCHEDULE_ALREADY_EXISTS', {
-        weekday: i18n.t('schedules.slot_taken'),
-      }),
+      HTTPException.Conflict(
+        i18n.t('schedules.already_exists'),
+        'SCHEDULE_ALREADY_EXISTS',
+        {
+          weekday: i18n.t('schedules.slot_taken'),
+        },
+      ),
   } satisfies RefusalTable<CollectionScheduleError>
 
   static http(error: CollectionScheduleError, i18n: I18n): HTTPException {
-    return ScheduleRefusal.translate(ScheduleRefusal.TABLE, error.code, error, i18n)
+    return ScheduleRefusal.translate(
+      ScheduleRefusal.TABLE,
+      error.code,
+      error,
+      i18n,
+    )
   }
 
   static notFound(i18n: I18n): HTTPException {
-    return HTTPException.NotFound(i18n.t('schedules.not_found'), 'SCHEDULE_NOT_FOUND')
+    return HTTPException.NotFound(
+      i18n.t('schedules.not_found'),
+      'SCHEDULE_NOT_FOUND',
+    )
   }
 }

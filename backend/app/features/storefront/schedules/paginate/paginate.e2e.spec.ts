@@ -13,11 +13,19 @@ test.group('storefront/schedules > paginate', (group) => {
   }) => {
     const mine = await NeighborhoodFactory.create()
     const other = await NeighborhoodFactory.create()
-    await CollectionScheduleFactory.merge({ neighborhoodId: mine.id, weekday: 'FRIDAY' }).create()
-    await CollectionScheduleFactory.merge({ neighborhoodId: mine.id, weekday: 'MONDAY' }).create()
+    await CollectionScheduleFactory.merge({
+      neighborhoodId: mine.id,
+      weekday: 'FRIDAY',
+    }).create()
+    await CollectionScheduleFactory.merge({
+      neighborhoodId: mine.id,
+      weekday: 'MONDAY',
+    }).create()
     await CollectionScheduleFactory.merge({ neighborhoodId: other.id }).create()
 
-    const response = await client.get(`/storefront/schedules?neighborhoodId=${mine.id}`)
+    const response = await client.get(
+      `/storefront/schedules?neighborhoodId=${mine.id}`,
+    )
 
     response.assertStatus(200)
     assert.deepEqual(
@@ -35,7 +43,9 @@ test.group('storefront/schedules > paginate', (group) => {
     await CollectionScheduleFactory.merge({ neighborhoodId: mine.id }).create()
 
     const all = await client.get('/storefront/schedules')
-    const malformed = await client.get('/storefront/schedules?neighborhoodId=xyz')
+    const malformed = await client.get(
+      '/storefront/schedules?neighborhoodId=xyz',
+    )
 
     assert.equal(body(all).meta.total, 1)
     malformed.assertStatus(422)

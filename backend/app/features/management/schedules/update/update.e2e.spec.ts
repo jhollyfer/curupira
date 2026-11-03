@@ -2,7 +2,11 @@ import { test } from '@japa/runner'
 
 import { CollectionScheduleFactory } from '#database/factories/collection-schedule.factory'
 import { NeighborhoodFactory } from '#database/factories/neighborhood.factory'
-import { authenticateAsAdministrator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsAdministrator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('management/schedules > update', (group) => {
@@ -11,7 +15,9 @@ test.group('management/schedules > update', (group) => {
   test('changes the weekday and keeps the rest', async ({ client, assert }) => {
     const session = await authenticateAsAdministrator(client)
     const neighborhood = await NeighborhoodFactory.create()
-    const slot = await CollectionScheduleFactory.merge({ neighborhoodId: neighborhood.id }).create()
+    const slot = await CollectionScheduleFactory.merge({
+      neighborhoodId: neighborhood.id,
+    }).create()
 
     const response = await client
       .put(`/management/schedules/${slot.id}`)
@@ -19,19 +25,27 @@ test.group('management/schedules > update', (group) => {
       .json({ weekday: 'SATURDAY' })
 
     response.assertStatus(200)
-    assert.deepInclude(body(response), { weekday: 'SATURDAY', wasteType: 'ORGANIC' })
+    assert.deepInclude(body(response), {
+      weekday: 'SATURDAY',
+      wasteType: 'ORGANIC',
+    })
     const stored = await Stored.schedule(slot.id)
     assert.equal(stored?.weekday, 'SATURDAY')
   })
 
-  test('moving onto an existing slot responds 409', async ({ client, assert }) => {
+  test('moving onto an existing slot responds 409', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
     const neighborhood = await NeighborhoodFactory.create()
     await CollectionScheduleFactory.merge({
       neighborhoodId: neighborhood.id,
       weekday: 'FRIDAY',
     }).create()
-    const slot = await CollectionScheduleFactory.merge({ neighborhoodId: neighborhood.id }).create()
+    const slot = await CollectionScheduleFactory.merge({
+      neighborhoodId: neighborhood.id,
+    }).create()
 
     const response = await client
       .put(`/management/schedules/${slot.id}`)

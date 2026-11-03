@@ -31,8 +31,13 @@ test.group('users > create-owner', (group) => {
     return command
   }
 
-  test('creates the administrator with a hashed password that signs in', async ({ assert }) => {
-    const command = await createOwner(`--email=${EMAIL}`, `--password=${STRONG}`)
+  test('creates the administrator with a hashed password that signs in', async ({
+    assert,
+  }) => {
+    const command = await createOwner(
+      `--email=${EMAIL}`,
+      `--password=${STRONG}`,
+    )
 
     command.assertSucceeded()
     const user = await Stored.userByEmailOrFail(EMAIL)
@@ -47,13 +52,18 @@ test.group('users > create-owner', (group) => {
   }) => {
     await createOwner(`--email=${EMAIL}`, `--password=${STRONG}`)
 
-    const again = await createOwner('--email=outro@prefeitura.test', `--password=${STRONG}`)
+    const again = await createOwner(
+      '--email=outro@prefeitura.test',
+      `--password=${STRONG}`,
+    )
 
     again.assertSucceeded()
     assert.isNull(await Stored.userByEmail('outro@prefeitura.test'))
   })
 
-  test('a weak password is refused and nobody is created', async ({ assert }) => {
+  test('a weak password is refused and nobody is created', async ({
+    assert,
+  }) => {
     const command = await createOwner(`--email=${EMAIL}`, '--password=12345678')
 
     command.assertFailed()
@@ -61,13 +71,18 @@ test.group('users > create-owner', (group) => {
   })
 
   test('an invalid e-mail is refused', async ({ assert }) => {
-    const command = await createOwner('--email=nao-e-email', `--password=${STRONG}`)
+    const command = await createOwner(
+      '--email=nao-e-email',
+      `--password=${STRONG}`,
+    )
 
     command.assertFailed()
     assert.lengthOf(await Stored.users(), 0)
   })
 
-  test('without flags it reads SEED_OWNER_EMAIL and SEED_OWNER_PASSWORD', async ({ assert }) => {
+  test('without flags it reads SEED_OWNER_EMAIL and SEED_OWNER_PASSWORD', async ({
+    assert,
+  }) => {
     const command = await createOwner()
 
     command.assertSucceeded()

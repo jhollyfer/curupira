@@ -20,4 +20,6 @@ export const StorefrontReportPhotoCreateValidator = vine.create({
   size: vine.number().min(1).max(REPORT_PHOTO_MAX_SIZE).withoutDecimals(),
 })
 
-export type StorefrontReportPhotoCreatePayload = Infer<typeof StorefrontReportPhotoCreateValidator>
+export type StorefrontReportPhotoCreatePayload = Infer<
+  typeof StorefrontReportPhotoCreateValidator
+>

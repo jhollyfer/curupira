@@ -27,7 +27,9 @@ export function distanceKm(
   const dLon = radians(to.longitude - from.longitude)
   const a =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos(radians(from.latitude)) * Math.cos(radians(to.latitude)) * Math.sin(dLon / 2) ** 2
+    Math.cos(radians(from.latitude)) *
+      Math.cos(radians(to.latitude)) *
+      Math.sin(dLon / 2) ** 2
 
   return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(a))
 }
@@ -46,7 +48,8 @@ export class NearestNeighborhood {
 
     for (const center of centers) {
       const km = distanceKm(point, center)
-      if (km <= NEAREST_MAX_KM && (best === null || km < best.km)) best = { id: center.id, km }
+      if (km <= NEAREST_MAX_KM && (best === null || km < best.km))
+        best = { id: center.id, km }
     }
 
     return best?.id ?? null

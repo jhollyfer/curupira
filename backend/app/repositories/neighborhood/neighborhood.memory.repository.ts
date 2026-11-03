@@ -7,10 +7,16 @@ import type {
   StorefrontNeighborhoodShowResponse,
 } from '@curupira/shared'
 
-import { NeighborhoodRepository, type NeighborhoodListCriteria } from './neighborhood.repository.ts'
+import {
+  NeighborhoodRepository,
+  type NeighborhoodListCriteria,
+} from './neighborhood.repository.ts'
 
 import { MemoryPagination } from '#core/memory-pagination'
-import { Neighborhood, type NeighborhoodProps } from '#domain/neighborhood/neighborhood.entity'
+import {
+  Neighborhood,
+  type NeighborhoodProps,
+} from '#domain/neighborhood/neighborhood.entity'
 import type { NeighborhoodError } from '#domain/neighborhood/neighborhood.errors'
 import { NearestNeighborhood } from '#domain/neighborhood/nearest-neighborhood'
 
@@ -38,7 +44,11 @@ export class NeighborhoodMemoryRepository extends NeighborhoodRepository {
     return Neighborhood.restore(structuredClone(props))
   }
 
-  async existsByNameOrSlug(name: string, slug: string, exceptId?: string): Promise<boolean> {
+  async existsByNameOrSlug(
+    name: string,
+    slug: string,
+    exceptId?: string,
+  ): Promise<boolean> {
     return [...this.rows.values()].some(
       (row) => row.id !== exceptId && (row.name === name || row.slug === slug),
     )
@@ -57,15 +67,21 @@ export class NeighborhoodMemoryRepository extends NeighborhoodRepository {
       [...this.rows.values()].flatMap((row) => {
         if (row.latitude === null || row.longitude === null) return []
 
-        return [{ id: row.id, latitude: row.latitude, longitude: row.longitude }]
+        return [
+          { id: row.id, latitude: row.latitude, longitude: row.longitude },
+        ]
       }),
     )
   }
 
-  async save(neighborhood: Neighborhood): Promise<Either<NeighborhoodError, void>> {
+  async save(
+    neighborhood: Neighborhood,
+  ): Promise<Either<NeighborhoodError, void>> {
     const snapshot = structuredClone(neighborhood.snapshot())
     const taken = [...this.rows.values()].some(
-      (row) => row.id !== snapshot.id && (row.name === snapshot.name || row.slug === snapshot.slug),
+      (row) =>
+        row.id !== snapshot.id &&
+        (row.name === snapshot.name || row.slug === snapshot.slug),
     )
     // The name and slug `unique`s, as the database guarantees them.
     if (taken) return left({ code: 'NEIGHBORHOOD_ALREADY_EXISTS' })
@@ -86,7 +102,11 @@ export class NeighborhoodMemoryRepository extends NeighborhoodRepository {
     const sign = SIGN[criteria.direction]
     const all = [...this.rows.values()]
       .filter((row) => !search || row.name.toLowerCase().includes(search))
-      .sort((a, b) => sign * String(a[criteria.sort]).localeCompare(String(b[criteria.sort])))
+      .sort(
+        (a, b) =>
+          sign *
+          String(a[criteria.sort]).localeCompare(String(b[criteria.sort])),
+      )
     const page = MemoryPagination.slice(all, criteria.page, criteria.perPage)
 
     return {

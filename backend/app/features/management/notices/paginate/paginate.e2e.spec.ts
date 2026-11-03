@@ -1,7 +1,11 @@
 import { test } from '@japa/runner'
 
 import { NoticeFactory } from '#database/factories/notice.factory'
-import { authenticateAsOperator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsOperator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 
 test.group('management/notices > paginate', (group) => {
   group.each.setup(() => resetDatabase())
@@ -14,7 +18,9 @@ test.group('management/notices > paginate', (group) => {
     await NoticeFactory.apply('closed').create()
 
     const total = async (status: string) => {
-      const response = await client.get(`/management/notices?status=${status}`).cookies(session)
+      const response = await client
+        .get(`/management/notices?status=${status}`)
+        .cookies(session)
       response.assertStatus(200)
 
       return body(response).meta.total
@@ -28,7 +34,9 @@ test.group('management/notices > paginate', (group) => {
   test('an unknown status responds 422', async ({ client }) => {
     const session = await authenticateAsOperator(client)
 
-    const response = await client.get('/management/notices?status=HIDDEN').cookies(session)
+    const response = await client
+      .get('/management/notices?status=HIDDEN')
+      .cookies(session)
 
     response.assertStatus(422)
   })

@@ -9,7 +9,10 @@ import { TransactionContext } from '#core/transaction-context'
 import { resetDatabase } from '#tests/http-fixtures'
 
 /** A write inside the unit, through the client the repositories use. */
-async function insertNeighborhood(context: TransactionContext, name: string): Promise<void> {
+async function insertNeighborhood(
+  context: TransactionContext,
+  name: string,
+): Promise<void> {
   await context.client().insertQuery().table('neighborhoods').insert({
     name,
     slug: name.toLowerCase(),

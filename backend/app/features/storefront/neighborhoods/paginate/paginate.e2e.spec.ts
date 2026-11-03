@@ -6,7 +6,10 @@ import { body, resetDatabase } from '#tests/http-fixtures'
 test.group('storefront/neighborhoods > paginate', (group) => {
   group.each.setup(() => resetDatabase())
 
-  test('lists every neighborhood by name without a session', async ({ client, assert }) => {
+  test('lists every neighborhood by name without a session', async ({
+    client,
+    assert,
+  }) => {
     await NeighborhoodFactory.merge([
       { name: 'Cohab', slug: 'cohab' },
       { name: 'Centro', slug: 'centro' },

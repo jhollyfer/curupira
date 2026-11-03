@@ -25,12 +25,18 @@ export default class StorageProvider {
 
   register() {
     this.app.container.singleton(S3Client, () => new S3Client(clientConfig))
-    this.app.container.bind(StorageContract, () => this.app.container.make(StorageService))
-    this.app.container.bind(MultipartContract, () => this.app.container.make(MultipartService))
+    this.app.container.bind(StorageContract, () =>
+      this.app.container.make(StorageService),
+    )
+    this.app.container.bind(MultipartContract, () =>
+      this.app.container.make(MultipartService),
+    )
     this.app.container.bind(PhotoSanitizerContract, () =>
       this.app.container.make(PhotoSanitizerService),
     )
-    this.app.container.bind(ProtocolContract, () => this.app.container.make(ProtocolService))
+    this.app.container.bind(ProtocolContract, () =>
+      this.app.container.make(ProtocolService),
+    )
   }
 
   async shutdown() {

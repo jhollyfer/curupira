@@ -28,7 +28,11 @@ test.group('management/schedules > update (unit)', () => {
 
     const result = await useCase.execute({ id, weekday: 'FRIDAY' })
 
-    assert.deepInclude(result.value, { weekday: 'FRIDAY', wasteType: 'ORGANIC', shift: 'MORNING' })
+    assert.deepInclude(result.value, {
+      weekday: 'FRIDAY',
+      wasteType: 'ORGANIC',
+      shift: 'MORNING',
+    })
   })
 
   test('null on the note erases it', async ({ assert }) => {
@@ -40,17 +44,26 @@ test.group('management/schedules > update (unit)', () => {
     assert.isNull(rightOf(result).note)
   })
 
-  test('moving onto a slot that exists is 409 SCHEDULE_ALREADY_EXISTS', async ({ assert }) => {
+  test('moving onto a slot that exists is 409 SCHEDULE_ALREADY_EXISTS', async ({
+    assert,
+  }) => {
     const { schedules, useCase, neighborhoodId } = await setup()
     await seedSchedule(schedules, neighborhoodId, { weekday: 'FRIDAY' })
-    const id = await seedSchedule(schedules, neighborhoodId, { weekday: 'MONDAY' })
+    const id = await seedSchedule(schedules, neighborhoodId, {
+      weekday: 'MONDAY',
+    })
 
     const result = await useCase.execute({ id, weekday: 'FRIDAY' })
 
-    assert.deepInclude(result.value, { status: 409, code: 'SCHEDULE_ALREADY_EXISTS' })
+    assert.deepInclude(result.value, {
+      status: 409,
+      code: 'SCHEDULE_ALREADY_EXISTS',
+    })
   })
 
-  test('an unknown neighborhood is 422 and a nonexistent slot is 404', async ({ assert }) => {
+  test('an unknown neighborhood is 422 and a nonexistent slot is 404', async ({
+    assert,
+  }) => {
     const { schedules, useCase, neighborhoodId } = await setup()
     const id = await seedSchedule(schedules, neighborhoodId)
 
@@ -58,9 +71,17 @@ test.group('management/schedules > update (unit)', () => {
       id,
       neighborhoodId: '00000000-0000-4000-8000-000000000000',
     })
-    const missing = await useCase.execute({ id: '00000000-0000-4000-8000-000000000000' })
+    const missing = await useCase.execute({
+      id: '00000000-0000-4000-8000-000000000000',
+    })
 
-    assert.deepInclude(unknown.value, { status: 422, code: 'NEIGHBORHOOD_NOT_FOUND' })
-    assert.deepInclude(missing.value, { status: 404, code: 'SCHEDULE_NOT_FOUND' })
+    assert.deepInclude(unknown.value, {
+      status: 422,
+      code: 'NEIGHBORHOOD_NOT_FOUND',
+    })
+    assert.deepInclude(missing.value, {
+      status: 404,
+      code: 'SCHEDULE_NOT_FOUND',
+    })
   })
 })

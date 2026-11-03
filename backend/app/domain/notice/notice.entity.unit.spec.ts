@@ -21,7 +21,9 @@ function notice(startsAt = at(-1), endsAt: Date | null = null): Notice {
 }
 
 test.group('Notice', () => {
-  test('an end that is not after the start is NOTICE_INVALID_PERIOD', ({ assert }) => {
+  test('an end that is not after the start is NOTICE_INVALID_PERIOD', ({
+    assert,
+  }) => {
     const same = Notice.create({
       id: 'id',
       title: 'Aviso',

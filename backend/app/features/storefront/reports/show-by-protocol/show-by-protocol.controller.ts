@@ -16,12 +16,17 @@ export default class StorefrontReportShowByProtocolController {
     errors: { 404: 'REPORT_NOT_FOUND' },
   })
 
-  constructor(private readonly useCase: StorefrontReportShowByProtocolUseCase) {}
+  constructor(
+    private readonly useCase: StorefrontReportShowByProtocolUseCase,
+  ) {}
 
   async handle(context: HttpContext) {
-    const payload = await context.request.validateUsing(StorefrontReportShowByProtocolValidator, {
-      data: context.params,
-    })
+    const payload = await context.request.validateUsing(
+      StorefrontReportShowByProtocolValidator,
+      {
+        data: context.params,
+      },
+    )
     const result = await this.useCase.execute(payload)
     if (result.isLeft()) throw result.value
     return context.response.ok(result.value)

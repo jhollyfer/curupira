@@ -54,8 +54,10 @@ export class CollectionSchedule {
 
   /** Absent field means "leave alone"; `null` on `note` erases it. */
   update(changes: CollectionScheduleChanges, now: Date): CollectionSchedule {
-    if (changes.neighborhoodId !== undefined) this.props.neighborhoodId = changes.neighborhoodId
-    if (changes.wasteType !== undefined) this.props.wasteType = changes.wasteType
+    if (changes.neighborhoodId !== undefined)
+      this.props.neighborhoodId = changes.neighborhoodId
+    if (changes.wasteType !== undefined)
+      this.props.wasteType = changes.wasteType
     if (changes.weekday !== undefined) this.props.weekday = changes.weekday
     if (changes.shift !== undefined) this.props.shift = changes.shift
     if (changes.note !== undefined) this.props.note = changes.note

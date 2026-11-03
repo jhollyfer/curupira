@@ -1,19 +1,32 @@
 import { test } from '@japa/runner'
 
 import { UserFactory } from '#database/factories/user.factory'
-import { authenticateAsAdministrator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsAdministrator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 
 test.group('management/users > show', (group) => {
   group.each.setup(() => resetDatabase())
 
-  test('returns the account without the password', async ({ client, assert }) => {
+  test('returns the account without the password', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
     const target = await UserFactory.create()
 
-    const response = await client.get(`/management/users/${target.id}`).cookies(session)
+    const response = await client
+      .get(`/management/users/${target.id}`)
+      .cookies(session)
 
     response.assertStatus(200)
-    assert.deepInclude(body(response), { id: target.id, email: target.email, role: 'OPERATOR' })
+    assert.deepInclude(body(response), {
+      id: target.id,
+      email: target.email,
+      role: 'OPERATOR',
+    })
     assert.notProperty(body(response), 'password')
   })
 

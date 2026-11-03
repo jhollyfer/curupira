@@ -1,7 +1,12 @@
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementReportShowResponse } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementReportShowResponse,
+} from '@curupira/shared'
 
 import { ReportPresenter } from '../reports.presenter.ts'
 import { ReportRefusal } from '../_shared.report-refusal.ts'

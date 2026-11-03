@@ -10,7 +10,9 @@ import { rightOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const notices = MemoryRepositories.notices()
-  const useCase = await makeWithMemory(ManagementNoticeCloseUseCase, [[NoticeRepository, notices]])
+  const useCase = await makeWithMemory(ManagementNoticeCloseUseCase, [
+    [NoticeRepository, notices],
+  ])
 
   return { notices, useCase }
 }
@@ -20,7 +22,9 @@ test.group('management/notices > close (unit)', () => {
     assert,
   }) => {
     const { notices, useCase } = await setup()
-    const id = await seedNotice(notices, { startsAt: new Date('2020-01-01T00:00:00Z') })
+    const id = await seedNotice(notices, {
+      startsAt: new Date('2020-01-01T00:00:00Z'),
+    })
     assert.lengthOf(await notices.listActive(new Date()), 1)
 
     const result = await useCase.execute({ id })
@@ -37,13 +41,18 @@ test.group('management/notices > close (unit)', () => {
 
     const result = await useCase.execute({ id })
 
-    assert.deepInclude(result.value, { status: 409, code: 'NOTICE_ALREADY_CLOSED' })
+    assert.deepInclude(result.value, {
+      status: 409,
+      code: 'NOTICE_ALREADY_CLOSED',
+    })
   })
 
   test('nonexistent is 404 NOTICE_NOT_FOUND', async ({ assert }) => {
     const { useCase } = await setup()
 
-    const result = await useCase.execute({ id: '00000000-0000-4000-8000-000000000000' })
+    const result = await useCase.execute({
+      id: '00000000-0000-4000-8000-000000000000',
+    })
 
     assert.deepInclude(result.value, { status: 404, code: 'NOTICE_NOT_FOUND' })
   })

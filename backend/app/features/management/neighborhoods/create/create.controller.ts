@@ -19,7 +19,9 @@ export default class ManagementNeighborhoodCreateController {
   constructor(private readonly useCase: ManagementNeighborhoodCreateUseCase) {}
 
   async handle(context: HttpContext) {
-    const payload = await context.request.validateUsing(ManagementNeighborhoodCreateValidator)
+    const payload = await context.request.validateUsing(
+      ManagementNeighborhoodCreateValidator,
+    )
     const result = await this.useCase.execute(payload)
     if (result.isLeft()) throw result.value
     return context.response.created(result.value)

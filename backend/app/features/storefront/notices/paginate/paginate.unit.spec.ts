@@ -18,8 +18,14 @@ test.group('storefront/notices > paginate (unit)', () => {
     const useCase = await makeWithMemory(StorefrontNoticePaginateUseCase, [
       [NoticeRepository, notices],
     ])
-    await seedNotice(notices, { title: 'Ativo', startsAt: new Date(Date.now() - YEAR) })
-    await seedNotice(notices, { title: 'Futuro', startsAt: new Date(Date.now() + YEAR) })
+    await seedNotice(notices, {
+      title: 'Ativo',
+      startsAt: new Date(Date.now() - YEAR),
+    })
+    await seedNotice(notices, {
+      title: 'Futuro',
+      startsAt: new Date(Date.now() + YEAR),
+    })
     await seedNotice(notices, {
       title: 'Passado',
       startsAt: new Date(Date.now() - 2 * YEAR),

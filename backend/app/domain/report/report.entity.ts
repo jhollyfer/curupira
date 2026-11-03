@@ -90,7 +90,10 @@ export class Report {
   }
 
   static restore(props: ReportProps): Report {
-    return new Report({ ...props, events: props.events.map((event) => ({ ...event })) })
+    return new Report({
+      ...props,
+      events: props.events.map((event) => ({ ...event })),
+    })
   }
 
   /** Moves the status forward (skipping steps is allowed: a report can go straight to forwarded). */
@@ -103,7 +106,10 @@ export class Report {
     },
     now: Date,
   ): Either<ReportError, Report> {
-    if (REPORT_STATUSES.indexOf(input.status) <= REPORT_STATUSES.indexOf(this.props.status))
+    if (
+      REPORT_STATUSES.indexOf(input.status) <=
+      REPORT_STATUSES.indexOf(this.props.status)
+    )
       return left({ code: 'REPORT_STATUS_REGRESSION' })
 
     this.props.status = input.status
@@ -124,6 +130,9 @@ export class Report {
   }
 
   snapshot(): Readonly<ReportProps> {
-    return { ...this.props, events: this.props.events.map((event) => ({ ...event })) }
+    return {
+      ...this.props,
+      events: this.props.events.map((event) => ({ ...event })),
+    }
   }
 }

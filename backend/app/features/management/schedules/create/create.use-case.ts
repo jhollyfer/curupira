@@ -3,7 +3,12 @@ import { randomUUID } from 'node:crypto'
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementScheduleShowResponse } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementScheduleShowResponse,
+} from '@curupira/shared'
 
 import { ScheduleRefusal } from '../_shared.schedule-refusal.ts'
 
@@ -32,11 +37,18 @@ export default class ManagementScheduleCreateUseCase {
         return left(NeighborhoodRefusal.unknown('neighborhoodId', this.i18n))
 
       if (await this.schedules.existsSlot(payload))
-        return left(ScheduleRefusal.http({ code: 'SCHEDULE_ALREADY_EXISTS' }, this.i18n))
+        return left(
+          ScheduleRefusal.http({ code: 'SCHEDULE_ALREADY_EXISTS' }, this.i18n),
+        )
 
-      const schedule = CollectionSchedule.create({ id: randomUUID(), ...payload, now: new Date() })
+      const schedule = CollectionSchedule.create({
+        id: randomUUID(),
+        ...payload,
+        now: new Date(),
+      })
       const saved = await this.schedules.save(schedule)
-      if (saved.isLeft()) return left(ScheduleRefusal.http(saved.value, this.i18n))
+      if (saved.isLeft())
+        return left(ScheduleRefusal.http(saved.value, this.i18n))
 
       const detail = await this.schedules.detail(schedule.id)
       if (!detail) return left(ScheduleRefusal.notFound(this.i18n))

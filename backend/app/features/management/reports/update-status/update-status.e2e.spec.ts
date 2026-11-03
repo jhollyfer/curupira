@@ -1,7 +1,12 @@
 import { test } from '@japa/runner'
 
 import { ReportFactory } from '#database/factories/report.factory'
-import { authenticateAsOperator, body, invalidPayload, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsOperator,
+  body,
+  invalidPayload,
+  resetDatabase,
+} from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('management/reports > update-status', (group) => {
@@ -26,7 +31,9 @@ test.group('management/reports > update-status', (group) => {
     const events = await Stored.eventsOfReport(report.id)
     assert.lengthOf(events, 2)
     assert.isNotNull(events[1]?.authorId)
-    const publicView = await client.get(`/storefront/reports/${report.protocol}`)
+    const publicView = await client.get(
+      `/storefront/reports/${report.protocol}`,
+    )
     assert.equal(body(publicView).status, 'IN_REVIEW')
     assert.equal(body(publicView).events.at(-1).message, 'Equipe a caminho.')
     assert.notProperty(body(publicView).events.at(-1), 'authorName')
@@ -55,7 +62,10 @@ test.group('management/reports > update-status', (group) => {
     assert.lengthOf(await Stored.eventsOfReport(report.id), 1)
   })
 
-  test('an unknown status or a too long message responds 422', async ({ client, assert }) => {
+  test('an unknown status or a too long message responds 422', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsOperator(client)
     const report = await ReportFactory.create()
 
@@ -69,7 +79,9 @@ test.group('management/reports > update-status', (group) => {
     assert.property(body(response).errors, 'message')
   })
 
-  test('nonexistent responds 404 and no session responds 401', async ({ client }) => {
+  test('nonexistent responds 404 and no session responds 401', async ({
+    client,
+  }) => {
     const session = await authenticateAsOperator(client)
 
     const missing = await client

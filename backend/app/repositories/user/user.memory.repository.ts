@@ -2,7 +2,11 @@ import hash from '@adonisjs/core/services/hash'
 import { left, right } from '@curupira/shared'
 import type { Either, Paginated, SortDirection } from '@curupira/shared'
 
-import { UserRepository, type UserListCriteria, type UserRead } from './user.repository.ts'
+import {
+  UserRepository,
+  type UserListCriteria,
+  type UserRead,
+} from './user.repository.ts'
 
 import { User, type UserProps } from '#domain/user/user.entity'
 import type { UserError } from '#domain/user/user.errors'
@@ -37,7 +41,9 @@ export class UserMemoryRepository extends UserRepository {
   }
 
   async existsByEmail(email: string, exceptId?: string): Promise<boolean> {
-    return [...this.rows.values()].some((row) => row.id !== exceptId && row.email === email)
+    return [...this.rows.values()].some(
+      (row) => row.id !== exceptId && row.email === email,
+    )
   }
 
   async save(user: User): Promise<Either<UserError, void>> {
@@ -82,15 +88,23 @@ export class UserMemoryRepository extends UserRepository {
       .sort((a, b) => sign * this.compare(a, b, criteria.sort))
     const page = MemoryPagination.slice(all, criteria.page, criteria.perPage)
 
-    return { meta: page.meta, data: page.data.map((row) => this.toResponse(row)) }
+    return {
+      meta: page.meta,
+      data: page.data.map((row) => this.toResponse(row)),
+    }
   }
 
   private restore(props: UserProps): User {
     return User.restore(structuredClone(props))
   }
 
-  private compare(a: UserProps, b: UserProps, sort: UserListCriteria['sort']): number {
-    if (sort === 'createdAt') return a.createdAt.getTime() - b.createdAt.getTime()
+  private compare(
+    a: UserProps,
+    b: UserProps,
+    sort: UserListCriteria['sort'],
+  ): number {
+    if (sort === 'createdAt')
+      return a.createdAt.getTime() - b.createdAt.getTime()
 
     return a[sort].localeCompare(b[sort])
   }

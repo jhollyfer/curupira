@@ -1,7 +1,11 @@
 import { test } from '@japa/runner'
 
 import { UserFactory } from '#database/factories/user.factory'
-import { authenticateAsAdministrator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsAdministrator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 
 test.group('management/users > paginate', (group) => {
   group.each.setup(() => resetDatabase())
@@ -15,8 +19,12 @@ test.group('management/users > paginate', (group) => {
     await UserFactory.apply('inactive').create()
 
     const all = await client.get('/management/users').cookies(session)
-    const operators = await client.get('/management/users?role=OPERATOR').cookies(session)
-    const inactive = await client.get('/management/users?status=INACTIVE').cookies(session)
+    const operators = await client
+      .get('/management/users?role=OPERATOR')
+      .cookies(session)
+    const inactive = await client
+      .get('/management/users?status=INACTIVE')
+      .cookies(session)
 
     all.assertStatus(200)
     assert.equal(body(all).meta.total, 4)
@@ -28,7 +36,9 @@ test.group('management/users > paginate', (group) => {
   test('an unknown role responds 422', async ({ client }) => {
     const session = await authenticateAsAdministrator(client)
 
-    const response = await client.get('/management/users?role=KING').cookies(session)
+    const response = await client
+      .get('/management/users?role=KING')
+      .cookies(session)
 
     response.assertStatus(422)
   })

@@ -14,5 +14,8 @@ export abstract class PhotoSanitizerContract {
    * portrait photo sideways. `null` when the bytes are not a decodable image of the
    * declared type: a file that only starts like a JPEG is not a photo.
    */
-  abstract strip(mimetype: string, bytes: Uint8Array): Promise<Uint8Array | null>
+  abstract strip(
+    mimetype: string,
+    bytes: Uint8Array,
+  ): Promise<Uint8Array | null>
 }

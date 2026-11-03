@@ -16,7 +16,10 @@ import { sortOrder } from '#features/_shared.sort'
 import type { ManagementNeighborhoodPaginatePayload } from '#validators/management/neighborhoods.validator'
 
 type Payload = ManagementNeighborhoodPaginatePayload
-type Response = Either<HTTPException, Paginated<ManagementNeighborhoodShowResponse>>
+type Response = Either<
+  HTTPException,
+  Paginated<ManagementNeighborhoodShowResponse>
+>
 
 @inject()
 export default class ManagementNeighborhoodPaginateUseCase {
@@ -39,7 +42,10 @@ export default class ManagementNeighborhoodPaginateUseCase {
         }),
       )
     } catch (error) {
-      logger.error({ err: error }, '[management/neighborhoods > paginate][error]')
+      logger.error(
+        { err: error },
+        '[management/neighborhoods > paginate][error]',
+      )
 
       return left(
         HTTPException.InternalServerError(

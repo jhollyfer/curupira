@@ -19,7 +19,11 @@ function operator(): User {
 
 test.group('User', () => {
   test('is born active and without avatar', ({ assert }) => {
-    assert.deepInclude(operator().snapshot(), { status: 'ACTIVE', avatarId: null, createdAt: NOW })
+    assert.deepInclude(operator().snapshot(), {
+      status: 'ACTIVE',
+      avatarId: null,
+      createdAt: NOW,
+    })
   })
 
   test('only an active account gets in', ({ assert }) => {
@@ -34,22 +38,39 @@ test.group('User', () => {
   test('changing e-mail, password, role or deactivating drops the sessions; name does not', ({
     assert,
   }) => {
-    assert.isTrue(operator().update({ email: 'outra@mail.com' }, LATER).revokesSessions)
-    assert.isTrue(operator().update({ password: 'Nova@1234' }, LATER).revokesSessions)
-    assert.isTrue(operator().update({ role: 'ADMINISTRATOR' }, LATER).revokesSessions)
-    assert.isTrue(operator().update({ status: 'INACTIVE' }, LATER).revokesSessions)
-    assert.isFalse(operator().update({ name: 'Ana Maria' }, LATER).revokesSessions)
+    assert.isTrue(
+      operator().update({ email: 'outra@mail.com' }, LATER).revokesSessions,
+    )
+    assert.isTrue(
+      operator().update({ password: 'Nova@1234' }, LATER).revokesSessions,
+    )
+    assert.isTrue(
+      operator().update({ role: 'ADMINISTRATOR' }, LATER).revokesSessions,
+    )
+    assert.isTrue(
+      operator().update({ status: 'INACTIVE' }, LATER).revokesSessions,
+    )
     assert.isFalse(
-      operator().update({ email: 'ana@mail.com', role: 'OPERATOR' }, LATER).revokesSessions,
+      operator().update({ name: 'Ana Maria' }, LATER).revokesSessions,
+    )
+    assert.isFalse(
+      operator().update({ email: 'ana@mail.com', role: 'OPERATOR' }, LATER)
+        .revokesSessions,
     )
   })
 
-  test('an absent field leaves alone and avatarId null removes the photo', ({ assert }) => {
+  test('an absent field leaves alone and avatarId null removes the photo', ({
+    assert,
+  }) => {
     const user = operator()
     user.update({ avatarId: 'foto' }, NOW)
 
     user.update({ name: 'Ana Maria' }, LATER)
-    assert.deepInclude(user.snapshot(), { name: 'Ana Maria', avatarId: 'foto', updatedAt: LATER })
+    assert.deepInclude(user.snapshot(), {
+      name: 'Ana Maria',
+      avatarId: 'foto',
+      updatedAt: LATER,
+    })
 
     user.update({ avatarId: null }, LATER)
     assert.isNull(user.snapshot().avatarId)
@@ -76,7 +97,9 @@ test.group('User', () => {
     assert.deepEqual(ok.value, { revokesSessions: true })
   })
 
-  test('the account itself without changing the password skips the proof', ({ assert }) => {
+  test('the account itself without changing the password skips the proof', ({
+    assert,
+  }) => {
     const result = operator().updateOwn(
       { name: 'Ana Maria' },
       { currentConfirmed: false, sameAsCurrent: false },

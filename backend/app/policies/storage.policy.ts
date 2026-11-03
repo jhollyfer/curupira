@@ -29,7 +29,10 @@ import type { Storage } from '#domain/storage/storage.entity'
  * entering here, and would be left out of the default check. The operator is in because
  * the report photos are theirs to review.
  */
-const STAFF_USER_ROLES: ReadonlyArray<UserRole> = [USER_ROLE.ADMINISTRATOR, USER_ROLE.OPERATOR]
+const STAFF_USER_ROLES: ReadonlyArray<UserRole> = [
+  USER_ROLE.ADMINISTRATOR,
+  USER_ROLE.OPERATOR,
+]
 
 @inject()
 export default class StoragePolicy extends BasePolicy {
@@ -41,6 +44,8 @@ export default class StoragePolicy extends BasePolicy {
     if (storage && STAFF_USER_ROLES.includes(actor.role)) return true
     if (storage && actor.avatarId === storage.id) return true
 
-    return AuthorizationResponse.deny(this.i18n.t('files.not_found'), 404).t('STORAGE_NOT_FOUND')
+    return AuthorizationResponse.deny(this.i18n.t('files.not_found'), 404).t(
+      'STORAGE_NOT_FOUND',
+    )
   }
 }

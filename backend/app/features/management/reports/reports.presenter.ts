@@ -8,7 +8,10 @@ import {
 } from '@curupira/shared'
 
 import { LocalDay } from '#core/local-day'
-import type { ReportRead, ReportStatistics } from '#repositories/report/report.repository'
+import type {
+  ReportRead,
+  ReportStatistics,
+} from '#repositories/report/report.repository'
 import type { StorageContract } from '#services/storage/storage.contract'
 
 /** How many days the dashboard series covers, today included. */
@@ -40,7 +43,10 @@ export class ReportPresenter {
    * zero (a missing key would read as "unknown" on the chart), and every one of the last
    * 30 days present, so the series has no holes to interpolate.
    */
-  static stats(raw: ReportStatistics, now: Date): ManagementReportStatsResponse {
+  static stats(
+    raw: ReportStatistics,
+    now: Date,
+  ): ManagementReportStatsResponse {
     const byKind: Record<ReportKind, number> = {
       [REPORT_KIND.BURNING]: 0,
       [REPORT_KIND.DUMPING]: 0,

@@ -14,12 +14,23 @@ async function sanitizer(): Promise<PhotoSanitizerContract> {
 }
 
 /** A 32x32 image carrying a GPS position and a camera make in its EXIF. */
-async function photoWithGps(format: 'jpeg' | 'png' | 'webp'): Promise<Uint8Array> {
+async function photoWithGps(
+  format: 'jpeg' | 'png' | 'webp',
+): Promise<Uint8Array> {
   const base = sharp({
-    create: { width: 32, height: 32, channels: 3, background: { r: 10, g: 120, b: 60 } },
+    create: {
+      width: 32,
+      height: 32,
+      channels: 3,
+      background: { r: 10, g: 120, b: 60 },
+    },
   }).withExif({
     IFD0: { Make: 'Acme Phone' },
-    IFD3: { GPSLatitudeRef: 'S', GPSLatitude: '4/1 22/1 36/1', GPSLongitude: '70/1 1/1 53/1' },
+    IFD3: {
+      GPSLatitudeRef: 'S',
+      GPSLatitude: '4/1 22/1 36/1',
+      GPSLongitude: '70/1 1/1 53/1',
+    },
   })
 
   return new Uint8Array(await base.toFormat(format).toBuffer())
@@ -42,14 +53,22 @@ test.group('services > photo sanitizer (unit)', () => {
       assert.isUndefined(metadata.exif)
       assert.equal(metadata.format, format)
       assert.equal(metadata.width, 32)
-      assert.notInclude(Buffer.from(clean ?? new Uint8Array()).toString('latin1'), 'Acme Phone')
+      assert.notInclude(
+        Buffer.from(clean ?? new Uint8Array()).toString('latin1'),
+        'Acme Phone',
+      )
     })
   }
 
   test('a 48 MP phone photo (8000x6000) still passes', async ({ assert }) => {
     const service = await sanitizer()
     const flat = sharp({
-      create: { width: 8000, height: 6000, channels: 3, background: { r: 10, g: 120, b: 60 } },
+      create: {
+        width: 8000,
+        height: 6000,
+        channels: 3,
+        background: { r: 10, g: 120, b: 60 },
+      },
     })
     const original = new Uint8Array(await flat.jpeg({ quality: 40 }).toBuffer())
 
@@ -58,10 +77,17 @@ test.group('services > photo sanitizer (unit)', () => {
     assert.isNotNull(clean)
   }).timeout(20_000)
 
-  test('a canvas above 50 MP is refused with null (decompression bomb)', async ({ assert }) => {
+  test('a canvas above 50 MP is refused with null (decompression bomb)', async ({
+    assert,
+  }) => {
     const service = await sanitizer()
     const flat = sharp({
-      create: { width: 9000, height: 6000, channels: 3, background: { r: 10, g: 120, b: 60 } },
+      create: {
+        width: 9000,
+        height: 6000,
+        channels: 3,
+        background: { r: 10, g: 120, b: 60 },
+      },
     })
     const original = new Uint8Array(await flat.jpeg({ quality: 40 }).toBuffer())
 
@@ -81,9 +107,13 @@ test.group('services > photo sanitizer (unit)', () => {
     assert.isTrue(results.every((clean) => clean !== null))
   })
 
-  test('bytes that only start like an image are refused with null', async ({ assert }) => {
+  test('bytes that only start like an image are refused with null', async ({
+    assert,
+  }) => {
     const service = await sanitizer()
-    const liar = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4, 5, 6, 7, 8])
+    const liar = new Uint8Array([
+      0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4, 5, 6, 7, 8,
+    ])
 
     assert.isNull(await service.strip('image/jpeg', liar))
   })

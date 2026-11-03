@@ -1,7 +1,11 @@
 import { test } from '@japa/runner'
 
 import { ReportFactory } from '#database/factories/report.factory'
-import { authenticateAsOperator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsOperator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 
 test.group('storefront/reports > map', (group) => {
   group.each.setup(() => resetDatabase())
@@ -18,7 +22,9 @@ test.group('storefront/reports > map', (group) => {
     const session = await authenticateAsOperator(client)
 
     const publicPin = body(await client.get('/storefront/reports/map'))[0]
-    const panelPin = body(await client.get('/management/reports/map').cookies(session))[0]
+    const panelPin = body(
+      await client.get('/management/reports/map').cookies(session),
+    )[0]
 
     assert.equal(publicPin.latitude, -4.377)
     assert.equal(publicPin.longitude, -70.031)
@@ -44,7 +50,9 @@ test.group('storefront/reports > map', (group) => {
     assert,
   }) => {
     await ReportFactory.merge({ status: 'RECEIVED' }).create()
-    const reviewed = await ReportFactory.apply('identified').merge({ status: 'IN_REVIEW' }).create()
+    const reviewed = await ReportFactory.apply('identified')
+      .merge({ status: 'IN_REVIEW' })
+      .create()
     await ReportFactory.merge({ status: 'RESOLVED' }).create()
 
     const response = await client.get('/storefront/reports/map')

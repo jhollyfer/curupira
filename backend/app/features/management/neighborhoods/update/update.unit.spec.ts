@@ -23,29 +23,47 @@ test.group('management/neighborhoods > update (unit)', () => {
 
     const result = await useCase.execute({ id, name: 'Centro Velho' })
 
-    assert.deepInclude(result.value, { name: 'Centro Velho', slug: 'centro-velho' })
+    assert.deepInclude(result.value, {
+      name: 'Centro Velho',
+      slug: 'centro-velho',
+    })
   })
 
   test('a missing field leaves alone and null on both coordinates erases the center', async ({
     assert,
   }) => {
     const { neighborhoods, useCase } = await setup()
-    const id = await seedNeighborhood(neighborhoods, 'Centro', { latitude: -4.3, longitude: -70 })
+    const id = await seedNeighborhood(neighborhoods, 'Centro', {
+      latitude: -4.3,
+      longitude: -70,
+    })
 
     const kept = await useCase.execute({ id, name: 'Centro' })
-    const erased = await useCase.execute({ id, latitude: null, longitude: null })
+    const erased = await useCase.execute({
+      id,
+      latitude: null,
+      longitude: null,
+    })
 
     assert.deepInclude(kept.value, { latitude: -4.3, longitude: -70 })
     assert.deepInclude(erased.value, { latitude: null, longitude: null })
   })
 
-  test('erasing only one coordinate is 422 NEIGHBORHOOD_CENTER_INCOMPLETE', async ({ assert }) => {
+  test('erasing only one coordinate is 422 NEIGHBORHOOD_CENTER_INCOMPLETE', async ({
+    assert,
+  }) => {
     const { neighborhoods, useCase } = await setup()
-    const id = await seedNeighborhood(neighborhoods, 'Centro', { latitude: -4.3, longitude: -70 })
+    const id = await seedNeighborhood(neighborhoods, 'Centro', {
+      latitude: -4.3,
+      longitude: -70,
+    })
 
     const result = await useCase.execute({ id, latitude: null })
 
-    assert.deepInclude(result.value, { status: 422, code: 'NEIGHBORHOOD_CENTER_INCOMPLETE' })
+    assert.deepInclude(result.value, {
+      status: 422,
+      code: 'NEIGHBORHOOD_CENTER_INCOMPLETE',
+    })
   })
 
   test('the name of another neighborhood is 409 NEIGHBORHOOD_ALREADY_EXISTS', async ({
@@ -57,14 +75,22 @@ test.group('management/neighborhoods > update (unit)', () => {
 
     const result = await useCase.execute({ id, name: 'Cohab' })
 
-    assert.deepInclude(result.value, { status: 409, code: 'NEIGHBORHOOD_ALREADY_EXISTS' })
+    assert.deepInclude(result.value, {
+      status: 409,
+      code: 'NEIGHBORHOOD_ALREADY_EXISTS',
+    })
   })
 
   test('nonexistent is 404 NEIGHBORHOOD_NOT_FOUND', async ({ assert }) => {
     const { useCase } = await setup()
 
-    const result = await useCase.execute({ id: '00000000-0000-4000-8000-000000000000' })
+    const result = await useCase.execute({
+      id: '00000000-0000-4000-8000-000000000000',
+    })
 
-    assert.deepInclude(result.value, { status: 404, code: 'NEIGHBORHOOD_NOT_FOUND' })
+    assert.deepInclude(result.value, {
+      status: 404,
+      code: 'NEIGHBORHOOD_NOT_FOUND',
+    })
   })
 })

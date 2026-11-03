@@ -16,7 +16,11 @@ export const StorefrontReportCreateValidator = vine.create({
   kind: vine.enum(REPORT_KINDS),
   latitude: vine.number().min(-90).max(90),
   longitude: vine.number().min(-180).max(180),
-  description: vine.string().trim().maxLength(LIST_LIMITS.REPORT_DESCRIPTION).optional(),
+  description: vine
+    .string()
+    .trim()
+    .maxLength(LIST_LIMITS.REPORT_DESCRIPTION)
+    .optional(),
   contact: vine.string().trim().minLength(3).maxLength(120).optional(),
   photoIds: vine
     .array(vine.string().uuid())
@@ -39,7 +43,9 @@ export const StorefrontReportShowByProtocolValidator = vine.create({
     .transform((value) => normalizeProtocol(value)),
 })
 
-export type StorefrontReportCreatePayload = Infer<typeof StorefrontReportCreateValidator>
+export type StorefrontReportCreatePayload = Infer<
+  typeof StorefrontReportCreateValidator
+>
 
 export type StorefrontReportShowByProtocolPayload = Infer<
   typeof StorefrontReportShowByProtocolValidator

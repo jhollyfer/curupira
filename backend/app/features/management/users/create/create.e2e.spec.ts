@@ -1,7 +1,11 @@
 import { test } from '@japa/runner'
 
 import { UserFactory } from '#database/factories/user.factory'
-import { authenticateAsAdministrator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsAdministrator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 const NEW = {
@@ -15,13 +19,23 @@ const NEW = {
 test.group('management/users > create', (group) => {
   group.each.setup(() => resetDatabase())
 
-  test('creates the account, active, and the new user can sign in', async ({ client, assert }) => {
+  test('creates the account, active, and the new user can sign in', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
 
-    const response = await client.post('/management/users').cookies(session).json(NEW)
+    const response = await client
+      .post('/management/users')
+      .cookies(session)
+      .json(NEW)
 
     response.assertStatus(201)
-    assert.deepInclude(body(response), { email: NEW.email, role: 'OPERATOR', status: 'ACTIVE' })
+    assert.deepInclude(body(response), {
+      email: NEW.email,
+      role: 'OPERATOR',
+      status: 'ACTIVE',
+    })
     assert.notProperty(body(response), 'password')
     const stored = await Stored.userByEmailOrFail(NEW.email)
     assert.notEqual(stored.password, NEW.password)
@@ -31,7 +45,10 @@ test.group('management/users > create', (group) => {
     signIn.assertStatus(204)
   })
 
-  test('the e-mail of another account responds 409', async ({ client, assert }) => {
+  test('the e-mail of another account responds 409', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
     const existing = await UserFactory.create()
 
@@ -53,7 +70,12 @@ test.group('management/users > create', (group) => {
     const response = await client
       .post('/management/users')
       .cookies(session)
-      .json({ name: 'X', email: 'x@mail.com', password: 'fraca', passwordConfirmation: 'outra' })
+      .json({
+        name: 'X',
+        email: 'x@mail.com',
+        password: 'fraca',
+        passwordConfirmation: 'outra',
+      })
 
     response.assertStatus(422)
     assert.property(body(response).errors, 'password')

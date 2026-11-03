@@ -2,7 +2,11 @@ import { test } from '@japa/runner'
 
 import { ReportFactory } from '#database/factories/report.factory'
 import { UserFactory } from '#database/factories/user.factory'
-import { authenticateAsAdministrator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsAdministrator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('management/users > delete', (group) => {
@@ -12,13 +16,18 @@ test.group('management/users > delete', (group) => {
     const session = await authenticateAsAdministrator(client)
     const target = await UserFactory.create()
 
-    const response = await client.delete(`/management/users/${target.id}`).cookies(session)
+    const response = await client
+      .delete(`/management/users/${target.id}`)
+      .cookies(session)
 
     response.assertStatus(204)
     assert.isNull(await Stored.user(target.id))
   })
 
-  test('the history the account wrote stays, with no author', async ({ client, assert }) => {
+  test('the history the account wrote stays, with no author', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
     const target = await UserFactory.apply('administrator').create()
     const report = await ReportFactory.create()
@@ -30,7 +39,9 @@ test.group('management/users > delete', (group) => {
     const events = await Stored.eventsOfReport(report.id)
     assert.isNotNull(events[1]?.authorId)
 
-    const response = await client.delete(`/management/users/${target.id}`).cookies(session)
+    const response = await client
+      .delete(`/management/users/${target.id}`)
+      .cookies(session)
 
     response.assertStatus(204)
     assert.lengthOf(await Stored.eventsOfReport(report.id), 2)

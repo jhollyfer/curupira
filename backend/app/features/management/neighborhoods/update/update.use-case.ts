@@ -42,13 +42,20 @@ export default class ManagementNeighborhoodUpdateUseCase {
           id,
         ))
       )
-        return left(NeighborhoodRefusal.http({ code: 'NEIGHBORHOOD_ALREADY_EXISTS' }, this.i18n))
+        return left(
+          NeighborhoodRefusal.http(
+            { code: 'NEIGHBORHOOD_ALREADY_EXISTS' },
+            this.i18n,
+          ),
+        )
 
       const updated = neighborhood.update(changes, new Date())
-      if (updated.isLeft()) return left(NeighborhoodRefusal.http(updated.value, this.i18n))
+      if (updated.isLeft())
+        return left(NeighborhoodRefusal.http(updated.value, this.i18n))
 
       const saved = await this.neighborhoods.save(neighborhood)
-      if (saved.isLeft()) return left(NeighborhoodRefusal.http(saved.value, this.i18n))
+      if (saved.isLeft())
+        return left(NeighborhoodRefusal.http(saved.value, this.i18n))
 
       return right(NeighborhoodPresenter.show(neighborhood))
     } catch (error) {

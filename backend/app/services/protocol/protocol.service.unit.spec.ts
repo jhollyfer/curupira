@@ -1,11 +1,17 @@
 import { test } from '@japa/runner'
 import app from '@adonisjs/core/services/app'
-import { PROTOCOL_ALPHABET, PROTOCOL_PATTERN, normalizeProtocol } from '@curupira/shared'
+import {
+  PROTOCOL_ALPHABET,
+  PROTOCOL_PATTERN,
+  normalizeProtocol,
+} from '@curupira/shared'
 
 import { ProtocolContract } from '#services/protocol/protocol.contract'
 
 test.group('services > protocol (unit)', () => {
-  test('every code has the canonical shape and only alphabet symbols', async ({ assert }) => {
+  test('every code has the canonical shape and only alphabet symbols', async ({
+    assert,
+  }) => {
     const service = await app.container.make(ProtocolContract)
 
     for (let index = 0; index < 500; index++) {

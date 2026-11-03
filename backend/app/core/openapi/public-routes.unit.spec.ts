@@ -32,7 +32,9 @@ const DECLARED_STOREFRONT_WRITES = DECLARED_ANONYMOUS_WRITES.filter((route) =>
   route.includes(' /storefront'),
 )
 
-function routesWhere(predicate: (route: string, protection: string) => boolean): string[] {
+function routesWhere(
+  predicate: (route: string, protection: string) => boolean,
+): string[] {
   return Object.entries(BASELINE)
     .filter(([route, protection]) => predicate(route, protection))
     .map(([route]) => route)
@@ -40,9 +42,12 @@ function routesWhere(predicate: (route: string, protection: string) => boolean):
 }
 
 test.group('public routes (unit)', () => {
-  test('an anonymous route that is not GET is in the declared list', ({ assert }) => {
+  test('an anonymous route that is not GET is in the declared list', ({
+    assert,
+  }) => {
     const writes = routesWhere(
-      (route, protection) => protection === ANONYMOUS && !route.startsWith('GET '),
+      (route, protection) =>
+        protection === ANONYMOUS && !route.startsWith('GET '),
     )
 
     assert.deepEqual(writes, [...DECLARED_ANONYMOUS_WRITES])

@@ -47,10 +47,14 @@ export class CollectionScheduleMemoryRepository extends CollectionScheduleReposi
   }
 
   async existsSlot(slot: ScheduleSlot, exceptId?: string): Promise<boolean> {
-    return [...this.rows.values()].some((row) => row.id !== exceptId && sameSlot(row, slot))
+    return [...this.rows.values()].some(
+      (row) => row.id !== exceptId && sameSlot(row, slot),
+    )
   }
 
-  async save(schedule: CollectionSchedule): Promise<Either<CollectionScheduleError, void>> {
+  async save(
+    schedule: CollectionSchedule,
+  ): Promise<Either<CollectionScheduleError, void>> {
     const snapshot = structuredClone(schedule.snapshot())
     const taken = [...this.rows.values()].some(
       (row) => row.id !== snapshot.id && sameSlot(row, snapshot),
@@ -78,20 +82,28 @@ export class CollectionScheduleMemoryRepository extends CollectionScheduleReposi
     criteria: ScheduleListCriteria,
   ): Promise<Paginated<ManagementScheduleShowResponse>> {
     const all = [...this.rows.values()].filter(
-      (row) => !criteria.neighborhoodId || row.neighborhoodId === criteria.neighborhoodId,
+      (row) =>
+        !criteria.neighborhoodId ||
+        row.neighborhoodId === criteria.neighborhoodId,
     )
     const page = MemoryPagination.slice(all, criteria.page, criteria.perPage)
 
-    return { meta: page.meta, data: page.data.map((row) => this.toResponse(row)) }
+    return {
+      meta: page.meta,
+      data: page.data.map((row) => this.toResponse(row)),
+    }
   }
 
-  async listWeek(neighborhoodId?: string): Promise<StorefrontScheduleShowResponse[]> {
+  async listWeek(
+    neighborhoodId?: string,
+  ): Promise<StorefrontScheduleShowResponse[]> {
     return [...this.rows.values()]
       .filter((row) => !neighborhoodId || row.neighborhoodId === neighborhoodId)
       .sort(
         (a, b) =>
           WEEKDAYS.indexOf(a.weekday) - WEEKDAYS.indexOf(b.weekday) ||
-          COLLECTION_SHIFTS.indexOf(a.shift) - COLLECTION_SHIFTS.indexOf(b.shift),
+          COLLECTION_SHIFTS.indexOf(a.shift) -
+            COLLECTION_SHIFTS.indexOf(b.shift),
       )
       .map((row) => ({
         id: row.id,
@@ -103,7 +115,9 @@ export class CollectionScheduleMemoryRepository extends CollectionScheduleReposi
       }))
   }
 
-  private toResponse(row: CollectionScheduleProps): ManagementScheduleShowResponse {
+  private toResponse(
+    row: CollectionScheduleProps,
+  ): ManagementScheduleShowResponse {
     return {
       id: row.id,
       neighborhoodId: row.neighborhoodId,

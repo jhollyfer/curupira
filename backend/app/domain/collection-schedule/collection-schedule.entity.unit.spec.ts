@@ -18,15 +18,24 @@ function slot(): CollectionSchedule {
 
 test.group('CollectionSchedule', () => {
   test('is born without a note', ({ assert }) => {
-    assert.deepInclude(slot().snapshot(), { note: null, createdAt: NOW, updatedAt: NOW })
+    assert.deepInclude(slot().snapshot(), {
+      note: null,
+      createdAt: NOW,
+      updatedAt: NOW,
+    })
   })
 
-  test('an absent field leaves alone and null on the note erases it', ({ assert }) => {
+  test('an absent field leaves alone and null on the note erases it', ({
+    assert,
+  }) => {
     const entity = slot()
 
     entity.update({ note: 'Só até as 9h' }, LATER)
     entity.update({ weekday: 'FRIDAY' }, LATER)
-    assert.deepInclude(entity.snapshot(), { weekday: 'FRIDAY', note: 'Só até as 9h' })
+    assert.deepInclude(entity.snapshot(), {
+      weekday: 'FRIDAY',
+      note: 'Só até as 9h',
+    })
 
     entity.update({ note: null }, LATER)
     assert.isNull(entity.snapshot().note)

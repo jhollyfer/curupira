@@ -4,7 +4,11 @@ import ManagementUserDeleteUseCase from './delete.use-case.ts'
 
 import { UserRepository } from '#repositories/user/user.repository'
 import { makeWithMemory } from '#tests/container-fixtures'
-import { identityDoubles, seedUser, USER_ID } from '#tests/identity-unit-fixtures'
+import {
+  identityDoubles,
+  seedUser,
+  USER_ID,
+} from '#tests/identity-unit-fixtures'
 
 async function setup() {
   const doubles = identityDoubles()

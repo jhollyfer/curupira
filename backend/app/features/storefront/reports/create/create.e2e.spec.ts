@@ -7,12 +7,19 @@ import { uploadReportPhoto } from '#tests/report-photo-fixtures'
 import { storageRow } from '#tests/storages-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
-const SPOT = { kind: 'BURNING', latitude: -4.3769, longitude: -70.0314 } as const
+const SPOT = {
+  kind: 'BURNING',
+  latitude: -4.3769,
+  longitude: -70.0314,
+} as const
 
 test.group('storefront/reports > create', (group) => {
   group.each.setup(() => resetDatabase())
 
-  test('files an anonymous report and answers only the protocol', async ({ client, assert }) => {
+  test('files an anonymous report and answers only the protocol', async ({
+    client,
+    assert,
+  }) => {
     const photoId = await uploadReportPhoto(client)
 
     const response = await client
@@ -23,7 +30,10 @@ test.group('storefront/reports > create', (group) => {
     assert.deepEqual(Object.keys(body(response)), ['protocol'])
     assert.match(body(response).protocol, PROTOCOL_PATTERN)
     const report = await Stored.reportByProtocol(body(response).protocol)
-    assert.deepInclude(report?.serialize(), { status: 'RECEIVED', anonymous: true })
+    assert.deepInclude(report?.serialize(), {
+      status: 'RECEIVED',
+      anonymous: true,
+    })
     assert.isNull(report?.contact)
     const events = await Stored.eventsOfReport(report?.id ?? '')
     assert.deepEqual(
@@ -49,12 +59,20 @@ test.group('storefront/reports > create', (group) => {
     assert.isFalse(report?.anonymous)
   })
 
-  test('resolves the neighborhood by the nearest center', async ({ client, assert }) => {
+  test('resolves the neighborhood by the nearest center', async ({
+    client,
+    assert,
+  }) => {
     const near = await NeighborhoodFactory.apply('centered').create()
-    await NeighborhoodFactory.merge({ latitude: -4.5, longitude: -70.3 }).create()
+    await NeighborhoodFactory.merge({
+      latitude: -4.5,
+      longitude: -70.3,
+    }).create()
     const photoId = await uploadReportPhoto(client)
 
-    const response = await client.post('/storefront/reports').json({ ...SPOT, photoIds: [photoId] })
+    const response = await client
+      .post('/storefront/reports')
+      .json({ ...SPOT, photoIds: [photoId] })
 
     const report = await Stored.reportByProtocol(body(response).protocol)
     assert.equal(report?.neighborhoodId, near.id)
@@ -78,11 +96,18 @@ test.group('storefront/reports > create', (group) => {
     assert.lengthOf(await Stored.reports(), 0)
   })
 
-  test('one photo serves one report: reusing it responds 422', async ({ client, assert }) => {
+  test('one photo serves one report: reusing it responds 422', async ({
+    client,
+    assert,
+  }) => {
     const photoId = await uploadReportPhoto(client)
-    await client.post('/storefront/reports').json({ ...SPOT, photoIds: [photoId] })
+    await client
+      .post('/storefront/reports')
+      .json({ ...SPOT, photoIds: [photoId] })
 
-    const response = await client.post('/storefront/reports').json({ ...SPOT, photoIds: [photoId] })
+    const response = await client
+      .post('/storefront/reports')
+      .json({ ...SPOT, photoIds: [photoId] })
 
     response.assertStatus(422)
     assert.equal(body(response).code, 'REPORT_PHOTO_TAKEN')
@@ -93,10 +118,17 @@ test.group('storefront/reports > create', (group) => {
     client,
     assert,
   }) => {
-    const none = await client.post('/storefront/reports').json({ ...SPOT, photoIds: [] })
-    const bad = await client
+    const none = await client
       .post('/storefront/reports')
-      .json(invalidPayload({ kind: 'PARTY', latitude: 200, longitude: 0, photoIds: ['x'] }))
+      .json({ ...SPOT, photoIds: [] })
+    const bad = await client.post('/storefront/reports').json(
+      invalidPayload({
+        kind: 'PARTY',
+        latitude: 200,
+        longitude: 0,
+        photoIds: ['x'],
+      }),
+    )
 
     none.assertStatus(422)
     assert.property(body(none).errors, 'photoIds')
@@ -105,7 +137,10 @@ test.group('storefront/reports > create', (group) => {
     assert.property(body(bad).errors, 'latitude')
   })
 
-  test('a library file cannot be attached to a report by its uuid', async ({ client, assert }) => {
+  test('a library file cannot be attached to a report by its uuid', async ({
+    client,
+    assert,
+  }) => {
     const library = await storageRow()
 
     const response = await client
@@ -116,7 +151,10 @@ test.group('storefront/reports > create', (group) => {
     assert.property(body(response).errors, 'photoIds')
   })
 
-  test('the rate-limit table never holds the caller IP', async ({ client, assert }) => {
+  test('the rate-limit table never holds the caller IP', async ({
+    client,
+    assert,
+  }) => {
     await client.post('/storefront/reports').json({ ...SPOT, photoIds: [] })
 
     const keys = await Stored.rateLimitKeys()
@@ -126,10 +164,14 @@ test.group('storefront/reports > create', (group) => {
     }
   })
 
-  test('throttles the filing per IP: the 11th within the hour is 429', async ({ client }) => {
+  test('throttles the filing per IP: the 11th within the hour is 429', async ({
+    client,
+  }) => {
     let last = 0
     for (let attempt = 0; attempt < 11; attempt++) {
-      const response = await client.post('/storefront/reports').json({ ...SPOT, photoIds: [] })
+      const response = await client
+        .post('/storefront/reports')
+        .json({ ...SPOT, photoIds: [] })
       last = response.status()
     }
 
@@ -139,5 +181,6 @@ test.group('storefront/reports > create', (group) => {
 })
 
 function assertTooMany(status: number): void {
-  if (status !== 429) throw new Error(`expected 429 after the ceiling, got ${status}`)
+  if (status !== 429)
+    throw new Error(`expected 429 after the ceiling, got ${status}`)
 }

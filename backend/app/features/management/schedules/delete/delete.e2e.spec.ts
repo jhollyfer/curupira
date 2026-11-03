@@ -2,7 +2,10 @@ import { test } from '@japa/runner'
 
 import { CollectionScheduleFactory } from '#database/factories/collection-schedule.factory'
 import { NeighborhoodFactory } from '#database/factories/neighborhood.factory'
-import { authenticateAsAdministrator, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsAdministrator,
+  resetDatabase,
+} from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('management/schedules > delete', (group) => {
@@ -11,9 +14,13 @@ test.group('management/schedules > delete', (group) => {
   test('deletes the slot', async ({ client, assert }) => {
     const session = await authenticateAsAdministrator(client)
     const neighborhood = await NeighborhoodFactory.create()
-    const slot = await CollectionScheduleFactory.merge({ neighborhoodId: neighborhood.id }).create()
+    const slot = await CollectionScheduleFactory.merge({
+      neighborhoodId: neighborhood.id,
+    }).create()
 
-    const response = await client.delete(`/management/schedules/${slot.id}`).cookies(session)
+    const response = await client
+      .delete(`/management/schedules/${slot.id}`)
+      .cookies(session)
 
     response.assertStatus(204)
     assert.isNull(await Stored.schedule(slot.id))

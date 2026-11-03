@@ -21,7 +21,9 @@ export default class ManagementNoticeUpdateController {
     // Body and params validated separately and merged: the `:id` comes from the URL and
     // not from the payload, and a single schema would accept an `id` in the body able to
     // point at another row.
-    const body = await context.request.validateUsing(ManagementNoticeUpdateValidator)
+    const body = await context.request.validateUsing(
+      ManagementNoticeUpdateValidator,
+    )
     const params = await context.request.validateUsing(IdentifierValidator, {
       data: context.params,
     })

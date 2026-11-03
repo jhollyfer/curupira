@@ -19,7 +19,9 @@ import { leftOf } from '#tests/result-unit-fixtures'
 import { rightOf } from '#tests/result-unit-fixtures'
 
 const PHOTO = '8a7b6c5d-4e3f-4a2b-9c1d-0e9f8a7b6c5d'
-const JPEG_HEAD = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0, 0, 0, 0, 0])
+const JPEG_HEAD = new Uint8Array([
+  0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0, 0, 0, 0, 0,
+])
 const BASE = {
   kind: 'BURNING',
   latitude: -4.3769,
@@ -34,7 +36,9 @@ const BASE = {
 
 const LIBRARY_FILE = '5b1d3a9e-7c2f-4e8a-8d6b-1f0e2c3a4b5d'
 
-async function uploadedPhoto(storages: ReturnType<typeof MemoryRepositories.storages>) {
+async function uploadedPhoto(
+  storages: ReturnType<typeof MemoryRepositories.storages>,
+) {
   const storage = Storage.open({
     id: PHOTO,
     key: `${REPORT_PHOTO_KEY_PREFIX}foto.jpg`,
@@ -66,7 +70,9 @@ async function setup(protocols = new ProtocolFake()) {
 }
 
 test.group('storefront/reports > create (unit)', () => {
-  test('answers only the protocol, and stores a RECEIVED anonymous report', async ({ assert }) => {
+  test('answers only the protocol, and stores a RECEIVED anonymous report', async ({
+    assert,
+  }) => {
     const { reports, useCase } = await setup()
 
     const result = await useCase.execute(BASE)
@@ -80,7 +86,9 @@ test.group('storefront/reports > create (unit)', () => {
     assert.lengthOf(stored?.events ?? [], 1)
   })
 
-  test('without a contact the report is anonymous and keeps no contact', async ({ assert }) => {
+  test('without a contact the report is anonymous and keeps no contact', async ({
+    assert,
+  }) => {
     const { reports, useCase } = await setup()
 
     await useCase.execute(BASE)
@@ -97,7 +105,10 @@ test.group('storefront/reports > create (unit)', () => {
   }) => {
     const { reports, useCase } = await setup()
 
-    const result = await useCase.execute({ ...BASE, contact: '(97) 99999-0000' })
+    const result = await useCase.execute({
+      ...BASE,
+      contact: '(97) 99999-0000',
+    })
 
     const [pin] = await reports.pins({})
     const detail = await reports.detail(pin?.id ?? '')
@@ -107,13 +118,18 @@ test.group('storefront/reports > create (unit)', () => {
     assert.notInclude(JSON.stringify(result.value), '99999')
   })
 
-  test('matches the nearest neighborhood that has a center', async ({ assert }) => {
+  test('matches the nearest neighborhood that has a center', async ({
+    assert,
+  }) => {
     const { reports, neighborhoods, useCase } = await setup()
     const centro = await seedNeighborhood(neighborhoods, 'Centro', {
       latitude: -4.3769,
       longitude: -70.0314,
     })
-    await seedNeighborhood(neighborhoods, 'Longe', { latitude: -4.5, longitude: -70.2 })
+    await seedNeighborhood(neighborhoods, 'Longe', {
+      latitude: -4.5,
+      longitude: -70.2,
+    })
 
     await useCase.execute(BASE)
 
@@ -146,7 +162,9 @@ test.group('storefront/reports > create (unit)', () => {
     assert.property(leftOf(result).errors ?? {}, 'photoIds')
   })
 
-  test('a file of the management library cannot be attached to a report', async ({ assert }) => {
+  test('a file of the management library cannot be attached to a report', async ({
+    assert,
+  }) => {
     const { storages, useCase } = await setup()
     const library = Storage.open({
       id: LIBRARY_FILE,
@@ -166,17 +184,24 @@ test.group('storefront/reports > create (unit)', () => {
     assert.deepInclude(result.value, { status: 422, code: 'STORAGE_NOT_FOUND' })
   })
 
-  test('a photo already used by another report is 422 REPORT_PHOTO_TAKEN', async ({ assert }) => {
+  test('a photo already used by another report is 422 REPORT_PHOTO_TAKEN', async ({
+    assert,
+  }) => {
     const { reports, useCase } = await setup()
     await seedReport(reports, { photoIds: [PHOTO] })
 
     const result = await useCase.execute(BASE)
 
-    assert.deepInclude(result.value, { status: 422, code: 'REPORT_PHOTO_TAKEN' })
+    assert.deepInclude(result.value, {
+      status: 422,
+      code: 'REPORT_PHOTO_TAKEN',
+    })
   })
 
   test('a protocol collision draws again and succeeds', async ({ assert }) => {
-    const { reports, useCase } = await setup(new ProtocolFake('2ABC3DEF', '2ABC3DEF', '4GHJ5KMN'))
+    const { reports, useCase } = await setup(
+      new ProtocolFake('2ABC3DEF', '2ABC3DEF', '4GHJ5KMN'),
+    )
     await seedReport(reports, { protocol: 'CUR-2ABC-3DEF' })
 
     const result = await useCase.execute({ ...BASE, photoIds: [PHOTO] })
@@ -184,13 +209,18 @@ test.group('storefront/reports > create (unit)', () => {
     assert.deepEqual(result.value, { protocol: 'CUR-4GHJ-5KMN' })
   })
 
-  test('collisions without end give up with 409 REPORT_PROTOCOL_TAKEN', async ({ assert }) => {
+  test('collisions without end give up with 409 REPORT_PROTOCOL_TAKEN', async ({
+    assert,
+  }) => {
     const queue = Array.from({ length: 10 }, () => '2ABC3DEF')
     const { reports, useCase } = await setup(new ProtocolFake(...queue))
     await seedReport(reports, { protocol: 'CUR-2ABC-3DEF' })
 
     const result = await useCase.execute(BASE)
 
-    assert.deepInclude(result.value, { status: 409, code: 'REPORT_PROTOCOL_TAKEN' })
+    assert.deepInclude(result.value, {
+      status: 409,
+      code: 'REPORT_PROTOCOL_TAKEN',
+    })
   })
 })

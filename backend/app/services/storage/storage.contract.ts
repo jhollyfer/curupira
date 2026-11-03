@@ -40,7 +40,11 @@ export abstract class StorageContract {
   /** The whole object, for the cases that must re-encode it (stripping photo metadata). */
   abstract read(path: string): Promise<Uint8Array>
   /** Replaces the object in place, keeping the key: the row that points at it stays valid. */
-  abstract overwrite(path: string, bytes: Uint8Array, mimetype: string): Promise<void>
+  abstract overwrite(
+    path: string,
+    bytes: Uint8Array,
+    mimetype: string,
+  ): Promise<void>
   /** Deletes the binary from the bucket. */
   abstract discard(path: string): Promise<void>
   /** The signed read URL, derived from `path` on every read of the record. */

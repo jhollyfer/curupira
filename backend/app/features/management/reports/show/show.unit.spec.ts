@@ -10,7 +10,9 @@ import { rightOf } from '#tests/result-unit-fixtures'
 
 async function setup() {
   const reports = MemoryRepositories.reports()
-  const useCase = await makeWithMemory(ManagementReportShowUseCase, [[ReportRepository, reports]])
+  const useCase = await makeWithMemory(ManagementReportShowUseCase, [
+    [ReportRepository, reports],
+  ])
 
   return { reports, useCase }
 }
@@ -41,7 +43,9 @@ test.group('management/reports > show (unit)', () => {
   test('nonexistent is 404 REPORT_NOT_FOUND', async ({ assert }) => {
     const { useCase } = await setup()
 
-    const result = await useCase.execute({ id: '00000000-0000-4000-8000-000000000000' })
+    const result = await useCase.execute({
+      id: '00000000-0000-4000-8000-000000000000',
+    })
 
     assert.deepInclude(result.value, { status: 404, code: 'REPORT_NOT_FOUND' })
   })

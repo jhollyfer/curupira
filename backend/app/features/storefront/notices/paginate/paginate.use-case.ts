@@ -26,7 +26,9 @@ export default class StorefrontNoticePaginateUseCase {
     try {
       const active = await this.notices.listActive(new Date())
 
-      return right(MemoryPagination.slice(active, 1, Math.max(active.length, 1)))
+      return right(
+        MemoryPagination.slice(active, 1, Math.max(active.length, 1)),
+      )
     } catch (error) {
       logger.error({ err: error }, '[storefront/notices > paginate][error]')
 

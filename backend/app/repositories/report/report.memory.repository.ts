@@ -59,12 +59,17 @@ export class ReportMemoryRepository extends ReportRepository {
     const all = [...this.rows.values()]
 
     // The protocol and photo `unique`s, as the database guarantees them.
-    if (all.some((row) => row.id !== snapshot.id && row.protocol === snapshot.protocol))
+    if (
+      all.some(
+        (row) => row.id !== snapshot.id && row.protocol === snapshot.protocol,
+      )
+    )
       return left({ code: 'REPORT_PROTOCOL_TAKEN' })
     if (
       all.some(
         (row) =>
-          row.id !== snapshot.id && row.photoIds.some((photo) => snapshot.photoIds.includes(photo)),
+          row.id !== snapshot.id &&
+          row.photoIds.some((photo) => snapshot.photoIds.includes(photo)),
       )
     )
       return left({ code: 'REPORT_PHOTO_TAKEN' })
@@ -96,7 +101,10 @@ export class ReportMemoryRepository extends ReportRepository {
       ...this.toListItem(row),
       description: row.description,
       contact: row.contact,
-      photos: row.photoIds.map((photo) => ({ id: photo, path: `${photo}.jpg` })),
+      photos: row.photoIds.map((photo) => ({
+        id: photo,
+        path: `${photo}.jpg`,
+      })),
       events: row.events.map((event) => ({
         status: event.status,
         message: event.message,
@@ -123,14 +131,22 @@ export class ReportMemoryRepository extends ReportRepository {
         if (criteria.sort === 'createdAt')
           return sign * (a.createdAt.getTime() - b.createdAt.getTime())
 
-        return sign * String(a[criteria.sort]).localeCompare(String(b[criteria.sort]))
+        return (
+          sign *
+          String(a[criteria.sort]).localeCompare(String(b[criteria.sort]))
+        )
       })
     const page = MemoryPagination.slice(all, criteria.page, criteria.perPage)
 
-    return { meta: page.meta, data: page.data.map((row) => this.toListItem(row)) }
+    return {
+      meta: page.meta,
+      data: page.data.map((row) => this.toListItem(row)),
+    }
   }
 
-  async pins(criteria: ReportFilterCriteria): Promise<ManagementReportListItemResponse[]> {
+  async pins(
+    criteria: ReportFilterCriteria,
+  ): Promise<ManagementReportListItemResponse[]> {
     return this.filtered(criteria)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .map((row) => this.toListItem(row))
@@ -158,8 +174,12 @@ export class ReportMemoryRepository extends ReportRepository {
     }
   }
 
-  async showByProtocol(protocol: string): Promise<StorefrontReportShowByProtocolResponse | null> {
-    const row = [...this.rows.values()].find((each) => each.protocol === protocol)
+  async showByProtocol(
+    protocol: string,
+  ): Promise<StorefrontReportShowByProtocolResponse | null> {
+    const row = [...this.rows.values()].find(
+      (each) => each.protocol === protocol,
+    )
     if (!row) return null
 
     return {
@@ -177,7 +197,9 @@ export class ReportMemoryRepository extends ReportRepository {
 
   async publicMap(limit: number): Promise<StorefrontReportMapResponse[]> {
     return [...this.rows.values()]
-      .filter((row) => REPORT_PUBLIC_STATUSES.some((status) => status === row.status))
+      .filter((row) =>
+        REPORT_PUBLIC_STATUSES.some((status) => status === row.status),
+      )
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, limit)
       .map((row) => ({
@@ -195,7 +217,8 @@ export class ReportMemoryRepository extends ReportRepository {
       (row) =>
         (!criteria.kind || row.kind === criteria.kind) &&
         (!criteria.status || row.status === criteria.status) &&
-        (!criteria.neighborhoodId || row.neighborhoodId === criteria.neighborhoodId) &&
+        (!criteria.neighborhoodId ||
+          row.neighborhoodId === criteria.neighborhoodId) &&
         (!criteria.from || row.createdAt >= criteria.from) &&
         (!criteria.to || row.createdAt <= criteria.to),
     )
@@ -210,7 +233,8 @@ export class ReportMemoryRepository extends ReportRepository {
       latitude: row.latitude,
       longitude: row.longitude,
       neighborhoodId: row.neighborhoodId,
-      neighborhoodName: this.neighborhoods.get(row.neighborhoodId ?? '') ?? null,
+      neighborhoodName:
+        this.neighborhoods.get(row.neighborhoodId ?? '') ?? null,
       createdAt: row.createdAt.toISOString(),
     }
   }

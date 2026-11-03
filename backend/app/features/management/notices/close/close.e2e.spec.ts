@@ -1,19 +1,28 @@
 import { test } from '@japa/runner'
 
 import { NoticeFactory } from '#database/factories/notice.factory'
-import { authenticateAsOperator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsOperator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('management/notices > close', (group) => {
   group.each.setup(() => resetDatabase())
 
-  test('closes the notice and it leaves the public list', async ({ client, assert }) => {
+  test('closes the notice and it leaves the public list', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsOperator(client)
     const notice = await NoticeFactory.create()
     const before = await client.get('/storefront/notices')
     assert.equal(body(before).data.length, 1)
 
-    const response = await client.patch(`/management/notices/${notice.id}/close`).cookies(session)
+    const response = await client
+      .patch(`/management/notices/${notice.id}/close`)
+      .cookies(session)
 
     response.assertStatus(200)
     assert.equal(body(response).status, 'CLOSED')
@@ -27,7 +36,9 @@ test.group('management/notices > close', (group) => {
     const session = await authenticateAsOperator(client)
     const notice = await NoticeFactory.apply('closed').create()
 
-    const response = await client.patch(`/management/notices/${notice.id}/close`).cookies(session)
+    const response = await client
+      .patch(`/management/notices/${notice.id}/close`)
+      .cookies(session)
 
     response.assertStatus(409)
     assert.equal(body(response).code, 'NOTICE_ALREADY_CLOSED')

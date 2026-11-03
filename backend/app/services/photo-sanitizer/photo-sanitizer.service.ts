@@ -28,7 +28,9 @@ export default class PhotoSanitizerService extends PhotoSanitizerContract {
   /** Photos decoded at the same time; the rest wait their turn instead of piling canvases in memory. */
   private static readonly MAX_CONCURRENT = 2
 
-  private static readonly gate = new Semaphore(PhotoSanitizerService.MAX_CONCURRENT)
+  private static readonly gate = new Semaphore(
+    PhotoSanitizerService.MAX_CONCURRENT,
+  )
 
   static {
     // libvips threads per operation: two photos at once with every core each would still
@@ -40,14 +42,19 @@ export default class PhotoSanitizerService extends PhotoSanitizerContract {
     return PhotoSanitizerService.gate.run(() => this.reencode(mimetype, bytes))
   }
 
-  private async reencode(mimetype: string, bytes: Uint8Array): Promise<Uint8Array | null> {
+  private async reencode(
+    mimetype: string,
+    bytes: Uint8Array,
+  ): Promise<Uint8Array | null> {
     try {
       const image = sharp(bytes, {
         limitInputPixels: PhotoSanitizerService.MAX_PIXELS,
         failOn: 'error',
       }).rotate()
 
-      return new Uint8Array(await PhotoSanitizerService.encode(image, mimetype).toBuffer())
+      return new Uint8Array(
+        await PhotoSanitizerService.encode(image, mimetype).toBuffer(),
+      )
     } catch {
       // The decoder refusing the bytes is the answer, not a failure of ours: the caller
       // turns `null` into a 422 for the resident.

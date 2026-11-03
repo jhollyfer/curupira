@@ -4,11 +4,17 @@ import ManagementUserShowUseCase from './show.use-case.ts'
 
 import { UserRepository } from '#repositories/user/user.repository'
 import { makeWithMemory } from '#tests/container-fixtures'
-import { identityDoubles, seedUser, USER_ID } from '#tests/identity-unit-fixtures'
+import {
+  identityDoubles,
+  seedUser,
+  USER_ID,
+} from '#tests/identity-unit-fixtures'
 
 async function setup() {
   const doubles = identityDoubles()
-  const useCase = await makeWithMemory(ManagementUserShowUseCase, [[UserRepository, doubles.users]])
+  const useCase = await makeWithMemory(ManagementUserShowUseCase, [
+    [UserRepository, doubles.users],
+  ])
 
   return { ...doubles, useCase }
 }

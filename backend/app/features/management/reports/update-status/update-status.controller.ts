@@ -23,11 +23,17 @@ export default class ManagementReportUpdateStatusController {
     // Body and params validated separately and merged: the `:id` comes from the URL and
     // not from the payload, and a single schema would accept an `id` in the body able to
     // point at another row.
-    const body = await context.request.validateUsing(ManagementReportUpdateStatusValidator)
+    const body = await context.request.validateUsing(
+      ManagementReportUpdateStatusValidator,
+    )
     const params = await context.request.validateUsing(IdentifierValidator, {
       data: context.params,
     })
-    const result = await this.useCase.execute({ ...body, ...params, actor: context.actor })
+    const result = await this.useCase.execute({
+      ...body,
+      ...params,
+      actor: context.actor,
+    })
     if (result.isLeft()) throw result.value
     return context.response.ok(result.value)
   }

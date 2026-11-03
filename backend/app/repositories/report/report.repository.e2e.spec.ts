@@ -128,7 +128,12 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       const authorId = await author('Ana')
 
       entity.advance(
-        { eventId: randomUUID(), status: 'IN_REVIEW', message: 'Olhando', authorId },
+        {
+          eventId: randomUUID(),
+          status: 'IN_REVIEW',
+          message: 'Olhando',
+          authorId,
+        },
         NOW,
       )
       await repository.save(entity)
@@ -145,7 +150,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       assert.isNull(detail?.events[0]?.authorName)
     })
 
-    test('a protocol of another report returns REPORT_PROTOCOL_TAKEN', async ({ assert }) => {
+    test('a protocol of another report returns REPORT_PROTOCOL_TAKEN', async ({
+      assert,
+    }) => {
       const { repository } = await build()
       await repository.save(report('CUR-2ABC-3DEF'))
 
@@ -161,7 +168,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       const shared = await photo()
       await repository.save(report('CUR-2AAA-0001', { photoIds: [shared] }))
 
-      const saved = await repository.save(report('CUR-2AAA-0002', { photoIds: [shared] }))
+      const saved = await repository.save(
+        report('CUR-2AAA-0002', { photoIds: [shared] }),
+      )
 
       assert.deepEqual(saved.value, { code: 'REPORT_PHOTO_TAKEN' })
       assert.isTrue(await repository.anyPhotoTaken([shared]))
@@ -190,7 +199,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       assert.isNull(await repository.detail(randomUUID()))
     })
 
-    test('paginate cuts, searches and orders; the items carry no contact', async ({ assert }) => {
+    test('paginate cuts, searches and orders; the items carry no contact', async ({
+      assert,
+    }) => {
       const { repository } = await build()
       await repository.save(
         report('CUR-2AAA-0001', {
@@ -199,12 +210,22 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
           now: new Date(NOW.getTime() - 2 * DAY),
         }),
       )
-      await repository.save(report('CUR-2AAA-0002', { description: 'lixo na rua' }))
-      const base = { page: 1, perPage: 10, sort: 'createdAt', direction: 'desc' } as const
+      await repository.save(
+        report('CUR-2AAA-0002', { description: 'lixo na rua' }),
+      )
+      const base = {
+        page: 1,
+        perPage: 10,
+        sort: 'createdAt',
+        direction: 'desc',
+      } as const
 
       const all = await repository.paginate(base)
       const burning = await repository.paginate({ ...base, kind: 'BURNING' })
-      const recent = await repository.paginate({ ...base, from: new Date(NOW.getTime() - DAY) })
+      const recent = await repository.paginate({
+        ...base,
+        from: new Date(NOW.getTime() - DAY),
+      })
       const searched = await repository.paginate({ ...base, search: 'lixo' })
 
       assert.deepEqual(
@@ -229,28 +250,42 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
     test('pins return every match with no page', async ({ assert }) => {
       const { repository } = await build()
       for (let index = 0; index < 25; index++)
-        await repository.save(report(`CUR-2AAA-${String(index).padStart(4, '0')}`))
+        await repository.save(
+          report(`CUR-2AAA-${String(index).padStart(4, '0')}`),
+        )
 
       const pins = await repository.pins({})
 
       assert.lengthOf(pins, 25)
     })
 
-    test('statistics counts by kind, status and local day', async ({ assert }) => {
+    test('statistics counts by kind, status and local day', async ({
+      assert,
+    }) => {
       const { repository, author } = await build()
       await repository.save(report('CUR-2AAA-0001', { kind: 'BURNING' }))
       const resolved = report('CUR-2AAA-0002')
       resolved.advance(
-        { eventId: randomUUID(), status: 'RESOLVED', authorId: await author('Ana') },
+        {
+          eventId: randomUUID(),
+          status: 'RESOLVED',
+          authorId: await author('Ana'),
+        },
         NOW,
       )
       await repository.save(resolved)
-      await repository.save(report('CUR-2AAA-0003', { now: new Date(NOW.getTime() - 60 * DAY) }))
+      await repository.save(
+        report('CUR-2AAA-0003', { now: new Date(NOW.getTime() - 60 * DAY) }),
+      )
 
-      const stats = await repository.statistics(new Date(NOW.getTime() - 30 * DAY))
+      const stats = await repository.statistics(
+        new Date(NOW.getTime() - 30 * DAY),
+      )
 
-      const total = (rows: ReadonlyArray<{ key: string; total: number }>, key: string) =>
-        rows.find((row) => row.key === key)?.total
+      const total = (
+        rows: ReadonlyArray<{ key: string; total: number }>,
+        key: string,
+      ) => rows.find((row) => row.key === key)?.total
       assert.equal(total(stats.byKind, 'BURNING'), 1)
       assert.equal(total(stats.byKind, 'DUMPING'), 2)
       assert.equal(total(stats.byStatus, 'RESOLVED'), 1)
@@ -260,7 +295,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       )
     })
 
-    test('showByProtocol is the public shape only, with the timeline', async ({ assert }) => {
+    test('showByProtocol is the public shape only, with the timeline', async ({
+      assert,
+    }) => {
       const { repository, author, photo } = await build()
       const entity = report('CUR-2ABC-3DEF', {
         contact: '(97) 99999-0000',
@@ -287,7 +324,11 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
         'protocol',
         'status',
       ])
-      assert.deepEqual(Object.keys(shown?.events[1] ?? {}).sort(), ['at', 'message', 'status'])
+      assert.deepEqual(Object.keys(shown?.events[1] ?? {}).sort(), [
+        'at',
+        'message',
+        'status',
+      ])
       assert.notInclude(JSON.stringify(shown), 'Ana')
       assert.isNull(await repository.showByProtocol('CUR-ZZZZ-ZZZZ'))
     })
@@ -302,7 +343,11 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
         description: 'privado',
       })
       reviewed.advance(
-        { eventId: randomUUID(), status: 'IN_REVIEW', authorId: await author('Ana') },
+        {
+          eventId: randomUUID(),
+          status: 'IN_REVIEW',
+          authorId: await author('Ana'),
+        },
         NOW,
       )
       await repository.save(reviewed)
@@ -321,7 +366,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       assert.match(pins[0]?.day ?? '', /^\d{4}-\d{2}-\d{2}$/)
     })
 
-    test('publicMap keeps only the newest pins up to the limit', async ({ assert }) => {
+    test('publicMap keeps only the newest pins up to the limit', async ({
+      assert,
+    }) => {
       const { repository, author } = await build()
       const reviewer = await author('Ana')
       for (const [index, suffix] of ['0001', '0002', '0003'].entries()) {
@@ -338,7 +385,9 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       assert.lengthOf(pins, 2)
     })
 
-    test('delete removes the report and its photo links', async ({ assert }) => {
+    test('delete removes the report and its photo links', async ({
+      assert,
+    }) => {
       const { repository, photo } = await build()
       const entity = report('CUR-2ABC-3DEF', { photoIds: [await photo()] })
       await repository.save(entity)

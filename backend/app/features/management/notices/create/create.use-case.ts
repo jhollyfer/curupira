@@ -3,7 +3,12 @@ import { randomUUID } from 'node:crypto'
 import { inject } from '@adonisjs/core'
 import { I18n } from '@adonisjs/i18n'
 import logger from '@adonisjs/core/services/logger'
-import { left, right, type Either, type ManagementNoticeShowResponse } from '@curupira/shared'
+import {
+  left,
+  right,
+  type Either,
+  type ManagementNoticeShowResponse,
+} from '@curupira/shared'
 
 import { NoticePresenter } from '../notices.presenter.ts'
 import { NoticeRefusal } from '../_shared.notice-refusal.ts'
@@ -36,7 +41,8 @@ export default class ManagementNoticeCreateUseCase {
         endsAt: Instant.parse(payload.endsAt) ?? null,
         now,
       })
-      if (created.isLeft()) return left(NoticeRefusal.http(created.value, this.i18n))
+      if (created.isLeft())
+        return left(NoticeRefusal.http(created.value, this.i18n))
 
       await this.notices.save(created.value)
 

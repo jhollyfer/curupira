@@ -35,14 +35,21 @@ export default class ManagementUserUpdateUseCase {
     try {
       const user = await this.users.findById(id)
       if (!user)
-        return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
+        return left(
+          HTTPException.NotFound(
+            this.i18n.t('users.not_found'),
+            'USER_NOT_FOUND',
+          ),
+        )
 
       if (
         changes.email &&
         changes.email !== user.snapshot().email &&
         (await this.users.existsByEmail(changes.email, id))
       )
-        return left(UserRefusal.http({ code: 'USER_ALREADY_EXISTS' }, this.i18n))
+        return left(
+          UserRefusal.http({ code: 'USER_ALREADY_EXISTS' }, this.i18n),
+        )
 
       // Changing email or password, changing the role and deactivating the account drop the
       // target sessions: the entity says what the edit obliges to do.
@@ -51,19 +58,27 @@ export default class ManagementUserUpdateUseCase {
       // Saving and dropping the sessions land together: apart, the failure of one would leave
       // the account changed with a session of the old access. The email check above does not
       // close the race: `save` returns the same fact when the database `unique` loses it.
-      const written = await this.unitOfWork.run(async (): Promise<Either<HTTPException, null>> => {
-        const saved = await this.users.save(user)
-        if (saved.isLeft()) return left(UserRefusal.http(saved.value, this.i18n))
+      const written = await this.unitOfWork.run(
+        async (): Promise<Either<HTTPException, null>> => {
+          const saved = await this.users.save(user)
+          if (saved.isLeft())
+            return left(UserRefusal.http(saved.value, this.i18n))
 
-        if (effects.revokesSessions) await this.sessions.revokeAll(id)
+          if (effects.revokesSessions) await this.sessions.revokeAll(id)
 
-        return right(null)
-      })
+          return right(null)
+        },
+      )
       if (written.isLeft()) return left(written.value)
 
       const detail = await this.users.detail(id)
       if (!detail)
-        return left(HTTPException.NotFound(this.i18n.t('users.not_found'), 'USER_NOT_FOUND'))
+        return left(
+          HTTPException.NotFound(
+            this.i18n.t('users.not_found'),
+            'USER_NOT_FOUND',
+          ),
+        )
 
       return right(detail)
     } catch (error) {

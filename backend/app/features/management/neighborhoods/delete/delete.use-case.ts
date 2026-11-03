@@ -25,7 +25,9 @@ export default class ManagementNeighborhoodDeleteUseCase {
       if (!neighborhood) return left(NeighborhoodRefusal.notFound(this.i18n))
 
       if (await this.neighborhoods.hasSchedules(id))
-        return left(NeighborhoodRefusal.http({ code: 'NEIGHBORHOOD_IN_USE' }, this.i18n))
+        return left(
+          NeighborhoodRefusal.http({ code: 'NEIGHBORHOOD_IN_USE' }, this.i18n),
+        )
 
       await this.neighborhoods.delete(neighborhood)
 

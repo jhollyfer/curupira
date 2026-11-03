@@ -3,7 +3,11 @@ import { test } from '@japa/runner'
 import { CollectionScheduleFactory } from '#database/factories/collection-schedule.factory'
 import { NeighborhoodFactory } from '#database/factories/neighborhood.factory'
 import { ReportFactory } from '#database/factories/report.factory'
-import { authenticateAsAdministrator, body, resetDatabase } from '#tests/http-fixtures'
+import {
+  authenticateAsAdministrator,
+  body,
+  resetDatabase,
+} from '#tests/http-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
 test.group('management/neighborhoods > delete', (group) => {
@@ -27,7 +31,9 @@ test.group('management/neighborhoods > delete', (group) => {
   }) => {
     const session = await authenticateAsAdministrator(client)
     const neighborhood = await NeighborhoodFactory.create()
-    await CollectionScheduleFactory.merge({ neighborhoodId: neighborhood.id }).create()
+    await CollectionScheduleFactory.merge({
+      neighborhoodId: neighborhood.id,
+    }).create()
 
     const response = await client
       .delete(`/management/neighborhoods/${neighborhood.id}`)
@@ -38,10 +44,15 @@ test.group('management/neighborhoods > delete', (group) => {
     assert.isNotNull(await Stored.neighborhood(neighborhood.id))
   })
 
-  test('the reports filed under it stay, with no neighborhood', async ({ client, assert }) => {
+  test('the reports filed under it stay, with no neighborhood', async ({
+    client,
+    assert,
+  }) => {
     const session = await authenticateAsAdministrator(client)
     const neighborhood = await NeighborhoodFactory.create()
-    const report = await ReportFactory.merge({ neighborhoodId: neighborhood.id }).create()
+    const report = await ReportFactory.merge({
+      neighborhoodId: neighborhood.id,
+    }).create()
 
     const response = await client
       .delete(`/management/neighborhoods/${neighborhood.id}`)

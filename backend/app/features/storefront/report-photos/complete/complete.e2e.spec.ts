@@ -3,7 +3,11 @@ import sharp from 'sharp'
 import drive from '@adonisjs/drive/services/main'
 
 import { body, resetDatabase } from '#tests/http-fixtures'
-import { jpegWithGps, openReportPhoto, uploadReportPhoto } from '#tests/report-photo-fixtures'
+import {
+  jpegWithGps,
+  openReportPhoto,
+  uploadReportPhoto,
+} from '#tests/report-photo-fixtures'
 import { storageRow } from '#tests/storages-fixtures'
 import { Stored } from '#tests/stored-fixtures'
 
@@ -47,7 +51,13 @@ test.group('storefront/report-photos > complete', (group) => {
     client,
     assert,
   }) => {
-    const liar = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, ...new Array<number>(60).fill(7)])
+    const liar = new Uint8Array([
+      0xff,
+      0xd8,
+      0xff,
+      0xe0,
+      ...new Array<number>(60).fill(7),
+    ])
     const opened = await openReportPhoto(client, liar.byteLength)
     await fetch(opened.uploadUrl, {
       method: 'PUT',
@@ -55,16 +65,23 @@ test.group('storefront/report-photos > complete', (group) => {
       headers: { 'Content-Type': 'image/jpeg' },
     })
 
-    const response = await client.post(`/storefront/report-photos/${opened.id}/complete`)
+    const response = await client.post(
+      `/storefront/report-photos/${opened.id}/complete`,
+    )
 
     response.assertStatus(422)
     assert.equal(body(response).code, 'REPORT_PHOTO_INVALID')
     assert.isNull(await Stored.storage(opened.id))
   })
 
-  test('a PNG sent as image/jpeg is refused by the signature check', async ({ client, assert }) => {
+  test('a PNG sent as image/jpeg is refused by the signature check', async ({
+    client,
+    assert,
+  }) => {
     const png = new Uint8Array(
-      await sharp({ create: { width: 8, height: 8, channels: 3, background: '#fff' } })
+      await sharp({
+        create: { width: 8, height: 8, channels: 3, background: '#fff' },
+      })
         .png()
         .toBuffer(),
     )
@@ -75,7 +92,9 @@ test.group('storefront/report-photos > complete', (group) => {
       headers: { 'Content-Type': 'image/jpeg' },
     })
 
-    const response = await client.post(`/storefront/report-photos/${opened.id}/complete`)
+    const response = await client.post(
+      `/storefront/report-photos/${opened.id}/complete`,
+    )
 
     response.assertStatus(422)
     assert.equal(body(response).code, 'STORAGE_CONTENT_MISMATCH')
@@ -85,20 +104,32 @@ test.group('storefront/report-photos > complete', (group) => {
     client,
     assert,
   }) => {
-    const library = await storageRow({ status: 'PENDING', mimetype: 'image/jpeg' })
+    const library = await storageRow({
+      status: 'PENDING',
+      mimetype: 'image/jpeg',
+    })
 
-    const response = await client.post(`/storefront/report-photos/${library.id}/complete`)
+    const response = await client.post(
+      `/storefront/report-photos/${library.id}/complete`,
+    )
 
     response.assertStatus(404)
     const kept = await Stored.storageOrFail(library.id)
     assert.equal(kept.status, 'PENDING')
   })
 
-  test('an unknown id and a malformed id are refused', async ({ client, assert }) => {
+  test('an unknown id and a malformed id are refused', async ({
+    client,
+    assert,
+  }) => {
     const unknown = await client
-      .post('/storefront/report-photos/00000000-0000-4000-8000-000000000000/complete')
+      .post(
+        '/storefront/report-photos/00000000-0000-4000-8000-000000000000/complete',
+      )
       .json({})
-    const malformed = await client.post('/storefront/report-photos/xyz/complete')
+    const malformed = await client.post(
+      '/storefront/report-photos/xyz/complete',
+    )
 
     unknown.assertStatus(404)
     assert.equal(body(unknown).code, 'REPORT_PHOTO_NOT_FOUND')

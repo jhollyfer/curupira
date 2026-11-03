@@ -5,7 +5,10 @@ import type {
   StorefrontNoticeShowResponse,
 } from '@curupira/shared'
 
-import { NoticeRepository, type NoticeListCriteria } from './notice.repository.ts'
+import {
+  NoticeRepository,
+  type NoticeListCriteria,
+} from './notice.repository.ts'
 
 import { MemoryPagination } from '#core/memory-pagination'
 import { Notice, type NoticeProps } from '#domain/notice/notice.entity'
@@ -33,13 +36,23 @@ export class NoticeMemoryRepository extends NoticeRepository {
     this.rows.delete(notice.id)
   }
 
-  async paginate(criteria: NoticeListCriteria): Promise<Paginated<ManagementNoticeShowResponse>> {
+  async paginate(
+    criteria: NoticeListCriteria,
+  ): Promise<Paginated<ManagementNoticeShowResponse>> {
     const search = criteria.search?.toLowerCase()
     const sign = SIGN[criteria.direction]
     const all = [...this.rows.values()]
       .filter((row) => !search || row.title.toLowerCase().includes(search))
-      .filter((row) => !criteria.status || Notice.statusOf(row, criteria.now) === criteria.status)
-      .sort((a, b) => sign * String(a[criteria.sort]).localeCompare(String(b[criteria.sort])))
+      .filter(
+        (row) =>
+          !criteria.status ||
+          Notice.statusOf(row, criteria.now) === criteria.status,
+      )
+      .sort(
+        (a, b) =>
+          sign *
+          String(a[criteria.sort]).localeCompare(String(b[criteria.sort])),
+      )
     const page = MemoryPagination.slice(all, criteria.page, criteria.perPage)
 
     return {

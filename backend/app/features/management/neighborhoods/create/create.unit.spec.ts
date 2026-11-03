@@ -16,7 +16,9 @@ async function setup() {
 }
 
 test.group('management/neighborhoods > create (unit)', () => {
-  test('registers with the slug from the name and no center', async ({ assert }) => {
+  test('registers with the slug from the name and no center', async ({
+    assert,
+  }) => {
     const { useCase } = await setup()
 
     const result = await useCase.execute({ name: 'Porto Cajuí' })
@@ -33,7 +35,11 @@ test.group('management/neighborhoods > create (unit)', () => {
   test('keeps the center when both coordinates come', async ({ assert }) => {
     const { useCase } = await setup()
 
-    const result = await useCase.execute({ name: 'Centro', latitude: -4.37, longitude: -70.03 })
+    const result = await useCase.execute({
+      name: 'Centro',
+      latitude: -4.37,
+      longitude: -70.03,
+    })
 
     assert.deepInclude(result.value, { latitude: -4.37, longitude: -70.03 })
   })
@@ -45,19 +51,29 @@ test.group('management/neighborhoods > create (unit)', () => {
 
     const result = await useCase.execute({ name: 'Centro', latitude: -4.37 })
 
-    assert.deepInclude(result.value, { status: 422, code: 'NEIGHBORHOOD_CENTER_INCOMPLETE' })
+    assert.deepInclude(result.value, {
+      status: 422,
+      code: 'NEIGHBORHOOD_CENTER_INCOMPLETE',
+    })
   })
 
-  test('repeated name or slug is 409 NEIGHBORHOOD_ALREADY_EXISTS', async ({ assert }) => {
+  test('repeated name or slug is 409 NEIGHBORHOOD_ALREADY_EXISTS', async ({
+    assert,
+  }) => {
     const { useCase } = await setup()
     await useCase.execute({ name: 'Centro' })
 
     const result = await useCase.execute({ name: 'CENTRO' })
 
-    assert.deepInclude(result.value, { status: 409, code: 'NEIGHBORHOOD_ALREADY_EXISTS' })
+    assert.deepInclude(result.value, {
+      status: 409,
+      code: 'NEIGHBORHOOD_ALREADY_EXISTS',
+    })
   })
 
-  test('repository failure is 500 MANAGEMENT_NEIGHBORHOOD_CREATE_ERROR', async ({ assert }) => {
+  test('repository failure is 500 MANAGEMENT_NEIGHBORHOOD_CREATE_ERROR', async ({
+    assert,
+  }) => {
     const { neighborhoods, useCase } = await setup()
     neighborhoods.save = async () => {
       throw new Error('database down')
@@ -65,6 +81,9 @@ test.group('management/neighborhoods > create (unit)', () => {
 
     const result = await useCase.execute({ name: 'Centro' })
 
-    assert.deepInclude(result.value, { status: 500, code: 'MANAGEMENT_NEIGHBORHOOD_CREATE_ERROR' })
+    assert.deepInclude(result.value, {
+      status: 500,
+      code: 'MANAGEMENT_NEIGHBORHOOD_CREATE_ERROR',
+    })
   })
 })

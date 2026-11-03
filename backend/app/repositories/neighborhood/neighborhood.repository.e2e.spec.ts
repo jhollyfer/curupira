@@ -16,7 +16,8 @@ import { resetDatabase } from '#tests/http-fixtures'
 const IMPLEMENTATIONS = {
   lucid: async (): Promise<NeighborhoodRepository> =>
     app.container.make(NeighborhoodLucidRepository),
-  memory: async (): Promise<NeighborhoodRepository> => new NeighborhoodMemoryRepository(),
+  memory: async (): Promise<NeighborhoodRepository> =>
+    new NeighborhoodMemoryRepository(),
 } satisfies Record<string, () => Promise<NeighborhoodRepository>>
 
 const NOW = new Date('2026-10-29T12:00:00.000Z')
@@ -39,9 +40,14 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
   test.group(`NeighborhoodRepository (${name})`, (group) => {
     group.each.setup(() => resetDatabase())
 
-    test('save and findById return the same neighborhood', async ({ assert }) => {
+    test('save and findById return the same neighborhood', async ({
+      assert,
+    }) => {
       const repository = await build()
-      const centro = make(CENTRO, 'Centro', { latitude: -4.3769, longitude: -70.0314 })
+      const centro = make(CENTRO, 'Centro', {
+        latitude: -4.3769,
+        longitude: -70.0314,
+      })
 
       await repository.save(centro)
       const found = await repository.findById(CENTRO)
@@ -63,32 +69,57 @@ for (const [name, build] of Object.entries(IMPLEMENTATIONS)) {
       assert.deepEqual(sameSlug.value, { code: 'NEIGHBORHOOD_ALREADY_EXISTS' })
     })
 
-    test('existsByNameOrSlug ignores the neighborhood itself', async ({ assert }) => {
+    test('existsByNameOrSlug ignores the neighborhood itself', async ({
+      assert,
+    }) => {
       const repository = await build()
       await repository.save(make(CENTRO, 'Centro'))
 
       assert.isTrue(await repository.existsByNameOrSlug('Centro', 'centro'))
-      assert.isFalse(await repository.existsByNameOrSlug('Centro', 'centro', CENTRO))
+      assert.isFalse(
+        await repository.existsByNameOrSlug('Centro', 'centro', CENTRO),
+      )
       assert.isFalse(await repository.existsByNameOrSlug('Outro', 'outro'))
     })
 
-    test('nearestTo picks the closest center and ignores those without one', async ({ assert }) => {
+    test('nearestTo picks the closest center and ignores those without one', async ({
+      assert,
+    }) => {
       const repository = await build()
-      await repository.save(make(CENTRO, 'Centro', { latitude: -4.3769, longitude: -70.0314 }))
-      await repository.save(make(COHAB, 'Cohab', { latitude: -4.3841, longitude: -70.0268 }))
+      await repository.save(
+        make(CENTRO, 'Centro', { latitude: -4.3769, longitude: -70.0314 }),
+      )
+      await repository.save(
+        make(COHAB, 'Cohab', { latitude: -4.3841, longitude: -70.0268 }),
+      )
       await repository.save(make(LONGE, 'Sem centro'))
 
-      assert.equal(await repository.nearestTo({ latitude: -4.3835, longitude: -70.0272 }), COHAB)
-      assert.equal(await repository.nearestTo({ latitude: -4.3771, longitude: -70.0312 }), CENTRO)
-      assert.isNull(await repository.nearestTo({ latitude: -3.1, longitude: -60 }))
+      assert.equal(
+        await repository.nearestTo({ latitude: -4.3835, longitude: -70.0272 }),
+        COHAB,
+      )
+      assert.equal(
+        await repository.nearestTo({ latitude: -4.3771, longitude: -70.0312 }),
+        CENTRO,
+      )
+      assert.isNull(
+        await repository.nearestTo({ latitude: -3.1, longitude: -60 }),
+      )
     })
 
-    test('paginate searches by name and sorts; listAll is by name', async ({ assert }) => {
+    test('paginate searches by name and sorts; listAll is by name', async ({
+      assert,
+    }) => {
       const repository = await build()
       await repository.save(make(COHAB, 'Cohab'))
       await repository.save(make(CENTRO, 'Centro'))
       await repository.save(make(LONGE, 'Livramento'))
-      const base = { page: 1, perPage: 10, sort: 'name', direction: 'asc' } as const
+      const base = {
+        page: 1,
+        perPage: 10,
+        sort: 'name',
+        direction: 'asc',
+      } as const
 
       const searched = await repository.paginate({ ...base, search: 'co' })
       const reversed = await repository.paginate({ ...base, direction: 'desc' })

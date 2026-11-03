@@ -59,7 +59,10 @@ export class Neighborhood {
   }
 
   /** Absent field means "leave alone"; `null` on a coordinate erases the center. */
-  update(changes: NeighborhoodChanges, now: Date): Either<NeighborhoodError, Neighborhood> {
+  update(
+    changes: NeighborhoodChanges,
+    now: Date,
+  ): Either<NeighborhoodError, Neighborhood> {
     const latitude = Neighborhood.keep(changes.latitude, this.props.latitude)
     const longitude = Neighborhood.keep(changes.longitude, this.props.longitude)
     if ((latitude === null) !== (longitude === null))
@@ -77,7 +80,10 @@ export class Neighborhood {
   }
 
   /** An absent change keeps the current value; `null` is a change (erase). */
-  private static keep(change: number | null | undefined, current: number | null): number | null {
+  private static keep(
+    change: number | null | undefined,
+    current: number | null,
+  ): number | null {
     if (change === undefined) return current
 
     return change

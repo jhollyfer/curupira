@@ -9,7 +9,10 @@ export class ReportPhotoRefusal {
    * flow. All three answer the same `404`, so the route cannot be used to probe which ids exist.
    */
   static notFound(i18n: I18n): HTTPException {
-    return HTTPException.NotFound(i18n.t('files.not_found'), 'REPORT_PHOTO_NOT_FOUND')
+    return HTTPException.NotFound(
+      i18n.t('files.not_found'),
+      'REPORT_PHOTO_NOT_FOUND',
+    )
   }
 
   /** The bytes are not an image the decoder accepts, whatever they started with. */

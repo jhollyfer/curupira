@@ -25,7 +25,8 @@ export class CorsOrigins {
       .map((entry) => entry.trim())
       .filter((entry) => entry.length > 0)
 
-    if (entries.length === 0) throw new Error('CORS_ORIGINS needs at least one origin')
+    if (entries.length === 0)
+      throw new Error('CORS_ORIGINS needs at least one origin')
 
     for (const entry of entries) CorsOrigins.assertOrigin(entry)
 
@@ -33,7 +34,8 @@ export class CorsOrigins {
   }
 
   private static assertOrigin(entry: string): void {
-    if (entry === '*') throw new Error('CORS_ORIGINS must not be * (the API uses cookies)')
+    if (entry === '*')
+      throw new Error('CORS_ORIGINS must not be * (the API uses cookies)')
 
     const url = CorsOrigins.toUrl(entry)
 
@@ -42,7 +44,9 @@ export class CorsOrigins {
     }
 
     if (url.origin !== entry) {
-      throw new Error(`CORS_ORIGINS entry must be an origin, no path or trailing slash: ${entry}`)
+      throw new Error(
+        `CORS_ORIGINS entry must be an origin, no path or trailing slash: ${entry}`,
+      )
     }
   }
 

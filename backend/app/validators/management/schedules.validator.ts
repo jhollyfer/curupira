@@ -28,8 +28,14 @@ export const ManagementSchedulePaginateValidator = vine.create({
   neighborhoodId: vine.string().uuid().optional(),
 })
 
-export type ManagementScheduleCreatePayload = Infer<typeof ManagementScheduleCreateValidator>
+export type ManagementScheduleCreatePayload = Infer<
+  typeof ManagementScheduleCreateValidator
+>
 
-export type ManagementScheduleUpdatePayload = Infer<typeof ManagementScheduleUpdateValidator>
+export type ManagementScheduleUpdatePayload = Infer<
+  typeof ManagementScheduleUpdateValidator
+>
 
-export type ManagementSchedulePaginatePayload = Infer<typeof ManagementSchedulePaginateValidator>
+export type ManagementSchedulePaginatePayload = Infer<
+  typeof ManagementSchedulePaginateValidator
+>

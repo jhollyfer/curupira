@@ -28,7 +28,9 @@ export abstract class NoticeRepository {
   abstract findById(id: string): Promise<Notice | null>
   abstract save(notice: Notice): Promise<void>
   abstract delete(notice: Notice): Promise<void>
-  abstract paginate(criteria: NoticeListCriteria): Promise<Paginated<ManagementNoticeShowResponse>>
+  abstract paginate(
+    criteria: NoticeListCriteria,
+  ): Promise<Paginated<ManagementNoticeShowResponse>>
   /** What the home shows at the instant: active only, the most recent start first. */
   abstract listActive(now: Date): Promise<StorefrontNoticeShowResponse[]>
 }

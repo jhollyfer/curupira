@@ -18,7 +18,9 @@ async function setup() {
 }
 
 test.group('management/neighborhoods > paginate (unit)', () => {
-  test('lists by name ascending, 20 per page by default', async ({ assert }) => {
+  test('lists by name ascending, 20 per page by default', async ({
+    assert,
+  }) => {
     const { neighborhoods, useCase } = await setup()
     await seedNeighborhood(neighborhoods, 'Cohab')
     await seedNeighborhood(neighborhoods, 'Centro')

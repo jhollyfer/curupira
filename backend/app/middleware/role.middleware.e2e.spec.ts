@@ -45,7 +45,9 @@ test.group('roles > without a session', (group) => {
   })
 
   for (const resource of [...OPERATOR_AREA, ...ADMINISTRATOR_AREA]) {
-    test(`/management/${resource} answers 401, and not 403`, async ({ client }) => {
+    test(`/management/${resource} answers 401, and not 403`, async ({
+      client,
+    }) => {
       const response = await client.get(`/management/${resource}`)
 
       response.assertStatus(401)
@@ -53,7 +55,12 @@ test.group('roles > without a session', (group) => {
   }
 
   test('the site answers without a session', async ({ client }) => {
-    for (const path of ['neighborhoods', 'schedules', 'notices', 'reports/map']) {
+    for (const path of [
+      'neighborhoods',
+      'schedules',
+      'notices',
+      'reports/map',
+    ]) {
       const response = await client.get(`/storefront/${path}`)
 
       response.assertStatus(200)
@@ -65,20 +72,29 @@ test.group('roles > the operator works reports and notices only', (group) => {
   group.each.setup(() => resetDatabase())
 
   for (const resource of OPERATOR_AREA) {
-    test(`/management/${resource} answers 200 to the operator`, async ({ client }) => {
+    test(`/management/${resource} answers 200 to the operator`, async ({
+      client,
+    }) => {
       const session = await authenticateAsOperator(client)
 
-      const response = await client.get(`/management/${resource}`).cookies(session)
+      const response = await client
+        .get(`/management/${resource}`)
+        .cookies(session)
 
       response.assertStatus(200)
     })
   }
 
   for (const resource of ADMINISTRATOR_AREA) {
-    test(`/management/${resource} answers 403 to the operator`, async ({ client, assert }) => {
+    test(`/management/${resource} answers 403 to the operator`, async ({
+      client,
+      assert,
+    }) => {
       const session = await authenticateAsOperator(client)
 
-      const response = await client.get(`/management/${resource}`).cookies(session)
+      const response = await client
+        .get(`/management/${resource}`)
+        .cookies(session)
 
       response.assertStatus(403)
       assert.equal(body(response).code, 'ACCESS_DENIED')
@@ -88,7 +104,10 @@ test.group('roles > the operator works reports and notices only', (group) => {
   test('nor does it create an account', async ({ client }) => {
     const session = await authenticateAsOperator(client)
 
-    const response = await client.post('/management/users').cookies(session).json(NEW_USER)
+    const response = await client
+      .post('/management/users')
+      .cookies(session)
+      .json(NEW_USER)
 
     response.assertStatus(403)
   })
@@ -98,30 +117,45 @@ test.group('roles > the administrator passes everywhere', (group) => {
   group.each.setup(() => resetDatabase())
 
   for (const resource of [...OPERATOR_AREA, ...ADMINISTRATOR_AREA]) {
-    test(`/management/${resource} answers 200 to the administrator`, async ({ client }) => {
+    test(`/management/${resource} answers 200 to the administrator`, async ({
+      client,
+    }) => {
       const session = await authenticateAsAdministrator(client)
 
-      const response = await client.get(`/management/${resource}`).cookies(session)
+      const response = await client
+        .get(`/management/${resource}`)
+        .cookies(session)
 
       response.assertStatus(200)
     })
   }
 
-  test('the administrator goes through users from start to end', async ({ client }) => {
+  test('the administrator goes through users from start to end', async ({
+    client,
+  }) => {
     const session = await authenticateAsAdministrator(client)
 
-    const created = await client.post('/management/users').cookies(session).json(NEW_USER)
+    const created = await client
+      .post('/management/users')
+      .cookies(session)
+      .json(NEW_USER)
     created.assertStatus(201)
 
-    const deleted = await client.delete(`/management/users/${body(created).id}`).cookies(session)
+    const deleted = await client
+      .delete(`/management/users/${body(created).id}`)
+      .cookies(session)
     deleted.assertStatus(204)
   })
 
-  test('and deletes another administrator, who is not their own account', async ({ client }) => {
+  test('and deletes another administrator, who is not their own account', async ({
+    client,
+  }) => {
     const session = await authenticateAsAdministrator(client)
     const other = await UserFactory.apply('administrator').create()
 
-    const response = await client.delete(`/management/users/${other.id}`).cookies(session)
+    const response = await client
+      .delete(`/management/users/${other.id}`)
+      .cookies(session)
 
     response.assertStatus(204)
   })

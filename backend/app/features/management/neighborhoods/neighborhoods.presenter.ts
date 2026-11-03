@@ -9,7 +9,8 @@ import type { Neighborhood } from '#domain/neighborhood/neighborhood.entity'
  */
 export class NeighborhoodPresenter {
   static show(neighborhood: Neighborhood): ManagementNeighborhoodShowResponse {
-    const { id, name, slug, latitude, longitude, createdAt, updatedAt } = neighborhood.snapshot()
+    const { id, name, slug, latitude, longitude, createdAt, updatedAt } =
+      neighborhood.snapshot()
 
     return {
       id,

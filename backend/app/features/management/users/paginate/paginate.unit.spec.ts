@@ -4,11 +4,17 @@ import ManagementUserPaginateUseCase from './paginate.use-case.ts'
 
 import { UserRepository } from '#repositories/user/user.repository'
 import { makeWithMemory } from '#tests/container-fixtures'
-import { identityDoubles, OTHER_ID, seedUser } from '#tests/identity-unit-fixtures'
+import {
+  identityDoubles,
+  OTHER_ID,
+  seedUser,
+} from '#tests/identity-unit-fixtures'
 import { rightOf } from '#tests/result-unit-fixtures'
 
 test.group('management/users > paginate (unit)', () => {
-  test('lists by name and cuts by role, status and search', async ({ assert }) => {
+  test('lists by name and cuts by role, status and search', async ({
+    assert,
+  }) => {
     const doubles = identityDoubles()
     const useCase = await makeWithMemory(ManagementUserPaginateUseCase, [
       [UserRepository, doubles.users],
