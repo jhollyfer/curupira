@@ -9,6 +9,10 @@ espera a prefeitura conferir bairros e cronograma.
 
 ## [Não lançado]
 
+### Corrigido
+
+- Endereço que não existe responde 404 de verdade (antes respondia 200 com a página "não encontrada"), mantendo o cabeçalho e o rodapé do app.
+
 ### Alterado
 
 - Botões, campos, menus, paginação e abas têm 44 px de altura no celular, em todas as telas, e voltam ao tamanho denso a partir de `sm`.
