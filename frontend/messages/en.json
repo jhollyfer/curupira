@@ -527,5 +527,6 @@
   "panel_filters_button_count": "Filters ({count})",
   "panel_reports_views_label": "View reports as",
   "panel_reports_view_list": "List",
-  "panel_reports_view_map": "Map"
+  "panel_reports_view_map": "Map",
+  "common_maiyu_credit": "Developed by {#link}Maiyu{/link}"
 }

@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import type * as React from 'react'
 
 import { BrandMark } from '#/components/common/brand-mark'
+import { MaiyuCredit } from '#/components/common/maiyu-credit'
 import { m } from '#/paraglide/messages'
 
 /**
@@ -41,9 +42,10 @@ export function Footer(): React.JSX.Element {
           </ul>
         </nav>
       </div>
-      <p className="page-container pb-6 text-sm text-stage-muted">
-        {m.footer_sample_notice()}
-      </p>
+      <div className="page-container flex flex-col gap-1 pb-6 text-sm text-stage-muted md:flex-row md:items-center md:justify-between">
+        <p>{m.footer_sample_notice()}</p>
+        <MaiyuCredit className="text-stage-muted" />
+      </div>
     </footer>
   )
 }

@@ -102,7 +102,10 @@ describe('messages', () => {
 
   it('every key is used in the code', () => {
     const code = sources(join(root, 'src')).join('\n')
-    const dead = keysOf(ptBR).filter((key) => !code.includes(`m.${key}(`))
+    // `m.key(` is a plain message; `m.key.parts(` is one with markup (`{#link}…{/link}`).
+    const dead = keysOf(ptBR).filter(
+      (key) => !code.includes(`m.${key}(`) && !code.includes(`m.${key}.parts(`),
+    )
 
     expect(dead).toEqual([])
   })

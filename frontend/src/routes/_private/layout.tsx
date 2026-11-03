@@ -3,6 +3,7 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import type * as React from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 
+import { MaiyuCredit } from '#/components/common/maiyu-credit'
 import { NotFoundPageServerError } from '#/components/common/not-found-page'
 import { SidebarInset, SidebarProvider } from '#/components/ui/sidebar'
 import { Spinner } from '#/components/ui/spinner'
@@ -129,6 +130,7 @@ function RouteComponent(): React.JSX.Element {
               </ErrorBoundary>
             )}
           </QueryErrorResetBoundary>
+          <MaiyuCredit className="mt-auto justify-center pt-4 text-sm text-muted-foreground" />
         </div>
       </SidebarInset>
     </SidebarProvider>

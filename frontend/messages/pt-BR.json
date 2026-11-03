@@ -527,5 +527,6 @@
   "panel_filters_button_count": "Filtros ({count})",
   "panel_reports_views_label": "Ver ocorrências como",
   "panel_reports_view_list": "Lista",
-  "panel_reports_view_map": "Mapa"
+  "panel_reports_view_map": "Mapa",
+  "common_maiyu_credit": "Desenvolvido por {#link}Maiyu{/link}"
 }

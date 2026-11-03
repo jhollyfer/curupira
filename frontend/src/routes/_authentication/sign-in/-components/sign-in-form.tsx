@@ -4,6 +4,7 @@ import { getRouteApi, useRouter } from '@tanstack/react-router'
 import type * as React from 'react'
 
 import { InputPassword } from '#/components/common/input-password'
+import { MaiyuCredit } from '#/components/common/maiyu-credit'
 import { SubmitButton } from '#/components/common/submit-button'
 import { Field, FieldGroup } from '#/components/ui/field'
 import { Input } from '#/components/ui/input'
@@ -132,6 +133,7 @@ export function SignInForm(): React.JSX.Element {
             </Field>
           </FieldGroup>
         </form>
+        <MaiyuCredit className="justify-center text-sm text-muted-foreground" />
       </AuthShellContent>
     </AuthShell>
   )

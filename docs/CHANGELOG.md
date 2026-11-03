@@ -17,6 +17,7 @@ espera a prefeitura conferir bairros e cronograma.
 
 ### Alterado
 
+- Crédito "Desenvolvido por Maiyu" (pt, es, en) no rodapé público, no login e no painel, pelo componente `MaiyuCredit`; sem slogan. A logo (`maiyu.png`) ainda não está no repositório, então o crédito sai só com o texto.
 - Bairros do seed trocados pelos 14 da lista oficial do município (Agropalmin, Alzenir Magalhães, Bom Jardim, Castanhal, Centro, Cidade Nova, Cohabam, Coimbra, Colônia I, Colônia II, Eduardo Braga, Javarizinho, Monte da Redenção e Umarizal), sem coordenada: o administrador marca o ponto no painel. Quem já tem a lista antiga no banco continua com ela até a limpar no painel.
 - Botões, campos, menus, paginação e abas têm 44 px de altura no celular, em todas as telas, e voltam ao tamanho denso a partir de `sm`.
 - Contadores de registros e ocorrências dizem "Nenhum registro" e "1 registro" em vez de "0 registros", nos três idiomas.
