@@ -12,14 +12,22 @@ type TrustFunction = (address: string, distance: number) => boolean
  * boot down instead of the first request (_doc-lib/adonisjs.md#guides/basics/request,
  * https://docs.adonisjs.com/guides/basics/request).
  *
+ * Absent means `loopback` (`_standards/backend.md` §6.2): right with no proxy in front.
+ *
  * "Trust everyone" is refused on purpose (`true`, `*`, the catch-all ranges): then the client
  * writes `X-Forwarded-For` itself and picks its own rate-limit bucket.
  */
 export class TrustedProxies {
-  private static readonly TRUST_EVERYONE = new Set(['true', '*', '0.0.0.0/0', '::/0'])
+  private static readonly TRUST_EVERYONE = new Set([
+    'true',
+    '*',
+    '0.0.0.0/0',
+    '::/0',
+  ])
+  private static readonly ABSENT = 'loopback'
 
-  static compile(raw: string): TrustFunction {
-    const entries = TrustedProxies.entries(raw)
+  static compile(raw: string | undefined): TrustFunction {
+    const entries = TrustedProxies.entries(raw ?? TrustedProxies.ABSENT)
 
     try {
       return proxyAddr.compile(entries)
@@ -28,9 +36,15 @@ export class TrustedProxies {
     }
   }
 
-  /** The env schema validator: fails the boot, and keeps the raw string for `config/app.ts`. */
-  static validate(key: string, value: string | undefined): string {
-    if (value === undefined) throw new Error(`${key} is required`)
+  /**
+   * The env schema validator: an invalid value fails the boot, and the raw string (or its
+   * absence) is what `config/app.ts` reads.
+   */
+  static readonly validate = (
+    _key: string,
+    value: string | undefined,
+  ): string | undefined => {
+    if (value === undefined) return undefined
 
     TrustedProxies.compile(value)
 
@@ -43,9 +57,12 @@ export class TrustedProxies {
       .map((entry) => entry.trim())
       .filter((entry) => entry.length > 0)
 
-    if (entries.length === 0) throw new Error('TRUSTED_PROXIES needs at least one entry')
+    if (entries.length === 0)
+      throw new Error('TRUSTED_PROXIES needs at least one entry')
 
-    const everyone = entries.find((entry) => TrustedProxies.TRUST_EVERYONE.has(entry.toLowerCase()))
+    const everyone = entries.find((entry) =>
+      TrustedProxies.TRUST_EVERYONE.has(entry.toLowerCase()),
+    )
 
     if (everyone !== undefined) {
       throw new Error(`TRUSTED_PROXIES must not trust everyone (${everyone})`)

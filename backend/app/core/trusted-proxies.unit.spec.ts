@@ -16,22 +16,36 @@ test.group('TrustedProxies', () => {
     assert.isFalse(trust('203.0.113.9', 0))
   })
 
+  test('when absent, only loopback is trusted', ({ assert }) => {
+    const trust = TrustedProxies.compile(undefined)
+
+    assert.isTrue(trust('127.0.0.1', 0))
+    assert.isFalse(trust('10.1.2.3', 0))
+  })
+
   test('a single value and a subnet work', ({ assert }) => {
     assert.isTrue(TrustedProxies.compile('loopback')('::1', 0))
     assert.isTrue(TrustedProxies.compile('10.0.0.0/8')('10.9.9.9', 0))
     assert.isFalse(TrustedProxies.compile('10.0.0.0/8')('11.0.0.1', 0))
   })
 
-  test('refuses an empty value, or one that is only separators', ({ assert }) => {
+  test('refuses an empty value, or one that is only separators', ({
+    assert,
+  }) => {
     assert.throws(() => TrustedProxies.compile(''), /TRUSTED_PROXIES/)
     assert.throws(() => TrustedProxies.compile(' , '), /TRUSTED_PROXIES/)
   })
 
   test('refuses an invalid entry', ({ assert }) => {
-    assert.throws(() => TrustedProxies.compile('loopback,not-an-address'), /TRUSTED_PROXIES/)
+    assert.throws(
+      () => TrustedProxies.compile('loopback,not-an-address'),
+      /TRUSTED_PROXIES/,
+    )
   })
 
-  test('never trusts everyone: true, *, and the catch-all ranges', ({ assert }) => {
+  test('never trusts everyone: true, *, and the catch-all ranges', ({
+    assert,
+  }) => {
     for (const value of [
       'true',
       '*',
@@ -41,7 +55,11 @@ test.group('TrustedProxies', () => {
       '::/0',
       '0.0.0.0/0,loopback',
     ]) {
-      assert.throws(() => TrustedProxies.compile(value), /TRUSTED_PROXIES/, value)
+      assert.throws(
+        () => TrustedProxies.compile(value),
+        /TRUSTED_PROXIES/,
+        value,
+      )
     }
   })
 
@@ -50,7 +68,10 @@ test.group('TrustedProxies', () => {
       TrustedProxies.validate('TRUSTED_PROXIES', 'loopback,uniquelocal'),
       'loopback,uniquelocal',
     )
-    assert.throws(() => TrustedProxies.validate('TRUSTED_PROXIES', undefined), /TRUSTED_PROXIES/)
-    assert.throws(() => TrustedProxies.validate('TRUSTED_PROXIES', 'true'), /TRUSTED_PROXIES/)
+    assert.isUndefined(TrustedProxies.validate('TRUSTED_PROXIES', undefined))
+    assert.throws(
+      () => TrustedProxies.validate('TRUSTED_PROXIES', 'true'),
+      /TRUSTED_PROXIES/,
+    )
   })
 })
