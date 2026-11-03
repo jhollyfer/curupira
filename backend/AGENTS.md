@@ -7,7 +7,7 @@ contexto do produto: `../AGENTS.md` e `../docs/`. O que cada operação faz, rec
 
 ## Comandos
 
-- `pnpm check`: lint, typecheck, `openapi:check`, `pattern:check`, `authz:check` e `test:unit`
+- `pnpm check`: lint, `format:check`, typecheck, `openapi:check`, `pattern:check`, `authz:check` e `test:unit`
   (`backend.md` §10).
 - `pnpm depcruise`: direção das camadas e ciclo (`domain.md` §8).
 - `pnpm test:unit`: a suíte `unit`, sem banco. `pnpm test:e2e`: a suíte `functional`, contra Postgres
