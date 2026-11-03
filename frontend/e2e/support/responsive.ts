@@ -1,32 +1,4 @@
-import { expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
-
-/** Every width the resident app is held to, phone to wide monitor (height is the usual one). */
-const ALL_VIEWPORTS = [
-  { name: 'phone-360', width: 360, height: 740 },
-  { name: 'phone-412', width: 412, height: 915 },
-  { name: 'phone-landscape', width: 740, height: 360 },
-  { name: 'tablet-portrait', width: 768, height: 1024 },
-  { name: 'tablet-landscape', width: 1024, height: 768 },
-  { name: 'desktop-1440', width: 1440, height: 900 },
-  { name: 'desktop-1920', width: 1920, height: 1080 },
-] as const
-
-/** The widths that cover each layout change: phone, tablet, desktop and wide monitor. */
-const CI_WIDTHS: ReadonlyArray<number> = [360, 768, 1440, 1920]
-
-/**
- * The matrix a run uses. The full one locally; in CI the four widths above (the run is
- * the config's and the CI's, not a key). The dev server is one process and the matrix is
- * about 150 visits, so the full matrix alone took longer than the job's cap; the other
- * widths sit between two of these and are checked before a release, not on every push.
- */
-function selectViewports(): ReadonlyArray<(typeof ALL_VIEWPORTS)[number]> {
-  if (!process.env.CI) return ALL_VIEWPORTS
-  return ALL_VIEWPORTS.filter((viewport) => CI_WIDTHS.includes(viewport.width))
-}
-
-export const VIEWPORTS = selectViewports()
 
 /** The public routes, plus the sign-in and a missing page (also part of the app a resident can reach). */
 export const PUBLIC_ROUTES = [
@@ -48,12 +20,14 @@ export const PUBLIC_ROUTES = [
  * scroll on a phone is a layout that did not fit. The only scrolling the app wants is
  * inside a region (the strip of days), which does not widen the document.
  *
- * `width` is the viewport the test asked for, and it is compared on purpose besides
+ * The width is the project's viewport, and it is compared on purpose besides
  * `innerWidth`: on a mobile-emulated page (`isMobile`) the browser grows the layout
  * viewport to fit overflowing content, so `innerWidth` follows the overflow and
  * `scrollWidth <= innerWidth` would pass on a page that is in fact wider than the phone.
  */
-export function horizontalOverflow(page: Page, width: number): Promise<number> {
+export function horizontalOverflow(page: Page): Promise<number> {
+  const width = page.viewportSize()?.width ?? 0
+
   return page.evaluate(
     (expected) =>
       document.documentElement.scrollWidth -
@@ -100,18 +74,18 @@ export function smallTouchTargets(page: Page): Promise<Array<string>> {
   })
 }
 
-/**
- * The 44px target rule, asserted only when the project has touch. The branch lives here
- * and not in the test body because the Playwright lint rejects a conditional inside a
- * test, and one navigation serves both reads (two tests would visit every route twice).
- *
- * Polled, not read once: the images settle a moment after hydration.
- */
-export async function expectTouchTargets(
-  page: Page,
-  touch: boolean,
-): Promise<void> {
-  if (touch) {
-    await expect.poll(() => smallTouchTargets(page)).toEqual([])
-  }
-}
+/** The panel's screens, for the administrator (the operator reaches only some of them). */
+export const PANEL_ROUTES = [
+  '/gestao',
+  '/gestao/reports',
+  '/gestao/reports?status=RECEIVED',
+  '/gestao/schedules',
+  '/gestao/neighborhoods',
+  '/gestao/neighborhoods/new',
+  '/gestao/notices',
+  '/gestao/notices/new',
+  '/gestao/users',
+  '/gestao/users/new',
+  '/gestao/account/profile',
+  '/gestao/does-not-exist',
+] as const

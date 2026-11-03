@@ -11,6 +11,8 @@ espera a prefeitura conferir bairros e cronograma.
 
 ### Corrigido
 
+- Painel no celular: campos, filtros, o resumo da tabela do gráfico e o botão de senha com 44 px de alvo de toque; o "Pular para o conteúdo" do painel usa o mesmo estilo do app do morador.
+- E2E: o título da lista do mapa seguia o formato antigo "Ocorrências (N)".
 - Endereço que não existe responde 404 de verdade (antes respondia 200 com a página "não encontrada"), mantendo o cabeçalho e o rodapé do app.
 
 ### Alterado

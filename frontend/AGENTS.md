@@ -8,7 +8,7 @@ TanStack Start + Nitro. A régua é `../_standards/` (`frontend.md`, `i18n.md`, 
 
 - `pnpm dev` sobe em `http://localhost:3000` (dados de exemplo, sem backend).
 - `pnpm check`: Paraglide, lint, typecheck e Prettier (`tooling.md` §7).
-- `pnpm test:unit`: Vitest. `pnpm test:e2e`: Playwright (`e2e/*.spec.ts`; projetos `mobile`, `desktop` e `responsive-*` em `e2e/playwright.config.ts`).
+- `pnpm test:unit`: Vitest. `pnpm test:e2e`: Playwright (`e2e/*.spec.ts`; projetos `setup`, `mobile`, `tablet` e `desktop` em `e2e/playwright.config.ts`; rode um projeto por vez, `--project=mobile`).
 - `pnpm build`, depois `pnpm check-cycles`.
 - `pnpm format` reescreve com Prettier e `eslint --fix`.
 - `routeTree.gen.ts` é regerado pelo plugin do Router (`pnpm dev` ou `pnpm build`), nunca à mão.
@@ -70,10 +70,8 @@ Rotas em `src/routes/_private/gestao/`, em par `rota.tsx` + `rota.lazy.tsx`, nom
 - **Responsivo**: abaixo de 768 px (`useIsMobile`) a sidebar é gaveta, a tabela vira cartões, os filtros viram
   `FilterPanel` e o cronograma vira lista por dia; abaixo de 1024 px a sidebar começa recolhida em trilho.
   Controle novo no painel herda os 44 px por `.panel-touch`; listagem nova passa `meta.card` nas colunas.
-- **E2E**: `e2e/management-flow.spec.ts` (projeto `desktop`); `e2e/responsive-public.spec.ts` (projetos
-  `responsive-touch` e `responsive-pointer`) e `e2e/responsive-panel.spec.ts` (projeto `responsive`), com as
-  larguras em `e2e/support/responsive.ts`; credenciais em `e2e/support/credentials.ts`
-  (`E2E_BASE_URL`, `E2E_API_URL`, `E2E_OWNER_*`, `E2E_DEMO_PASSWORD`, ver `.env.e2e.example`).
+- **E2E**: `auth.setup.ts` grava a sessão de cada papel em `e2e/.auth/`; `report-flow`, `management-flow`, `responsive.spec` (todas as telas, rolagem lateral, axe, tema claro e escuro) rodam nos três projetos de viewport e `touch-targets.spec` só no `mobile`. Credenciais em `e2e/support/credentials.ts`
+  (`E2E_BASE_URL`, `E2E_API_URL`, `E2E_OWNER_*`, `E2E_DEMO_PASSWORD`, ver `.env.e2e.example`). Cada projeto denuncia e o limite é de 10 por hora por IP: entre um projeto e outro, local, esvazie `rate_limits`.
 
 ## Dados e a API
 

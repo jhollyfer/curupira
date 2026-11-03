@@ -1,14 +1,11 @@
 import AxeBuilder from '@axe-core/playwright'
-import { USER_ROLE } from '@curupira/shared'
 import { expect, test as base } from '@playwright/test'
 import type { APIRequestContext, Page } from '@playwright/test'
 
-import { API_URL, SITE_ORIGIN, apiClient } from './api'
-import { demoCredentials, ownerCredentials } from './credentials'
+import { API_URL, SITE_ORIGIN } from './api'
+import { AUTH_FILES } from './auth-files'
 
 type Role = 'anonymous' | 'owner' | 'operator'
-
-type StorageState = Awaited<ReturnType<APIRequestContext['storageState']>>
 
 type Fixtures = Readonly<{
   /**
@@ -23,32 +20,14 @@ type Fixtures = Readonly<{
   ownerApi: APIRequestContext
 }>
 
-type Sessions = Readonly<{
-  owner: () => Promise<StorageState>
-  operator: () => Promise<StorageState>
-}>
-
-type WorkerFixtures = Readonly<{ sessions: Sessions }>
-
-/** Runs `open` once, on first use: a spec that never needs the operator never creates one. */
-function once<T>(open: () => Promise<T>): () => Promise<T> {
-  let pending: Promise<T> | undefined
-
-  return () => {
-    pending ??= open()
-
-    return pending
-  }
-}
-
 /**
- * The suite's `test`. Sessions are opened once per worker, through the API: each screen
- * sign-in spends one of the five attempts per minute the limiter gives the IP, and the
+ * The suite's `test`. Sessions come from the `setup` project (`auth.setup.ts`), written once per run: each screen
+ * sign-in would spend one of the five attempts per minute the limiter gives the IP, and the
  * blocked IP stays blocked for ten minutes.
  *
  * The operator is the demonstration seeder's (`operator@example.com`, `E2E_DEMO_PASSWORD`).
  */
-export const test = base.extend<Fixtures, WorkerFixtures>({
+export const test = base.extend<Fixtures>({
   expectAccessible: async ({}, provide) => {
     await provide(async (page) => {
       const results = await new AxeBuilder({ page }).analyze()
@@ -62,45 +41,19 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
 
   role: ['anonymous', { option: true }],
 
-  sessions: [
-    async ({ playwright }, provide) => {
-      const owner = once(async () => {
-        const client = await apiClient(playwright, ownerCredentials())
-        const state = await client.storageState()
-        await client.dispose()
-
-        return state
-      })
-
-      const operator = once(async () => {
-        const client = await apiClient(
-          playwright,
-          demoCredentials(USER_ROLE.OPERATOR),
-        )
-        const state = await client.storageState()
-        await client.dispose()
-
-        return state
-      })
-
-      await provide({ owner, operator })
-    },
-    { scope: 'worker' },
-  ],
-
-  storageState: async ({ role, sessions }, provide) => {
+  storageState: async ({ role }, provide) => {
     const states = {
-      anonymous: async () => undefined,
-      owner: sessions.owner,
-      operator: sessions.operator,
-    } satisfies Record<Role, () => Promise<StorageState | undefined>>
+      anonymous: undefined,
+      owner: AUTH_FILES.owner,
+      operator: AUTH_FILES.operator,
+    } satisfies Record<Role, string | undefined>
 
-    await provide(await states[role]())
+    await provide(states[role])
   },
 
-  ownerApi: async ({ sessions, playwright }, provide) => {
+  ownerApi: async ({ playwright }, provide) => {
     const client = await playwright.request.newContext({
-      storageState: await sessions.owner(),
+      storageState: AUTH_FILES.owner,
       baseURL: API_URL,
       extraHTTPHeaders: { Origin: SITE_ORIGIN },
     })

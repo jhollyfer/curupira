@@ -54,11 +54,8 @@ test.describe('administrator', () => {
     await expect(
       page.getByRole('heading', { name: 'Ocorrências', level: 1 }),
     ).toBeVisible()
-    await page
-      .getByRole('table')
-      .getByRole('link', { name: /^CUR-/ })
-      .first()
-      .click()
+    // A link in the table, or in a card on a phone.
+    await page.getByRole('link', { name: /^CUR-/ }).first().click()
 
     await page.getByRole('radio', { name: /Em análise/ }).check()
     await page
@@ -111,7 +108,11 @@ test.describe('administrator', () => {
     // Close it: it leaves the resident's page and stays in the panel list as closed.
     await page.goto('/gestao/notices')
     await expect(page.getByText(scheduled)).toBeVisible()
-    const row = page.getByRole('row').filter({ hasText: title })
+    // A table row, or a card on a phone.
+    const row = page
+      .getByRole('row')
+      .or(page.getByRole('listitem'))
+      .filter({ hasText: title })
     await row.getByRole('button').click()
     await page.getByRole('menuitem', { name: 'Encerrar' }).click()
     await page
@@ -136,11 +137,11 @@ test.describe('administrator', () => {
       '/management/neighborhoods?perPage=100',
     )
     const { data } = await neighborhoods.json()
-    const umariacu = data.find(
-      (item: { name: string }) => item.name === 'Umariaçu',
+    const umarizal = data.find(
+      (item: { name: string }) => item.name === 'Umarizal',
     )
     const entries = await ownerApi.get(
-      `/management/schedules?neighborhoodId=${umariacu.id}&perPage=100`,
+      `/management/schedules?neighborhoodId=${umarizal.id}&perPage=100`,
     )
     const { data: schedules } = await entries.json()
     for (const entry of schedules.filter(
@@ -151,8 +152,15 @@ test.describe('administrator', () => {
 
     await page.goto('/gestao/schedules')
     await waitForHydration(page)
-    await page.getByLabel('Bairro').selectOption({ label: 'Umariaçu' })
-    await expect(page.getByRole('table')).toBeVisible()
+    await page.getByLabel('Bairro').selectOption({ label: 'Umarizal' })
+    // The weekly table, or the list of days on a phone.
+    await expect(
+      page.getByRole('table').or(
+        page.getByRole('list', {
+          name: 'Coletas da semana: tipo de lixo nas linhas, dia da semana nas colunas',
+        }),
+      ),
+    ).toBeVisible()
 
     // Debris is not in the seed: the first free slot of its row is ours.
     await page
@@ -169,13 +177,13 @@ test.describe('administrator', () => {
     const calendar = await resident.newPage()
     await calendar.goto('/')
     await waitForHydration(calendar)
-    await calendar.getByText('Umariaçu', { exact: true }).click()
+    await calendar.getByText('Umarizal', { exact: true }).click()
     await expect(calendar.getByText('Entulho').first()).toBeVisible()
     await resident.close()
 
     // Leave the seed as found.
     await page.reload()
-    await page.getByLabel('Bairro').selectOption({ label: 'Umariaçu' })
+    await page.getByLabel('Bairro').selectOption({ label: 'Umarizal' })
     await page
       .getByRole('button', { name: /editar coleta de Entulho/i })
       .first()

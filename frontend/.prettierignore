@@ -24,3 +24,6 @@ playwright-report
 project.inlang/.lix
 project.inlang/.meta.json
 project.inlang/README.md
+
+# Sessões gravadas pelo projeto `setup` do Playwright (ignoradas pelo git).
+e2e/.auth

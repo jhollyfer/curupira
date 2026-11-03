@@ -9,6 +9,7 @@ import type { WasteType } from '@curupira/shared'
 import type { APIRequestContext, Page } from '@playwright/test'
 
 import { API_URL, apiClient } from './support/api'
+import { AUTH_FILES } from './support/auth-files'
 import { waitForHydration } from './support/hydration'
 import { hasEmbeddedMetadata, photoWithGps } from './support/photo'
 import { expect, test } from './support/test'
@@ -134,7 +135,6 @@ test.describe('resident', () => {
     browser,
     ownerApi,
     request,
-    sessions,
   }) => {
     await page.goto('/denunciar')
     await waitForHydration(page)
@@ -172,7 +172,7 @@ test.describe('resident', () => {
 
     // The panel, on a desktop screen.
     const panel = await browser.newContext({
-      storageState: await sessions.owner(),
+      storageState: AUTH_FILES.owner,
       viewport: { width: 1440, height: 900 },
       locale: 'pt-BR',
       baseURL: page.url().split('/acompanhar')[0],

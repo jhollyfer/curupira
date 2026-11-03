@@ -13,27 +13,29 @@ if (existsSync(envFile)) process.loadEnvFile(envFile)
 const baseURL = baseUrl()
 const port = new URL(baseURL).port
 
-let workerCount = 2
-if (process.env.CI) workerCount = 4
+const inCI = Boolean(process.env.CI)
+
+// In CI the app starts from its build, as in production; locally it is `vite dev`.
+const appCommands = {
+  true: 'node .output/server/index.mjs',
+  false: `pnpm exec vite dev --port ${port} --strictPort`,
+} as const
 
 // https://playwright.dev/docs/test-configuration
 export default defineConfig({
   testDir: '.',
   outputDir: '../test-results',
-  forbidOnly: Boolean(process.env.CI),
+  forbidOnly: inCI,
   // Unconditional retry turns a broken test into a flaky one
   // (_doc-lib/playwright.md#docs/test-retries).
   retries: 0,
-  // 4 workers in CI, where the runner is dedicated, and 2 on a developer machine, which is
-  // also running the app. Parallel only where it is safe. The flows (report, panel, panel matrix) write to the
-  // database and spend the API's login and report limits, so they are chained with
-  // `dependencies` and never overlap; the public matrix only reads pages and runs beside
-  // them. Without this the matrix (about 150 navigations) ran alone in one worker and
-  // alone took longer than the whole job's cap.
-  workers: workerCount,
+  // One worker: the flows write to the database and spend the API's login and report
+  // limits, so they cannot overlap. Parallelism comes from the CI matrix, one job and one
+  // database per viewport project. Locally, run one project at a time
+  // (`--project=mobile`): each one files reports and the limiter allows ten an hour per IP.
+  workers: 1,
   // Without a global cap, a job killed by the provider produces no report
-  // (_doc-lib/playwright.md#docs/test-timeouts). Room for the slowest cold run, not a cure:
-  // the suite is expected to finish well under it.
+  // (_doc-lib/playwright.md#docs/test-timeouts). Room for the slowest cold run, not a cure.
   globalTimeout: 25 * 60 * 1000,
   timeout: 60 * 1000,
   // The dev server compiles each route on first visit; 5s is not enough for that.
@@ -52,58 +54,63 @@ export default defineConfig({
     },
   },
   projects: [
-    // The resident app is a phone app: the flows run in a phone-sized viewport.
+    // Signs the roles in once and writes their sessions (`auth.setup.ts`). `--project=mobile`
+    // pulls it in through `dependencies` (_doc-lib/playwright.md#docs/test-projects).
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
+    // The same specs at three viewports (_doc-lib/playwright.md#docs/emulation).
+    // `mobile` has touch: Pixel 5 with the viewport of the plan, and the only project that
+    // holds the 44px rule (`touch-targets.spec.ts`).
     {
       name: 'mobile',
-      testMatch: /report-flow\.spec\.ts/,
-      use: { ...devices['Pixel 7'] },
+      dependencies: ['setup'],
+      use: { ...devices['Pixel 5'], viewport: { width: 360, height: 740 } },
     },
-    // The panel flows run in a desktop viewport. They wait for the resident flow: both
-    // log in and file reports, and the sign-in allows 5 attempts a minute per IP.
+    {
+      name: 'tablet',
+      dependencies: ['setup'],
+      testIgnore: /touch-targets\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 768, height: 1024 },
+      },
+    },
     {
       name: 'desktop',
-      testMatch: /management-flow\.spec\.ts/,
-      dependencies: ['mobile'],
+      dependencies: ['setup'],
+      testIgnore: /touch-targets\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1440, height: 900 },
       },
     },
-    // The public matrix runs twice: with touch (the page overflow and the 44px targets are
-    // asserted) and with a mouse (only the overflow: the spec reads `hasTouch`). It reads
-    // pages and writes nothing, so every test is independent and runs in parallel.
+  ],
+  // The specs run against the real API (the backend on `E2E_API_URL`, migrated and seeded
+  // with the demonstration seed; its `CORS_ORIGINS` must list the origin of the app). In CI
+  // both are started here, the app from its build as in production; on a developer machine
+  // the app is `vite dev` and a backend already running is reused.
+  webServer: [
     {
-      name: 'responsive-touch',
-      testMatch: /responsive-public\.spec\.ts/,
-      fullyParallel: true,
-      use: { ...devices['Pixel 7'] },
+      command: 'node ace serve',
+      cwd: '../../backend',
+      url: `${apiUrl()}/storefront/neighborhoods`,
+      env: { NODE_ENV: 'development' },
+      reuseExistingServer: !inCI,
+      timeout: 120 * 1000,
     },
     {
-      name: 'responsive-pointer',
-      testMatch: /responsive-public\.spec\.ts/,
-      fullyParallel: true,
-      use: { ...devices['Desktop Chrome'] },
-    },
-    // The panel at every width of the matrix: the spec sets its own viewport per test.
-    // It signs in (one session per worker), so it runs alone, after the panel flows.
-    {
-      name: 'responsive',
-      testMatch: /responsive-panel\.spec\.ts/,
-      dependencies: ['desktop'],
-      use: { ...devices['Desktop Chrome'] },
+      command: appCommands[`${inCI}`],
+      cwd: '..',
+      url: baseURL,
+      env: {
+        VITE_API_URL: apiUrl(),
+        VITE_SITE_URL: baseURL,
+        HOST: 'localhost',
+        PORT: port,
+        STORAGE_PUBLIC_URL:
+          process.env.STORAGE_PUBLIC_URL ?? process.env.STORAGE_ENDPOINT ?? '',
+      },
+      reuseExistingServer: !inCI,
+      timeout: 120 * 1000,
     },
   ],
-  webServer: {
-    // The specs run against the real API (backend on `E2E_API_URL`, seeded with
-    // the demonstration seed; its `CORS_ORIGINS` must list this server's origin).
-    command: `pnpm exec vite dev --port ${port} --strictPort`,
-    cwd: '..',
-    url: baseURL,
-    env: {
-      VITE_API_URL: apiUrl(),
-      VITE_SITE_URL: baseURL,
-    },
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
 })
