@@ -8,7 +8,7 @@ const MAIYU_URL = 'https://maiyu.com.br'
 type MaiyuCreditProps = Readonly<{ className?: string }>
 
 /**
- * The credit of every footer: only "Developed by Maiyu", with the name as the link
+ * The credit of every footer: the Maiyu logo (decorative, 20px) and only "Developed by Maiyu", with the name as the link
  * (`_standards/frontend.md` §8, `DECISIONS.md` #277). No tagline, year or other line of
  * authorship; the color comes from where it is used (`className`). The sentence is one
  * message, `common_maiyu_credit`, whose `{#link}…{/link}` marks the link in each language.
@@ -43,6 +43,15 @@ export function MaiyuCredit({
 
   return (
     <p className={cn('inline-flex flex-wrap items-center gap-x-1', className)}>
+      <img
+        src="/maiyu.svg"
+        alt=""
+        width={20}
+        height={20}
+        loading="lazy"
+        decoding="async"
+        className="size-5 rounded-full"
+      />
       {nodes}
     </p>
   )
