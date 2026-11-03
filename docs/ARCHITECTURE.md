@@ -111,7 +111,7 @@ Há 47 operações no `backend/openapi.json`. `GET /health-check` fica fora do d
 | `reports` | id, protocol (único), kind, status, latitude, longitude, neighborhood_id, description, contact, anonymous | pertence a `neighborhoods` (`SET NULL`); tem muitas `report_photos` e `report_status_events` | `contact` só é lido pelo painel; índice por (status, created_at) |
 | `report_photos` | report_id, storage_id (único), position | `storages` com `RESTRICT` | uma foto serve a uma denúncia só |
 | `report_status_events` | report_id, status, message, author_id, at | autor é `users` (nulo no evento `RECEIVED`) | histórico que o morador vê pelo protocolo |
-| `neighborhoods` | name, slug, latitude, longitude | tem muitos `collection_schedules` | 12 bairros de exemplo no seed |
+| `neighborhoods` | name, slug, latitude, longitude | tem muitos `collection_schedules` | 14 bairros oficiais no seed (só nome, sem coordenada) |
 | `collection_schedules` | neighborhood_id, waste_type, weekday, shift, note (200) | pertence a `neighborhoods` | unique `collection_schedules_slot_unique` |
 | `notices` | title (120), body (600), starts_at, ends_at, closed_at | | |
 | `users` | name, email (único), password (hash), role, status, avatar_id | `storages` | |

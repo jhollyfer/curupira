@@ -62,6 +62,9 @@ const WEEK: ReadonlyArray<Slot> = [
   [WEEKDAY.SATURDAY, COLLECTION_SHIFT.MORNING, WASTE_TYPE.BULKY],
 ]
 
+/** Approximate center of the urban area: the demo pins start here until a neighborhood has its own point. */
+const CITY_CENTER = { latitude: -4.3769, longitude: -70.0314 } as const
+
 type SeedReport = {
   readonly kind: ReportKind
   readonly status: ReportStatus
@@ -87,7 +90,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.BURNING,
     status: REPORT_STATUS.IN_REVIEW,
-    neighborhood: 'Cohab',
+    neighborhood: 'Cohabam',
     dLat: -0.003,
     dLon: 0.002,
     daysAgo: 1,
@@ -97,7 +100,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.DEFORESTATION,
     status: REPORT_STATUS.FORWARDED,
-    neighborhood: 'Umariaçu',
+    neighborhood: 'Umarizal',
     dLat: 0.004,
     dLon: 0.001,
     daysAgo: 3,
@@ -107,7 +110,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.DUMPING,
     status: REPORT_STATUS.RESOLVED,
-    neighborhood: 'Porto Cajuí',
+    neighborhood: 'Castanhal',
     dLat: -0.001,
     dLon: -0.002,
     daysAgo: 9,
@@ -117,7 +120,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.OTHER,
     status: REPORT_STATUS.RECEIVED,
-    neighborhood: 'São Francisco',
+    neighborhood: 'Cidade Nova',
     dLat: 0.001,
     dLon: 0.003,
     daysAgo: 0,
@@ -127,7 +130,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.BURNING,
     status: REPORT_STATUS.RESOLVED,
-    neighborhood: 'Bom Jesus',
+    neighborhood: 'Bom Jardim',
     dLat: -0.002,
     dLon: 0.001,
     daysAgo: 14,
@@ -137,7 +140,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.DUMPING,
     status: REPORT_STATUS.IN_REVIEW,
-    neighborhood: 'Nazaré',
+    neighborhood: 'Alzenir Magalhães',
     dLat: 0.003,
     dLon: -0.001,
     daysAgo: 2,
@@ -147,7 +150,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.DEFORESTATION,
     status: REPORT_STATUS.RECEIVED,
-    neighborhood: 'Ibirapuera',
+    neighborhood: 'Eduardo Braga',
     dLat: -0.004,
     dLon: -0.003,
     daysAgo: 1,
@@ -157,7 +160,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.DUMPING,
     status: REPORT_STATUS.FORWARDED,
-    neighborhood: 'Santa Rita',
+    neighborhood: 'Coimbra',
     dLat: 0.002,
     dLon: 0.002,
     daysAgo: 5,
@@ -167,7 +170,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.BURNING,
     status: REPORT_STATUS.IN_REVIEW,
-    neighborhood: 'Colônia',
+    neighborhood: 'Colônia I',
     dLat: -0.001,
     dLon: 0.004,
     daysAgo: 4,
@@ -177,7 +180,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.OTHER,
     status: REPORT_STATUS.RESOLVED,
-    neighborhood: 'Livramento',
+    neighborhood: 'Javarizinho',
     dLat: 0.001,
     dLon: -0.004,
     daysAgo: 20,
@@ -187,7 +190,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.DUMPING,
     status: REPORT_STATUS.RECEIVED,
-    neighborhood: 'Prosperidade',
+    neighborhood: 'Monte da Redenção',
     dLat: -0.002,
     dLon: -0.001,
     daysAgo: 0,
@@ -207,7 +210,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.BURNING,
     status: REPORT_STATUS.FORWARDED,
-    neighborhood: 'Cohab',
+    neighborhood: 'Cohabam',
     dLat: 0.002,
     dLon: -0.002,
     daysAgo: 6,
@@ -217,7 +220,7 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   {
     kind: REPORT_KIND.DUMPING,
     status: REPORT_STATUS.IN_REVIEW,
-    neighborhood: 'Umariaçu',
+    neighborhood: 'Umarizal',
     dLat: -0.001,
     dLon: -0.002,
     daysAgo: 7,
@@ -334,8 +337,8 @@ export default class extends BaseSeeder {
         {
           kind: seed.kind,
           status: seed.status,
-          latitude: (center?.latitude ?? -4.3769) + seed.dLat,
-          longitude: (center?.longitude ?? -70.0314) + seed.dLon,
+          latitude: (center?.latitude ?? CITY_CENTER.latitude) + seed.dLat,
+          longitude: (center?.longitude ?? CITY_CENTER.longitude) + seed.dLon,
           neighborhoodId: center?.id ?? null,
           description: seed.description,
           contact: seed.contact,

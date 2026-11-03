@@ -39,7 +39,7 @@
   papel regrava a linha de base do `authz:check` e pede aprovação.
 - A CSP e os cabeçalhos de segurança em `frontend/src/server.ts` e `frontend/src/lib/security-headers.ts`, e a lista de rotas fora do cache do service worker em `frontend/vite.config.ts`.
 - Os seeds de bairros (`backend/database/seeders/neighborhood.seed.ts`) e o cronograma de exemplo
-  (`backend/database/seeders/demo.seed.ts`): são de exemplo, a prefeitura confere; não trocar por dados "reais" sem fonte.
+  (`backend/database/seeders/demo.seed.ts`): os bairros vêm da lista oficial do município (só nomes, sem coordenada inventada) e o cronograma é de exemplo, a prefeitura confere; não trocar por dados "reais" sem fonte.
 - Os textos de `/privacidade`, `/termos` e `/sobre` (rascunho a revisar pela prefeitura e pela procuradoria).
 - A cor fixa de cada tipo de coleta (`--waste-*`) e o uso exclusivo de laranja e vermelho.
 - Os arquivos gerados e commitados: `backend/openapi.json`, `backend/database/schema.ts`,

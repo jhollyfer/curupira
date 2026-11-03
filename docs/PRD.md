@@ -71,7 +71,7 @@ Muitos moradores não sabem em que dia a coleta passa no seu bairro, e o lixo va
 
 ## 8. Perguntas em aberto
 
-- [ ] Bairros e cronograma reais de Benjamin Constant: o seed é de exemplo, a prefeitura confere antes de abrir.
+- [ ] Cronograma real de Benjamin Constant: os 14 bairros do seed são da lista oficial; o cronograma é de exemplo e a prefeitura confere antes de abrir.
 - [ ] Qual órgão recebe o encaminhamento de cada tipo (queimada, desmatamento, lixo)? Define o texto de "Encaminhada".
 - [ ] A prefeitura envia retorno por telefone ou por e-mail ao denunciante que deixou contato?
 - [ ] Por quanto tempo a prefeitura guarda denúncia, foto e contato, e quem apaga? Hoje não há exclusão automática.

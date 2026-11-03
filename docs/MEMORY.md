@@ -73,7 +73,7 @@ O que falta de resto é só do dono, nada de código:
 
 ## Contexto importante
 
-- Bairros e cronograma do seed são de exemplo: a prefeitura confere antes de abrir.
+- Os bairros do seed são os 14 da lista oficial do município (sem coordenada: o administrador marca o ponto no painel); o cronograma do seed é de exemplo e a prefeitura confere antes de abrir.
 - Os textos de privacidade e termos (`/privacidade`, `/termos`) são rascunho: a prefeitura e a procuradoria revisam.
 - Os secrets `COOLIFY_*` ainda não existem no GitHub; o job de deploy reprova nomeando o que faltar.
 - `STORAGE_PUBLIC_URL` não está definida porque o endereço do bucket de produção é desconhecido; sem ela a CSP só

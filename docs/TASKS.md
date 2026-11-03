@@ -32,7 +32,7 @@ Workspace, régua, contratos e CI/CD no padrão Maiyu.
 | 2.2 | Features `storefront` (bairros, cronograma, avisos, fotos, denúncia, protocolo, mapa) | Alta | Feita | e2e do backend passam no CI, em 3 shards contra Postgres e MinIO reais (PRs #6 e #8; `TEST-PLAN.md` §7) |
 | 2.3 | Features `management` (ocorrências, cronograma, bairros, avisos, contas) | Alta | Feita | mais `authentication`, `account` e `storages` |
 | 2.4 | Segurança: throttles, EXIF, Origin, mimetype | Alta | Feita | `docs/SECURITY.md`; a auditoria do código é a 5.2 |
-| 2.5 | Seeders com bairros reais de Benjamin Constant | Média | Feita | 12 bairros e cronograma de exemplo; a prefeitura confere antes de abrir (`PRD.md` §8) |
+| 2.5 | Seeders com bairros reais de Benjamin Constant | Média | Feita | 14 bairros da lista oficial do município (só nome: o ponto no mapa o administrador define no painel) e cronograma de exemplo; a prefeitura confere o cronograma antes de abrir (`PRD.md` §8) |
 
 ## Fase 3 · App do morador (6/6)
 

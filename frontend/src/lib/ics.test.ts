@@ -17,12 +17,12 @@ const PASS: CollectionPass = {
 
 function build(from: string, passes: ReadonlyArray<CollectionPass> = [PASS]) {
   return buildIcs({
-    neighborhoodName: 'Umariaçu',
+    neighborhoodName: 'Umarizal',
     passes,
     from: DateTime.fromISO(from, { zone: ZONE }),
     now: DateTime.fromISO('2026-11-01T12:00:00Z'),
     summary: () => 'Coleta: lixo orgânico',
-    calendarName: 'Coleta em Umariaçu',
+    calendarName: 'Coleta em Umarizal',
   })
 }
 
@@ -105,6 +105,6 @@ describe('buildIcs', () => {
     const ics = build('2026-11-01T10:00')
 
     expect(ics).toContain('DESCRIPTION:Deixe o saco na calçada\\, até as 6h')
-    expect(ics).toContain('LOCATION:Umariaçu')
+    expect(ics).toContain('LOCATION:Umarizal')
   })
 })
