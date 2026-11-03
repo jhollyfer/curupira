@@ -33,6 +33,8 @@
 
 ## Parou em
 
+Sessão de 2026-11-03 (na `main`): R.3 feita (projetos `setup`, `mobile`, `tablet`, `desktop`; `responsive.spec` e `touch-targets.spec`; E2E verde: 65 + 42 + 42), alvos de 44 px do painel no celular, regressão do 404 e do tema claro/escuro, backend reformatado e com `format:check`, seed com os 14 bairros oficiais, crédito "Desenvolvido por Maiyu" (sem logo: falta o `maiyu.png`), régua sincronizada. O produto é **responsivo** nos três tamanhos, não "mobile first". Pendentes: `shadcn add --all` e troca nos usos ad-hoc, rodada das skills pedidas, teste manual ponta a ponta (PWA offline, atualização do service worker), revisão de copy pt-BR, logo da Maiyu, e o dono criar os secrets `VITE_API_URL` e `VITE_SITE_URL` no GitHub. Antes disso:
+
 Sessão interrompida pelo dono; segue em outra sessão. Feito: `/_public/$` agora lança `notFound()` e a tela mora no `notFoundComponent` da folha (404 com status 404 e com o shell). Ambiente local montado sem Docker: Postgres 16 em `/usr/lib/postgresql/16/bin` (porta 5436), S3 por `moto_server` (pip, venv) na 9106 com `STORAGE_ENDPOINT` e `STORAGE_PUBLIC_URL` apontando para ela (a 9006 e a 3000 estavam ocupadas por outros projetos), front na 3100 com `CORS_ORIGINS` igual; `chromium.launch()` sem opções falha (revisão do navegador não bate com `/opt/pw-browsers`): usar `E2E_CHROMIUM_PATH=/usr/bin/google-chrome`. Pendentes: R.3, teste manual ponta a ponta (denúncia, protocolo, painel, PWA/offline, idiomas a 1280 e 390), revisão de copy com `humanizer`, rodada das demais skills pedidas, teste de regressão do 404 no E2E. Antes disso:
 
 Alinhamento do frontend à régua (`chore/sync-regua`, branch de trabalho): sync espelho refeito, R.4 (44 px no kit `h-11 sm:h-7`),

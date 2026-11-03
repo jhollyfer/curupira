@@ -1,6 +1,6 @@
 # Curupira: instruções para agentes
 
-Plataforma de serviço público de Benjamin Constant/AM (Alto Solimões): cronograma da coleta de lixo por bairro, denúncia ambiental anônima com foto e mapa (queimada, descarte irregular de lixo, desmatamento) acompanhada por protocolo, e painel da gestão municipal para tratar as ocorrências, manter o cronograma e publicar avisos. App do morador em PWA, mobile first, em português, espanhol e inglês.
+Plataforma de serviço público de Benjamin Constant/AM (Alto Solimões): cronograma da coleta de lixo por bairro, denúncia ambiental anônima com foto e mapa (queimada, descarte irregular de lixo, desmatamento) acompanhada por protocolo, e painel da gestão municipal para tratar as ocorrências, manter o cronograma e publicar avisos. App do morador em PWA, responsivo (celular, tablet e desktop), em português, espanhol e inglês.
 
 Monorepo pnpm: `backend/` (AdonisJS 7), `frontend/` (TanStack Start) e `shared/` (`@curupira/shared`: Either, enums, validators Zod, respostas). Os comandos de cada app estão em `backend/AGENTS.md` e `frontend/AGENTS.md`; os scripts, no `package.json`.
 
