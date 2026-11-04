@@ -27,6 +27,7 @@ espera a prefeitura conferir bairros e cronograma.
 
 ### Adicionado
 
+- Bairro sem cronograma cadastrado mostra "Ainda não temos o cronograma deste bairro" e um link para o site da prefeitura, no início e no cronograma, em vez de "não há coleta nos próximos dias".
 - App do morador, em português, espanhol e inglês, instalável como aplicativo (PWA):
   - escolher o bairro uma vez e ver a próxima coleta e os próximos 14 dias, com cor, ícone e nome por tipo
     (orgânico, reciclável, volumoso, entulho);

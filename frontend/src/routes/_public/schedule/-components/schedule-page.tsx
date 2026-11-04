@@ -10,6 +10,7 @@ import {
   NeighborhoodPickerList,
   NeighborhoodPickerSummary,
 } from '#/components/common/neighborhood-picker'
+import { NoSchedule } from '#/components/common/no-schedule'
 import {
   WasteCalendar,
   WasteCalendarDetail,
@@ -105,7 +106,8 @@ export function SchedulePage(): React.JSX.Element {
           <NeighborhoodPickerSummary />
           <NeighborhoodPickerList />
           <NeighborhoodPickerClosed>
-            {schedules.data && (
+            {schedules.data && passes.length === 0 && <NoSchedule />}
+            {schedules.data && passes.length > 0 && (
               <WasteCalendar
                 passes={passes}
                 now={now}

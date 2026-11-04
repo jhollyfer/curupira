@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import type * as React from 'react'
 
+import { NoSchedule } from '#/components/common/no-schedule'
 import { WasteDot } from '#/components/common/waste-calendar'
 import { TOWN_TIME_ZONE, townDay } from '#/lib/i18n'
 import { COLLECTION_SHIFT_LABELS, WASTE_TYPE_LABELS } from '#/lib/labels'
@@ -21,12 +22,15 @@ const RELATIVE_DAYS: Record<number, (() => string) | undefined> = {
 
 /**
  * The big answer: the next day the truck passes, with the shift and the type. A day
- * with two passes (organic in the morning, recyclables in the afternoon) lists both.
+ * with two passes (organic in the morning, recyclables in the afternoon) lists both; a
+ * neighborhood with no collection registered at all points to the city hall instead.
  */
 export function NextCollection({
   passes,
   now,
 }: NextCollectionProps): React.JSX.Element {
+  if (passes.length === 0) return <NoSchedule />
+
   const next = nextCollection(
     passes,
     DateTime.fromISO(now, { zone: TOWN_TIME_ZONE }),
