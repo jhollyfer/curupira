@@ -33,6 +33,8 @@
 
 ## Parou em
 
+Sessão de 2026-11-04 (direto na `main`, a pedido do dono): rotas do frontend em inglês sem redirect (#28), bairro sem cronograma com link para a prefeitura, métrica "respondidas em até 7 dias" no painel (PRD §7) e fotos reais no seed de demonstração (13 do Wikimedia Commons, sem rosto nem placa, créditos em `backend/database/seeders/assets/report-photos/CREDITS.md`). Prova: hooks verdes (shared 21, backend 298, frontend 306 unitários); e2e do backend 367/369 local (as 2 falhas são do moto no lugar do MinIO: expiração de URL assinada e tamanho declarado; passam no CI da `main` contra MinIO); Playwright 151/151 local (mobile, tablet e desktop; a cota de denúncia por IP precisa de `truncate rate_limits` entre larguras quando rodam em sequência na mesma máquina). **O CI da `main` pula o E2E do frontend** (só roda em PR) e todo push na `main` faz deploy no Coolify. Achado para o upstream: a régua #108 pede redirect 301 ao migrar rota para inglês e o dono pediu sem redirect. Antes disso:
+
 Teste em produção (2026-11-03, com escrita autorizada): API 42/42 e CRUD por papel ok; login e painel ok; E2E mobile 62, tablet 39 e desktop 39 passando (as falhas foram limite de login e cota de denúncias do meu IP). **Bloqueio real: a denúncia não envia foto no navegador em produção**, porque a URL assinada vai para `curupira.<conta>.r2.cloudflarestorage.com` e a CSP libera só `<conta>.r2…`; o painel e o acompanhamento teriam o mesmo bloqueio em `img-src`. Correção do dono no Coolify: `STORAGE_PUBLIC_URL` com o host do bucket (ou `STORAGE_FORCE_PATH_STYLE=true`) e redeploy; alternativa em código (CSP com `*.<host>`) só com o ok do dono (`RULES.md` §2). Achado para o upstream: `scripts/openapi/field-patches.ts` aplica o patch de `password` por nome em todo payload (o sign-in aparece no OpenAPI com senha forte e `passwordConfirmation`). Antes disso:
 
 Sessão de 2026-11-03 (na `main`): R.3 feita (projetos `setup`, `mobile`, `tablet`, `desktop`; `responsive.spec` e `touch-targets.spec`; E2E verde: 65 + 42 + 42), alvos de 44 px do painel no celular, regressão do 404 e do tema claro/escuro, backend reformatado e com `format:check`, seed com os 14 bairros oficiais, crédito "Desenvolvido por Maiyu" (sem logo: falta o `maiyu.png`), régua sincronizada. O produto é **responsivo** nos três tamanhos, não "mobile first". Pendentes: `shadcn add --all` e troca nos usos ad-hoc, rodada das skills pedidas, teste manual ponta a ponta (PWA offline, atualização do service worker), revisão de copy pt-BR, logo da Maiyu, e o dono criar os secrets `VITE_API_URL` e `VITE_SITE_URL` no GitHub. Antes disso:
@@ -67,6 +69,9 @@ O que falta de resto é só do dono, nada de código:
 6. Fechar os PRs do Dependabot #2 e #3 (`node:26-alpine` contraria a régua, Node 24 por digest), avaliar #4 e #5 e apagar as branches já mergeadas no GitHub.
 
 ## Próximos passos
+
+- Ainda do levantamento de 2026-11-04: achado `region` do axe nos menus abertos do painel (5.4a) e os links de bairro com 38 px de largura no tablet (5.4b).
+- Decidir com o dono o que entra depois do MVP: push e lembrete, retorno por e-mail, focos de calor do INPE e retenção automática.
 
 0. R.3: migrar os projetos do Playwright para `mobile`/`tablet`/`desktop` e rodar a suíte no CI (e `touch-targets.spec` após o kit de 44 px).
 1. Conferir o CI do PR da padronização (E2E e `functional` do backend), e os seis itens de "Parou em", na ordem.
@@ -104,6 +109,9 @@ O que falta de resto é só do dono, nada de código:
 |---|---|---|---|
 | 2026-11-01 | Nome de branch com prefixo de agente sugerido pela sessão | branch `<tipo>/<escopo>-<assunto>`, sem nome de agente | toda branch e todo PR |
 | 2026-11-01 | Agente seguiu a doc sem testar a variável de ambiente real: `TRUSTED_PROXIES=loopback,uniquelocal` quebrava a API (A-01) | testar `TRUSTED_PROXIES` com o valor de produção, e toda variável de ambiente nova com o valor que a produção terá, não só com o do `.env.example` | `backend/` e o `ENV.md` |
+
+| 2026-11-04 | Rotas do app em português (`/gestao`, `/denunciar`...) apesar de `_standards/typescript.md` §12 | rota e URL sempre em inglês, no backend e no frontend; ao renomear, sem redirect | todo projeto |
+| 2026-11-04 | Foto de exemplo com pessoa | foto ilustrativa sem rosto e sem placa legível, licença livre com crédito | seed e qualquer imagem do produto |
 
 ## Problemas conhecidos
 
