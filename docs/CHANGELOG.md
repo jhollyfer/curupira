@@ -27,6 +27,7 @@ espera a prefeitura conferir bairros e cronograma.
 
 ### Adicionado
 
+- Demonstração: as denúncias de exemplo trazem foto de verdade, uma por tipo (queimada, desmatamento, descarte e outro), com licença livre, sem rosto nem placa, e créditos em `backend/database/seeders/assets/report-photos/CREDITS.md`. Antes a foto do seed abria quebrada.
 - Painel: "Respondidas em até 7 dias" na visão geral, o percentual das ocorrências dos últimos 30 dias que receberam a primeira resposta da equipe no prazo, com a meta de 80% do PRD.
 - Bairro sem cronograma cadastrado mostra "Ainda não temos o cronograma deste bairro" e um link para o site da prefeitura, no início e no cronograma, em vez de "não há coleta nos próximos dias".
 - App do morador, em português, espanhol e inglês, instalável como aplicativo (PWA):

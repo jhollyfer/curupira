@@ -126,6 +126,12 @@ export default defineConfig({
     // `/openapi.json`. Without this entry the production build does not copy it, and the route
     // answers 500 on the built server - but works in development.
     { pattern: 'openapi.json', reloadServer: false },
+    // The demonstration seed uploads these to the bucket (`demo.seed.ts`), and the seed
+    // runs on the built server too when `SEED_DEMO_PASSWORD` is set.
+    {
+      pattern: 'database/seeders/assets/**/*.jpg',
+      reloadServer: false,
+    },
     {
       pattern: 'resources/lang/**/*.{json,yaml,yml}',
       reloadServer: false,

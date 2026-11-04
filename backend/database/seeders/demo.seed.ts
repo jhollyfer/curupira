@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { readFile } from 'node:fs/promises'
 
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import { DateTime } from 'luxon'
@@ -21,6 +22,7 @@ import {
   type Weekday,
 } from '@curupira/shared'
 import app from '@adonisjs/core/services/app'
+import drive from '@adonisjs/drive/services/main'
 import logger from '@adonisjs/core/services/logger'
 
 import CollectionSchedule from '#models/collection-schedule'
@@ -40,9 +42,9 @@ import NeighborhoodSeeder from '#database/seeders/neighborhood.seed'
  *
  * **EXAMPLE DATA ONLY.** The schedule is invented (the real one comes from the city hall,
  * in the panel), the reports are fictional, their protocols start with `SEED` so they are
- * recognizable, and the photos are `storages` rows marked `seed/` **with no file in the
- * bucket**: their signed URLs lead nowhere, which is enough for every screen except
- * actually opening the image.
+ * recognizable, and each report gets a real photo of its kind, uploaded to the bucket under
+ * `seed/` from `database/seeders/assets/report-photos/` (free-licensed, no faces, no EXIF;
+ * credits in the `CREDITS.md` beside them).
  *
  * Switched on by `SEED_DEMO_PASSWORD` having a value, in any environment
  * (_standards/backend.md §6.2, "Seed ligado pela chave"): empty skips it with one log line
@@ -229,6 +231,23 @@ const REPORTS: ReadonlyArray<SeedReport> = [
   },
 ]
 
+/** The illustrative photos per kind, in `assets/report-photos/<kind>-<n>.jpg` (CREDITS.md). */
+const PHOTOS: Record<ReportKind, ReadonlyArray<string>> = {
+  [REPORT_KIND.BURNING]: [
+    'burning-1.jpg',
+    'burning-2.jpg',
+    'burning-3.jpg',
+    'burning-4.jpg',
+  ],
+  [REPORT_KIND.DEFORESTATION]: [
+    'deforestation-1.jpg',
+    'deforestation-2.jpg',
+    'deforestation-3.jpg',
+  ],
+  [REPORT_KIND.DUMPING]: ['dumping-1.jpg', 'dumping-2.jpg', 'dumping-3.jpg'],
+  [REPORT_KIND.OTHER]: ['other-1.jpg', 'other-2.jpg', 'other-3.jpg'],
+}
+
 /** What the team wrote to the resident at each step; `null` for the first (the resident's own). */
 const STEP_MESSAGES: Record<ReportStatus, string | null> = {
   [REPORT_STATUS.RECEIVED]: null,
@@ -381,19 +400,34 @@ export default class extends BaseSeeder {
     }
   }
 
-  /** A fictional photo: the row exists, the object in the bucket does not. */
+  /**
+   * A real photo of the report's kind. The key is fixed per report, so running again
+   * reasserts the same object and row; an older run that left a row with no object (the
+   * seed used to) gets the file now.
+   */
   private async photo(report: Report, index: number) {
+    const choices = PHOTOS[report.kind]
+    const file = choices[index % choices.length]
+    if (!file) return
+
+    const bytes = await readFile(
+      app.makePath('database/seeders/assets/report-photos', file),
+    )
+    const filename = `seed/seed-foto-${index + 1}.jpg`
+    await drive.use().put(filename, bytes, { contentType: 'image/jpeg' })
+
+    const storage = await Storage.updateOrCreate(
+      { filename },
+      {
+        originalName: file,
+        mimetype: 'image/jpeg',
+        size: bytes.byteLength,
+        path: filename,
+        status: UPLOAD_STATUS.UPLOADED,
+      },
+    )
     if (await ReportPhoto.query().where('reportId', report.id).first()) return
 
-    const filename = `seed/seed-foto-${index + 1}.jpg`
-    const storage = await Storage.create({
-      filename,
-      originalName: `seed-foto-${index + 1}.jpg`,
-      mimetype: 'image/jpeg',
-      size: 1024,
-      path: filename,
-      status: UPLOAD_STATUS.UPLOADED,
-    })
     await ReportPhoto.create({
       reportId: report.id,
       storageId: storage.id,
