@@ -46,7 +46,7 @@ flowchart LR
 | navegador para bucket | foto da denúncia | URL `PUT` pré-assinada de 3 min com tamanho fixado, em chave com prefixo `report-photos/` sorteada pelo servidor; `complete` só aceita esse tipo, confere tamanho e assinatura e reencoda | `backend/app/features/storefront/report-photos/`, `backend/app/core/report-photo-key.ts`, `backend/app/services/multipart/multipart.service.ts` |
 | API para bucket | leitura e escrita | credencial `STORAGE_KEY` do usuário `app-rw`; bucket privado; leitura da gestão por URL assinada de 15 min (foto no detalhe) e download da biblioteca por URL de 5 min | `backend/infra/minio/minio-setup.sh`, `backend/config/drive.ts`, `backend/app/services/storage/storage.service.ts` |
 | navegador para CDN de tiles | mapa | CSP libera só `https://tile.openstreetmap.org` em `img-src` | `frontend/vite.config.ts` |
-| navegador para cache do aparelho | painel e entrada | service worker não guarda `/gestao` nem `/sign-in` (nem as versões `/en` e `/es`); Nitro responde `Cache-Control: no-store` nelas; o sign-out apaga o cache `pages` | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
+| navegador para cache do aparelho | painel e entrada | service worker não guarda `/management` nem `/sign-in` (nem as versões `/en` e `/es`); Nitro responde `Cache-Control: no-store` nelas; o sign-out apaga o cache `pages` | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
 | CI para produção | GitHub e Coolify | `COOLIFY_TOKEN` em secret, uuid conferido, smoke test por revisão; build do app reprova sem `https` em `VITE_API_URL` e `VITE_SITE_URL` | `.github/workflows/main-deploy-coolify.yml`, `.github/workflows/main-build-frontend.yml` |
 
 ### 2.3 Ativos
@@ -110,7 +110,7 @@ flowchart LR
 | TM-013 | embutir o site em outro por `iframe` (clickjacking) | baixa | médio | baixa | `frame-ancestors 'none'` no app e `X-Frame-Options: DENY` na API | `frontend/vite.config.ts`, `backend/config/shield.ts` |
 | TM-014 | vazar segredo por log | baixa | alto | média | redação de `password`, tokens, `authorization` e `cookie`; o corpo da denúncia não é logado | `backend/config/logger.ts`, `backend/app/core/log-redaction.unit.spec.ts` |
 | TM-015 | commit com autoria de agente ou segredo no repositório, ou workflow injetável | baixa | médio | média | Gitleaks, `pnpm audit --prod`, varredura de `pull_request_target` e de `github.event` em `run:`, checagem de autor e trailers | `.github/workflows/ci.yml`, `.github/workflows/main-check-backend.yml` |
-| TM-016 | próxima pessoa de um aparelho compartilhado abrir páginas do painel pelo cache | baixa | alto | média | o service worker não guarda `/gestao` nem `/sign-in`; Nitro manda `no-store` nelas; o sign-out apaga o cache `pages` | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
+| TM-016 | próxima pessoa de um aparelho compartilhado abrir páginas do painel pelo cache | baixa | alto | média | o service worker não guarda `/management` nem `/sign-in`; Nitro manda `no-store` nelas; o sign-out apaga o cache `pages` | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
 | TM-017 | trocar a foto já higienizada pela URL de envio | baixa | médio | baixa | a URL `PUT` vale 3 minutos; passado o prazo, não escreve mais (janela residual, A-09 no §10) | `backend/app/features/storefront/report-photos/create/create.use-case.ts` |
 | TM-018 | anexar arquivo da biblioteca da gestão a uma denúncia, ou confirmá-lo pela rota anônima | baixa | alto | média | a chave da foto de denúncia tem o prefixo `report-photos/` sorteado pelo servidor; `complete` e o anexo só aceitam esse tipo (arquivo da biblioteca responde 404) | `backend/app/core/report-photo-key.ts`, `backend/app/repositories/storage/storage.lucid.repository.ts` |
 
@@ -151,7 +151,7 @@ flowchart LR
 - O SSR repassa à API o `X-Forwarded-For` (a cadeia recebida mais o IP do par) e o `Origin`
   (`VITE_SITE_URL`): sem o primeiro, a API veria o IP do Nitro em toda chamada do SSR e os limites por IP virariam um balde só; sem o segundo, a barreira de
   `Origin` recusaria a renovação de sessão feita no servidor (`frontend/src/integrations/tanstack-query/http.server.ts`).
-- Painel e entrada nunca vão para o cache do aparelho: `Cache-Control: no-store` em `/gestao/**` e
+- Painel e entrada nunca vão para o cache do aparelho: `Cache-Control: no-store` em `/management/**` e
   `/sign-in` (e as versões `/en` e `/es`), service worker sem essas rotas e cache `pages` apagado no sign-out
   (`frontend/vite.config.ts`, `frontend/src/lib/pwa.ts`).
 - `sign-out` revoga os tokens da sessão; mudar papel ou situação de uma conta revoga todas as sessões dela.
@@ -238,7 +238,7 @@ flowchart LR
 | Nome, e-mail e senha (hash) da gestão | operar o painel | execução das funções do cargo | enquanto a conta existir | `DELETE /management/users/:id` (a conta não exclui a si mesma) |
 | Protocolos, bairro e fila de denúncias no aparelho | o morador acompanhar e reenviar | consentimento implícito do uso, sem envio ao servidor | até o morador limpar os dados do site | limpar os dados do site no navegador |
 
-Os textos de `/privacidade` e `/termos` (`frontend/messages/*.json`) são rascunho: a prefeitura e a
+Os textos de `/privacy` e `/terms` (`frontend/messages/*.json`) são rascunho: a prefeitura e a
 procuradoria revisam antes da abertura. O direito de acesso, correção e exclusão é atendido pela
 prefeitura de Benjamin Constant; a denúncia anônima não pode ser localizada por quem a fez, a não ser
 pelo protocolo.
@@ -287,8 +287,8 @@ Demais achados, um a um (todos com correção e teste no mesmo ciclo):
 | Id | Achado | Status | Onde está |
 |---|---|---|---|
 | A-02 | o `.env.production` do frontend nunca foi versionado e o build do CI saía em modo de exemplo, com a API em `localhost` e a CSP fechada para ela: o morador acharia que enviou a denúncia | corrigido: não há mais modo de exemplo (`DECISIONS.md` #26) e `main-build-frontend.yml` reprova o build sem `https` nos `VITE_*` | `.github/workflows/main-build-frontend.yml` |
-| A-03 | o service worker guardava o HTML de `/gestao/*` e nada o limpava no sign-out | corrigido: sem `/gestao` e `/sign-in` no cache, `no-store`, `caches.delete` no sign-out | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
-| A-04 | o SSR de `/acompanhar` chamava a API sem o IP do visitante: todas as consultas caíam no mesmo balde de 30 por 10 minutos | corrigido: o SSR repassa `X-Forwarded-For` | `frontend/src/integrations/tanstack-query/http.server.ts` |
+| A-03 | o service worker guardava o HTML de `/management/*` e nada o limpava no sign-out | corrigido: sem `/management` e `/sign-in` no cache, `no-store`, `caches.delete` no sign-out | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
+| A-04 | o SSR de `/track` chamava a API sem o IP do visitante: todas as consultas caíam no mesmo balde de 30 por 10 minutos | corrigido: o SSR repassa `X-Forwarded-For` | `frontend/src/integrations/tanstack-query/http.server.ts` |
 | A-05 | o IP do denunciante ficava em texto claro na chave de `rate_limits` e o 429 o registrava em log | corrigido: HMAC do IP como chave; sem IP no log de 429 anônimo | `backend/start/limiter.ts`, `backend/app/exceptions/handler.ts` |
 | A-06 | foto enviada que nunca virou denúncia não era podada, e a foto pendente guarda o objeto cru | corrigido: `storages:prune` apaga também a `UPLOADED` de denúncia sem denúncia há mais de 24 h (exige cron) | `backend/commands/storages-prune.command.ts` |
 | A-07 | `sharp` 0.34 com três avisos HIGH no `pnpm audit --prod` | corrigido: `sharp` 0.35.5; `pnpm audit --prod --audit-level=high` sem HIGH | `backend/package.json` |
@@ -310,7 +310,7 @@ Resumo das correções por tema:
 | Foto de denúncia | `storages:prune` apaga também foto `UPLOADED` sem denúncia há mais de 24 h | `backend/commands/storages-prune.command.ts` |
 | Processamento de imagem | `sharp` 0.35.5, limite de 50 milhões de pixels e no máximo 2 conversões simultâneas | `backend/app/services/photo-sanitizer/photo-sanitizer.service.ts`, `backend/app/core/semaphore.ts` |
 | Primeiro administrador | `node ace users:create-owner` (ou o seed do dono, com `SEED_OWNER_PASSWORD` presente); `SEED_DEMO_PASSWORD` vazia em produção | `backend/commands/users-create-owner.command.ts` |
-| Cache do aparelho | service worker sem `/gestao` e `/sign-in`; `no-store`; sign-out apaga o cache `pages` | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
+| Cache do aparelho | service worker sem `/management` e `/sign-in`; `no-store`; sign-out apaga o cache `pages` | `frontend/vite.config.ts`, `frontend/src/lib/pwa.ts` |
 | SSR para a API | repassa `X-Forwarded-For` e `Origin` | `frontend/src/integrations/tanstack-query/http.server.ts` |
 | Redirecionamento | `?redirect=` validado por origem e sem caractere de controle | `frontend/src/lib/redirect-search.ts` |
 | Dados de exemplo | só no seeder de demonstração, ligado por `SEED_DEMO_PASSWORD` | `backend/database/seeders/demo.seed.ts` |

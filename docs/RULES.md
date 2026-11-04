@@ -40,7 +40,7 @@
 - A CSP e os cabeçalhos de segurança em `frontend/src/server.ts` e `frontend/src/lib/security-headers.ts`, e a lista de rotas fora do cache do service worker em `frontend/vite.config.ts`.
 - Os seeds de bairros (`backend/database/seeders/neighborhood.seed.ts`) e o cronograma de exemplo
   (`backend/database/seeders/demo.seed.ts`): os bairros vêm da lista oficial do município (só nomes, sem coordenada inventada) e o cronograma é de exemplo, a prefeitura confere; não trocar por dados "reais" sem fonte.
-- Os textos de `/privacidade`, `/termos` e `/sobre` (rascunho a revisar pela prefeitura e pela procuradoria).
+- Os textos de `/privacy`, `/terms` e `/about` (rascunho a revisar pela prefeitura e pela procuradoria).
 - A cor fixa de cada tipo de coleta (`--waste-*`) e o uso exclusivo de laranja e vermelho.
 - Os arquivos gerados e commitados: `backend/openapi.json`, `backend/database/schema.ts`,
   `frontend/src/routeTree.gen.ts`; regeram-se pelo comando, não à mão.
@@ -63,7 +63,7 @@
 | Idiomas | pt-BR é a base; todo texto novo entra em pt-BR, es e en no mesmo commit | fronteira com Peru e Colômbia |
 | Mapa | Leaflet só em chunk lazy e só no cliente; nada de `import 'leaflet'` fora de `components/common/report-map` | peso e SSR |
 | Fonte de dados do frontend | só a API (`VITE_API_URL`); o dado de exemplo é o seeder de demonstração do backend, ligado por `SEED_DEMO_PASSWORD`; nenhuma chave de ambiente fora do catálogo da régua | os quatro projetos da casa têm as mesmas chaves (`DECISIONS.md` #26) |
-| Rotas do frontend | par `rota.tsx` + `rota.lazy.tsx`; nomes das rotas da gestão em inglês, da vitrine em português (`/coleta`, `/denunciar`) | convenção já consolidada |
+| Rotas do frontend | par `rota.tsx` + `rota.lazy.tsx`; nomes das rotas da gestão em inglês, da vitrine em português (`/schedule`, `/report`) | convenção já consolidada |
 | Bucket | privado; nunca URL pública; leitura por URL assinada de 15 minutos, download da biblioteca de 5 e envio de foto de denúncia de 3 | `SECURITY.md` |
 | Variável de ambiente nova | testada com o valor de produção, não só com o do `.env.example` | `TRUSTED_PROXIES` com `loopback,uniquelocal` quebrou a API (A-01, `MEMORY.md`) |
 | Primeiro administrador | `node ace users:create-owner`; o seeder do dono só roda em `development` e `test` | `DECISIONS.md` #24 |

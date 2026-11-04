@@ -14,14 +14,14 @@
 | Fluxo | Quem | Tela inicial | Resultado |
 |---|---|---|---|
 | [Próxima coleta](#proxima-coleta) | morador | `/` | vê o dia, o turno e o tipo da próxima coleta |
-| [Cronograma do mês](#cronograma-do-mes) | morador | `/coleta` | calendário do mês e arquivo `.ics` |
-| [Nova denúncia](#nova-denuncia) | morador | `/denunciar` | protocolo na tela |
-| [Acompanhar denúncia](#acompanhar-denuncia) | morador | `/acompanhar` | linha do tempo do status |
-| [Mapa público](#mapa-publico) | morador | `/mapa` | ocorrências em andamento e resolvidas |
-| [Entrar no painel](#entrar-no-painel) | gestão | `/sign-in` | painel aberto em `/gestao` |
-| [Tratar ocorrência](#tratar-ocorrencia) | operador, administrador | `/gestao/reports` | status novo e resposta registrada |
-| [Manter cronograma](#manter-cronograma) | administrador | `/gestao/schedules` | dias e turnos atualizados |
-| [Publicar aviso](#publicar-aviso) | operador, administrador | `/gestao/notices` | aviso na home do morador |
+| [Cronograma do mês](#cronograma-do-mes) | morador | `/schedule` | calendário do mês e arquivo `.ics` |
+| [Nova denúncia](#nova-denuncia) | morador | `/report` | protocolo na tela |
+| [Acompanhar denúncia](#acompanhar-denuncia) | morador | `/track` | linha do tempo do status |
+| [Mapa público](#mapa-publico) | morador | `/map` | ocorrências em andamento e resolvidas |
+| [Entrar no painel](#entrar-no-painel) | gestão | `/sign-in` | painel aberto em `/management` |
+| [Tratar ocorrência](#tratar-ocorrencia) | operador, administrador | `/management/reports` | status novo e resposta registrada |
+| [Manter cronograma](#manter-cronograma) | administrador | `/management/schedules` | dias e turnos atualizados |
+| [Publicar aviso](#publicar-aviso) | operador, administrador | `/management/notices` | aviso na home do morador |
 
 ---
 
@@ -55,9 +55,9 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | abre o calendário | mostra o mês atual do bairro salvo | `/coleta` |
-| 2 | troca o mês ou o bairro | recalcula as datas | `/coleta` |
-| 3 | toca em "Adicionar ao calendário do celular" | baixa o `.ics` com as coletas do bairro | `/coleta` |
+| 1 | abre o calendário | mostra o mês atual do bairro salvo | `/schedule` |
+| 2 | troca o mês ou o bairro | recalcula as datas | `/schedule` |
+| 3 | toca em "Adicionar ao calendário do celular" | baixa o `.ics` com as coletas do bairro | `/schedule` |
 
 ---
 
@@ -99,8 +99,8 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | digita o protocolo (ou toca em um dos enviados deste aparelho) | aceita maiúscula, minúscula, espaço, hífen ausente e `O`/`0`, `I`/`L`/`1` trocados | `/acompanhar` |
-| 2 | toca em "Consultar" | mostra o status e a resposta da gestão em cada etapa | `/acompanhar` |
+| 1 | digita o protocolo (ou toca em um dos enviados deste aparelho) | aceita maiúscula, minúscula, espaço, hífen ausente e `O`/`0`, `I`/`L`/`1` trocados | `/track` |
+| 2 | toca em "Consultar" | mostra o status e a resposta da gestão em cada etapa | `/track` |
 
 **Caminhos alternativos**
 
@@ -118,8 +118,8 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | abre o mapa | mostra ocorrências em andamento e resolvidas, por tipo, com o ponto aproximado (cerca de 110 m) e até as 500 mais recentes | `/mapa` |
-| 2 | filtra por tipo | mostra só o tipo escolhido | `/mapa` |
+| 1 | abre o mapa | mostra ocorrências em andamento e resolvidas, por tipo, com o ponto aproximado (cerca de 110 m) e até as 500 mais recentes | `/map` |
+| 2 | filtra por tipo | mostra só o tipo escolhido | `/map` |
 
 ---
 
@@ -130,7 +130,7 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | informa e-mail e senha | abre a sessão por cookie e vai para a visão geral | `/gestao` |
+| 1 | informa e-mail e senha | abre a sessão por cookie e vai para a visão geral | `/management` |
 
 **Caminhos alternativos**
 
@@ -138,7 +138,7 @@
 |---|---|
 | Credencial errada | mensagem única, sem dizer qual campo errou |
 | Muitas tentativas (429) | bloqueio temporário com aviso |
-| Operador abre área de administrador | volta à visão geral (`/gestao`); a API responde 403 se a rota for chamada direto |
+| Operador abre área de administrador | volta à visão geral (`/management`); a API responde 403 se a rota for chamada direto |
 | Sessão expirada | tenta renovar com o refresh token; se falhar, volta a `/sign-in?redirect=` com a rota de origem |
 
 ---
@@ -150,7 +150,7 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | filtra por tipo, bairro, status e período | atualiza o mapa e a tabela com o mesmo recorte | `/gestao/reports` |
+| 1 | filtra por tipo, bairro, status e período | atualiza o mapa e a tabela com o mesmo recorte | `/management/reports` |
 | 2 | clica no pin ou na linha | abre o detalhe com foto, local, descrição e histórico | detalhe |
 | 3 | muda o status e escreve a resposta | grava o evento com o autor; o status só avança | detalhe |
 
@@ -162,7 +162,7 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | escolhe o bairro | lista os dias, turnos e tipos | `/gestao/schedules` |
+| 1 | escolhe o bairro | lista os dias, turnos e tipos | `/management/schedules` |
 | 2 | adiciona ou edita um dia em diálogo, na grade semanal (tipo x dia) | grava; repetir tipo, dia e turno no mesmo bairro dá 409 no campo do dia | diálogo |
 
 ---
@@ -173,8 +173,8 @@
 
 | # | Usuário faz | Sistema responde | Tela |
 |---|---|---|---|
-| 1 | cria o aviso com título, texto e início | agenda (início futuro) ou publica | `/gestao/notices` |
-| 2 | define o fim ou toca em "Encerrar" | o aviso sai da home | `/gestao/notices` |
+| 1 | cria o aviso com título, texto e início | agenda (início futuro) ou publica | `/management/notices` |
+| 2 | define o fim ou toca em "Encerrar" | o aviso sai da home | `/management/notices` |
 
 ---
 

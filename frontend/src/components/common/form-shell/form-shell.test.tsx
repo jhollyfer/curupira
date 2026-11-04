@@ -38,7 +38,7 @@ function renderForm(
   onSubmit: React.ComponentProps<'form'>['onSubmit'] = undefined,
 ) {
   render(
-    <FormShell formId="form-teste" backTo="/sobre" isPending={isPending}>
+    <FormShell formId="form-teste" backTo="/about" isPending={isPending}>
       <FormShellHeader>
         <FormShellBack />
         <FormShellTitle>Nova form-teste</FormShellTitle>
@@ -65,12 +65,12 @@ describe('FormShell', () => {
 
     expect(
       screen.getByRole('link', { name: m.common_back() }).getAttribute('href'),
-    ).toBe('/sobre')
+    ).toBe('/about')
     expect(
       screen
         .getByRole('link', { name: m.common_discard() })
         .getAttribute('href'),
-    ).toBe('/sobre')
+    ).toBe('/about')
   })
 
   it('renders the title as the h1 and points Salvar at the shell form', () => {

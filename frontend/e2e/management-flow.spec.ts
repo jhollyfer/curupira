@@ -48,7 +48,7 @@ test.describe('administrator', () => {
   test('handles an untreated report and cannot move it back', async ({
     page,
   }) => {
-    await page.goto('/gestao')
+    await page.goto('/management')
     await page.getByRole('link', { name: 'Tratar agora' }).click()
 
     await expect(
@@ -77,7 +77,7 @@ test.describe('administrator', () => {
     const title = `Aviso E2E ${Date.now()}`
     const scheduled = `Aviso agendado E2E ${Date.now()}`
 
-    await page.goto('/gestao/notices/new')
+    await page.goto('/management/notices/new')
     await waitForHydration(page)
     await page.getByLabel('Título').fill(title)
     await page
@@ -88,7 +88,7 @@ test.describe('administrator', () => {
     await expect(page.getByText(`Aviso “${title}” salvo`)).toBeVisible()
 
     // A notice that starts in two days is saved but not public yet.
-    await page.goto('/gestao/notices/new')
+    await page.goto('/management/notices/new')
     await waitForHydration(page)
     await page.getByLabel('Título').fill(scheduled)
     await page.getByLabel('Texto do aviso').fill('Começa depois de amanhã.')
@@ -97,16 +97,16 @@ test.describe('administrator', () => {
     await expect(page.getByText(`Aviso “${scheduled}” salvo`)).toBeVisible()
 
     const resident = await browser.newContext({
-      baseURL: page.url().split('/gestao')[0],
+      baseURL: page.url().split('/management')[0],
       locale: 'pt-BR',
     })
     const home = await resident.newPage()
-    await home.goto('/avisos')
+    await home.goto('/notices')
     await expect(home.getByText(title)).toBeVisible()
     await expect(home.getByText(scheduled)).toHaveCount(0)
 
     // Close it: it leaves the resident's page and stays in the panel list as closed.
-    await page.goto('/gestao/notices')
+    await page.goto('/management/notices')
     await expect(page.getByText(scheduled)).toBeVisible()
     // A table row, or a card on a phone.
     const row = page
@@ -121,7 +121,7 @@ test.describe('administrator', () => {
       .click()
     await expect(page.getByText('Aviso encerrado')).toBeVisible()
 
-    await home.goto('/avisos')
+    await home.goto('/notices')
     await expect(home.getByText(title)).toHaveCount(0)
     await resident.close()
   })
@@ -150,7 +150,7 @@ test.describe('administrator', () => {
       await ownerApi.delete(`/management/schedules/${entry.id}`)
     }
 
-    await page.goto('/gestao/schedules')
+    await page.goto('/management/schedules')
     await waitForHydration(page)
     await page.getByLabel('Bairro').selectOption({ label: 'Umarizal' })
     // The weekly table, or the list of days on a phone.
@@ -171,7 +171,7 @@ test.describe('administrator', () => {
     await expect(page.getByText('Coleta salva')).toBeVisible()
 
     const resident = await browser.newContext({
-      baseURL: page.url().split('/gestao')[0],
+      baseURL: page.url().split('/management')[0],
       locale: 'pt-BR',
     })
     const calendar = await resident.newPage()
@@ -203,19 +203,19 @@ test.describe('operator', () => {
   test('reaches reports and notices but not schedules, neighborhoods or users', async ({
     page,
   }) => {
-    await page.goto('/gestao/reports')
+    await page.goto('/management/reports')
     await expect(
       page.getByRole('heading', { name: 'Ocorrências', level: 1 }),
     ).toBeVisible()
-    await page.goto('/gestao/notices')
+    await page.goto('/management/notices')
     await expect(
       page.getByRole('heading', { name: 'Avisos', level: 1 }),
     ).toBeVisible()
 
     for (const path of [
-      '/gestao/schedules',
-      '/gestao/neighborhoods',
-      '/gestao/users',
+      '/management/schedules',
+      '/management/neighborhoods',
+      '/management/users',
     ]) {
       await page.goto(path)
       await expect(page).not.toHaveURL(new RegExp(`${path}$`))

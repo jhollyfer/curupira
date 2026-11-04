@@ -5,29 +5,32 @@ import { breadcrumbTitle, buildBreadcrumbs } from './breadcrumbs'
 describe('buildBreadcrumbs', () => {
   it('turns the matched path into a trail, linking only real ancestors', () => {
     const crumbs = buildBreadcrumbs([
-      { fullPath: '/gestao/', pathname: '/gestao/' },
-      { fullPath: '/gestao/notices/', pathname: '/gestao/notices/' },
-      { fullPath: '/gestao/notices/new', pathname: '/gestao/notices/new' },
+      { fullPath: '/management/', pathname: '/management/' },
+      { fullPath: '/management/notices/', pathname: '/management/notices/' },
+      {
+        fullPath: '/management/notices/new',
+        pathname: '/management/notices/new',
+      },
     ])
 
     expect(crumbs.map((crumb) => crumb.to)).toEqual([
-      '/gestao',
-      '/gestao/notices',
+      '/management',
+      '/management/notices',
       undefined,
     ])
   })
 
   it('does not link a segment that has no screen of its own', () => {
     const crumbs = buildBreadcrumbs([
-      { fullPath: '/gestao/', pathname: '/gestao/' },
+      { fullPath: '/management/', pathname: '/management/' },
       {
-        fullPath: '/gestao/account/profile/',
-        pathname: '/gestao/account/profile/',
+        fullPath: '/management/account/profile/',
+        pathname: '/management/account/profile/',
       },
     ])
 
     expect(crumbs.map((crumb) => crumb.to)).toEqual([
-      '/gestao',
+      '/management',
       undefined,
       undefined,
     ])
@@ -35,7 +38,10 @@ describe('buildBreadcrumbs', () => {
 
   it('names a dynamic segment as the record, not as its id', () => {
     const crumbs = buildBreadcrumbs([
-      { fullPath: '/gestao/reports/$id/', pathname: '/gestao/reports/abc/' },
+      {
+        fullPath: '/management/reports/$id/',
+        pathname: '/management/reports/abc/',
+      },
     ])
 
     expect(crumbs.at(-1)?.label).not.toBe('abc')

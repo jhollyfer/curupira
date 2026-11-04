@@ -82,7 +82,7 @@ export function HomePage(): React.JSX.Element {
                 size="touch-lg"
                 variant="secondary"
                 className={STAGE_CTA}
-                render={<Link to="/denunciar" />}
+                render={<Link to="/report" />}
               >
                 <WarningCircleIcon aria-hidden="true" weight="fill" />
                 {m.home_cta_report()}
@@ -91,7 +91,7 @@ export function HomePage(): React.JSX.Element {
                 size="touch-lg"
                 variant="outline"
                 className="border-stage-foreground/50 bg-transparent text-stage-foreground hover:bg-stage-foreground/10 hover:text-stage-foreground"
-                render={<Link to="/coleta" />}
+                render={<Link to="/schedule" />}
               >
                 {m.home_cta_schedule()}
               </Button>
@@ -168,7 +168,7 @@ export function HomePage(): React.JSX.Element {
             variant="ghost"
             size="touch"
             className="self-start"
-            render={<Link to="/avisos" />}
+            render={<Link to="/notices" />}
           >
             {m.home_all_notices()}
           </Button>
@@ -189,7 +189,7 @@ export function HomePage(): React.JSX.Element {
             size="touch-lg"
             variant="secondary"
             className={STAGE_CTA}
-            render={<Link to="/denunciar" />}
+            render={<Link to="/report" />}
           >
             <WarningCircleIcon aria-hidden="true" weight="fill" />
             {m.home_cta_report()}

@@ -34,7 +34,7 @@ const FIELDS = ['email', 'password'] as const
 
 /**
  * The panel's sign-in. The resident never sees it (the public app is anonymous): it is
- * the door of the city hall team to `/gestao`.
+ * the door of the city hall team to `/management`.
  */
 export function SignInForm(): React.JSX.Element {
   const router = useRouter()
@@ -70,7 +70,7 @@ export function SignInForm(): React.JSX.Element {
         return
       }
 
-      await router.navigate({ to: '/gestao' })
+      await router.navigate({ to: '/management' })
     },
   })
 

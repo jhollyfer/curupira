@@ -17,11 +17,11 @@ const config = defineConfig(() => {
   // rules match the path as it is served).
   const noStore = { headers: { 'Cache-Control': 'no-store' } }
   const routeRules: Record<string, { headers: Record<string, string> }> = {
-    '/gestao/**': noStore,
+    '/management/**': noStore,
     '/sign-in': noStore,
-    '/en/gestao/**': noStore,
+    '/en/management/**': noStore,
     '/en/sign-in': noStore,
-    '/es/gestao/**': noStore,
+    '/es/management/**': noStore,
     '/es/sign-in': noStore,
   }
   return {
@@ -87,7 +87,7 @@ const config = defineConfig(() => {
               // this file exists; `(en|es)` are the Paraglide URL prefixes.
               urlPattern: ({ request, url }) =>
                 request.mode === 'navigate' &&
-                !/^(?:\/(?:en|es))?\/(?:gestao|sign-in)(?:\/|$)/.test(
+                !/^(?:\/(?:en|es))?\/(?:management|sign-in)(?:\/|$)/.test(
                   url.pathname,
                 ),
               handler: 'NetworkFirst',

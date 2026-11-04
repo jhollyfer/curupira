@@ -24,13 +24,13 @@ export type NavItem = Readonly<{
  */
 export const NAV_ITEMS = [
   { to: '/', label: () => m.nav_home(), icon: HouseIcon },
-  { to: '/coleta', label: () => m.nav_schedule(), icon: CalendarDotsIcon },
-  { to: '/denunciar', label: () => m.nav_report(), icon: WarningCircleIcon },
-  { to: '/acompanhar', label: () => m.nav_track(), icon: MagnifyingGlassIcon },
-  { to: '/mapa', label: () => m.nav_map(), icon: MapTrifoldIcon },
+  { to: '/schedule', label: () => m.nav_schedule(), icon: CalendarDotsIcon },
+  { to: '/report', label: () => m.nav_report(), icon: WarningCircleIcon },
+  { to: '/track', label: () => m.nav_track(), icon: MagnifyingGlassIcon },
+  { to: '/map', label: () => m.nav_map(), icon: MapTrifoldIcon },
 ] as const satisfies ReadonlyArray<NavItem>
 
 /** Reached from the home and the footer, a destination of the menu and the header, but not of the main sequence. */
 export const EXTRA_ITEMS = [
-  { to: '/avisos', label: () => m.nav_notices(), icon: MegaphoneIcon },
+  { to: '/notices', label: () => m.nav_notices(), icon: MegaphoneIcon },
 ] as const satisfies ReadonlyArray<NavItem>

@@ -186,7 +186,9 @@ function AccountMenu(): React.JSX.Element {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             render={
-              <Link to="/gestao/account/profile">{m.panel_my_profile()}</Link>
+              <Link to="/management/account/profile">
+                {m.panel_my_profile()}
+              </Link>
             }
             className="min-h-11"
           />

@@ -192,4 +192,4 @@ aqui sem cópia: `_standards/tooling.md` §10.1. Deste projeto:
 - [ ] Contraste nos temas claro e escuro.
 - [ ] Foto enviada: baixar o objeto do bucket e conferir que não traz EXIF.
 - [ ] Entrar como operador e confirmar que cronograma, bairros e contas não abrem.
-- [ ] `/privacidade` e `/termos` revisados pela prefeitura e pela procuradoria.
+- [ ] `/privacy` e `/terms` revisados pela prefeitura e pela procuradoria.

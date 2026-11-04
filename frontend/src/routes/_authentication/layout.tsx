@@ -30,7 +30,7 @@ export const Route = createFileRoute('/_authentication')({
     //
     // A single destination: both roles enter the same panel, and what each one can do is
     // the backend's `403`.
-    throw redirect({ to: '/gestao' })
+    throw redirect({ to: '/management' })
   },
   head: () => ({
     meta: [

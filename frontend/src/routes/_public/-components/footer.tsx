@@ -25,10 +25,10 @@ export function Footer(): React.JSX.Element {
         <nav aria-label={m.footer_nav_label()}>
           <ul className="flex flex-col gap-1 md:flex-row md:flex-wrap md:justify-end md:gap-x-6">
             {[
-              { to: '/avisos', label: m.nav_notices() },
-              { to: '/sobre', label: m.nav_about() },
-              { to: '/privacidade', label: m.nav_privacy() },
-              { to: '/termos', label: m.nav_terms() },
+              { to: '/notices', label: m.nav_notices() },
+              { to: '/about', label: m.nav_about() },
+              { to: '/privacy', label: m.nav_privacy() },
+              { to: '/terms', label: m.nav_terms() },
             ].map((item) => (
               <li key={item.to}>
                 <Link

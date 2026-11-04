@@ -17,7 +17,7 @@ import type {
  * A module with no cached read (`authentication`, `storages`) has no section:
  * a key nobody reads or invalidates is just an extra name.
  *
- * The `management` section is the panel's (`/gestao`), one entry per screen.
+ * The `management` section is the panel's (`/management`), one entry per screen.
  */
 export const queryKeys = {
   account: {

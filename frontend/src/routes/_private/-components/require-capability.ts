@@ -19,5 +19,5 @@ export function requireCapability(
 ): void {
   if (can(role, capability)) return
 
-  throw redirect({ to: '/gestao' })
+  throw redirect({ to: '/management' })
 }

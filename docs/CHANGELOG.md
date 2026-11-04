@@ -18,6 +18,7 @@ espera a prefeitura conferir bairros e cronograma.
 
 ### Alterado
 
+- Endereços do app em inglês: `/report`, `/track`, `/schedule`, `/map`, `/notices`, `/about`, `/privacy`, `/terms` e o painel em `/management`. Os endereços antigos em português deixam de existir e mostram a página não encontrada.
 - Crédito "Desenvolvido por Maiyu" (pt, es, en) no rodapé público, no login e no painel, pelo componente `MaiyuCredit`; sem slogan. Com a logo original (`src/assets/maiyu.png`, a mesma do aporta e do interclasse).
 - Bairros do seed trocados pelos 14 da lista oficial do município (Agropalmin, Alzenir Magalhães, Bom Jardim, Castanhal, Centro, Cidade Nova, Cohabam, Coimbra, Colônia I, Colônia II, Eduardo Braga, Javarizinho, Monte da Redenção e Umarizal), sem coordenada: o administrador marca o ponto no painel. Quem já tem a lista antiga no banco continua com ela até a limpar no painel.
 - Botões, campos, menus, paginação e abas têm 44 px de altura no celular, em todas as telas, e voltam ao tamanho denso a partir de `sm`.

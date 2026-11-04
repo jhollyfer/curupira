@@ -31,7 +31,7 @@ import {
 const privateRoute = getRouteApi('/_private')
 
 /**
- * The active item is the longest path that matches, not every prefix: `/gestao` is a
+ * The active item is the longest path that matches, not every prefix: `/management` is a
  * prefix of every other item, so a plain `fuzzy` match would light the overview up on
  * every screen.
  */
@@ -95,7 +95,7 @@ export function Sidebar(): React.JSX.Element {
   // What is waiting for a first look: the number the operator opens the panel to find.
   const untreated = stats?.byStatus.RECEIVED
   const badges: Partial<Record<string, number>> = {
-    '/gestao/reports': untreated,
+    '/management/reports': untreated,
   }
 
   // `role="navigation"` on the container, not on an inner `<nav>`: the brand and the
@@ -114,7 +114,7 @@ export function Sidebar(): React.JSX.Element {
             {/* Collapsed to icons (the 1024px case) the rail is 48px wide: the wordmark
                 spilled out of it and printed over the breadcrumb. */}
             <BrandMark
-              to="/gestao"
+              to="/management"
               className="group-data-[collapsible=icon]:[&>span]:hidden"
             />
           </SidebarMenuItem>

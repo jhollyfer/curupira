@@ -29,7 +29,7 @@ export function useSignOut() {
       // are all data from a session that has just ceased to exist.
       queryClient.clear()
 
-      // The service worker's saved pages are session data too (`/gestao` HTML).
+      // The service worker's saved pages are session data too (`/management` HTML).
       await clearPageCaches()
 
       // After clearing, not before: navigating first remounts the `_private`

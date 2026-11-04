@@ -17,7 +17,7 @@ import { PanelNotFound } from './-components/panel-not-found'
 import { Sidebar } from './-components/sidebar'
 
 /**
- * The panel gate (`/gestao`). It lives in the layout, and not on each screen, so a new
+ * The panel gate (`/management`). It lives in the layout, and not on each screen, so a new
  * route inside `_private/` is born protected by being in the right place - the same
  * idea as the `middleware.auth()` applied to the group in `backend/start/routes.ts`.
  *

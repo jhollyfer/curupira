@@ -25,21 +25,21 @@
   "shortcuts": [
     {
       "name": "Fazer denúncia",
-      "url": "/denunciar",
+      "url": "/report",
       "icons": [
         { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }
       ]
     },
     {
       "name": "Cronograma da coleta",
-      "url": "/coleta",
+      "url": "/schedule",
       "icons": [
         { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }
       ]
     },
     {
       "name": "Acompanhar denúncia",
-      "url": "/acompanhar",
+      "url": "/track",
       "icons": [
         { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }
       ]

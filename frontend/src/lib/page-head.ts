@@ -18,7 +18,7 @@ type PageHeadInput = Readonly<{
   title?: string
   /** When absent, the site description applies. */
   description?: string
-  /** The path without language prefix and without query, as the router sees it (`/coleta`). */
+  /** The path without language prefix and without query, as the router sees it (`/schedule`). */
   pathname: string
   /** A page outside the search engines' index (404). */
   noindex?: boolean

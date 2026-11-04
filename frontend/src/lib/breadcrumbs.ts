@@ -12,7 +12,7 @@ export type Crumb = {
 }
 
 const SEGMENT_LABELS: Record<string, string | undefined> = {
-  get gestao() {
+  get management() {
     return m.panel_crumb_panel()
   },
   get reports() {
@@ -54,7 +54,7 @@ export type BreadcrumbMatch = {
 }
 
 /**
- * Only an ancestor that is itself a route is a link: `/gestao/account` has no screen of
+ * Only an ancestor that is itself a route is a link: `/management/account` has no screen of
  * its own, and linking it would land on a 404.
  */
 export function buildBreadcrumbs(

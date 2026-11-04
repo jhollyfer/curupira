@@ -76,7 +76,7 @@ Escala fluida em tokens `--text-*` do `@theme` (teto de desktop dentro de um `cl
 `--text-error-code` (7rem) e `--text-error-code-lg` (9rem), para a página de erro, e `--leading-display` (1.05). `--heading-tight` (-0.02em) e `--heading-tighter`
 (-0.03em) são os espaçamentos de título.
 
-Corpo nunca abaixo de 16 px; prosa (`ProsePage`, `/sobre`, `/privacidade`, `/termos`) com medida limitada;
+Corpo nunca abaixo de 16 px; prosa (`ProsePage`, `/about`, `/privacy`, `/terms`) com medida limitada;
 número em coluna com `tabular-nums`.
 
 ## 4. Layout
@@ -99,7 +99,7 @@ número em coluna com `tabular-nums`.
 A barra inferior respeita a área segura do aparelho (`env(safe-area-inset-bottom)`). No celular deitado o
 cabeçalho fixo deixa de ser fixo (variante `short`, altura até 30 rem), para não tomar um quinto da tela.
 
-### Painel `/gestao`, por largura
+### Painel `/management`, por largura
 
 | Largura | Menu | Listagens e telas |
 |---|---|---|
@@ -208,7 +208,7 @@ Ilustração de estado vazio: ícone Phosphor, sem ilustração.
   fallback ajustado, Leaflet só quando a tela precisa, foto reduzida a 1600 px antes do envio.
 - PWA: `manifest.webmanifest` em pt-BR (`display: standalone`, `theme_color #1f6b3d`, atalhos "Fazer denúncia",
   "Cronograma da coleta" e "Acompanhar denúncia"), ícones de 192, 512 e maskable; service worker com cache
-  descrito em `ARCHITECTURE.md` §6.2, sem guardar `/gestao` nem `/sign-in`.
+  descrito em `ARCHITECTURE.md` §6.2, sem guardar `/management` nem `/sign-in`.
 - Datas sempre em `America/Manaus`.
 
 ## 11. Fazer / não fazer

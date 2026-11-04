@@ -30,7 +30,7 @@ export function PanelNotFound(): React.JSX.Element {
         <EmptyDescription>{m.panel_not_found_description()}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button variant="outline" render={<Link to="/gestao" />}>
+        <Button variant="outline" render={<Link to="/management" />}>
           {m.panel_not_found_action()}
         </Button>
       </EmptyContent>

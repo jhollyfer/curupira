@@ -18,14 +18,14 @@ export type SitemapEntry = Readonly<{
 /** The public pages: every one is static, so the sitemap needs no data. */
 export const SITEMAP_STATIC_ENTRIES = [
   { pathname: '/' },
-  { pathname: '/coleta' },
-  { pathname: '/denunciar' },
-  { pathname: '/acompanhar' },
-  { pathname: '/mapa' },
-  { pathname: '/avisos' },
-  { pathname: '/sobre' },
-  { pathname: '/privacidade' },
-  { pathname: '/termos' },
+  { pathname: '/schedule' },
+  { pathname: '/report' },
+  { pathname: '/track' },
+  { pathname: '/map' },
+  { pathname: '/notices' },
+  { pathname: '/about' },
+  { pathname: '/privacy' },
+  { pathname: '/terms' },
 ] as const satisfies ReadonlyArray<SitemapEntry>
 
 const ESCAPES: Readonly<Record<string, string>> = {
@@ -84,5 +84,5 @@ type RobotsInput = Readonly<{
 export function robotsTxt({ indexable }: RobotsInput): string {
   if (!indexable) return 'User-agent: *\nDisallow: /\n'
 
-  return `User-agent: *\nDisallow: /gestao\nDisallow: /sign-in\n\nSitemap: ${env.VITE_SITE_URL}/sitemap.xml\n`
+  return `User-agent: *\nDisallow: /management\nDisallow: /sign-in\n\nSitemap: ${env.VITE_SITE_URL}/sitemap.xml\n`
 }

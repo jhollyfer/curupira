@@ -140,7 +140,7 @@ const SAFE_METHODS: ReadonlySet<string> = new Set(['GET', 'HEAD', 'OPTIONS'])
  * arrived with, plus the address of the peer that opened that connection.
  *
  * Without it the API sees Nitro's address for every server-rendered call, and the
- * per-IP limiters (30 protocol lookups per 10 minutes on `/acompanhar`) become one bucket
+ * per-IP limiters (30 protocol lookups per 10 minutes on `/track`) become one bucket
  * for the whole city. Appending, and not replacing, keeps the proxy chain: the API's
  * `TRUSTED_PROXIES` strips the trusted hops from the right and reads the visitor.
  * The header is only ever sent to the API (`SERVER_API_URL`), never to the browser.

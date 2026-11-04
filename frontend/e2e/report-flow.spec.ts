@@ -136,7 +136,7 @@ test.describe('resident', () => {
     ownerApi,
     request,
   }) => {
-    await page.goto('/denunciar')
+    await page.goto('/report')
     await waitForHydration(page)
     await fileReport(page, 'Queimada')
 
@@ -160,14 +160,14 @@ test.describe('resident', () => {
       return z.array(StorefrontReportMapResponse).parse(await response.json())
     }
     expect((await pins()).map((pin) => pin.id)).not.toContain(stored.id)
-    await page.goto('/mapa')
+    await page.goto('/map')
     await waitForHydration(page)
     const before = await page
       .getByRole('heading', { name: MAP_LIST_TITLE })
       .innerText()
 
     // Follow it: received.
-    await page.goto(`/acompanhar?protocol=${code}`)
+    await page.goto(`/track?protocol=${code}`)
     await expect(page.getByText('Recebida').first()).toBeVisible()
 
     // The panel, on a desktop screen.
@@ -175,10 +175,10 @@ test.describe('resident', () => {
       storageState: AUTH_FILES.owner,
       viewport: { width: 1440, height: 900 },
       locale: 'pt-BR',
-      baseURL: page.url().split('/acompanhar')[0],
+      baseURL: page.url().split('/track')[0],
     })
     const desk = await panel.newPage()
-    await desk.goto('/gestao/reports')
+    await desk.goto('/management/reports')
     await waitForHydration(desk)
     await expect(
       desk.getByRole('table').getByRole('link', { name: code }),
@@ -197,13 +197,13 @@ test.describe('resident', () => {
     await panel.close()
 
     // The resident now sees the new step and the answer.
-    await page.goto(`/acompanhar?protocol=${code}`)
+    await page.goto(`/track?protocol=${code}`)
     await expect(page.getByText('Em análise').first()).toBeVisible()
     await expect(page.getByText('Equipe a caminho do local.')).toBeVisible()
 
     // And only now the pin is public.
     expect((await pins()).map((pin) => pin.id)).toContain(stored.id)
-    await page.goto('/mapa')
+    await page.goto('/map')
     await waitForHydration(page)
     await expect(
       page.getByRole('heading', { name: MAP_LIST_TITLE }),
@@ -260,7 +260,7 @@ test.describe('resident', () => {
   }) => {
     await context.grantPermissions(['geolocation'])
     await context.setGeolocation({ latitude: -4.3836, longitude: -70.0311 })
-    await page.goto('/denunciar')
+    await page.goto('/report')
     await waitForHydration(page)
     await context.setOffline(true)
 
@@ -288,7 +288,7 @@ test.describe('resident', () => {
   test('refuses a file that is not a photo, in plain words', async ({
     page,
   }) => {
-    await page.goto('/denunciar')
+    await page.goto('/report')
     await waitForHydration(page)
     await page.getByText('Queimada', { exact: true }).click()
     await page.getByRole('button', { name: /Continuar/ }).click()
@@ -311,7 +311,7 @@ test.describe('resident', () => {
   })
 
   test('says the protocol does not exist', async ({ page }) => {
-    await page.goto('/acompanhar?protocol=CUR-0000-0000')
+    await page.goto('/track?protocol=CUR-0000-0000')
 
     await expect(
       page.getByRole('heading', { name: 'Protocolo não encontrado' }),
@@ -360,7 +360,7 @@ test.describe('resident', () => {
     expect(refusedAt + filedInThisRun).toBeLessThanOrEqual(11)
 
     // The browser shares the IP, so the screen meets the same wall.
-    await page.goto('/denunciar')
+    await page.goto('/report')
     await waitForHydration(page)
     await fileReport(page, 'Queimada')
     await expect(

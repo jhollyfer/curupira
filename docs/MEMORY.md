@@ -20,12 +20,12 @@
 - App do morador: home, cronograma e `.ics`, denúncia em 3 passos com fila offline, acompanhar por protocolo,
   mapa com ponto aproximado, avisos, sobre, privacidade e termos, PWA sem o painel no cache, três idiomas.
   Fala com a API de verdade (3.6 provada por E2E); 303 testes unitários em 53 arquivos.
-- Painel `/gestao`: visão geral, ocorrências, avisos, cronograma, bairros, contas e perfil, com capacidade por papel.
+- Painel `/management`: visão geral, ocorrências, avisos, cronograma, bairros, contas e perfil, com capacidade por papel.
 - E2E de Playwright contra a API real, no CI: 11 testes de fluxo (6 do morador em celular, 5 do painel em desktop),
   com axe, mais a matriz de responsividade (4 larguras no CI, 7 localmente). Total de
   121 testes no CI e 187 com a matriz completa; o job leva cerca de 13,6 min, com limite de 25.
 - Responsividade: app do morador com navegação superior em tablet e desktop, hero e grade em colunas a partir de
-  `md` e `lg`; painel `/gestao` do celular ao monitor largo (gaveta, cartões, folha de filtros, abas, cronograma
+  `md` e `lg`; painel `/management` do celular ao monitor largo (gaveta, cartões, folha de filtros, abas, cronograma
   por dia, alvos de 44 px). Descrito em `DESIGN.md` §4.
 - Auditoria de segurança feita, com as correções aplicadas (`SECURITY.md` §10); revisão de acessibilidade e
   movimento reduzido por peça.
@@ -78,7 +78,7 @@ O que falta de resto é só do dono, nada de código:
 ## Contexto importante
 
 - Os bairros do seed são os 14 da lista oficial do município (sem coordenada: o administrador marca o ponto no painel); o cronograma do seed é de exemplo e a prefeitura confere antes de abrir.
-- Os textos de privacidade e termos (`/privacidade`, `/termos`) são rascunho: a prefeitura e a procuradoria revisam.
+- Os textos de privacidade e termos (`/privacy`, `/terms`) são rascunho: a prefeitura e a procuradoria revisam.
 - Os secrets `COOLIFY_*` ainda não existem no GitHub; o job de deploy reprova nomeando o que faltar.
 - `STORAGE_PUBLIC_URL` não está definida porque o endereço do bucket de produção é desconhecido; sem ela a CSP só
   libera a API e a foto não sobe em produção (`DECISIONS.md` #27).
@@ -116,7 +116,7 @@ O que falta de resto é só do dono, nada de código:
 | Sem retenção automática de denúncia, foto e contato | `docs/SECURITY.md` §8.1 | decisão da prefeitura (`PRD.md` §8) |
 | IP no log do proxy não verificável pelo repositório | `docs/SECURITY.md` §2.8 | conferir no painel do Coolify |
 | Menus abertos do shadcn (dropdown, select) com 1 achado moderado de axe, a regra `region` | painel, `frontend/e2e/responsive-panel.spec.ts` | revisão de acessibilidade (`TASKS.md` 5.4) |
-| Links de bairro com 38 px de largura no tablet, no tema escuro, abaixo dos 44 px | app do morador, `/coleta` e home | revisão de acessibilidade (`TASKS.md` 5.4) |
+| Links de bairro com 38 px de largura no tablet, no tema escuro, abaixo dos 44 px | app do morador, `/schedule` e home | revisão de acessibilidade (`TASKS.md` 5.4) |
 
 ## Links úteis
 

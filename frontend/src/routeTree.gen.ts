@@ -18,31 +18,31 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicSplatRouteImport } from './routes/_public/$'
 import { Route as AuthenticationSignInIndexRouteImport } from './routes/_authentication/sign-in/index'
-import { Route as PrivateGestaoIndexRouteImport } from './routes/_private/gestao/index'
-import { Route as PrivateGestaoNeighborhoodsLayoutRouteImport } from './routes/_private/gestao/neighborhoods/layout'
-import { Route as PrivateGestaoSchedulesLayoutRouteImport } from './routes/_private/gestao/schedules/layout'
-import { Route as PrivateGestaoUsersLayoutRouteImport } from './routes/_private/gestao/users/layout'
-import { Route as PublicAcompanharIndexRouteImport } from './routes/_public/acompanhar/index'
-import { Route as PublicAvisosIndexRouteImport } from './routes/_public/avisos/index'
-import { Route as PublicColetaIndexRouteImport } from './routes/_public/coleta/index'
-import { Route as PublicDenunciarIndexRouteImport } from './routes/_public/denunciar/index'
-import { Route as PublicMapaIndexRouteImport } from './routes/_public/mapa/index'
-import { Route as PublicPrivacidadeIndexRouteImport } from './routes/_public/privacidade/index'
-import { Route as PublicSobreIndexRouteImport } from './routes/_public/sobre/index'
-import { Route as PublicTermosIndexRouteImport } from './routes/_public/termos/index'
-import { Route as PrivateGestaoNeighborhoodsIndexRouteImport } from './routes/_private/gestao/neighborhoods/index'
-import { Route as PrivateGestaoNeighborhoodsNewRouteImport } from './routes/_private/gestao/neighborhoods/new'
-import { Route as PrivateGestaoNoticesIndexRouteImport } from './routes/_private/gestao/notices/index'
-import { Route as PrivateGestaoNoticesNewRouteImport } from './routes/_private/gestao/notices/new'
-import { Route as PrivateGestaoReportsIndexRouteImport } from './routes/_private/gestao/reports/index'
-import { Route as PrivateGestaoSchedulesIndexRouteImport } from './routes/_private/gestao/schedules/index'
-import { Route as PrivateGestaoUsersIndexRouteImport } from './routes/_private/gestao/users/index'
-import { Route as PrivateGestaoUsersNewRouteImport } from './routes/_private/gestao/users/new'
-import { Route as PrivateGestaoAccountProfileIndexRouteImport } from './routes/_private/gestao/account/profile/index'
-import { Route as PrivateGestaoNeighborhoodsIdEditRouteImport } from './routes/_private/gestao/neighborhoods/$id/edit'
-import { Route as PrivateGestaoNoticesIdEditRouteImport } from './routes/_private/gestao/notices/$id/edit'
-import { Route as PrivateGestaoReportsIdIndexRouteImport } from './routes/_private/gestao/reports/$id/index'
-import { Route as PrivateGestaoUsersIdEditRouteImport } from './routes/_private/gestao/users/$id/edit'
+import { Route as PrivateManagementIndexRouteImport } from './routes/_private/management/index'
+import { Route as PrivateManagementNeighborhoodsLayoutRouteImport } from './routes/_private/management/neighborhoods/layout'
+import { Route as PrivateManagementSchedulesLayoutRouteImport } from './routes/_private/management/schedules/layout'
+import { Route as PrivateManagementUsersLayoutRouteImport } from './routes/_private/management/users/layout'
+import { Route as PublicAboutIndexRouteImport } from './routes/_public/about/index'
+import { Route as PublicMapIndexRouteImport } from './routes/_public/map/index'
+import { Route as PublicNoticesIndexRouteImport } from './routes/_public/notices/index'
+import { Route as PublicPrivacyIndexRouteImport } from './routes/_public/privacy/index'
+import { Route as PublicReportIndexRouteImport } from './routes/_public/report/index'
+import { Route as PublicScheduleIndexRouteImport } from './routes/_public/schedule/index'
+import { Route as PublicTermsIndexRouteImport } from './routes/_public/terms/index'
+import { Route as PublicTrackIndexRouteImport } from './routes/_public/track/index'
+import { Route as PrivateManagementNeighborhoodsIndexRouteImport } from './routes/_private/management/neighborhoods/index'
+import { Route as PrivateManagementNeighborhoodsNewRouteImport } from './routes/_private/management/neighborhoods/new'
+import { Route as PrivateManagementNoticesIndexRouteImport } from './routes/_private/management/notices/index'
+import { Route as PrivateManagementNoticesNewRouteImport } from './routes/_private/management/notices/new'
+import { Route as PrivateManagementReportsIndexRouteImport } from './routes/_private/management/reports/index'
+import { Route as PrivateManagementSchedulesIndexRouteImport } from './routes/_private/management/schedules/index'
+import { Route as PrivateManagementUsersIndexRouteImport } from './routes/_private/management/users/index'
+import { Route as PrivateManagementUsersNewRouteImport } from './routes/_private/management/users/new'
+import { Route as PrivateManagementAccountProfileIndexRouteImport } from './routes/_private/management/account/profile/index'
+import { Route as PrivateManagementNeighborhoodsIdEditRouteImport } from './routes/_private/management/neighborhoods/$id/edit'
+import { Route as PrivateManagementNoticesIdEditRouteImport } from './routes/_private/management/notices/$id/edit'
+import { Route as PrivateManagementReportsIdIndexRouteImport } from './routes/_private/management/reports/$id/index'
+import { Route as PrivateManagementUsersIdEditRouteImport } from './routes/_private/management/users/$id/edit'
 
 const AuthenticationLayoutRoute = AuthenticationLayoutRouteImport.update({
   id: '/_authentication',
@@ -89,201 +89,214 @@ const AuthenticationSignInIndexRoute =
   } as any).lazy(() =>
     import('./routes/_authentication/sign-in/index.lazy').then((d) => d.Route),
   )
-const PrivateGestaoIndexRoute = PrivateGestaoIndexRouteImport.update({
-  id: '/gestao/',
-  path: '/gestao/',
+const PrivateManagementIndexRoute = PrivateManagementIndexRouteImport.update({
+  id: '/management/',
+  path: '/management/',
   getParentRoute: () => PrivateLayoutRoute,
 } as any).lazy(() =>
-  import('./routes/_private/gestao/index.lazy').then((d) => d.Route),
+  import('./routes/_private/management/index.lazy').then((d) => d.Route),
 )
-const PrivateGestaoNeighborhoodsLayoutRoute =
-  PrivateGestaoNeighborhoodsLayoutRouteImport.update({
-    id: '/gestao/neighborhoods',
-    path: '/gestao/neighborhoods',
+const PrivateManagementNeighborhoodsLayoutRoute =
+  PrivateManagementNeighborhoodsLayoutRouteImport.update({
+    id: '/management/neighborhoods',
+    path: '/management/neighborhoods',
     getParentRoute: () => PrivateLayoutRoute,
   } as any)
-const PrivateGestaoSchedulesLayoutRoute =
-  PrivateGestaoSchedulesLayoutRouteImport.update({
-    id: '/gestao/schedules',
-    path: '/gestao/schedules',
+const PrivateManagementSchedulesLayoutRoute =
+  PrivateManagementSchedulesLayoutRouteImport.update({
+    id: '/management/schedules',
+    path: '/management/schedules',
     getParentRoute: () => PrivateLayoutRoute,
   } as any)
-const PrivateGestaoUsersLayoutRoute =
-  PrivateGestaoUsersLayoutRouteImport.update({
-    id: '/gestao/users',
-    path: '/gestao/users',
+const PrivateManagementUsersLayoutRoute =
+  PrivateManagementUsersLayoutRouteImport.update({
+    id: '/management/users',
+    path: '/management/users',
     getParentRoute: () => PrivateLayoutRoute,
   } as any)
-const PublicAcompanharIndexRoute = PublicAcompanharIndexRouteImport.update({
-  id: '/acompanhar/',
-  path: '/acompanhar/',
+const PublicAboutIndexRoute = PublicAboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
   getParentRoute: () => PublicLayoutRoute,
 } as any).lazy(() =>
-  import('./routes/_public/acompanhar/index.lazy').then((d) => d.Route),
+  import('./routes/_public/about/index.lazy').then((d) => d.Route),
 )
-const PublicAvisosIndexRoute = PublicAvisosIndexRouteImport.update({
-  id: '/avisos/',
-  path: '/avisos/',
+const PublicMapIndexRoute = PublicMapIndexRouteImport.update({
+  id: '/map/',
+  path: '/map/',
   getParentRoute: () => PublicLayoutRoute,
 } as any).lazy(() =>
-  import('./routes/_public/avisos/index.lazy').then((d) => d.Route),
+  import('./routes/_public/map/index.lazy').then((d) => d.Route),
 )
-const PublicColetaIndexRoute = PublicColetaIndexRouteImport.update({
-  id: '/coleta/',
-  path: '/coleta/',
+const PublicNoticesIndexRoute = PublicNoticesIndexRouteImport.update({
+  id: '/notices/',
+  path: '/notices/',
   getParentRoute: () => PublicLayoutRoute,
 } as any).lazy(() =>
-  import('./routes/_public/coleta/index.lazy').then((d) => d.Route),
+  import('./routes/_public/notices/index.lazy').then((d) => d.Route),
 )
-const PublicDenunciarIndexRoute = PublicDenunciarIndexRouteImport.update({
-  id: '/denunciar/',
-  path: '/denunciar/',
+const PublicPrivacyIndexRoute = PublicPrivacyIndexRouteImport.update({
+  id: '/privacy/',
+  path: '/privacy/',
   getParentRoute: () => PublicLayoutRoute,
 } as any).lazy(() =>
-  import('./routes/_public/denunciar/index.lazy').then((d) => d.Route),
+  import('./routes/_public/privacy/index.lazy').then((d) => d.Route),
 )
-const PublicMapaIndexRoute = PublicMapaIndexRouteImport.update({
-  id: '/mapa/',
-  path: '/mapa/',
+const PublicReportIndexRoute = PublicReportIndexRouteImport.update({
+  id: '/report/',
+  path: '/report/',
   getParentRoute: () => PublicLayoutRoute,
 } as any).lazy(() =>
-  import('./routes/_public/mapa/index.lazy').then((d) => d.Route),
+  import('./routes/_public/report/index.lazy').then((d) => d.Route),
 )
-const PublicPrivacidadeIndexRoute = PublicPrivacidadeIndexRouteImport.update({
-  id: '/privacidade/',
-  path: '/privacidade/',
+const PublicScheduleIndexRoute = PublicScheduleIndexRouteImport.update({
+  id: '/schedule/',
+  path: '/schedule/',
   getParentRoute: () => PublicLayoutRoute,
 } as any).lazy(() =>
-  import('./routes/_public/privacidade/index.lazy').then((d) => d.Route),
+  import('./routes/_public/schedule/index.lazy').then((d) => d.Route),
 )
-const PublicSobreIndexRoute = PublicSobreIndexRouteImport.update({
-  id: '/sobre/',
-  path: '/sobre/',
+const PublicTermsIndexRoute = PublicTermsIndexRouteImport.update({
+  id: '/terms/',
+  path: '/terms/',
   getParentRoute: () => PublicLayoutRoute,
 } as any).lazy(() =>
-  import('./routes/_public/sobre/index.lazy').then((d) => d.Route),
+  import('./routes/_public/terms/index.lazy').then((d) => d.Route),
 )
-const PublicTermosIndexRoute = PublicTermosIndexRouteImport.update({
-  id: '/termos/',
-  path: '/termos/',
+const PublicTrackIndexRoute = PublicTrackIndexRouteImport.update({
+  id: '/track/',
+  path: '/track/',
   getParentRoute: () => PublicLayoutRoute,
 } as any).lazy(() =>
-  import('./routes/_public/termos/index.lazy').then((d) => d.Route),
+  import('./routes/_public/track/index.lazy').then((d) => d.Route),
 )
-const PrivateGestaoNeighborhoodsIndexRoute =
-  PrivateGestaoNeighborhoodsIndexRouteImport.update({
+const PrivateManagementNeighborhoodsIndexRoute =
+  PrivateManagementNeighborhoodsIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => PrivateGestaoNeighborhoodsLayoutRoute,
+    getParentRoute: () => PrivateManagementNeighborhoodsLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_private/gestao/neighborhoods/index.lazy').then(
+    import('./routes/_private/management/neighborhoods/index.lazy').then(
       (d) => d.Route,
     ),
   )
-const PrivateGestaoNeighborhoodsNewRoute =
-  PrivateGestaoNeighborhoodsNewRouteImport.update({
+const PrivateManagementNeighborhoodsNewRoute =
+  PrivateManagementNeighborhoodsNewRouteImport.update({
     id: '/new',
     path: '/new',
-    getParentRoute: () => PrivateGestaoNeighborhoodsLayoutRoute,
+    getParentRoute: () => PrivateManagementNeighborhoodsLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_private/gestao/neighborhoods/new.lazy').then(
+    import('./routes/_private/management/neighborhoods/new.lazy').then(
       (d) => d.Route,
     ),
   )
-const PrivateGestaoNoticesIndexRoute =
-  PrivateGestaoNoticesIndexRouteImport.update({
-    id: '/gestao/notices/',
-    path: '/gestao/notices/',
+const PrivateManagementNoticesIndexRoute =
+  PrivateManagementNoticesIndexRouteImport.update({
+    id: '/management/notices/',
+    path: '/management/notices/',
     getParentRoute: () => PrivateLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_private/gestao/notices/index.lazy').then((d) => d.Route),
+    import('./routes/_private/management/notices/index.lazy').then(
+      (d) => d.Route,
+    ),
   )
-const PrivateGestaoNoticesNewRoute = PrivateGestaoNoticesNewRouteImport.update({
-  id: '/gestao/notices/new',
-  path: '/gestao/notices/new',
-  getParentRoute: () => PrivateLayoutRoute,
-} as any).lazy(() =>
-  import('./routes/_private/gestao/notices/new.lazy').then((d) => d.Route),
-)
-const PrivateGestaoReportsIndexRoute =
-  PrivateGestaoReportsIndexRouteImport.update({
-    id: '/gestao/reports/',
-    path: '/gestao/reports/',
+const PrivateManagementNoticesNewRoute =
+  PrivateManagementNoticesNewRouteImport.update({
+    id: '/management/notices/new',
+    path: '/management/notices/new',
     getParentRoute: () => PrivateLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_private/gestao/reports/index.lazy').then((d) => d.Route),
+    import('./routes/_private/management/notices/new.lazy').then(
+      (d) => d.Route,
+    ),
   )
-const PrivateGestaoSchedulesIndexRoute =
-  PrivateGestaoSchedulesIndexRouteImport.update({
+const PrivateManagementReportsIndexRoute =
+  PrivateManagementReportsIndexRouteImport.update({
+    id: '/management/reports/',
+    path: '/management/reports/',
+    getParentRoute: () => PrivateLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_private/management/reports/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const PrivateManagementSchedulesIndexRoute =
+  PrivateManagementSchedulesIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => PrivateGestaoSchedulesLayoutRoute,
+    getParentRoute: () => PrivateManagementSchedulesLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_private/gestao/schedules/index.lazy').then(
+    import('./routes/_private/management/schedules/index.lazy').then(
       (d) => d.Route,
     ),
   )
-const PrivateGestaoUsersIndexRoute = PrivateGestaoUsersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PrivateGestaoUsersLayoutRoute,
-} as any).lazy(() =>
-  import('./routes/_private/gestao/users/index.lazy').then((d) => d.Route),
-)
-const PrivateGestaoUsersNewRoute = PrivateGestaoUsersNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => PrivateGestaoUsersLayoutRoute,
-} as any).lazy(() =>
-  import('./routes/_private/gestao/users/new.lazy').then((d) => d.Route),
-)
-const PrivateGestaoAccountProfileIndexRoute =
-  PrivateGestaoAccountProfileIndexRouteImport.update({
-    id: '/gestao/account/profile/',
-    path: '/gestao/account/profile/',
+const PrivateManagementUsersIndexRoute =
+  PrivateManagementUsersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PrivateManagementUsersLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_private/management/users/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const PrivateManagementUsersNewRoute =
+  PrivateManagementUsersNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => PrivateManagementUsersLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_private/management/users/new.lazy').then((d) => d.Route),
+  )
+const PrivateManagementAccountProfileIndexRoute =
+  PrivateManagementAccountProfileIndexRouteImport.update({
+    id: '/management/account/profile/',
+    path: '/management/account/profile/',
     getParentRoute: () => PrivateLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_private/gestao/account/profile/index.lazy').then(
+    import('./routes/_private/management/account/profile/index.lazy').then(
       (d) => d.Route,
     ),
   )
-const PrivateGestaoNeighborhoodsIdEditRoute =
-  PrivateGestaoNeighborhoodsIdEditRouteImport.update({
+const PrivateManagementNeighborhoodsIdEditRoute =
+  PrivateManagementNeighborhoodsIdEditRouteImport.update({
     id: '/$id/edit',
     path: '/$id/edit',
-    getParentRoute: () => PrivateGestaoNeighborhoodsLayoutRoute,
+    getParentRoute: () => PrivateManagementNeighborhoodsLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_private/gestao/neighborhoods/$id/edit.lazy').then(
+    import('./routes/_private/management/neighborhoods/$id/edit.lazy').then(
       (d) => d.Route,
     ),
   )
-const PrivateGestaoNoticesIdEditRoute =
-  PrivateGestaoNoticesIdEditRouteImport.update({
-    id: '/gestao/notices/$id/edit',
-    path: '/gestao/notices/$id/edit',
+const PrivateManagementNoticesIdEditRoute =
+  PrivateManagementNoticesIdEditRouteImport.update({
+    id: '/management/notices/$id/edit',
+    path: '/management/notices/$id/edit',
     getParentRoute: () => PrivateLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_private/gestao/notices/$id/edit.lazy').then(
+    import('./routes/_private/management/notices/$id/edit.lazy').then(
       (d) => d.Route,
     ),
   )
-const PrivateGestaoReportsIdIndexRoute =
-  PrivateGestaoReportsIdIndexRouteImport.update({
-    id: '/gestao/reports/$id/',
-    path: '/gestao/reports/$id/',
+const PrivateManagementReportsIdIndexRoute =
+  PrivateManagementReportsIdIndexRouteImport.update({
+    id: '/management/reports/$id/',
+    path: '/management/reports/$id/',
     getParentRoute: () => PrivateLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_private/gestao/reports/$id/index.lazy').then(
+    import('./routes/_private/management/reports/$id/index.lazy').then(
       (d) => d.Route,
     ),
   )
-const PrivateGestaoUsersIdEditRoute =
-  PrivateGestaoUsersIdEditRouteImport.update({
+const PrivateManagementUsersIdEditRoute =
+  PrivateManagementUsersIdEditRouteImport.update({
     id: '/$id/edit',
     path: '/$id/edit',
-    getParentRoute: () => PrivateGestaoUsersLayoutRoute,
+    getParentRoute: () => PrivateManagementUsersLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_private/gestao/users/$id/edit.lazy').then((d) => d.Route),
+    import('./routes/_private/management/users/$id/edit.lazy').then(
+      (d) => d.Route,
+    ),
   )
 
 export interface FileRoutesByFullPath {
@@ -292,32 +305,32 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/$': typeof PublicSplatRoute
-  '/gestao/neighborhoods': typeof PrivateGestaoNeighborhoodsLayoutRouteWithChildren
-  '/gestao/schedules': typeof PrivateGestaoSchedulesLayoutRouteWithChildren
-  '/gestao/users': typeof PrivateGestaoUsersLayoutRouteWithChildren
+  '/management/neighborhoods': typeof PrivateManagementNeighborhoodsLayoutRouteWithChildren
+  '/management/schedules': typeof PrivateManagementSchedulesLayoutRouteWithChildren
+  '/management/users': typeof PrivateManagementUsersLayoutRouteWithChildren
   '/sign-in/': typeof AuthenticationSignInIndexRoute
-  '/gestao/': typeof PrivateGestaoIndexRoute
-  '/acompanhar/': typeof PublicAcompanharIndexRoute
-  '/avisos/': typeof PublicAvisosIndexRoute
-  '/coleta/': typeof PublicColetaIndexRoute
-  '/denunciar/': typeof PublicDenunciarIndexRoute
-  '/mapa/': typeof PublicMapaIndexRoute
-  '/privacidade/': typeof PublicPrivacidadeIndexRoute
-  '/sobre/': typeof PublicSobreIndexRoute
-  '/termos/': typeof PublicTermosIndexRoute
-  '/gestao/neighborhoods/new': typeof PrivateGestaoNeighborhoodsNewRoute
-  '/gestao/notices/new': typeof PrivateGestaoNoticesNewRoute
-  '/gestao/users/new': typeof PrivateGestaoUsersNewRoute
-  '/gestao/neighborhoods/': typeof PrivateGestaoNeighborhoodsIndexRoute
-  '/gestao/notices/': typeof PrivateGestaoNoticesIndexRoute
-  '/gestao/reports/': typeof PrivateGestaoReportsIndexRoute
-  '/gestao/schedules/': typeof PrivateGestaoSchedulesIndexRoute
-  '/gestao/users/': typeof PrivateGestaoUsersIndexRoute
-  '/gestao/neighborhoods/$id/edit': typeof PrivateGestaoNeighborhoodsIdEditRoute
-  '/gestao/notices/$id/edit': typeof PrivateGestaoNoticesIdEditRoute
-  '/gestao/users/$id/edit': typeof PrivateGestaoUsersIdEditRoute
-  '/gestao/account/profile/': typeof PrivateGestaoAccountProfileIndexRoute
-  '/gestao/reports/$id/': typeof PrivateGestaoReportsIdIndexRoute
+  '/management/': typeof PrivateManagementIndexRoute
+  '/about/': typeof PublicAboutIndexRoute
+  '/map/': typeof PublicMapIndexRoute
+  '/notices/': typeof PublicNoticesIndexRoute
+  '/privacy/': typeof PublicPrivacyIndexRoute
+  '/report/': typeof PublicReportIndexRoute
+  '/schedule/': typeof PublicScheduleIndexRoute
+  '/terms/': typeof PublicTermsIndexRoute
+  '/track/': typeof PublicTrackIndexRoute
+  '/management/neighborhoods/new': typeof PrivateManagementNeighborhoodsNewRoute
+  '/management/notices/new': typeof PrivateManagementNoticesNewRoute
+  '/management/users/new': typeof PrivateManagementUsersNewRoute
+  '/management/neighborhoods/': typeof PrivateManagementNeighborhoodsIndexRoute
+  '/management/notices/': typeof PrivateManagementNoticesIndexRoute
+  '/management/reports/': typeof PrivateManagementReportsIndexRoute
+  '/management/schedules/': typeof PrivateManagementSchedulesIndexRoute
+  '/management/users/': typeof PrivateManagementUsersIndexRoute
+  '/management/neighborhoods/$id/edit': typeof PrivateManagementNeighborhoodsIdEditRoute
+  '/management/notices/$id/edit': typeof PrivateManagementNoticesIdEditRoute
+  '/management/users/$id/edit': typeof PrivateManagementUsersIdEditRoute
+  '/management/account/profile/': typeof PrivateManagementAccountProfileIndexRoute
+  '/management/reports/$id/': typeof PrivateManagementReportsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -326,28 +339,28 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/$': typeof PublicSplatRoute
   '/sign-in': typeof AuthenticationSignInIndexRoute
-  '/gestao': typeof PrivateGestaoIndexRoute
-  '/acompanhar': typeof PublicAcompanharIndexRoute
-  '/avisos': typeof PublicAvisosIndexRoute
-  '/coleta': typeof PublicColetaIndexRoute
-  '/denunciar': typeof PublicDenunciarIndexRoute
-  '/mapa': typeof PublicMapaIndexRoute
-  '/privacidade': typeof PublicPrivacidadeIndexRoute
-  '/sobre': typeof PublicSobreIndexRoute
-  '/termos': typeof PublicTermosIndexRoute
-  '/gestao/neighborhoods/new': typeof PrivateGestaoNeighborhoodsNewRoute
-  '/gestao/notices/new': typeof PrivateGestaoNoticesNewRoute
-  '/gestao/users/new': typeof PrivateGestaoUsersNewRoute
-  '/gestao/neighborhoods': typeof PrivateGestaoNeighborhoodsIndexRoute
-  '/gestao/notices': typeof PrivateGestaoNoticesIndexRoute
-  '/gestao/reports': typeof PrivateGestaoReportsIndexRoute
-  '/gestao/schedules': typeof PrivateGestaoSchedulesIndexRoute
-  '/gestao/users': typeof PrivateGestaoUsersIndexRoute
-  '/gestao/neighborhoods/$id/edit': typeof PrivateGestaoNeighborhoodsIdEditRoute
-  '/gestao/notices/$id/edit': typeof PrivateGestaoNoticesIdEditRoute
-  '/gestao/users/$id/edit': typeof PrivateGestaoUsersIdEditRoute
-  '/gestao/account/profile': typeof PrivateGestaoAccountProfileIndexRoute
-  '/gestao/reports/$id': typeof PrivateGestaoReportsIdIndexRoute
+  '/management': typeof PrivateManagementIndexRoute
+  '/about': typeof PublicAboutIndexRoute
+  '/map': typeof PublicMapIndexRoute
+  '/notices': typeof PublicNoticesIndexRoute
+  '/privacy': typeof PublicPrivacyIndexRoute
+  '/report': typeof PublicReportIndexRoute
+  '/schedule': typeof PublicScheduleIndexRoute
+  '/terms': typeof PublicTermsIndexRoute
+  '/track': typeof PublicTrackIndexRoute
+  '/management/neighborhoods/new': typeof PrivateManagementNeighborhoodsNewRoute
+  '/management/notices/new': typeof PrivateManagementNoticesNewRoute
+  '/management/users/new': typeof PrivateManagementUsersNewRoute
+  '/management/neighborhoods': typeof PrivateManagementNeighborhoodsIndexRoute
+  '/management/notices': typeof PrivateManagementNoticesIndexRoute
+  '/management/reports': typeof PrivateManagementReportsIndexRoute
+  '/management/schedules': typeof PrivateManagementSchedulesIndexRoute
+  '/management/users': typeof PrivateManagementUsersIndexRoute
+  '/management/neighborhoods/$id/edit': typeof PrivateManagementNeighborhoodsIdEditRoute
+  '/management/notices/$id/edit': typeof PrivateManagementNoticesIdEditRoute
+  '/management/users/$id/edit': typeof PrivateManagementUsersIdEditRoute
+  '/management/account/profile': typeof PrivateManagementAccountProfileIndexRoute
+  '/management/reports/$id': typeof PrivateManagementReportsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -359,32 +372,32 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_public/$': typeof PublicSplatRoute
   '/_public/': typeof PublicIndexRoute
-  '/_private/gestao/neighborhoods': typeof PrivateGestaoNeighborhoodsLayoutRouteWithChildren
-  '/_private/gestao/schedules': typeof PrivateGestaoSchedulesLayoutRouteWithChildren
-  '/_private/gestao/users': typeof PrivateGestaoUsersLayoutRouteWithChildren
+  '/_private/management/neighborhoods': typeof PrivateManagementNeighborhoodsLayoutRouteWithChildren
+  '/_private/management/schedules': typeof PrivateManagementSchedulesLayoutRouteWithChildren
+  '/_private/management/users': typeof PrivateManagementUsersLayoutRouteWithChildren
   '/_authentication/sign-in/': typeof AuthenticationSignInIndexRoute
-  '/_private/gestao/': typeof PrivateGestaoIndexRoute
-  '/_public/acompanhar/': typeof PublicAcompanharIndexRoute
-  '/_public/avisos/': typeof PublicAvisosIndexRoute
-  '/_public/coleta/': typeof PublicColetaIndexRoute
-  '/_public/denunciar/': typeof PublicDenunciarIndexRoute
-  '/_public/mapa/': typeof PublicMapaIndexRoute
-  '/_public/privacidade/': typeof PublicPrivacidadeIndexRoute
-  '/_public/sobre/': typeof PublicSobreIndexRoute
-  '/_public/termos/': typeof PublicTermosIndexRoute
-  '/_private/gestao/neighborhoods/new': typeof PrivateGestaoNeighborhoodsNewRoute
-  '/_private/gestao/notices/new': typeof PrivateGestaoNoticesNewRoute
-  '/_private/gestao/users/new': typeof PrivateGestaoUsersNewRoute
-  '/_private/gestao/neighborhoods/': typeof PrivateGestaoNeighborhoodsIndexRoute
-  '/_private/gestao/notices/': typeof PrivateGestaoNoticesIndexRoute
-  '/_private/gestao/reports/': typeof PrivateGestaoReportsIndexRoute
-  '/_private/gestao/schedules/': typeof PrivateGestaoSchedulesIndexRoute
-  '/_private/gestao/users/': typeof PrivateGestaoUsersIndexRoute
-  '/_private/gestao/neighborhoods/$id/edit': typeof PrivateGestaoNeighborhoodsIdEditRoute
-  '/_private/gestao/notices/$id/edit': typeof PrivateGestaoNoticesIdEditRoute
-  '/_private/gestao/users/$id/edit': typeof PrivateGestaoUsersIdEditRoute
-  '/_private/gestao/account/profile/': typeof PrivateGestaoAccountProfileIndexRoute
-  '/_private/gestao/reports/$id/': typeof PrivateGestaoReportsIdIndexRoute
+  '/_private/management/': typeof PrivateManagementIndexRoute
+  '/_public/about/': typeof PublicAboutIndexRoute
+  '/_public/map/': typeof PublicMapIndexRoute
+  '/_public/notices/': typeof PublicNoticesIndexRoute
+  '/_public/privacy/': typeof PublicPrivacyIndexRoute
+  '/_public/report/': typeof PublicReportIndexRoute
+  '/_public/schedule/': typeof PublicScheduleIndexRoute
+  '/_public/terms/': typeof PublicTermsIndexRoute
+  '/_public/track/': typeof PublicTrackIndexRoute
+  '/_private/management/neighborhoods/new': typeof PrivateManagementNeighborhoodsNewRoute
+  '/_private/management/notices/new': typeof PrivateManagementNoticesNewRoute
+  '/_private/management/users/new': typeof PrivateManagementUsersNewRoute
+  '/_private/management/neighborhoods/': typeof PrivateManagementNeighborhoodsIndexRoute
+  '/_private/management/notices/': typeof PrivateManagementNoticesIndexRoute
+  '/_private/management/reports/': typeof PrivateManagementReportsIndexRoute
+  '/_private/management/schedules/': typeof PrivateManagementSchedulesIndexRoute
+  '/_private/management/users/': typeof PrivateManagementUsersIndexRoute
+  '/_private/management/neighborhoods/$id/edit': typeof PrivateManagementNeighborhoodsIdEditRoute
+  '/_private/management/notices/$id/edit': typeof PrivateManagementNoticesIdEditRoute
+  '/_private/management/users/$id/edit': typeof PrivateManagementUsersIdEditRoute
+  '/_private/management/account/profile/': typeof PrivateManagementAccountProfileIndexRoute
+  '/_private/management/reports/$id/': typeof PrivateManagementReportsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -394,32 +407,32 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/$'
-    | '/gestao/neighborhoods'
-    | '/gestao/schedules'
-    | '/gestao/users'
+    | '/management/neighborhoods'
+    | '/management/schedules'
+    | '/management/users'
     | '/sign-in/'
-    | '/gestao/'
-    | '/acompanhar/'
-    | '/avisos/'
-    | '/coleta/'
-    | '/denunciar/'
-    | '/mapa/'
-    | '/privacidade/'
-    | '/sobre/'
-    | '/termos/'
-    | '/gestao/neighborhoods/new'
-    | '/gestao/notices/new'
-    | '/gestao/users/new'
-    | '/gestao/neighborhoods/'
-    | '/gestao/notices/'
-    | '/gestao/reports/'
-    | '/gestao/schedules/'
-    | '/gestao/users/'
-    | '/gestao/neighborhoods/$id/edit'
-    | '/gestao/notices/$id/edit'
-    | '/gestao/users/$id/edit'
-    | '/gestao/account/profile/'
-    | '/gestao/reports/$id/'
+    | '/management/'
+    | '/about/'
+    | '/map/'
+    | '/notices/'
+    | '/privacy/'
+    | '/report/'
+    | '/schedule/'
+    | '/terms/'
+    | '/track/'
+    | '/management/neighborhoods/new'
+    | '/management/notices/new'
+    | '/management/users/new'
+    | '/management/neighborhoods/'
+    | '/management/notices/'
+    | '/management/reports/'
+    | '/management/schedules/'
+    | '/management/users/'
+    | '/management/neighborhoods/$id/edit'
+    | '/management/notices/$id/edit'
+    | '/management/users/$id/edit'
+    | '/management/account/profile/'
+    | '/management/reports/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -428,28 +441,28 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/$'
     | '/sign-in'
-    | '/gestao'
-    | '/acompanhar'
-    | '/avisos'
-    | '/coleta'
-    | '/denunciar'
-    | '/mapa'
-    | '/privacidade'
-    | '/sobre'
-    | '/termos'
-    | '/gestao/neighborhoods/new'
-    | '/gestao/notices/new'
-    | '/gestao/users/new'
-    | '/gestao/neighborhoods'
-    | '/gestao/notices'
-    | '/gestao/reports'
-    | '/gestao/schedules'
-    | '/gestao/users'
-    | '/gestao/neighborhoods/$id/edit'
-    | '/gestao/notices/$id/edit'
-    | '/gestao/users/$id/edit'
-    | '/gestao/account/profile'
-    | '/gestao/reports/$id'
+    | '/management'
+    | '/about'
+    | '/map'
+    | '/notices'
+    | '/privacy'
+    | '/report'
+    | '/schedule'
+    | '/terms'
+    | '/track'
+    | '/management/neighborhoods/new'
+    | '/management/notices/new'
+    | '/management/users/new'
+    | '/management/neighborhoods'
+    | '/management/notices'
+    | '/management/reports'
+    | '/management/schedules'
+    | '/management/users'
+    | '/management/neighborhoods/$id/edit'
+    | '/management/notices/$id/edit'
+    | '/management/users/$id/edit'
+    | '/management/account/profile'
+    | '/management/reports/$id'
   id:
     | '__root__'
     | '/_authentication'
@@ -460,32 +473,32 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_public/$'
     | '/_public/'
-    | '/_private/gestao/neighborhoods'
-    | '/_private/gestao/schedules'
-    | '/_private/gestao/users'
+    | '/_private/management/neighborhoods'
+    | '/_private/management/schedules'
+    | '/_private/management/users'
     | '/_authentication/sign-in/'
-    | '/_private/gestao/'
-    | '/_public/acompanhar/'
-    | '/_public/avisos/'
-    | '/_public/coleta/'
-    | '/_public/denunciar/'
-    | '/_public/mapa/'
-    | '/_public/privacidade/'
-    | '/_public/sobre/'
-    | '/_public/termos/'
-    | '/_private/gestao/neighborhoods/new'
-    | '/_private/gestao/notices/new'
-    | '/_private/gestao/users/new'
-    | '/_private/gestao/neighborhoods/'
-    | '/_private/gestao/notices/'
-    | '/_private/gestao/reports/'
-    | '/_private/gestao/schedules/'
-    | '/_private/gestao/users/'
-    | '/_private/gestao/neighborhoods/$id/edit'
-    | '/_private/gestao/notices/$id/edit'
-    | '/_private/gestao/users/$id/edit'
-    | '/_private/gestao/account/profile/'
-    | '/_private/gestao/reports/$id/'
+    | '/_private/management/'
+    | '/_public/about/'
+    | '/_public/map/'
+    | '/_public/notices/'
+    | '/_public/privacy/'
+    | '/_public/report/'
+    | '/_public/schedule/'
+    | '/_public/terms/'
+    | '/_public/track/'
+    | '/_private/management/neighborhoods/new'
+    | '/_private/management/notices/new'
+    | '/_private/management/users/new'
+    | '/_private/management/neighborhoods/'
+    | '/_private/management/notices/'
+    | '/_private/management/reports/'
+    | '/_private/management/schedules/'
+    | '/_private/management/users/'
+    | '/_private/management/neighborhoods/$id/edit'
+    | '/_private/management/notices/$id/edit'
+    | '/_private/management/users/$id/edit'
+    | '/_private/management/account/profile/'
+    | '/_private/management/reports/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -562,180 +575,180 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticationSignInIndexRouteImport
       parentRoute: typeof AuthenticationLayoutRoute
     }
-    '/_private/gestao/': {
-      id: '/_private/gestao/'
-      path: '/gestao'
-      fullPath: '/gestao/'
-      preLoaderRoute: typeof PrivateGestaoIndexRouteImport
+    '/_private/management/': {
+      id: '/_private/management/'
+      path: '/management'
+      fullPath: '/management/'
+      preLoaderRoute: typeof PrivateManagementIndexRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_private/gestao/neighborhoods': {
-      id: '/_private/gestao/neighborhoods'
-      path: '/gestao/neighborhoods'
-      fullPath: '/gestao/neighborhoods'
-      preLoaderRoute: typeof PrivateGestaoNeighborhoodsLayoutRouteImport
+    '/_private/management/neighborhoods': {
+      id: '/_private/management/neighborhoods'
+      path: '/management/neighborhoods'
+      fullPath: '/management/neighborhoods'
+      preLoaderRoute: typeof PrivateManagementNeighborhoodsLayoutRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_private/gestao/schedules': {
-      id: '/_private/gestao/schedules'
-      path: '/gestao/schedules'
-      fullPath: '/gestao/schedules'
-      preLoaderRoute: typeof PrivateGestaoSchedulesLayoutRouteImport
+    '/_private/management/schedules': {
+      id: '/_private/management/schedules'
+      path: '/management/schedules'
+      fullPath: '/management/schedules'
+      preLoaderRoute: typeof PrivateManagementSchedulesLayoutRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_private/gestao/users': {
-      id: '/_private/gestao/users'
-      path: '/gestao/users'
-      fullPath: '/gestao/users'
-      preLoaderRoute: typeof PrivateGestaoUsersLayoutRouteImport
+    '/_private/management/users': {
+      id: '/_private/management/users'
+      path: '/management/users'
+      fullPath: '/management/users'
+      preLoaderRoute: typeof PrivateManagementUsersLayoutRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_public/acompanhar/': {
-      id: '/_public/acompanhar/'
-      path: '/acompanhar'
-      fullPath: '/acompanhar/'
-      preLoaderRoute: typeof PublicAcompanharIndexRouteImport
+    '/_public/about/': {
+      id: '/_public/about/'
+      path: '/about'
+      fullPath: '/about/'
+      preLoaderRoute: typeof PublicAboutIndexRouteImport
       parentRoute: typeof PublicLayoutRoute
     }
-    '/_public/avisos/': {
-      id: '/_public/avisos/'
-      path: '/avisos'
-      fullPath: '/avisos/'
-      preLoaderRoute: typeof PublicAvisosIndexRouteImport
+    '/_public/map/': {
+      id: '/_public/map/'
+      path: '/map'
+      fullPath: '/map/'
+      preLoaderRoute: typeof PublicMapIndexRouteImport
       parentRoute: typeof PublicLayoutRoute
     }
-    '/_public/coleta/': {
-      id: '/_public/coleta/'
-      path: '/coleta'
-      fullPath: '/coleta/'
-      preLoaderRoute: typeof PublicColetaIndexRouteImport
+    '/_public/notices/': {
+      id: '/_public/notices/'
+      path: '/notices'
+      fullPath: '/notices/'
+      preLoaderRoute: typeof PublicNoticesIndexRouteImport
       parentRoute: typeof PublicLayoutRoute
     }
-    '/_public/denunciar/': {
-      id: '/_public/denunciar/'
-      path: '/denunciar'
-      fullPath: '/denunciar/'
-      preLoaderRoute: typeof PublicDenunciarIndexRouteImport
+    '/_public/privacy/': {
+      id: '/_public/privacy/'
+      path: '/privacy'
+      fullPath: '/privacy/'
+      preLoaderRoute: typeof PublicPrivacyIndexRouteImport
       parentRoute: typeof PublicLayoutRoute
     }
-    '/_public/mapa/': {
-      id: '/_public/mapa/'
-      path: '/mapa'
-      fullPath: '/mapa/'
-      preLoaderRoute: typeof PublicMapaIndexRouteImport
+    '/_public/report/': {
+      id: '/_public/report/'
+      path: '/report'
+      fullPath: '/report/'
+      preLoaderRoute: typeof PublicReportIndexRouteImport
       parentRoute: typeof PublicLayoutRoute
     }
-    '/_public/privacidade/': {
-      id: '/_public/privacidade/'
-      path: '/privacidade'
-      fullPath: '/privacidade/'
-      preLoaderRoute: typeof PublicPrivacidadeIndexRouteImport
+    '/_public/schedule/': {
+      id: '/_public/schedule/'
+      path: '/schedule'
+      fullPath: '/schedule/'
+      preLoaderRoute: typeof PublicScheduleIndexRouteImport
       parentRoute: typeof PublicLayoutRoute
     }
-    '/_public/sobre/': {
-      id: '/_public/sobre/'
-      path: '/sobre'
-      fullPath: '/sobre/'
-      preLoaderRoute: typeof PublicSobreIndexRouteImport
+    '/_public/terms/': {
+      id: '/_public/terms/'
+      path: '/terms'
+      fullPath: '/terms/'
+      preLoaderRoute: typeof PublicTermsIndexRouteImport
       parentRoute: typeof PublicLayoutRoute
     }
-    '/_public/termos/': {
-      id: '/_public/termos/'
-      path: '/termos'
-      fullPath: '/termos/'
-      preLoaderRoute: typeof PublicTermosIndexRouteImport
+    '/_public/track/': {
+      id: '/_public/track/'
+      path: '/track'
+      fullPath: '/track/'
+      preLoaderRoute: typeof PublicTrackIndexRouteImport
       parentRoute: typeof PublicLayoutRoute
     }
-    '/_private/gestao/neighborhoods/': {
-      id: '/_private/gestao/neighborhoods/'
+    '/_private/management/neighborhoods/': {
+      id: '/_private/management/neighborhoods/'
       path: '/'
-      fullPath: '/gestao/neighborhoods/'
-      preLoaderRoute: typeof PrivateGestaoNeighborhoodsIndexRouteImport
-      parentRoute: typeof PrivateGestaoNeighborhoodsLayoutRoute
+      fullPath: '/management/neighborhoods/'
+      preLoaderRoute: typeof PrivateManagementNeighborhoodsIndexRouteImport
+      parentRoute: typeof PrivateManagementNeighborhoodsLayoutRoute
     }
-    '/_private/gestao/neighborhoods/new': {
-      id: '/_private/gestao/neighborhoods/new'
+    '/_private/management/neighborhoods/new': {
+      id: '/_private/management/neighborhoods/new'
       path: '/new'
-      fullPath: '/gestao/neighborhoods/new'
-      preLoaderRoute: typeof PrivateGestaoNeighborhoodsNewRouteImport
-      parentRoute: typeof PrivateGestaoNeighborhoodsLayoutRoute
+      fullPath: '/management/neighborhoods/new'
+      preLoaderRoute: typeof PrivateManagementNeighborhoodsNewRouteImport
+      parentRoute: typeof PrivateManagementNeighborhoodsLayoutRoute
     }
-    '/_private/gestao/notices/': {
-      id: '/_private/gestao/notices/'
-      path: '/gestao/notices'
-      fullPath: '/gestao/notices/'
-      preLoaderRoute: typeof PrivateGestaoNoticesIndexRouteImport
+    '/_private/management/notices/': {
+      id: '/_private/management/notices/'
+      path: '/management/notices'
+      fullPath: '/management/notices/'
+      preLoaderRoute: typeof PrivateManagementNoticesIndexRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_private/gestao/notices/new': {
-      id: '/_private/gestao/notices/new'
-      path: '/gestao/notices/new'
-      fullPath: '/gestao/notices/new'
-      preLoaderRoute: typeof PrivateGestaoNoticesNewRouteImport
+    '/_private/management/notices/new': {
+      id: '/_private/management/notices/new'
+      path: '/management/notices/new'
+      fullPath: '/management/notices/new'
+      preLoaderRoute: typeof PrivateManagementNoticesNewRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_private/gestao/reports/': {
-      id: '/_private/gestao/reports/'
-      path: '/gestao/reports'
-      fullPath: '/gestao/reports/'
-      preLoaderRoute: typeof PrivateGestaoReportsIndexRouteImport
+    '/_private/management/reports/': {
+      id: '/_private/management/reports/'
+      path: '/management/reports'
+      fullPath: '/management/reports/'
+      preLoaderRoute: typeof PrivateManagementReportsIndexRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_private/gestao/schedules/': {
-      id: '/_private/gestao/schedules/'
+    '/_private/management/schedules/': {
+      id: '/_private/management/schedules/'
       path: '/'
-      fullPath: '/gestao/schedules/'
-      preLoaderRoute: typeof PrivateGestaoSchedulesIndexRouteImport
-      parentRoute: typeof PrivateGestaoSchedulesLayoutRoute
+      fullPath: '/management/schedules/'
+      preLoaderRoute: typeof PrivateManagementSchedulesIndexRouteImport
+      parentRoute: typeof PrivateManagementSchedulesLayoutRoute
     }
-    '/_private/gestao/users/': {
-      id: '/_private/gestao/users/'
+    '/_private/management/users/': {
+      id: '/_private/management/users/'
       path: '/'
-      fullPath: '/gestao/users/'
-      preLoaderRoute: typeof PrivateGestaoUsersIndexRouteImport
-      parentRoute: typeof PrivateGestaoUsersLayoutRoute
+      fullPath: '/management/users/'
+      preLoaderRoute: typeof PrivateManagementUsersIndexRouteImport
+      parentRoute: typeof PrivateManagementUsersLayoutRoute
     }
-    '/_private/gestao/users/new': {
-      id: '/_private/gestao/users/new'
+    '/_private/management/users/new': {
+      id: '/_private/management/users/new'
       path: '/new'
-      fullPath: '/gestao/users/new'
-      preLoaderRoute: typeof PrivateGestaoUsersNewRouteImport
-      parentRoute: typeof PrivateGestaoUsersLayoutRoute
+      fullPath: '/management/users/new'
+      preLoaderRoute: typeof PrivateManagementUsersNewRouteImport
+      parentRoute: typeof PrivateManagementUsersLayoutRoute
     }
-    '/_private/gestao/account/profile/': {
-      id: '/_private/gestao/account/profile/'
-      path: '/gestao/account/profile'
-      fullPath: '/gestao/account/profile/'
-      preLoaderRoute: typeof PrivateGestaoAccountProfileIndexRouteImport
+    '/_private/management/account/profile/': {
+      id: '/_private/management/account/profile/'
+      path: '/management/account/profile'
+      fullPath: '/management/account/profile/'
+      preLoaderRoute: typeof PrivateManagementAccountProfileIndexRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_private/gestao/neighborhoods/$id/edit': {
-      id: '/_private/gestao/neighborhoods/$id/edit'
+    '/_private/management/neighborhoods/$id/edit': {
+      id: '/_private/management/neighborhoods/$id/edit'
       path: '/$id/edit'
-      fullPath: '/gestao/neighborhoods/$id/edit'
-      preLoaderRoute: typeof PrivateGestaoNeighborhoodsIdEditRouteImport
-      parentRoute: typeof PrivateGestaoNeighborhoodsLayoutRoute
+      fullPath: '/management/neighborhoods/$id/edit'
+      preLoaderRoute: typeof PrivateManagementNeighborhoodsIdEditRouteImport
+      parentRoute: typeof PrivateManagementNeighborhoodsLayoutRoute
     }
-    '/_private/gestao/notices/$id/edit': {
-      id: '/_private/gestao/notices/$id/edit'
-      path: '/gestao/notices/$id/edit'
-      fullPath: '/gestao/notices/$id/edit'
-      preLoaderRoute: typeof PrivateGestaoNoticesIdEditRouteImport
+    '/_private/management/notices/$id/edit': {
+      id: '/_private/management/notices/$id/edit'
+      path: '/management/notices/$id/edit'
+      fullPath: '/management/notices/$id/edit'
+      preLoaderRoute: typeof PrivateManagementNoticesIdEditRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_private/gestao/reports/$id/': {
-      id: '/_private/gestao/reports/$id/'
-      path: '/gestao/reports/$id'
-      fullPath: '/gestao/reports/$id/'
-      preLoaderRoute: typeof PrivateGestaoReportsIdIndexRouteImport
+    '/_private/management/reports/$id/': {
+      id: '/_private/management/reports/$id/'
+      path: '/management/reports/$id'
+      fullPath: '/management/reports/$id/'
+      preLoaderRoute: typeof PrivateManagementReportsIdIndexRouteImport
       parentRoute: typeof PrivateLayoutRoute
     }
-    '/_private/gestao/users/$id/edit': {
-      id: '/_private/gestao/users/$id/edit'
+    '/_private/management/users/$id/edit': {
+      id: '/_private/management/users/$id/edit'
       path: '/$id/edit'
-      fullPath: '/gestao/users/$id/edit'
-      preLoaderRoute: typeof PrivateGestaoUsersIdEditRouteImport
-      parentRoute: typeof PrivateGestaoUsersLayoutRoute
+      fullPath: '/management/users/$id/edit'
+      preLoaderRoute: typeof PrivateManagementUsersIdEditRouteImport
+      parentRoute: typeof PrivateManagementUsersLayoutRoute
     }
   }
 }
@@ -751,83 +764,87 @@ const AuthenticationLayoutRouteChildren: AuthenticationLayoutRouteChildren = {
 const AuthenticationLayoutRouteWithChildren =
   AuthenticationLayoutRoute._addFileChildren(AuthenticationLayoutRouteChildren)
 
-interface PrivateGestaoNeighborhoodsLayoutRouteChildren {
-  PrivateGestaoNeighborhoodsNewRoute: typeof PrivateGestaoNeighborhoodsNewRoute
-  PrivateGestaoNeighborhoodsIndexRoute: typeof PrivateGestaoNeighborhoodsIndexRoute
-  PrivateGestaoNeighborhoodsIdEditRoute: typeof PrivateGestaoNeighborhoodsIdEditRoute
+interface PrivateManagementNeighborhoodsLayoutRouteChildren {
+  PrivateManagementNeighborhoodsNewRoute: typeof PrivateManagementNeighborhoodsNewRoute
+  PrivateManagementNeighborhoodsIndexRoute: typeof PrivateManagementNeighborhoodsIndexRoute
+  PrivateManagementNeighborhoodsIdEditRoute: typeof PrivateManagementNeighborhoodsIdEditRoute
 }
 
-const PrivateGestaoNeighborhoodsLayoutRouteChildren: PrivateGestaoNeighborhoodsLayoutRouteChildren =
+const PrivateManagementNeighborhoodsLayoutRouteChildren: PrivateManagementNeighborhoodsLayoutRouteChildren =
   {
-    PrivateGestaoNeighborhoodsNewRoute: PrivateGestaoNeighborhoodsNewRoute,
-    PrivateGestaoNeighborhoodsIndexRoute: PrivateGestaoNeighborhoodsIndexRoute,
-    PrivateGestaoNeighborhoodsIdEditRoute:
-      PrivateGestaoNeighborhoodsIdEditRoute,
+    PrivateManagementNeighborhoodsNewRoute:
+      PrivateManagementNeighborhoodsNewRoute,
+    PrivateManagementNeighborhoodsIndexRoute:
+      PrivateManagementNeighborhoodsIndexRoute,
+    PrivateManagementNeighborhoodsIdEditRoute:
+      PrivateManagementNeighborhoodsIdEditRoute,
   }
 
-const PrivateGestaoNeighborhoodsLayoutRouteWithChildren =
-  PrivateGestaoNeighborhoodsLayoutRoute._addFileChildren(
-    PrivateGestaoNeighborhoodsLayoutRouteChildren,
+const PrivateManagementNeighborhoodsLayoutRouteWithChildren =
+  PrivateManagementNeighborhoodsLayoutRoute._addFileChildren(
+    PrivateManagementNeighborhoodsLayoutRouteChildren,
   )
 
-interface PrivateGestaoSchedulesLayoutRouteChildren {
-  PrivateGestaoSchedulesIndexRoute: typeof PrivateGestaoSchedulesIndexRoute
+interface PrivateManagementSchedulesLayoutRouteChildren {
+  PrivateManagementSchedulesIndexRoute: typeof PrivateManagementSchedulesIndexRoute
 }
 
-const PrivateGestaoSchedulesLayoutRouteChildren: PrivateGestaoSchedulesLayoutRouteChildren =
+const PrivateManagementSchedulesLayoutRouteChildren: PrivateManagementSchedulesLayoutRouteChildren =
   {
-    PrivateGestaoSchedulesIndexRoute: PrivateGestaoSchedulesIndexRoute,
+    PrivateManagementSchedulesIndexRoute: PrivateManagementSchedulesIndexRoute,
   }
 
-const PrivateGestaoSchedulesLayoutRouteWithChildren =
-  PrivateGestaoSchedulesLayoutRoute._addFileChildren(
-    PrivateGestaoSchedulesLayoutRouteChildren,
+const PrivateManagementSchedulesLayoutRouteWithChildren =
+  PrivateManagementSchedulesLayoutRoute._addFileChildren(
+    PrivateManagementSchedulesLayoutRouteChildren,
   )
 
-interface PrivateGestaoUsersLayoutRouteChildren {
-  PrivateGestaoUsersNewRoute: typeof PrivateGestaoUsersNewRoute
-  PrivateGestaoUsersIndexRoute: typeof PrivateGestaoUsersIndexRoute
-  PrivateGestaoUsersIdEditRoute: typeof PrivateGestaoUsersIdEditRoute
+interface PrivateManagementUsersLayoutRouteChildren {
+  PrivateManagementUsersNewRoute: typeof PrivateManagementUsersNewRoute
+  PrivateManagementUsersIndexRoute: typeof PrivateManagementUsersIndexRoute
+  PrivateManagementUsersIdEditRoute: typeof PrivateManagementUsersIdEditRoute
 }
 
-const PrivateGestaoUsersLayoutRouteChildren: PrivateGestaoUsersLayoutRouteChildren =
+const PrivateManagementUsersLayoutRouteChildren: PrivateManagementUsersLayoutRouteChildren =
   {
-    PrivateGestaoUsersNewRoute: PrivateGestaoUsersNewRoute,
-    PrivateGestaoUsersIndexRoute: PrivateGestaoUsersIndexRoute,
-    PrivateGestaoUsersIdEditRoute: PrivateGestaoUsersIdEditRoute,
+    PrivateManagementUsersNewRoute: PrivateManagementUsersNewRoute,
+    PrivateManagementUsersIndexRoute: PrivateManagementUsersIndexRoute,
+    PrivateManagementUsersIdEditRoute: PrivateManagementUsersIdEditRoute,
   }
 
-const PrivateGestaoUsersLayoutRouteWithChildren =
-  PrivateGestaoUsersLayoutRoute._addFileChildren(
-    PrivateGestaoUsersLayoutRouteChildren,
+const PrivateManagementUsersLayoutRouteWithChildren =
+  PrivateManagementUsersLayoutRoute._addFileChildren(
+    PrivateManagementUsersLayoutRouteChildren,
   )
 
 interface PrivateLayoutRouteChildren {
-  PrivateGestaoNeighborhoodsLayoutRoute: typeof PrivateGestaoNeighborhoodsLayoutRouteWithChildren
-  PrivateGestaoSchedulesLayoutRoute: typeof PrivateGestaoSchedulesLayoutRouteWithChildren
-  PrivateGestaoUsersLayoutRoute: typeof PrivateGestaoUsersLayoutRouteWithChildren
-  PrivateGestaoIndexRoute: typeof PrivateGestaoIndexRoute
-  PrivateGestaoNoticesNewRoute: typeof PrivateGestaoNoticesNewRoute
-  PrivateGestaoNoticesIndexRoute: typeof PrivateGestaoNoticesIndexRoute
-  PrivateGestaoReportsIndexRoute: typeof PrivateGestaoReportsIndexRoute
-  PrivateGestaoNoticesIdEditRoute: typeof PrivateGestaoNoticesIdEditRoute
-  PrivateGestaoAccountProfileIndexRoute: typeof PrivateGestaoAccountProfileIndexRoute
-  PrivateGestaoReportsIdIndexRoute: typeof PrivateGestaoReportsIdIndexRoute
+  PrivateManagementNeighborhoodsLayoutRoute: typeof PrivateManagementNeighborhoodsLayoutRouteWithChildren
+  PrivateManagementSchedulesLayoutRoute: typeof PrivateManagementSchedulesLayoutRouteWithChildren
+  PrivateManagementUsersLayoutRoute: typeof PrivateManagementUsersLayoutRouteWithChildren
+  PrivateManagementIndexRoute: typeof PrivateManagementIndexRoute
+  PrivateManagementNoticesNewRoute: typeof PrivateManagementNoticesNewRoute
+  PrivateManagementNoticesIndexRoute: typeof PrivateManagementNoticesIndexRoute
+  PrivateManagementReportsIndexRoute: typeof PrivateManagementReportsIndexRoute
+  PrivateManagementNoticesIdEditRoute: typeof PrivateManagementNoticesIdEditRoute
+  PrivateManagementAccountProfileIndexRoute: typeof PrivateManagementAccountProfileIndexRoute
+  PrivateManagementReportsIdIndexRoute: typeof PrivateManagementReportsIdIndexRoute
 }
 
 const PrivateLayoutRouteChildren: PrivateLayoutRouteChildren = {
-  PrivateGestaoNeighborhoodsLayoutRoute:
-    PrivateGestaoNeighborhoodsLayoutRouteWithChildren,
-  PrivateGestaoSchedulesLayoutRoute:
-    PrivateGestaoSchedulesLayoutRouteWithChildren,
-  PrivateGestaoUsersLayoutRoute: PrivateGestaoUsersLayoutRouteWithChildren,
-  PrivateGestaoIndexRoute: PrivateGestaoIndexRoute,
-  PrivateGestaoNoticesNewRoute: PrivateGestaoNoticesNewRoute,
-  PrivateGestaoNoticesIndexRoute: PrivateGestaoNoticesIndexRoute,
-  PrivateGestaoReportsIndexRoute: PrivateGestaoReportsIndexRoute,
-  PrivateGestaoNoticesIdEditRoute: PrivateGestaoNoticesIdEditRoute,
-  PrivateGestaoAccountProfileIndexRoute: PrivateGestaoAccountProfileIndexRoute,
-  PrivateGestaoReportsIdIndexRoute: PrivateGestaoReportsIdIndexRoute,
+  PrivateManagementNeighborhoodsLayoutRoute:
+    PrivateManagementNeighborhoodsLayoutRouteWithChildren,
+  PrivateManagementSchedulesLayoutRoute:
+    PrivateManagementSchedulesLayoutRouteWithChildren,
+  PrivateManagementUsersLayoutRoute:
+    PrivateManagementUsersLayoutRouteWithChildren,
+  PrivateManagementIndexRoute: PrivateManagementIndexRoute,
+  PrivateManagementNoticesNewRoute: PrivateManagementNoticesNewRoute,
+  PrivateManagementNoticesIndexRoute: PrivateManagementNoticesIndexRoute,
+  PrivateManagementReportsIndexRoute: PrivateManagementReportsIndexRoute,
+  PrivateManagementNoticesIdEditRoute: PrivateManagementNoticesIdEditRoute,
+  PrivateManagementAccountProfileIndexRoute:
+    PrivateManagementAccountProfileIndexRoute,
+  PrivateManagementReportsIdIndexRoute: PrivateManagementReportsIdIndexRoute,
 }
 
 const PrivateLayoutRouteWithChildren = PrivateLayoutRoute._addFileChildren(
@@ -837,27 +854,27 @@ const PrivateLayoutRouteWithChildren = PrivateLayoutRoute._addFileChildren(
 interface PublicLayoutRouteChildren {
   PublicSplatRoute: typeof PublicSplatRoute
   PublicIndexRoute: typeof PublicIndexRoute
-  PublicAcompanharIndexRoute: typeof PublicAcompanharIndexRoute
-  PublicAvisosIndexRoute: typeof PublicAvisosIndexRoute
-  PublicColetaIndexRoute: typeof PublicColetaIndexRoute
-  PublicDenunciarIndexRoute: typeof PublicDenunciarIndexRoute
-  PublicMapaIndexRoute: typeof PublicMapaIndexRoute
-  PublicPrivacidadeIndexRoute: typeof PublicPrivacidadeIndexRoute
-  PublicSobreIndexRoute: typeof PublicSobreIndexRoute
-  PublicTermosIndexRoute: typeof PublicTermosIndexRoute
+  PublicAboutIndexRoute: typeof PublicAboutIndexRoute
+  PublicMapIndexRoute: typeof PublicMapIndexRoute
+  PublicNoticesIndexRoute: typeof PublicNoticesIndexRoute
+  PublicPrivacyIndexRoute: typeof PublicPrivacyIndexRoute
+  PublicReportIndexRoute: typeof PublicReportIndexRoute
+  PublicScheduleIndexRoute: typeof PublicScheduleIndexRoute
+  PublicTermsIndexRoute: typeof PublicTermsIndexRoute
+  PublicTrackIndexRoute: typeof PublicTrackIndexRoute
 }
 
 const PublicLayoutRouteChildren: PublicLayoutRouteChildren = {
   PublicSplatRoute: PublicSplatRoute,
   PublicIndexRoute: PublicIndexRoute,
-  PublicAcompanharIndexRoute: PublicAcompanharIndexRoute,
-  PublicAvisosIndexRoute: PublicAvisosIndexRoute,
-  PublicColetaIndexRoute: PublicColetaIndexRoute,
-  PublicDenunciarIndexRoute: PublicDenunciarIndexRoute,
-  PublicMapaIndexRoute: PublicMapaIndexRoute,
-  PublicPrivacidadeIndexRoute: PublicPrivacidadeIndexRoute,
-  PublicSobreIndexRoute: PublicSobreIndexRoute,
-  PublicTermosIndexRoute: PublicTermosIndexRoute,
+  PublicAboutIndexRoute: PublicAboutIndexRoute,
+  PublicMapIndexRoute: PublicMapIndexRoute,
+  PublicNoticesIndexRoute: PublicNoticesIndexRoute,
+  PublicPrivacyIndexRoute: PublicPrivacyIndexRoute,
+  PublicReportIndexRoute: PublicReportIndexRoute,
+  PublicScheduleIndexRoute: PublicScheduleIndexRoute,
+  PublicTermsIndexRoute: PublicTermsIndexRoute,
+  PublicTrackIndexRoute: PublicTrackIndexRoute,
 }
 
 const PublicLayoutRouteWithChildren = PublicLayoutRoute._addFileChildren(

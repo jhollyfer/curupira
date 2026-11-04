@@ -18,7 +18,7 @@ const MAIN_ID = 'conteudo'
  * is anonymous by design, and a guard here would turn the audience into a redirect.
  * The panel's guard is in `_private/layout.tsx`, the exact opposite.
  *
- * Pathless group: `_public` does not enter the address. `/coleta` is `/coleta`.
+ * Pathless group: `_public` does not enter the address. `/schedule` is `/schedule`.
  */
 export const Route = createFileRoute('/_public')({
   component: RouteComponent,

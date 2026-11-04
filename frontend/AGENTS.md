@@ -19,7 +19,7 @@ TanStack Start + Nitro. A régua é `../_standards/` (`frontend.md`, `i18n.md`, 
 | O quê                                                       | Onde                                                                                                                                                                                            |
 | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Guarda do painel (sessão, `account` no contexto da rota)    | `src/routes/_private/layout.tsx` (a guarda de sessão e o shell: sidebar, cabeçalho, trilha)                                                                                                     |
-| Visão geral do painel                                       | `src/routes/_private/gestao/index.tsx` + `index.lazy.tsx`                                                                                                                                       |
+| Visão geral do painel                                       | `src/routes/_private/management/index.tsx` + `index.lazy.tsx`                                                                                                                                   |
 | Entrada                                                     | `src/routes/_authentication/` (`/sign-in`, `?redirect=` validado, guarda inversa)                                                                                                               |
 | Tokens (cores, `--waste-*`, status, raio, camadas)          | `src/styles.css`                                                                                                                                                                                |
 | Layout do morador (container, gutter, tipografia fluida)    | `page-container*` e `--page-gutter` em `src/styles.css`; `routes/_public/-components/{header,bottom-nav,menu,home-page}.tsx` (`NAV_ITEMS` alimenta barra inferior e cabeçalho)                  |
@@ -39,19 +39,19 @@ TanStack Start + Nitro. A régua é `../_standards/` (`frontend.md`, `i18n.md`, 
 
 Lixeira e upload de imagem do interclasse **não** foram trazidos (o painel não tem nenhum dos dois).
 
-## O painel da gestão (`/gestao`)
+## O painel da gestão (`/management`)
 
-Rotas em `src/routes/_private/gestao/`, em par `rota.tsx` + `rota.lazy.tsx`, nomes em inglês:
+Rotas em `src/routes/_private/management/`, em par `rota.tsx` + `rota.lazy.tsx`, nomes em inglês:
 
-| Rota                                          | Quem entra     | O que é                                                                                                         |
-| --------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------- |
-| `/gestao`                                     | os dois papéis | visão geral: atalho das "Recebidas", contagens por status e tipo, gráfico dos últimos 30 dias (SVG próprio)     |
-| `/gestao/reports`, `reports/$id`              | os dois papéis | mapa + tabela do mesmo recorte (`reportsFilterOf`), detalhe, mudança de status só para frente + resposta        |
-| `/gestao/notices` (+ `new`, `$id/edit`)       | os dois papéis | avisos: criar, agendar, encerrar, excluir; filtro por situação                                                  |
-| `/gestao/schedules`                           | administrador  | grade semanal por bairro (tipo x dia), criar/editar/excluir em diálogo; 409 de slot repetido no campo `weekday` |
-| `/gestao/neighborhoods` (+ `new`, `$id/edit`) | administrador  | bairros com ponto opcional escolhido no mapa                                                                    |
-| `/gestao/users` (+ `new`, `$id/edit`)         | administrador  | contas da gestão (papel, situação, senha)                                                                       |
-| `/gestao/account/profile`                     | os dois papéis | o próprio perfil e a troca de senha                                                                             |
+| Rota                                              | Quem entra     | O que é                                                                                                         |
+| ------------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------- |
+| `/management`                                     | os dois papéis | visão geral: atalho das "Recebidas", contagens por status e tipo, gráfico dos últimos 30 dias (SVG próprio)     |
+| `/management/reports`, `reports/$id`              | os dois papéis | mapa + tabela do mesmo recorte (`reportsFilterOf`), detalhe, mudança de status só para frente + resposta        |
+| `/management/notices` (+ `new`, `$id/edit`)       | os dois papéis | avisos: criar, agendar, encerrar, excluir; filtro por situação                                                  |
+| `/management/schedules`                           | administrador  | grade semanal por bairro (tipo x dia), criar/editar/excluir em diálogo; 409 de slot repetido no campo `weekday` |
+| `/management/neighborhoods` (+ `new`, `$id/edit`) | administrador  | bairros com ponto opcional escolhido no mapa                                                                    |
+| `/management/users` (+ `new`, `$id/edit`)         | administrador  | contas da gestão (papel, situação, senha)                                                                       |
+| `/management/account/profile`                     | os dois papéis | o próprio perfil e a troca de senha                                                                             |
 
 - **Capacidade por área**: `lib/capabilities.ts` é a tabela única (guarda e menu leem dela). Cada área
   restrita tem o próprio `layout.tsx` com `requireCapability` (`_private/-components/require-capability.ts`).

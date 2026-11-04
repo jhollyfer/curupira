@@ -14,9 +14,15 @@ import {
 
 describe('localizedUrl', () => {
   it('leaves pt-BR without prefix and gives es/en the language prefix', () => {
-    expect(localizedUrl('/coleta', 'pt-BR')).toBe(`${env.VITE_SITE_URL}/coleta`)
-    expect(localizedUrl('/coleta', 'es')).toBe(`${env.VITE_SITE_URL}/es/coleta`)
-    expect(localizedUrl('/coleta', 'en')).toBe(`${env.VITE_SITE_URL}/en/coleta`)
+    expect(localizedUrl('/schedule', 'pt-BR')).toBe(
+      `${env.VITE_SITE_URL}/schedule`,
+    )
+    expect(localizedUrl('/schedule', 'es')).toBe(
+      `${env.VITE_SITE_URL}/es/schedule`,
+    )
+    expect(localizedUrl('/schedule', 'en')).toBe(
+      `${env.VITE_SITE_URL}/en/schedule`,
+    )
   })
 
   it('strips the trailing slash, except at the root', () => {
@@ -25,7 +31,7 @@ describe('localizedUrl', () => {
 })
 
 describe('pageHead', () => {
-  const head = pageHead({ title: 'Coleta', pathname: '/coleta' })
+  const head = pageHead({ title: 'Coleta', pathname: '/schedule' })
 
   it('puts the site suffix on the title', () => {
     expect(head.meta).toContainEqual({
@@ -42,7 +48,7 @@ describe('pageHead', () => {
   it('declares the canonical and the reciprocal hreflang of the three versions', () => {
     expect(head.links).toContainEqual({
       rel: 'canonical',
-      href: `${env.VITE_SITE_URL}/coleta`,
+      href: `${env.VITE_SITE_URL}/schedule`,
     })
 
     for (const hrefLang of ['pt-BR', 'es', 'en', 'x-default']) {
@@ -53,7 +59,7 @@ describe('pageHead', () => {
   it('makes x-default point at the pt-BR version', () => {
     const fallback = head.links.find((link) => link.hrefLang === 'x-default')
 
-    expect(fallback?.href).toBe(`${env.VITE_SITE_URL}/coleta`)
+    expect(fallback?.href).toBe(`${env.VITE_SITE_URL}/schedule`)
   })
 
   it('carries the Open Graph', () => {

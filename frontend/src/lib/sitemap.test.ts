@@ -6,8 +6,8 @@ import { SITEMAP_STATIC_ENTRIES, robotsTxt, sitemapXml } from './sitemap'
 
 describe('sitemapXml', () => {
   const xml = sitemapXml([
-    { pathname: '/coleta' },
-    { pathname: '/mapa', lastModified: '2026-10-01T10:00:00Z' },
+    { pathname: '/schedule' },
+    { pathname: '/map', lastModified: '2026-10-01T10:00:00Z' },
   ])
 
   it('brings one url per language for each page', () => {
@@ -15,15 +15,17 @@ describe('sitemapXml', () => {
   })
 
   it('writes pt-BR without a prefix and the others with a prefix', () => {
-    expect(xml).toContain(`<loc>${env.VITE_SITE_URL}/coleta</loc>`)
-    expect(xml).toContain(`<loc>${env.VITE_SITE_URL}/es/coleta</loc>`)
-    expect(xml).toContain(`<loc>${env.VITE_SITE_URL}/en/coleta</loc>`)
+    expect(xml).toContain(`<loc>${env.VITE_SITE_URL}/schedule</loc>`)
+    expect(xml).toContain(`<loc>${env.VITE_SITE_URL}/es/schedule</loc>`)
+    expect(xml).toContain(`<loc>${env.VITE_SITE_URL}/en/schedule</loc>`)
   })
 
   it('links each url to the sibling hreflangs and to x-default', () => {
-    expect(xml).toContain(`hreflang="es" href="${env.VITE_SITE_URL}/es/coleta"`)
     expect(xml).toContain(
-      `hreflang="x-default" href="${env.VITE_SITE_URL}/coleta"`,
+      `hreflang="es" href="${env.VITE_SITE_URL}/es/schedule"`,
+    )
+    expect(xml).toContain(
+      `hreflang="x-default" href="${env.VITE_SITE_URL}/schedule"`,
     )
   })
 
@@ -38,16 +40,16 @@ describe('SITEMAP_STATIC_ENTRIES', () => {
 
     expect(paths).toEqual([
       '/',
-      '/coleta',
-      '/denunciar',
-      '/acompanhar',
-      '/mapa',
-      '/avisos',
-      '/sobre',
-      '/privacidade',
-      '/termos',
+      '/schedule',
+      '/report',
+      '/track',
+      '/map',
+      '/notices',
+      '/about',
+      '/privacy',
+      '/terms',
     ])
-    expect(paths.some((path) => path.startsWith('/gestao'))).toBe(false)
+    expect(paths.some((path) => path.startsWith('/management'))).toBe(false)
   })
 })
 
@@ -55,7 +57,7 @@ describe('robotsTxt', () => {
   it('in production, keeps the panel and sign-in out and points at the absolute sitemap', () => {
     const text = robotsTxt({ indexable: true })
 
-    expect(text).toContain('Disallow: /gestao')
+    expect(text).toContain('Disallow: /management')
     expect(text).toContain(`Sitemap: ${env.VITE_SITE_URL}/sitemap.xml`)
   })
 

@@ -65,7 +65,7 @@ test.describe('visitor', () => {
     await openSiteMenu(page)
     await page.getByRole('link', { name: 'Coleta' }).first().click()
 
-    await expect(page).toHaveURL(/\/coleta$/)
+    await expect(page).toHaveURL(/\/schedule$/)
     await expect(page.getByRole('dialog')).toHaveCount(0)
   })
 
@@ -89,7 +89,7 @@ test.describe('theme', () => {
     }) => {
       await context.addCookies([{ name: 'theme', value: theme, url: baseURL }])
 
-      for (const route of ['/', '/denunciar', '/avisos']) {
+      for (const route of ['/', '/report', '/notices']) {
         await page.goto(route)
         await waitForHydration(page)
         await expect(page.locator('html')).toHaveClass(new RegExp(theme))
@@ -118,18 +118,18 @@ test.describe('administrator', () => {
   }
 
   test('the report detail fits and the menu navigates', async ({ page }) => {
-    await page.goto('/gestao/reports')
+    await page.goto('/management/reports')
     await waitForHydration(page)
 
     // The first protocol of the list: a link in the table, or in a card on a phone.
     await page.getByRole('link', { name: /^CUR-/ }).first().click()
-    await expect(page).toHaveURL(/\/gestao\/reports\/[0-9a-f-]{36}/)
+    await expect(page).toHaveURL(/\/management\/reports\/[0-9a-f-]{36}/)
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     await expect.poll(() => horizontalOverflow(page)).toBeLessThanOrEqual(0)
 
     await openMenu(page)
     await page.getByRole('link', { name: 'Avisos' }).first().click()
-    await expect(page).toHaveURL(/\/gestao\/notices/)
+    await expect(page).toHaveURL(/\/management\/notices/)
     await expect(
       page.getByRole('heading', { name: 'Avisos', level: 1 }),
     ).toBeVisible()
@@ -139,7 +139,7 @@ test.describe('administrator', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
-    await page.goto('/gestao/reports?status=RECEIVED&kind=BURNING')
+    await page.goto('/management/reports?status=RECEIVED&kind=BURNING')
     await waitForHydration(page)
 
     await page.setViewportSize({ width: 360, height: 740 })
@@ -159,7 +159,7 @@ test.describe('operator', () => {
   test.use({ role: 'operator' })
 
   test('no way into schedules, neighborhoods or accounts', async ({ page }) => {
-    await page.goto('/gestao')
+    await page.goto('/management')
     await waitForHydration(page)
 
     await openMenu(page)
@@ -171,13 +171,13 @@ test.describe('operator', () => {
     ).toBeVisible()
 
     for (const route of [
-      '/gestao/schedules',
-      '/gestao/neighborhoods',
-      '/gestao/users',
+      '/management/schedules',
+      '/management/neighborhoods',
+      '/management/users',
     ]) {
       await page.goto(route)
       await waitForHydration(page)
-      await expect(page).toHaveURL(/\/gestao$/)
+      await expect(page).toHaveURL(/\/management$/)
     }
   })
 })

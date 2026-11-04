@@ -122,7 +122,7 @@ Há 47 operações no `backend/openapi.json`. `GET /health-check` fica fora do d
 
 ### 6.1 Uma denúncia, da foto ao protocolo
 
-1. O morador escolhe o tipo, tira a foto e confirma o ponto no mapa (`/denunciar`). O navegador reduz a
+1. O morador escolhe o tipo, tira a foto e confirma o ponto no mapa (`/report`). O navegador reduz a
    foto a 1600 px e JPEG 80 (`lib/image.ts`), o que já derruba o EXIF.
 2. Para cada foto (até 3), `POST /storefront/report-photos` com `mimetype` e `size`. O `size` respeita
    `REPORT_PHOTO_MAX_SIZE`. A API grava um `Storage` `PENDING` e devolve `{ id, uploadUrl }`, uma URL
@@ -151,7 +151,7 @@ Há 47 operações no `backend/openapi.json`. `GET /health-check` fica fora do d
 3. A fila vive na página e não no service worker porque o Safari não tem Background Sync.
 4. O service worker (`vite-plugin-pwa`) faz precache só de estilos, fonte e ícones; páginas públicas
    visitadas usam `NetworkFirst`, `/assets/` usa `CacheFirst`, cronograma, bairros e avisos usam
-   `StaleWhileRevalidate`, e os tiles do OSM ficam 14 dias em cache. `/gestao` e `/sign-in` (e as versões
+   `StaleWhileRevalidate`, e os tiles do OSM ficam 14 dias em cache. `/management` e `/sign-in` (e as versões
    `/en` e `/es`) ficam fora do cache, o Nitro responde `Cache-Control: no-store` nelas e o sign-out apaga o
    cache `pages` (`frontend/src/lib/pwa.ts`).
 
@@ -177,7 +177,7 @@ Não há e-mail, SMS, pagamento nem API de terceiros no servidor.
   deixa a gestão (ou o dono do avatar) baixar um arquivo.
 - `scripts/authz-check.ts` compara a cadeia de autorização de cada rota com `app/core/openapi/authz-baseline.json`.
 - No frontend, `lib/capabilities.ts` é a tabela de capacidades por área; a guarda `requireCapability`
-  redireciona para `/gestao` e o menu esconde o link. Quem autoriza é o backend.
+  redireciona para `/management` e o menu esconde o link. Quem autoriza é o backend.
 - Matriz e ameaças: `SECURITY.md`.
 
 ### 8.1 Mapa de rotas
@@ -186,9 +186,9 @@ Frontend (`frontend/src/routes/`, rotas em par `rota.tsx` + `rota.lazy.tsx`):
 
 | Grupo | Rotas | SSR |
 |---|---|---|
-| `_public` | `/`, `/coleta`, `/denunciar`, `/acompanhar`, `/mapa`, `/avisos`, `/sobre`, `/privacidade`, `/termos`, `$` (404) | completo |
+| `_public` | `/`, `/schedule`, `/report`, `/track`, `/map`, `/notices`, `/about`, `/privacy`, `/terms`, `$` (404) | completo |
 | `_authentication` | `/sign-in` (com `?redirect=` validado e guarda inversa) | completo |
-| `_private` | `/gestao`, `/gestao/reports` e `/$id`, `/gestao/notices` (`new`, `$id/edit`), `/gestao/schedules`, `/gestao/neighborhoods` (`new`, `$id/edit`), `/gestao/users` (`new`, `$id/edit`), `/gestao/account/profile` | `data-only`: dados no servidor, tela no cliente |
+| `_private` | `/management`, `/management/reports` e `/$id`, `/management/notices` (`new`, `$id/edit`), `/management/schedules`, `/management/neighborhoods` (`new`, `$id/edit`), `/management/users` (`new`, `$id/edit`), `/management/account/profile` | `data-only`: dados no servidor, tela no cliente |
 | Raiz | `/health-check`, `/robots.txt`, `/sitemap.xml` | servidor |
 
 API:

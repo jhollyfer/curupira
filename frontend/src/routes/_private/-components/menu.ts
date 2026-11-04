@@ -23,7 +23,7 @@ import { m } from '#/paraglide/messages'
  */
 const OPERATION = linkOptions([
   {
-    to: '/gestao',
+    to: '/management',
     capability: 'overview' as const,
     get label() {
       return m.panel_menu_overview()
@@ -31,7 +31,7 @@ const OPERATION = linkOptions([
     icon: GaugeIcon,
   },
   {
-    to: '/gestao/reports',
+    to: '/management/reports',
     capability: 'reports' as const,
     get label() {
       return m.panel_menu_reports()
@@ -39,7 +39,7 @@ const OPERATION = linkOptions([
     icon: SirenIcon,
   },
   {
-    to: '/gestao/notices',
+    to: '/management/notices',
     capability: 'notices' as const,
     get label() {
       return m.panel_menu_notices()
@@ -50,7 +50,7 @@ const OPERATION = linkOptions([
 
 const REGISTRY = linkOptions([
   {
-    to: '/gestao/schedules',
+    to: '/management/schedules',
     capability: 'schedules' as const,
     get label() {
       return m.panel_menu_schedules()
@@ -58,7 +58,7 @@ const REGISTRY = linkOptions([
     icon: CalendarDotsIcon,
   },
   {
-    to: '/gestao/neighborhoods',
+    to: '/management/neighborhoods',
     capability: 'neighborhoods' as const,
     get label() {
       return m.panel_menu_neighborhoods()
@@ -66,7 +66,7 @@ const REGISTRY = linkOptions([
     icon: MapPinAreaIcon,
   },
   {
-    to: '/gestao/users',
+    to: '/management/users',
     capability: 'users' as const,
     get label() {
       return m.panel_menu_users()
@@ -77,7 +77,7 @@ const REGISTRY = linkOptions([
 
 const ACCOUNT = linkOptions([
   {
-    to: '/gestao/account/profile',
+    to: '/management/account/profile',
     capability: 'profile' as const,
     get label() {
       return m.panel_menu_profile()
