@@ -5,6 +5,7 @@ import {
   axisCeiling,
   countOf,
   fillDailySeries,
+  responsePercent,
   seriesPeak,
   seriesTotal,
 } from './report-stats'
@@ -63,5 +64,16 @@ describe('series helpers', () => {
   it('counts a missing key as zero', () => {
     expect(countOf({ BURNING: 3 }, 'BURNING')).toBe(3)
     expect(countOf({ BURNING: 3 }, 'OTHER')).toBe(0)
+  })
+})
+
+describe('responsePercent', () => {
+  it('is null while no report is due, so an empty month does not read as 0%', () => {
+    expect(responsePercent({ answered: 0, due: 0 })).toBeNull()
+  })
+
+  it('rounds the share of due reports answered within 7 days', () => {
+    expect(responsePercent({ answered: 2, due: 3 })).toBe(67)
+    expect(responsePercent({ answered: 4, due: 4 })).toBe(100)
   })
 })

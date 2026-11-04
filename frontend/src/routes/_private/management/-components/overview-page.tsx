@@ -9,7 +9,13 @@ import { managementReportStatsQueryOptions } from '#/integrations/tanstack-query
 import { formatNumber } from '#/lib/i18n'
 import { REPORT_KIND_ICONS, REPORT_STATUS_ICONS } from '#/lib/icons'
 import { REPORT_KIND_LABELS, REPORT_STATUS_LABELS } from '#/lib/labels'
-import { countOf, fillDailySeries, seriesTotal } from '#/lib/report-stats'
+import {
+  RESPONSE_GOAL_PERCENT,
+  countOf,
+  fillDailySeries,
+  responsePercent,
+  seriesTotal,
+} from '#/lib/report-stats'
 import { m } from '#/paraglide/messages'
 
 import { DailyChart } from './daily-chart'
@@ -81,6 +87,48 @@ function Untreated({ count }: Readonly<{ count: number }>): React.JSX.Element {
   )
 }
 
+/**
+ * The PRD's success metric: of the last 30 days' reports already past their 7 days (or
+ * answered in time), the share the team answered within 7 days, against the 80% goal.
+ */
+function ResponseRate({
+  rate,
+}: Readonly<{ rate: { answered: number; due: number } }>): React.JSX.Element {
+  const percent = responsePercent(rate)
+
+  return (
+    <section
+      aria-labelledby="response-rate-title"
+      className="flex flex-col gap-1"
+    >
+      <h2 id="response-rate-title" className="text-lg font-semibold">
+        {m.panel_overview_response_title()}
+      </h2>
+      {percent === null && (
+        <p className="text-sm text-muted-foreground">
+          {m.panel_overview_response_empty()}
+        </p>
+      )}
+      {percent !== null && (
+        <>
+          <p className="text-3xl font-bold tabular-nums">
+            {m.panel_overview_response_value({
+              percent: formatNumber(percent),
+              answered: formatNumber(rate.answered),
+              due: formatNumber(rate.due),
+            })}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {m.panel_overview_response_goal({
+              goal: formatNumber(RESPONSE_GOAL_PERCENT),
+            })}
+          </p>
+        </>
+      )}
+    </section>
+  )
+}
+
 export function OverviewPage(): React.JSX.Element {
   const { today } = route.useLoaderData()
   const { data: stats } = useSuspenseQuery(managementReportStatsQueryOptions())
@@ -103,6 +151,8 @@ export function OverviewPage(): React.JSX.Element {
       </header>
 
       <Untreated count={untreated} />
+
+      <ResponseRate rate={stats.responseWithinSevenDays} />
 
       <div className="grid gap-8 lg:grid-cols-2">
         <section

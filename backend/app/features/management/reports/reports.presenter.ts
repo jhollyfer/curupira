@@ -17,6 +17,9 @@ import type { StorageContract } from '#services/storage/storage.contract'
 /** How many days the dashboard series covers, today included. */
 export const STATS_DAYS = 30
 
+/** The PRD's deadline for a first answer (docs/PRD.md §7: 80% within 7 days). */
+export const RESPONSE_DEADLINE_MS = 7 * 24 * 60 * 60 * 1000
+
 /**
  * The report in the shape of the `shared/` response (`_standards/architecture.md` §10).
  * The repository returns it without the photo `url` (no service inside it); the single
@@ -62,6 +65,16 @@ export class ReportPresenter {
     for (const row of raw.byKind) byKind[row.key] = row.total
     for (const row of raw.byStatus) byStatus[row.key] = row.total
     const perDay = new Map(raw.byDay.map((row) => [row.day, row.total]))
+    let answered = 0
+    let due = 0
+    for (const row of raw.responses) {
+      const deadline = row.createdAt.getTime() + RESPONSE_DEADLINE_MS
+      const inTime =
+        row.respondedAt !== null && row.respondedAt.getTime() <= deadline
+      // A report still inside its 7 days and unanswered is neither a hit nor a miss yet.
+      if (inTime) answered += 1
+      if (inTime || deadline <= now.getTime()) due += 1
+    }
 
     return {
       total: raw.byKind.reduce((sum, row) => sum + row.total, 0),
@@ -71,6 +84,7 @@ export class ReportPresenter {
         day,
         total: perDay.get(day) ?? 0,
       })),
+      responseWithinSevenDays: { answered, due },
     }
   }
 }

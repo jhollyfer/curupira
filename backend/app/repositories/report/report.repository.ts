@@ -54,6 +54,14 @@ export type ReportStatistics = {
     readonly day: string
     readonly total: number
   }>
+  /**
+   * Each report created since `since`: when it arrived and when the team first answered
+   * it (the first status event past `RECEIVED`), or `null` while nobody has.
+   */
+  readonly responses: ReadonlyArray<{
+    readonly createdAt: Date
+    readonly respondedAt: Date | null
+  }>
 }
 
 /**

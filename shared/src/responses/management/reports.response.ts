@@ -37,7 +37,12 @@ export const ManagementReportShowResponse = z.object({
   updatedAt: instant().nullable(),
 })
 
-/** The overview: counters by kind and by status, and the last 30 days day by day. */
+/**
+ * The overview: counters by kind and by status, the last 30 days day by day, and the
+ * PRD's success metric (docs/PRD.md §7): of the reports of those 30 days whose 7-day
+ * deadline has passed or that were already answered in time, how many got a first
+ * answer from the team within 7 days. `due` zero means there is nothing to measure yet.
+ */
 export const ManagementReportStatsResponse = z.object({
   total: z.number().int(),
   byKind: z.record(z.enum(REPORT_KINDS), z.number().int()),
@@ -45,6 +50,10 @@ export const ManagementReportStatsResponse = z.object({
   lastThirtyDays: z.array(
     z.object({ day: z.iso.date(), total: z.number().int() }),
   ),
+  responseWithinSevenDays: z.object({
+    answered: z.number().int(),
+    due: z.number().int(),
+  }),
 })
 
 export type ManagementReportListItemResponse = z.infer<

@@ -54,3 +54,18 @@ export function countOf(
 ): number {
   return record[key] ?? 0
 }
+
+/** The PRD's goal for the share of reports answered within 7 days (docs/PRD.md §7). */
+export const RESPONSE_GOAL_PERCENT = 80
+
+/**
+ * The share of due reports answered within 7 days, as a whole percent, or `null` while
+ * none is due yet: 0% would read as a failure when there is simply nothing to measure.
+ */
+export function responsePercent(
+  rate: Readonly<{ answered: number; due: number }>,
+): number | null {
+  if (rate.due === 0) return null
+
+  return Math.round((rate.answered / rate.due) * 100)
+}

@@ -1,4 +1,9 @@
-import { REPORT_PUBLIC_STATUSES, left, right } from '@curupira/shared'
+import {
+  REPORT_PUBLIC_STATUSES,
+  REPORT_STATUS,
+  left,
+  right,
+} from '@curupira/shared'
 import type {
   Either,
   ManagementReportListItemResponse,
@@ -171,6 +176,18 @@ export class ReportMemoryRepository extends ReportRepository {
       byKind: [...kinds].map(([key, total]) => ({ key, total })),
       byStatus: [...statuses].map(([key, total]) => ({ key, total })),
       byDay: [...days].map(([day, total]) => ({ day, total })),
+      responses: rows
+        .filter((row) => row.createdAt >= since)
+        .map((row) => {
+          const answers = row.events
+            .filter((event) => event.status !== REPORT_STATUS.RECEIVED)
+            .map((event) => event.at.getTime())
+
+          let respondedAt: Date | null = null
+          if (answers.length > 0) respondedAt = new Date(Math.min(...answers))
+
+          return { createdAt: row.createdAt, respondedAt }
+        }),
     }
   }
 

@@ -8086,13 +8086,34 @@
               ],
               "additionalProperties": false
             }
+          },
+          "responseWithinSevenDays": {
+            "type": "object",
+            "properties": {
+              "answered": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "due": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "answered",
+              "due"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
           "total",
           "byKind",
           "byStatus",
-          "lastThirtyDays"
+          "lastThirtyDays",
+          "responseWithinSevenDays"
         ],
         "additionalProperties": false
       },

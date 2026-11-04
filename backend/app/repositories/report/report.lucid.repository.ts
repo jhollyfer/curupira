@@ -5,6 +5,7 @@ import { DateTime } from 'luxon'
 import {
   REPORT_KINDS,
   REPORT_PUBLIC_STATUSES,
+  REPORT_STATUS,
   REPORT_STATUSES,
   left,
   right,
@@ -305,7 +306,7 @@ export class ReportLucidRepository extends ReportRepository {
 
   async statistics(since: Date): Promise<ReportStatistics> {
     const client = this.transaction.client()
-    const [byKind, byStatus, byDay] = await Promise.all([
+    const [byKind, byStatus, byDay, responses] = await Promise.all([
       client
         .from('reports')
         .groupBy('kind')
@@ -328,6 +329,18 @@ export class ReportLucidRepository extends ReportRepository {
         .groupByRaw(
           `to_char(created_at at time zone '${LOCAL_TIME_ZONE}', 'YYYY-MM-DD')`,
         ),
+      // The first answer is the earliest event past `RECEIVED`; the index on
+      // (report_id, at) serves the correlated subquery.
+      client
+        .from('reports')
+        .where('created_at', '>=', since)
+        .select('created_at')
+        .select(
+          client.raw(
+            '(select min(e.at) from report_status_events e where e.report_id = reports.id and e.status <> ?) as responded_at',
+            [REPORT_STATUS.RECEIVED],
+          ),
+        ),
     ])
 
     return {
@@ -349,6 +362,18 @@ export class ReportLucidRepository extends ReportRepository {
         day: row.day,
         total: Number(row.total),
       })),
+      responses: responses.map(
+        (row: {
+          created_at: Date | string
+          responded_at: Date | string | null
+        }) => {
+          let respondedAt: Date | null = null
+          if (row.responded_at !== null)
+            respondedAt = new Date(row.responded_at)
+
+          return { createdAt: new Date(row.created_at), respondedAt }
+        },
+      ),
     }
   }
 

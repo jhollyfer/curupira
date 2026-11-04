@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto'
+
 import { test } from '@japa/runner'
 
 import ManagementReportStatsUseCase from './stats.use-case.ts'
@@ -65,5 +67,40 @@ test.group('management/reports > stats (unit)', () => {
       stats.lastThirtyDays.reduce((sum, day) => sum + day.total, 0),
       2,
     )
+  })
+
+  test('counts first answers within 7 days over the reports already due', async ({
+    assert,
+  }) => {
+    const reports = MemoryRepositories.reports()
+    const useCase = await makeWithMemory(ManagementReportStatsUseCase, [
+      [ReportRepository, reports],
+    ])
+    const day = 24 * 60 * 60 * 1000
+    const ago = (days: number) => new Date(Date.now() - days * day)
+    const answer = async (
+      protocol: string,
+      created: number,
+      answeredAfter: number | null,
+    ) => {
+      const report = await seedReport(reports, { protocol, now: ago(created) })
+      if (answeredAfter === null) return
+      report.advance(
+        { eventId: randomUUID(), status: 'IN_REVIEW', authorId: randomUUID() },
+        ago(created - answeredAfter),
+      )
+      await reports.save(report)
+    }
+
+    await answer('CUR-2AAA-0011', 10, 2) // in time
+    await answer('CUR-2AAA-0012', 10, 9) // late
+    await answer('CUR-2AAA-0013', 10, null) // overdue, never answered
+    await answer('CUR-2AAA-0014', 2, null) // still inside its 7 days: not due
+    await answer('CUR-2AAA-0015', 1, 0.5) // already answered in time
+    await answer('CUR-2AAA-0016', 40, 1) // outside the 30-day window
+
+    const stats = rightOf(await useCase.execute())
+
+    assert.deepEqual(stats.responseWithinSevenDays, { answered: 2, due: 4 })
   })
 })
